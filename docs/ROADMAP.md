@@ -3,6 +3,7 @@
 This document is the source of truth for what to build next. Tasks are grouped by phase. Each task has an ID. When a task is finished, check its box and update the commit reference.
 
 Task ID prefixes:
+
 - **F** Foundation
 - **E** Entries (CRUD for the five entry types)
 - **D** Documents (file upload and storage)
@@ -20,7 +21,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-01** Vite project setup with React 18, TypeScript strict, Tailwind, ESLint, Prettier
 - [x] **F-02** Folder structure per `architecture.md` (`crypto/`, `db/`, `domain/`, `features/`, `ui/`, `i18n/`, `lib/`)
 - [x] **F-03** ESLint rules: restrict `crypto.subtle` to `src/crypto/`, restrict `dexie` to `src/db/`
-- [ ] **F-04** Husky + lint-staged pre-commit hook
+- [x] **F-04** Husky + lint-staged pre-commit hook
 - [ ] **F-05** Vitest setup with `fake-indexeddb`, sample test green
 - [ ] **F-06** Playwright setup with one smoke test
 - [ ] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
@@ -146,6 +147,7 @@ This phase is OPTIONAL and only starts after Phase 6 is complete and stable. It 
 The first task to work on is **F-01**. Confirm this before starting.
 
 When a phase is complete:
+
 1. Run the full test suite and fix any regressions.
 2. Update CHANGELOG.md.
 3. Tag a release per `release-workflow.md` (minor bump per phase, patch for fixes).
