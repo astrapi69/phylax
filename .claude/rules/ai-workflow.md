@@ -5,14 +5,16 @@ How Claude Code should operate inside this repo.
 ## Session start
 
 On the first message of a session:
+
 1. Read `docs/ROADMAP.md` (current state, open tasks).
 2. Check recent changes: `git log --oneline -10`.
-3. Run `npm test` to confirm a green baseline.
-Only then begin the actual task.
+3. Run `make test` to confirm a green baseline.
+   Only then begin the actual task.
 
 ## Interpreting "continue" / "next task"
 
 When the user says "continue", "next task", "weiter", or similar:
+
 1. Read `docs/ROADMAP.md`, section "Next Steps".
 2. Name the first open item (unchecked checkbox) by its task ID.
 3. Wait for confirmation. Do NOT start implementing immediately.
@@ -32,6 +34,7 @@ When the user says "continue", "next task", "weiter", or similar:
 ## Order of work for a crypto change
 
 Crypto changes are special. Order is mandatory:
+
 1. State the security goal in plain language.
 2. State the threat model delta (what new threat is mitigated, or what existing one is now broken).
 3. Write the test FIRST, including a negative test (wrong key fails).
@@ -55,7 +58,8 @@ Crypto changes are special. Order is mandatory:
 - Ask before guessing on architectural questions.
 - List edge cases before implementing them.
 - Justify every security-relevant decision in the PR description or commit body.
-- When touching `src/crypto/` or `src/db/`, run `npm test` AND `npm run test:e2e` before committing.
+- Use Make targets for all build, test, lint, format, and dev commands. Do not invoke npm scripts directly except inside the Makefile itself and inside `package.json`.
+- When touching `src/crypto/` or `src/db/`, run `make test` AND `make test-e2e` before committing.
 - When adding a new entry type, verify the round-trip: create, encrypt, persist, fetch, decrypt, render.
 
 ## How to handle ambiguity

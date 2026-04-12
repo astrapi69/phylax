@@ -92,20 +92,23 @@ Vitest, Playwright. See [package.json](package.json) for exact versions.
 ```bash
 git clone https://github.com/astrapi69/phylax.git
 cd phylax
-npm install
-npm run dev        # Start dev server
+make install             # Clean install of dependencies
+make dev                 # Start dev server on port 6173
 ```
 
 Other commands:
 
 ```bash
-npm test           # Run unit tests (Vitest)
-npm run test:coverage  # Run tests with coverage report
-npm run lint       # ESLint
-npm run format:check   # Prettier check
-npm run typecheck  # TypeScript type check
-npm run build      # Production build
+make test                # Run unit tests
+make test-coverage       # Run tests with coverage report
+make lint                # ESLint
+make format-check        # Prettier check
+make typecheck           # TypeScript type check
+make build               # Production build
+make check               # Run lint, typecheck, test, and build in one command
 ```
+
+Run `make help` to see all available targets.
 
 There are no end-user install instructions yet. The app is not deployable.
 
