@@ -1,6 +1,18 @@
-##################
-# intellij files #
-##################
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE
 *.iws
 *.iml
 *.ipr
@@ -8,9 +20,7 @@
 .idea/**
 .idea/*.*
 
-#############
-# Zip files #
-#############
+# Archives
 *.tar
 *.tar.gz
 *.zip
