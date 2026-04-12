@@ -23,6 +23,21 @@ uploaded, encrypted, and linked to entries.
 
 Think of it as a password manager, but for your health records.
 
+## Origin
+
+Phylax grew out of a personal essay series on Medium titled
+[Lebende Gesundheit](https://asterios-raptis.medium.com/lebende-gesundheit-die-serie-0193f66df9a3)
+("Living Health", in German). The series started as a concept piece on health
+as a process the individual leads with observation and long-term context, rather
+than a state managed by professionals in ten-minute appointments. It turned
+personal when the author's 85-year-old mother faced dementia, hypertension,
+iron deficiency, and a stack of lab results no single doctor had the full
+picture of.
+
+Phylax is the tool the series kept pointing toward: a place where a person
+(or a caregiver) can collect, structure, and bring along the context that
+ten-minute appointments cannot reconstruct from scratch.
+
 ## Not a medical device
 
 Phylax is a personal data management tool. It does not provide medical advice,
