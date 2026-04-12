@@ -58,7 +58,7 @@ Crypto changes are special. Order is mandatory:
 - Ask before guessing on architectural questions.
 - List edge cases before implementing them.
 - Justify every security-relevant decision in the PR description or commit body.
-- Use Make targets for all build, test, lint, format, and dev commands. Do not invoke npm scripts directly except inside the Makefile itself and inside `package.json`.
+- Use Make targets for all build, test, lint, format, and dev commands. Do not invoke npm scripts directly except inside the Makefile itself, inside `package.json`, and inside Playwright's `webServer.command`, where direct child-process management requires bypassing the Makefile wrapper.
 - When touching `src/crypto/` or `src/db/`, run `make test` AND `make test-e2e` before committing.
 - When adding a new entry type, verify the round-trip: create, encrypt, persist, fetch, decrypt, render.
 

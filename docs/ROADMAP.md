@@ -24,7 +24,8 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-04** Husky + lint-staged pre-commit hook
 - [x] **F-05** Vitest setup with `fake-indexeddb`, sample test green
 - [ ] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
-- [ ] **F-06** Playwright setup with one smoke test
+- [x] **F-06** Playwright setup with one smoke test
+- [ ] **F-06b** Cross-browser E2E: add Firefox and WebKit projects to Playwright config
 - [ ] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
 - [ ] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
 - [ ] **F-09** Key store module: in-memory key holder, lock/unlock API, no persistence

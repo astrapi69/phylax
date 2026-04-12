@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e build check
+.PHONY: help dev preview install clean lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui build check
 
 # -- Development --
 
@@ -46,6 +46,9 @@ test-coverage: ## Run tests with coverage report
 
 test-e2e: ## Run Playwright end-to-end tests
 	npm run test:e2e
+
+test-e2e-ui: ## Run Playwright tests in interactive UI mode
+	npx playwright test --ui
 
 # -- Build and release --
 
