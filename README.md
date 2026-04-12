@@ -1,6 +1,6 @@
 # Phylax
 
-Your local-first, zero-knowledge health diary.
+Your local-first, zero-knowledge living health profile.
 
 <!-- Badges: replace with real URLs once GitHub Actions CI is wired up (F-17) -->
 <!-- ![Build](https://img.shields.io/github/actions/workflow/status/astrapi69/phylax/ci.yml?branch=main) -->
@@ -10,18 +10,25 @@ Your local-first, zero-knowledge health diary.
 
 ## What is Phylax
 
-Phylax (Greek: phylax, "guardian") is a personal, data-sovereign health record
-built as a Progressive Web App. All data stays on your device, encrypted with a
-master password you choose. There is no backend, no cloud, no telemetry, and no
-data collection.
+Phylax (Greek: phylax, "guardian") is a personal, data-sovereign health
+platform built as a Progressive Web App. All data stays on your device,
+encrypted with a master password you choose. There is no backend, no cloud,
+no telemetry, and no data collection.
 
-The app serves as a structured health diary, medication tracker, and document
-archive for doctor visits. It supports five entry types: symptoms, medications,
-vitals (blood pressure, pulse, temperature, weight, blood glucose, SpO2),
-appointments, and free-text notes. Documents such as PDFs and images can be
-uploaded, encrypted, and linked to entries.
+The core artifact is a **living medical profile**: a versioned, structured
+document where you record observations about your health, grouped by theme
+(e.g., "Shoulder", "Nutrition", "Blood pressure"). Each observation has three
+facets: what happened (fact), what recurs (pattern), and what you decided to
+do about it (self-regulation). The profile also tracks lab values, supplements,
+and open questions for your next doctor visit.
 
-Think of it as a password manager, but for your health records.
+Phylax supports AI-guided profile creation: you provide fragments (lab photos,
+medication names, verbal observations), and an AI structures them into your
+profile. The AI operates under a strict contract: it structures, it does not
+diagnose. You can also enter data manually or paste markdown from an external
+AI session.
+
+Think of it as a password manager, but for your health context.
 
 ## Origin
 
@@ -42,6 +49,10 @@ ten-minute appointments cannot reconstruct from scratch.
 
 Phylax is a personal data management tool. It does not provide medical advice,
 diagnosis, or treatment recommendations.
+
+AI in Phylax structures, it does not diagnose. The AI organizes what you bring
+in. It does not interpret your health data, recommend treatments, or replace
+professional medical judgment.
 
 If you are experiencing a medical emergency, contact your doctor or call
 emergency services immediately.
@@ -78,6 +89,8 @@ Completed foundation tasks:
 - F-03: ESLint rules enforcing crypto and Dexie import boundaries
 - F-04: Pre-commit hook with Husky and lint-staged
 - F-05: Vitest setup with fake-indexeddb and Testing Library
+- F-06: Playwright setup with smoke test
+- F-07: AES-256-GCM encrypt/decrypt with round-trip and negative tests
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task list and current phase.
 
@@ -85,7 +98,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task list and current phase.
 
 React 18, TypeScript (strict mode), Vite, Tailwind CSS, Dexie.js (IndexedDB),
 Web Crypto API (native, no third-party crypto library), PWA via vite-plugin-pwa,
-Vitest, Playwright. See [package.json](package.json) for exact versions.
+Vitest, Playwright. AI integration via user-provided API key (OpenAI or
+Anthropic, no own backend). See [package.json](package.json) for exact versions.
 
 ## Getting started (developers)
 
@@ -119,7 +133,7 @@ src/
   crypto/          Encryption and key derivation (only place that uses crypto.subtle)
   db/              Dexie schema and repositories (only place that imports Dexie)
   domain/          Pure business logic, validation, types (no React, no Dexie)
-  features/        React feature folders (onboarding, entries, documents, export, backup, settings)
+  features/        React feature folders (onboarding, profile, ai-input, documents, export, backup, settings)
   ui/              Shared UI components (buttons, inputs, modals)
   i18n/            Translations (DE, EN)
   lib/             Small utilities with no domain knowledge
@@ -135,12 +149,12 @@ For the full architecture, see [.claude/rules/architecture.md](.claude/rules/arc
 
 ## Documentation
 
-| Document                           | Description                                                         |
-| ---------------------------------- | ------------------------------------------------------------------- |
-| [docs/CONCEPT.md](docs/CONCEPT.md) | Project vision, data model, security model, and phase plan (German) |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Task list with IDs, grouped by phase, checkboxes for progress       |
-| [CLAUDE.md](CLAUDE.md)             | Context document for Claude Code (development rules, constraints)   |
-| [.claude/rules/](.claude/rules/)   | Architecture, coding standards, quality checks, release workflow    |
+| Document                           | Description                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| [docs/CONCEPT.md](docs/CONCEPT.md) | Living health profile vision, data model, AI role, security model (German) |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Task list with IDs, grouped by phase, checkboxes for progress              |
+| [CLAUDE.md](CLAUDE.md)             | Context document for Claude Code (development rules, constraints)          |
+| [.claude/rules/](.claude/rules/)   | Architecture, coding standards, quality checks, release workflow           |
 
 ## Contributing
 
