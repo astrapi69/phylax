@@ -13,6 +13,14 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'crypto',
+          message:
+            'crypto is restricted to src/crypto/. Import helpers from @/crypto instead.',
+        },
+      ],
       'no-restricted-imports': [
         'error',
         {
@@ -20,6 +28,11 @@ export default [
             {
               group: ['**/crypto/internal/*'],
               message: 'Import from src/crypto only via the public index.',
+            },
+            {
+              group: ['dexie', 'dexie/*'],
+              message:
+                'dexie is restricted to src/db/. Use repositories from @/db instead.',
             },
           ],
         },
@@ -31,6 +44,28 @@ export default [
       react: {
         version: 'detect',
       },
+    },
+  },
+  {
+    files: ['src/crypto/**/*.ts'],
+    rules: {
+      'no-restricted-globals': 'off',
+    },
+  },
+  {
+    files: ['src/db/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/crypto/internal/*'],
+              message: 'Import from src/crypto only via the public index.',
+            },
+          ],
+        },
+      ],
     },
   },
   {
