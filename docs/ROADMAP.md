@@ -26,7 +26,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [ ] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
 - [x] **F-06** Playwright setup with one smoke test
 - [ ] **F-06b** Cross-browser E2E: add Firefox and WebKit projects to Playwright config
-- [ ] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
+- [x] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
 - [ ] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
 - [ ] **F-09** Key store module: in-memory key holder, lock/unlock API, no persistence
 - [ ] **F-10** Dexie schema v1: `entries`, `documents`, `meta` tables

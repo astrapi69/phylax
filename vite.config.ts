@@ -23,7 +23,7 @@ export default defineConfig({
   test: {
     globals: false,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./src/crypto/test-setup.ts', './src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
@@ -31,6 +31,7 @@ export default defineConfig({
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'src/test/**',
+        'src/crypto/test-setup.ts',
         'src/**/*.test.{ts,tsx}',
         'src/vite-env.d.ts',
         'src/main.tsx',
@@ -41,13 +42,18 @@ export default defineConfig({
       ],
       thresholds: {
         // Project-wide floor per quality-checks.md
-        // Per-module thresholds (crypto 100%, db 95%, domain 90%, features 85%,
-        // ui 85%, lib 90%) deferred until modules have real code.
-        // TODO [F-05b]: enable per-module coverage thresholds after F-11
+        // TODO [F-05b]: add per-module thresholds for db 95%, domain 90%,
+        // features 85%, ui 85%, lib 90% as those modules gain real code.
         lines: 85,
         branches: 85,
         functions: 85,
         statements: 85,
+        'src/crypto/**': {
+          lines: 100,
+          branches: 100,
+          functions: 100,
+          statements: 100,
+        },
       },
     },
   },
