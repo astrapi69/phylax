@@ -1,1 +1,11 @@
+#!/usr/bin/env sh
+set -e
+
 npx lint-staged
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' || true)
+if [ -n "$STAGED" ]; then
+  echo "$STAGED" | xargs npx vitest related --run
+fi
+
+npx tsc --noEmit

@@ -22,7 +22,8 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-02** Folder structure per `architecture.md` (`crypto/`, `db/`, `domain/`, `features/`, `ui/`, `i18n/`, `lib/`)
 - [x] **F-03** ESLint rules: restrict `crypto.subtle` to `src/crypto/`, restrict `dexie` to `src/db/`
 - [x] **F-04** Husky + lint-staged pre-commit hook
-- [ ] **F-05** Vitest setup with `fake-indexeddb`, sample test green
+- [x] **F-05** Vitest setup with `fake-indexeddb`, sample test green
+- [ ] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
 - [ ] **F-06** Playwright setup with one smoke test
 - [ ] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
 - [ ] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
