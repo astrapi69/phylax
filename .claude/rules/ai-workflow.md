@@ -47,7 +47,7 @@ Crypto changes are special. Order is mandatory:
 - Adding a dependency without explicit approval.
 - Writing plaintext to IndexedDB, even temporarily.
 - Adding `console.log` of decrypted user data.
-- Calling third-party APIs at runtime in MVP phases (1-6).
+- Calling third-party APIs at runtime except for user-initiated AI requests with the user's own API key (Phase 3 onward).
 - Generating medical advice, diagnoses, or interpretations of health data via heuristics in code.
 - Using em-dashes in any output (code, docs, commit messages).
 - Bypassing the repository layer to read or write Dexie directly from a component.
@@ -60,7 +60,8 @@ Crypto changes are special. Order is mandatory:
 - Justify every security-relevant decision in the PR description or commit body.
 - Use Make targets for all build, test, lint, format, and dev commands. Do not invoke npm scripts directly except inside the Makefile itself, inside `package.json`, and inside Playwright's `webServer.command`, where direct child-process management requires bypassing the Makefile wrapper.
 - When touching `src/crypto/` or `src/db/`, run `make test` AND `make test-e2e` before committing.
-- When adding a new entry type, verify the round-trip: create, encrypt, persist, fetch, decrypt, render.
+- When adding a new profile section or observation type, verify the round-trip: create, encrypt, persist, fetch, decrypt, render.
+- When building AI features, ensure chat messages are ephemeral (never persisted) and only user-confirmed profile fragments are saved.
 
 ## How to handle ambiguity
 
@@ -69,7 +70,7 @@ If a task in ROADMAP.md is ambiguous, do not invent a scope. Ask one targeted qu
 ## Commits
 
 - One commit per task ID where possible.
-- Conventional Commits format: `feat(entries): add medication CRUD [E-04]`.
+- Conventional Commits format: `feat(profile): add observation CRUD [O-04]`.
 - The task ID in square brackets is mandatory.
 - No co-author lines, no AI attribution in commit messages.
 

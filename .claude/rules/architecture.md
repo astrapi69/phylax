@@ -29,17 +29,26 @@ src/
   db/                   # ONLY place that touches Dexie
     schema.ts
     repositories/
-      entryRepository.ts
+      profileRepository.ts
+      observationRepository.ts
+      labValueRepository.ts
+      supplementRepository.ts
+      openPointRepository.ts
+      profileVersionRepository.ts
       documentRepository.ts
   domain/               # pure business logic, no React, no Dexie
-    entries/
+    profile/
+      types.ts
+      validation.ts
+    observations/
       types.ts
       validation.ts
     documents/
     backup/
   features/             # React features, one folder per user-facing area
     onboarding/
-    entries/
+    profile/
+    ai-input/
     documents/
     export/
     backup/
@@ -63,9 +72,10 @@ src/
 ## Storage layer
 
 - IndexedDB via Dexie. One database `phylax`, schema versioned via Dexie migrations.
-- Tables: `entries`, `documents`, `meta` (salt, settings, schema version).
-- Every record stored as `{ id, type, createdAt, updatedAt, ciphertext, iv }`. Plaintext fields are NEVER persisted.
-- Search/filter happens in-memory after decryption. No plaintext indexes. Acceptable because the dataset is small (single user, manual entries).
+- Tables: `profiles`, `observations`, `lab_values`, `supplements`, `open_points`, `profile_versions`, `documents`, `meta` (salt, settings, schema version, encrypted API key).
+- Every record stored as `{ id, profileId, createdAt, updatedAt, ciphertext, iv }`. Plaintext fields are NEVER persisted. All entities carry a `profileId` field from day one (MVP uses a single profile, multi-profile is a future phase).
+- Search/filter happens in-memory after decryption. No plaintext indexes. Acceptable because the dataset is small (single user, personal profile).
+- The canonical output is a markdown document rendered from the encrypted profile data.
 
 ## Crypto layer
 
@@ -89,5 +99,6 @@ This is documented in the README and the onboarding flow, in plain language.
 - No user accounts.
 - No cloud storage.
 - No telemetry, no analytics, no error reporting services.
-- No medical advice features. Phylax is a documentation tool, not a medical device.
-- No third-party API calls in the MVP. Phase 7 (AI assistant) is opt-in and uses the user's own API key.
+- No medical advice features. Phylax is a documentation tool, not a medical device. AI structures, AI does not diagnose.
+- No own backend service for AI. API calls go directly from the browser to the user's chosen provider (OpenAI / Anthropic) using the user's own API key.
+- Chat messages from AI sessions are ephemeral and NEVER persisted. Only the user-confirmed profile fragment is saved.
