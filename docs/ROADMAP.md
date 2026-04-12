@@ -17,9 +17,9 @@ Task ID prefixes:
 
 Goal: a working PWA shell with master password, encryption layer, and an empty but functional database.
 
-- [ ] **F-01** Vite project setup with React 18, TypeScript strict, Tailwind, ESLint, Prettier
-- [ ] **F-02** Folder structure per `architecture.md` (`crypto/`, `db/`, `domain/`, `features/`, `ui/`, `i18n/`, `lib/`)
-- [ ] **F-03** ESLint rules: restrict `crypto.subtle` to `src/crypto/`, restrict `dexie` to `src/db/`
+- [x] **F-01** Vite project setup with React 18, TypeScript strict, Tailwind, ESLint, Prettier
+- [x] **F-02** Folder structure per `architecture.md` (`crypto/`, `db/`, `domain/`, `features/`, `ui/`, `i18n/`, `lib/`)
+- [x] **F-03** ESLint rules: restrict `crypto.subtle` to `src/crypto/`, restrict `dexie` to `src/db/`
 - [ ] **F-04** Husky + lint-staged pre-commit hook
 - [ ] **F-05** Vitest setup with `fake-indexeddb`, sample test green
 - [ ] **F-06** Playwright setup with one smoke test

@@ -13,12 +13,10 @@ dist/
 *.tsbuildinfo
 
 # IDE
+.idea/
 *.iws
 *.iml
 *.ipr
-!.idea/runConfigurations
-.idea/**
-.idea/*.*
 
 # Archives
 *.tar
