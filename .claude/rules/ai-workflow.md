@@ -48,6 +48,7 @@ Crypto changes are special. Order is mandatory:
 - Generating medical advice, diagnoses, or interpretations of health data via heuristics in code.
 - Using em-dashes in any output (code, docs, commit messages).
 - Bypassing the repository layer to read or write Dexie directly from a component.
+- Deferring frontend test work as a default, including writing audit reports that list frontend gaps as a lower tier than backend gaps.
 
 ## Required actions
 
@@ -67,3 +68,10 @@ If a task in ROADMAP.md is ambiguous, do not invent a scope. Ask one targeted qu
 - Conventional Commits format: `feat(entries): add medication CRUD [E-04]`.
 - The task ID in square brackets is mandatory.
 - No co-author lines, no AI attribution in commit messages.
+
+## Running a coverage audit
+
+1. Check if `docs/audits/current-coverage.md` exists.
+2. If it exists, read its "Audit date" header, then `git mv` it to `docs/audits/history/YYYY-MM-DD-coverage.md` using that date.
+3. Write the new audit to `docs/audits/current-coverage.md`.
+4. When prioritizing gap closure, list frontend and backend gaps in the same priority queue sorted by risk, not by layer. Do not batch all backend gaps first.

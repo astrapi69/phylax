@@ -46,10 +46,20 @@ Run E2E in CI on every PR.
 
 ## Coverage thresholds
 
-- `src/crypto/`: 100% lines, 100% branches. Hard requirement.
-- `src/db/`: 90% lines minimum.
-- `src/domain/`: 80% lines minimum.
-- `src/features/`: no hard threshold, but every feature needs at least one happy-path test.
+Project overall: 85 to 95 percent lines. The test suite must genuinely protect the code, not just tick a box.
+
+Per-module targets, differentiated by risk:
+
+- `src/crypto/`: 100% lines, 100% branches. Hard requirement. Security-critical, no exceptions.
+- `src/db/` (repositories, schema): 95% lines minimum.
+- `src/domain/`: 90% lines minimum.
+- `src/features/` (React components, hooks, flows): 85% lines minimum. Tested with React Testing Library, behavior not implementation.
+- `src/ui/` (shared dumb components): 85% lines minimum.
+- `src/lib/` (utilities): 90% lines minimum.
+
+No module falls below 80% without an explicit ADR-documented exception in `docs/decisions/`.
+
+Frontend modules (`src/features/`, `src/ui/`) are NOT exempt from gap closure and are prioritized on equal footing with backend modules. User-facing bugs erode trust as fast as backend bugs corrupt data.
 
 Coverage is checked in CI. Drops below threshold block the merge.
 
@@ -66,6 +76,17 @@ Coverage is checked in CI. Drops below threshold block the merge.
 - Run `npm audit` and resolve all high/critical findings.
 - Verify the production bundle has no third-party network calls (use Chrome DevTools network tab on a fresh install).
 - Check the service worker cache list does not include any external URLs.
+
+## Audit file convention
+
+Coverage audits are written to `docs/audits/current-coverage.md`. This is the single canonical file for the latest audit.
+
+When a new audit runs, the previous version is archived:
+1. Read the "Audit date" header from the existing `current-coverage.md`.
+2. Move it to `docs/audits/history/YYYY-MM-DD-coverage.md` using that date.
+3. Write the new audit to `docs/audits/current-coverage.md`.
+
+Never overwrite the current audit without archiving the previous version first.
 
 ## Performance budget
 
