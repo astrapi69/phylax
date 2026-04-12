@@ -8,10 +8,12 @@ export default defineConfig({
   server: {
     port: 6173,
     strictPort: true,
+    open: true,
   },
   preview: {
     port: 6174,
     strictPort: true,
+    open: true,
   },
   resolve: {
     alias: {
