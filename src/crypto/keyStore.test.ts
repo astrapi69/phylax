@@ -40,6 +40,20 @@ describe('key store', () => {
       expect(keyStore.getLockState()).toBe('locked');
     });
 
+    it('unlockWithKey transitions to unlocked', async () => {
+      const { deriveKeyFromPassword } = await import('./keyDerivation');
+      const key = await deriveKeyFromPassword('password', salt);
+      keyStore.unlockWithKey(key);
+      expect(keyStore.getLockState()).toBe('unlocked');
+    });
+
+    it('unlockWithKey when already unlocked throws', async () => {
+      const { deriveKeyFromPassword } = await import('./keyDerivation');
+      const key = await deriveKeyFromPassword('password', salt);
+      keyStore.unlockWithKey(key);
+      expect(() => keyStore.unlockWithKey(key)).toThrow('Key store already unlocked');
+    });
+
     it('lock when already locked is a no-op', () => {
       keyStore.lock();
       expect(keyStore.getLockState()).toBe('locked');

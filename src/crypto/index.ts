@@ -5,6 +5,7 @@ export type { LockState } from './keyStore';
 export {
   getLockState,
   unlock,
+  unlockWithKey,
   lock,
   encryptWithStoredKey,
   decryptWithStoredKey,

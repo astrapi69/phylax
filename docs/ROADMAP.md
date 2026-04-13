@@ -32,7 +32,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-09** Key store module: in-memory key holder, lock/unlock API, no persistence
 - [x] **F-10** Dexie schema v1: `profiles`, `observations`, `lab_values`, `supplements`, `open_points`, `profile_versions`, `documents`, `meta` tables. All entities carry `profileId`.
 - [x] **F-11** Generic encrypted repository base class (encrypt before put, decrypt after get)
-- [ ] **F-12** Master password onboarding flow: set, confirm, derive key, store salt
+- [x] **F-12** Master password onboarding flow: set, confirm, derive key, store salt
 - [ ] **F-13** Unlock flow: enter password, derive key, verify against test ciphertext
 - [ ] **F-14** Auto-lock: configurable inactivity timeout, default 5 minutes, clears in-memory key
 - [ ] **F-15** PWA config via `vite-plugin-pwa`: manifest, icons, service worker with autoUpdate

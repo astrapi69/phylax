@@ -57,6 +57,22 @@ export async function unlock(password: string, salt: Uint8Array): Promise<void> 
 }
 
 /**
+ * Unlock with a pre-derived CryptoKey. Avoids re-deriving via PBKDF2
+ * when the key was just derived (e.g. during onboarding).
+ * Throws if already unlocked.
+ *
+ * @param key - a pre-derived AES-GCM CryptoKey
+ */
+export function unlockWithKey(key: CryptoKey): void {
+  if (currentKey !== null) {
+    throw new Error('Key store already unlocked');
+  }
+
+  currentKey = key;
+  notifyListeners('unlocked');
+}
+
+/**
  * Clear the in-memory key. Safe to call when already locked (no-op).
  * Listeners are only notified on actual transition from unlocked to locked.
  */
