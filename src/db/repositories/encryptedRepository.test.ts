@@ -234,4 +234,32 @@ describe('EncryptedRepository', () => {
       expect(fetched?.nested).toBeNull();
     });
   });
+
+  describe('subclass extensibility', () => {
+    it('subclass can override create using protected serialize', async () => {
+      // Verifies the private->protected visibility change works for subclass overrides
+      const { generateId } = await import('../../crypto');
+
+      class CustomRepository extends EncryptedRepository<TestEntity> {
+        async create(
+          data: Omit<TestEntity, 'id' | 'createdAt' | 'updatedAt'>,
+        ): Promise<TestEntity> {
+          const id = generateId();
+          const now = Date.now();
+          const entity: TestEntity = { ...data, id, createdAt: now, updatedAt: now };
+          const row = await this.serialize(entity);
+          await this.table.put(row);
+          return entity;
+        }
+      }
+
+      const customRepo = new CustomRepository(testDb.testItems);
+      const created = await customRepo.create(makeTestData());
+
+      expect(created.id).toMatch(/^[0-9a-f]{8}-/);
+
+      const fetched = await customRepo.getById(created.id);
+      expect(fetched?.name).toBe(created.name);
+    });
+  });
 });

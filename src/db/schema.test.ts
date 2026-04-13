@@ -7,10 +7,12 @@ const EXPECTED_TABLES = [
   'profiles',
   'observations',
   'lab_values',
+  'lab_reports',
   'supplements',
   'open_points',
   'profile_versions',
   'documents',
+  'timeline_entries',
   'meta',
 ];
 
@@ -112,15 +114,19 @@ describe('PhylaxDb schema', () => {
     await db.openPoints.put({ id: 'op1', ...baseRow });
     await db.profileVersions.put({ id: 'v1', ...baseRow });
     await db.documents.put({ id: 'd1', ...baseRow });
+    await db.labReports.put({ id: 'lr1', ...baseRow });
+    await db.timelineEntries.put({ id: 'te1', ...baseRow });
 
     const tables = [
       { table: db.profiles, id: 'p1' },
       { table: db.observations, id: 'o1' },
       { table: db.labValues, id: 'l1' },
+      { table: db.labReports, id: 'lr1' },
       { table: db.supplements, id: 's1' },
       { table: db.openPoints, id: 'op1' },
       { table: db.profileVersions, id: 'v1' },
       { table: db.documents, id: 'd1' },
+      { table: db.timelineEntries, id: 'te1' },
     ];
 
     for (const { table, id } of tables) {
@@ -131,8 +137,31 @@ describe('PhylaxDb schema', () => {
     db.close();
   });
 
-  it('schema version is 1', () => {
-    expect(db.verno).toBe(1);
+  it('schema version is 2', () => {
+    expect(db.verno).toBe(2);
+  });
+
+  it('v2 tables exist and accept put/get', async () => {
+    const now = Date.now();
+    const baseRow = {
+      profileId: 'p1',
+      createdAt: now,
+      updatedAt: now,
+      payload: new ArrayBuffer(0),
+    };
+
+    await db.labReports.put({ id: 'lr1', ...baseRow });
+    await db.timelineEntries.put({ id: 'te1', ...baseRow });
+
+    const lr = await db.labReports.get('lr1');
+    expect(lr?.id).toBe('lr1');
+    expect(lr?.profileId).toBe('p1');
+
+    const te = await db.timelineEntries.get('te1');
+    expect(te?.id).toBe('te1');
+    expect(te?.profileId).toBe('p1');
+
+    db.close();
   });
 
   it('data persists across close and re-open', async () => {

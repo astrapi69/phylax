@@ -4,9 +4,11 @@ export type {
   ProfileRow,
   ObservationRow,
   LabValueRow,
+  LabReportRow,
   SupplementRow,
   OpenPointRow,
   ProfileVersionRow,
   DocumentRow,
+  TimelineEntryRow,
   MetaRow,
 } from './types';

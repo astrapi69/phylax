@@ -126,7 +126,7 @@ export abstract class EncryptedRepository<T extends DomainEntity> {
     return Promise.all(rows.map((row) => this.deserialize(row)));
   }
 
-  private async serialize(entity: T): Promise<EncryptedRow> {
+  protected async serialize(entity: T): Promise<EncryptedRow> {
     const { id, profileId, createdAt, updatedAt, ...domainFields } = entity;
     const json = JSON.stringify(domainFields);
     const bytes = new TextEncoder().encode(json);
@@ -141,7 +141,7 @@ export abstract class EncryptedRepository<T extends DomainEntity> {
     };
   }
 
-  private async deserialize(row: EncryptedRow): Promise<T> {
+  protected async deserialize(row: EncryptedRow): Promise<T> {
     const payload = new Uint8Array(row.payload);
     const bytes = await decryptWithStoredKey(payload);
     const json = new TextDecoder().decode(bytes);

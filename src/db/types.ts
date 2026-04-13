@@ -50,6 +50,12 @@ export type ProfileVersionRow = EncryptedRow;
 /** Encrypted document (PDF, image). Encrypted payload: file content, name, mimeType, linked observation IDs. */
 export type DocumentRow = EncryptedRow;
 
+/** Lab report (parent of LabValues). Encrypted payload: reportDate, labName, assessments, etc. */
+export type LabReportRow = EncryptedRow;
+
+/** Timeline entry (Verlaufsnotiz). Encrypted payload: period, title, content, source. */
+export type TimelineEntryRow = EncryptedRow;
+
 /**
  * App-level metadata. Single-row pattern (id is always 'singleton').
  * Salt and schemaVersion are plaintext because they are needed before
