@@ -1,4 +1,5 @@
 export { encrypt, decrypt } from './aesGcm';
+export { generateId } from './generateId';
 export { deriveKeyFromPassword, generateSalt } from './keyDerivation';
 export type { LockState } from './keyStore';
 export {

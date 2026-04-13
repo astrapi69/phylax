@@ -9,7 +9,7 @@
 /// <reference types="node" />
 import { webcrypto } from 'node:crypto';
 
-if (!globalThis.crypto) {
+if (!globalThis.crypto?.subtle) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Node's webcrypto is API-compatible with the browser Crypto interface but types diverge
   globalThis.crypto = webcrypto as any;
 }
