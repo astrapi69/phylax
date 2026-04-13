@@ -8,7 +8,7 @@ export const AUTH_TAG_LENGTH = 16;
 export const ALGORITHM = 'AES-GCM' as const;
 
 /** Number of PBKDF2 iterations. 600k is the chosen security-UX tradeoff. */
-export const PBKDF2_ITERATIONS = 600_000;
+export const PBKDF2_ITERATIONS = 1_200_000;
 
 /** Hash algorithm used by PBKDF2. */
 export const PBKDF2_HASH = 'SHA-256' as const;
