@@ -36,21 +36,29 @@ database, but a guardian of your health narrative.
 
 ## Origin
 
-Phylax grew out of a personal essay series on Medium titled
-[Lebende Gesundheit](https://asterios-raptis.medium.com/lebende-gesundheit-die-serie-0193f66df9a3)
-("Living Health") by Asterios Raptis. The series has four parts:
+Phylax implements the "Living Health" concept by Asterios Raptis, a four-part
+Medium series arguing that health is a user-led process, not a state managed
+by others.
 
-1. **Concept**: health as a process the individual leads, not a state managed by professionals
-2. **Self-application**: observe your body, find patterns, self-regulate
-3. **Caregiver profiles**: leading the health profile for someone who cannot do it themselves
-4. **AI as structuring partner**: AI organizes your fragments into a profile, never diagnoses
+**English:**
 
-The series turned personal when the author's 85-year-old mother faced
-dementia, hypertension, iron deficiency, and a stack of lab results no single
-doctor had the full picture of. Phylax is the tool the series kept pointing
-toward: a place where a person (or a caregiver) can collect, structure, and
-bring along the context that ten-minute appointments cannot reconstruct from
-scratch.
+- Part 1: [Living Health: From Patient to Partner](https://asterios-raptis.medium.com/living-health-from-patient-to-partner-9fff311a8c45)
+- Part 2: [Living Health in Practice](https://asterios-raptis.medium.com/living-health-in-practice-d53964053500)
+- Parts 3-4: Translation in progress
+
+**Original German:**
+
+- [Lebende Gesundheit - Die Serie](https://asterios-raptis.medium.com/lebende-gesundheit-die-serie-0193f66df9a3)
+
+The four parts cover:
+
+1. Concept: health as a user-led process, not a managed state
+2. Self-application: observe, pattern, self-regulate
+3. Caregiver profiles (elderly parent, dependent child)
+4. AI as a structuring partner, not a diagnostician
+
+Phylax is the practical implementation: a tool for carrying out steps 2-4 in
+daily life.
 
 ## Not a medical device
 
