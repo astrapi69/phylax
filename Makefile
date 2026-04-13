@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui build check
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui build check
 
 # -- Development --
 
@@ -15,6 +15,9 @@ install: ## Clean install of dependencies
 
 clean: ## Remove node_modules, dist, and coverage
 	rm -rf node_modules dist coverage
+
+icons: ## Generate PNG icons from SVG sources
+	node scripts/generate-icons.mjs
 
 # -- Quality --
 
