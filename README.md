@@ -2,10 +2,7 @@
 
 Your local-first, zero-knowledge living health profile.
 
-<!-- Badges: replace with real URLs once GitHub Actions CI is wired up (F-17) -->
-<!-- ![Build](https://img.shields.io/github/actions/workflow/status/astrapi69/phylax/ci.yml?branch=main) -->
-<!-- ![Tests](https://img.shields.io/github/actions/workflow/status/astrapi69/phylax/ci.yml?branch=main&label=tests) -->
-
+[![CI](https://github.com/astrapi69/phylax/actions/workflows/ci.yml/badge.svg)](https://github.com/astrapi69/phylax/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## What is Phylax

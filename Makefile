@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui build check
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production build check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -53,12 +53,21 @@ test-e2e: ## Run Playwright end-to-end tests
 test-e2e-ui: ## Run Playwright tests in interactive UI mode
 	npx playwright test --ui
 
+test-e2e-production: ## Run Playwright E2E against production build
+	npx playwright test --config playwright.config.production.ts
+
 # -- Build and release --
 
 build: ## Production build
 	npm run build
 
 check: lint typecheck test build ## Run lint, typecheck, test, and build (CI gate)
+
+# -- CI parity --
+
+ci-local-fast: lint typecheck test ## Fast CI check (no build, no E2E)
+
+ci-local-full: lint typecheck test-coverage build test-e2e test-e2e-production ## Full CI check
 
 # -- Meta --
 
