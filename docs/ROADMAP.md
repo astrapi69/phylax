@@ -177,6 +177,10 @@ When a phase is complete:
 3. Tag a release per `release-workflow.md` (minor bump per phase, patch for fixes).
 4. Move to the next phase.
 
+## Technical Debt
+
+- [ ] **TD-01** Bump GitHub Actions from @v4 to @v5 when released (Node.js 20 deprecation, June 2026 deadline)
+
 ## Out of scope (do not propose)
 
 - Backend, server, cloud sync
