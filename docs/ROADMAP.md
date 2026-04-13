@@ -28,7 +28,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-06** Playwright setup with one smoke test
 - [ ] **F-06b** Cross-browser E2E: add Firefox and WebKit projects to Playwright config
 - [x] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
-- [ ] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
+- [x] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
 - [ ] **F-09** Key store module: in-memory key holder, lock/unlock API, no persistence
 - [ ] **F-10** Dexie schema v1: `profiles`, `observations`, `lab_values`, `supplements`, `open_points`, `profile_versions`, `documents`, `meta` tables. All entities carry `profileId`.
 - [ ] **F-11** Generic encrypted repository base class (encrypt before put, decrypt after get)
