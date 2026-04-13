@@ -1,19 +1,27 @@
 # src/domain
 
-Pure business logic layer. Type definitions, validation rules, and transformations. No framework dependencies.
+Pure business logic layer. Type definitions for the living health profile entities. No framework dependencies.
 
-This layer defines interfaces that the storage layer implements. It never imports from React or Dexie directly. All code here is plain TypeScript, easily testable without a browser environment.
+This layer defines the shapes that the storage layer persists. It never imports from React or Dexie directly. All code here is plain TypeScript, easily testable without a browser environment.
 
 ## What does NOT belong here
 
 - No React imports. Domain logic is framework-agnostic.
-- No Dexie imports. Storage access goes through repository interfaces.
+- No Dexie imports. Storage access goes through repository interfaces in `src/db/repositories/`.
 - No `crypto.subtle` calls. Encryption is handled by `src/crypto/`.
 - No UI concerns (components, hooks, styles).
 
-## Planned contents
+## Current contents
 
-- `entries/` (E-01, E-02): type definitions and validation for the five entry types
-- `documents/` (D-01): document metadata types and validation
-- `backup/` (B-01): backup file format spec, serialization logic
+- `profile/types.ts`: Profile, BaseData, DoctorInfo, WeightEntry
+- `observation/types.ts`: Observation, ObservationStatus, Source
+- `labValue/types.ts`: LabReport, LabValue
+- `supplement/types.ts`: Supplement, SupplementCategory
+- `openPoint/types.ts`: OpenPoint, OpenPointContext
+- `profileVersion/types.ts`: ProfileVersion
+- `timelineEntry/types.ts`: TimelineEntry
 - `index.ts`: public API re-exports
+
+## Future additions
+
+When document upload support is implemented (currently placeholder in Dexie schema), a `document/` subdirectory with its own types will be added. When backup format logic lands (Phase 6 territory), a `backup/` subdirectory will be added. Neither exists yet; stale scaffolds were removed after the architecture realignment cleanup.

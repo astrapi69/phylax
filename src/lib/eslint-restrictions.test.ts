@@ -40,7 +40,7 @@ describe('ESLint import boundary rules', () => {
     it('flags crypto.randomUUID outside src/crypto/', async () => {
       const messages = await lintText(
         'const id = crypto.randomUUID();\n',
-        'src/domain/entries/types.ts',
+        'src/domain/observation/types.ts',
       );
       const violation = messages.find((m) => m.ruleId === 'no-restricted-globals');
       expect(violation).toBeDefined();
@@ -59,10 +59,7 @@ describe('ESLint import boundary rules', () => {
     });
 
     it('allows dexie import inside src/db/', async () => {
-      const messages = await lintText(
-        'import Dexie from "dexie";\n',
-        'src/db/schema.ts',
-      );
+      const messages = await lintText('import Dexie from "dexie";\n', 'src/db/schema.ts');
       const violation = messages.find((m) => m.ruleId === 'no-restricted-imports');
       expect(violation).toBeUndefined();
     });
