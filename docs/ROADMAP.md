@@ -51,10 +51,10 @@ Goal: the living medical profile as core artifact. Observation CRUD grouped by t
 - [x] **O-02** Validation rules for observations (required fields, theme non-empty, status enum)
 - [x] **O-03** Profile repository: create default profile on first unlock, read, update base data
 - [x] **O-04** Observation repository: create, read, update, delete, list by theme, all encrypted
-- [ ] **O-05** Lab value repository: create, read, update, delete, list by date, all encrypted
-- [ ] **O-06** Supplement repository: create, read, update, delete, list, all encrypted
-- [ ] **O-07** Open point repository: create, read, update (toggle), delete, list, all encrypted
-- [ ] **O-08** Profile version repository: create version entry on every profile change, list history
+- [x] **O-05** Lab value repository: create, read, update, delete, list by date, all encrypted
+- [x] **O-06** Supplement repository: create, read, update, delete, list, all encrypted
+- [x] **O-07** Open point repository: create, read, update (toggle), delete, list, all encrypted
+- [x] **O-08** Profile version repository: create version entry on every profile change, list history
 - [ ] **O-09** Profile view: render the full profile as structured markdown
 - [ ] **O-10** Observation form: theme selector (free text or existing), fact/pattern/self-regulation/status fields
 - [ ] **O-11** Observation list grouped by theme, expandable detail

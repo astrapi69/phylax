@@ -4,3 +4,7 @@ export { ProfileRepository } from './profileRepository';
 export { ObservationRepository } from './observationRepository';
 export { LabReportRepository } from './labReportRepository';
 export { LabValueRepository } from './labValueRepository';
+export { SupplementRepository } from './supplementRepository';
+export { OpenPointRepository } from './openPointRepository';
+export { ProfileVersionRepository } from './profileVersionRepository';
+export { TimelineEntryRepository } from './timelineEntryRepository';
