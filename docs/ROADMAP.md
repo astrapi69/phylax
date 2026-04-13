@@ -24,7 +24,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-03** ESLint rules: restrict `crypto.subtle` to `src/crypto/`, restrict `dexie` to `src/db/`
 - [x] **F-04** Husky + lint-staged pre-commit hook
 - [x] **F-05** Vitest setup with `fake-indexeddb`, sample test green
-- [ ] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
+- [x] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
 - [x] **F-06** Playwright setup with one smoke test
 - [ ] **F-06b** Cross-browser E2E: add Firefox and WebKit projects to Playwright config
 - [x] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests

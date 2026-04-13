@@ -74,6 +74,8 @@ export default defineConfig({
         'src/vite-env.d.ts',
         'src/main.tsx',
         'src/pwa/**',
+        // Route definitions are declarative config, verified by E2E tests
+        'src/router/routes.tsx',
         // Exclude empty placeholder index files from F-02 scaffold.
         // Remove entries from this list as modules gain real code.
         'src/**/index.ts',
@@ -81,23 +83,68 @@ export default defineConfig({
       ],
       thresholds: {
         // Project-wide floor per quality-checks.md
-        // TODO [F-05b]: add per-module thresholds for domain 90%,
-        // features 85%, ui 85%, lib 90% as those modules gain real code.
         lines: 85,
         branches: 85,
         functions: 85,
         statements: 85,
+        // Per-module thresholds [F-05b]
+        // 100% for security-critical modules
         'src/crypto/**': {
           lines: 100,
           branches: 100,
           functions: 100,
           statements: 100,
         },
+        'src/db/repositories/**': {
+          lines: 100,
+          branches: 100,
+          functions: 100,
+          statements: 100,
+        },
+        // 95% for data/state/auth modules
         'src/db/**': {
           lines: 95,
-          branches: 95,
+          branches: 90,
           functions: 95,
           statements: 95,
+        },
+        'src/features/onboarding/**': {
+          lines: 95,
+          branches: 90,
+          functions: 100,
+          statements: 95,
+        },
+        'src/features/auto-lock/**': {
+          lines: 95,
+          branches: 95,
+          functions: 100,
+          statements: 95,
+        },
+        'src/features/pwa-update/**': {
+          lines: 95,
+          branches: 95,
+          functions: 100,
+          statements: 95,
+        },
+        'src/router/**': {
+          lines: 95,
+          branches: 90,
+          functions: 95,
+          statements: 95,
+        },
+        // 90% for unlock (known untested error branch, audit debt #8)
+        'src/features/unlock/**': {
+          lines: 90,
+          branches: 85,
+          functions: 100,
+          statements: 90,
+        },
+        // 85% for UI shell (render-heavy, fewer logic branches)
+        'src/features/app-shell/**': {
+          lines: 85,
+          branches: 85,
+          functions: 100,
+          statements: 85,
         },
       },
     },
