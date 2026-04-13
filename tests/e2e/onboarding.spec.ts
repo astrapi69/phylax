@@ -26,23 +26,27 @@ test.describe('Onboarding flow', () => {
     await expect(page.getByLabel('Passwort wiederholen')).not.toBeVisible();
   });
 
-  test('full onboarding flow arrives at profile page', async ({ page }) => {
+  test('full onboarding flow arrives at profile-create', async ({ page }) => {
     await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
     await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
 
-    // After onboarding, navigates to /profile inside the app shell
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    // After onboarding, navigates to /profile/create (no profile yet)
+    await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
-  test('reload after onboarding shows unlock screen, not onboarding', async ({ page }) => {
+  test('reload after onboarding shows unlock screen', async ({ page }) => {
     await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
     await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.reload();
 

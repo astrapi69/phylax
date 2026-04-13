@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
 import { ProtectedRoute } from './ProtectedRoute';
+import { RequireProfile } from './RequireProfile';
 import { AppShell } from '../features/app-shell';
 import { OnboardingFlow } from '../features/onboarding';
 import { UnlockScreen } from '../features/unlock';
+import { ProfileCreateForm } from '../features/profile-create';
 import { ProfilePlaceholder } from '../features/profile/ProfilePlaceholder';
 import { ObservationsPlaceholder } from '../features/observations/ObservationsPlaceholder';
 import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
@@ -14,18 +16,27 @@ import { NotFound } from '../features/not-found/NotFound';
 function OnboardingPage() {
   const navigate = useNavigate();
   const handleComplete = useCallback(() => {
-    navigate('/profile', { replace: true });
+    navigate('/profile/create', { replace: true });
   }, [navigate]);
   return <OnboardingFlow onComplete={handleComplete} />;
+}
+
+function ProfileCreatePage() {
+  const navigate = useNavigate();
+  const handleComplete = useCallback(() => {
+    navigate('/profile', { replace: true });
+  }, [navigate]);
+  return <ProfileCreateForm onComplete={handleComplete} />;
 }
 
 /**
  * Application route tree.
  *
  * - /onboarding and /unlock are full-screen (no app shell)
- * - All other routes are protected and wrapped in AppShell
+ * - /profile/create is protected but does NOT require an existing profile
+ * - Feature routes are protected AND require a profile
  * - / redirects to /profile
- * - Unknown routes show 404
+ * - Unknown routes show 404 (protected, inside shell)
  */
 export function AppRoutes() {
   return (
@@ -34,11 +45,26 @@ export function AppRoutes() {
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/unlock" element={<UnlockScreen />} />
 
-      {/* Protected routes with app shell */}
+      {/* Protected route: profile creation (no RequireProfile) */}
       <Route
         element={
           <ProtectedRoute>
             <AppShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/profile/create" element={<ProfileCreatePage />} />
+        {/* Catch-all 404: inside shell but no RequireProfile so it always renders */}
+        <Route path="*" element={<NotFound />} />
+      </Route>
+
+      {/* Protected routes that require an existing profile */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <RequireProfile>
+              <AppShell />
+            </RequireProfile>
           </ProtectedRoute>
         }
       >
@@ -48,7 +74,6 @@ export function AppRoutes() {
         <Route path="/lab-values" element={<LabValuesPlaceholder />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
         <Route path="/settings" element={<SettingsPlaceholder />} />
-        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

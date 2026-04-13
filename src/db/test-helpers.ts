@@ -22,19 +22,27 @@ export async function resetDatabase(): Promise<void> {
   await db.open();
 }
 
+export interface SetupOnboardingOptions {
+  /** If true, creates a default 'self' profile after onboarding. Default: false. */
+  createDefaultProfile?: boolean;
+}
+
 /**
  * Sets up a completed onboarding state for tests.
  * - Resets the database
  * - Writes meta row with verification token encrypted under the given password
+ * - Optionally creates a default profile (for tests that need a ready-to-use state)
  * - Leaves keyStore in LOCKED state (ready for unlock tests)
  */
-export async function setupCompletedOnboarding(password: string): Promise<void> {
+export async function setupCompletedOnboarding(
+  password: string,
+  options?: SetupOnboardingOptions,
+): Promise<void> {
   await resetDatabase();
 
   const salt = generateSalt();
   const key = await deriveKeyFromPassword(password, salt);
 
-  // Ensure keyStore is locked before unlocking (handles repeated calls)
   if (getLockState() === 'unlocked') {
     lock();
   }
@@ -47,6 +55,23 @@ export async function setupCompletedOnboarding(password: string): Promise<void> 
   });
   const encrypted = await encryptWithStoredKey(payloadBytes);
   await writeMeta(new Uint8Array(salt).buffer, new Uint8Array(encrypted).buffer);
+
+  if (options?.createDefaultProfile) {
+    const { ProfileRepository } = await import('./repositories/profileRepository');
+    const repo = new ProfileRepository();
+    await repo.create({
+      baseData: {
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+  }
 
   lock();
 }

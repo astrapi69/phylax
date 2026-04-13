@@ -55,7 +55,7 @@ Goal: the living medical profile as core artifact. Observation CRUD grouped by t
 - [x] **O-06** Supplement repository: create, read, update, delete, list, all encrypted
 - [x] **O-07** Open point repository: create, read, update (toggle), delete, list, all encrypted
 - [x] **O-08** Profile version repository: create version entry on every profile change, list history
-- [ ] **O-09** Profile view: render the full profile as structured markdown
+- [x] **O-09** Profile view: render the full profile as structured markdown
 - [ ] **O-10** Observation form: theme selector (free text or existing), fact/pattern/self-regulation/status fields
 - [ ] **O-11** Observation list grouped by theme, expandable detail
 - [ ] **O-12** Lab value form: date, parameter, result, reference range, assessment
