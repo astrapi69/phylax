@@ -38,7 +38,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-15** PWA config via `vite-plugin-pwa`: manifest, icons, service worker with autoUpdate
 - [x] **F-16** App shell: router, locked/unlocked state, basic layout
 - [x] **F-17** GitHub Actions CI: typecheck, lint, test, build on every PR
-- [ ] **F-18** README with install instructions, threat model summary, screenshots
+- [x] **F-18** README with install instructions, threat model summary, screenshots
 
 ---
 
