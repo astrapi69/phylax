@@ -54,6 +54,12 @@ export default defineConfig({
           functions: 100,
           statements: 100,
         },
+        'src/db/**': {
+          lines: 95,
+          branches: 95,
+          functions: 95,
+          statements: 95,
+        },
       },
     },
   },
