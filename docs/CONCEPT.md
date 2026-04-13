@@ -29,6 +29,19 @@ Das Konzept beruht auf vier Säulen:
 3. **Datenhoheit**: Der Nutzer entscheidet, was dokumentiert wird.
 4. **Entscheidungsfähigkeit auf Augenhöhe**: Der Nutzer sucht Beratung, nicht Unterordnung.
 
+## Core Principle: Structure, Never Diagnose
+
+Phylax is a structuring tool, not a diagnostic system. It helps the user organize their own observations, lab values, and health decisions, but it never substitutes for medical judgment.
+
+This has concrete implications across the application:
+
+- **Every derived output carries a disclaimer.** Plans (diet, training, supplements, medications) generated from the profile data always include a visible reminder that the plan is a structured suggestion, not a medical prescription, and must be reviewed with a qualified healthcare provider.
+- **Interpretations are labeled.** When the profile contains interpretive content (patterns, hypotheses about causes), the source is explicit: user self-assessment, AI-generated analysis, or quoted from a medical professional. The three are never conflated.
+- **No automated decisions about treatment.** Phylax does not recommend dose changes, medication adjustments, or treatment stops based on data patterns. It surfaces patterns for the user to discuss with their doctor.
+- **AI assistance is transparent.** Any AI-generated content (analyses, plan suggestions) is marked as such in the UI and stored with provenance metadata, so the user and their doctor can distinguish self-observation from machine-generated text.
+
+This principle is not a legal disclaimer appended to the UI. It shapes feature decisions: a feature that subtly encourages the user to treat Phylax as an authority is a feature that violates the principle and should not be built.
+
 ## Zielgruppe
 
 - Menschen, die ihre Gesundheit aktiv beobachten und dokumentieren wollen

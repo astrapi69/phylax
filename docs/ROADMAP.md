@@ -12,6 +12,7 @@ Task ID prefixes:
 - **B** Backup and restore
 - **P** Polish (UI, i18n, accessibility)
 - **M** Multi-profile (future, proxy profile support)
+- **DP** Derived plans (diet, training, supplement, medication plans)
 
 ---
 
@@ -166,9 +167,24 @@ This phase is NOT part of the MVP. The data model supports it from day one via `
 
 ---
 
+## Phase 9: Derived Plans (future)
+
+Goal: generate structured plans from the medical profile. Every derived plan carries a mandatory "consult your doctor" disclaimer. Phylax structures information; it does not prescribe or diagnose.
+
+This phase depends on Phase 2 (profile data must exist before plans can be derived).
+
+- [ ] **DP-01** Diet plan template (based on target weight, caloric deficit, profile constraints)
+- [ ] **DP-02** Training plan template (respects joint issues, pulse zones, known limitations)
+- [ ] **DP-03** Supplement plan template (keep / pause / on-demand categories, as reflected in the existing profile)
+- [ ] **DP-04** Medication plan template
+- [ ] **DP-05** Doctor-focused export format (condensed profile for clinical visits, separate from full export)
+- [ ] **DP-06** AI-assisted plan derivation (with enforced disclaimer presence and audit trail of AI suggestions)
+
+---
+
 ## Next Steps
 
-The next task to work on is **F-08**. Confirm this before starting.
+The next task to work on is **O-01**. Confirm this before starting.
 
 When a phase is complete:
 
