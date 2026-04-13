@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { metaExists } from './db/meta';
 import { getLockState } from './crypto';
 import { OnboardingFlow } from './features/onboarding';
+import { UnlockScreen } from './features/unlock';
 
 type AppScreen = 'loading' | 'onboarding' | 'locked' | 'main';
 
@@ -33,11 +34,7 @@ function App() {
   }
 
   if (screen === 'locked') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <p className="text-gray-600">Phylax ist gesperrt. Entsperrung folgt in F-13.</p>
-      </div>
-    );
+    return <UnlockScreen onUnlocked={() => setScreen('main')} />;
   }
 
   return (

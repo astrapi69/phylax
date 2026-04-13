@@ -60,7 +60,7 @@ test.describe('Onboarding flow', () => {
 
     // Should NOT show onboarding again (meta row persists)
     await expect(page.getByRole('heading', { name: 'Phylax einrichten' })).not.toBeVisible();
-    // Should show the locked screen
-    await expect(page.getByText('gesperrt')).toBeVisible();
+    // Should show the unlock screen
+    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
   });
 });
