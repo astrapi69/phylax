@@ -34,7 +34,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-11** Generic encrypted repository base class (encrypt before put, decrypt after get)
 - [x] **F-12** Master password onboarding flow: set, confirm, derive key, store salt
 - [x] **F-13** Unlock flow: enter password, derive key, verify against test ciphertext
-- [ ] **F-14** Auto-lock: configurable inactivity timeout, default 5 minutes, clears in-memory key
+- [x] **F-14** Auto-lock: configurable inactivity timeout, default 5 minutes, clears in-memory key
 - [ ] **F-15** PWA config via `vite-plugin-pwa`: manifest, icons, service worker with autoUpdate
 - [ ] **F-16** App shell: router, locked/unlocked state, basic layout
 - [ ] **F-17** GitHub Actions CI: typecheck, lint, test, build on every PR

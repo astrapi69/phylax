@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { metaExists } from './db/meta';
-import { getLockState } from './crypto';
+import { getLockState, onLockStateChange } from './crypto';
 import { OnboardingFlow } from './features/onboarding';
 import { UnlockScreen } from './features/unlock';
+import { useAutoLock } from './features/auto-lock';
+import { DEFAULT_SETTINGS } from './db/settings';
 
 type AppScreen = 'loading' | 'onboarding' | 'locked' | 'main';
 
 function App() {
   const [screen, setScreen] = useState<AppScreen>('loading');
+
+  // Auto-lock: active when app is in any state (hook internally
+  // only runs its timer when keyStore is unlocked)
+  useAutoLock(DEFAULT_SETTINGS.autoLockMinutes);
 
   useEffect(() => {
     metaExists().then((exists) => {
@@ -19,6 +25,17 @@ function App() {
         setScreen('locked');
       }
     });
+  }, []);
+
+  // Subscribe to lock state changes so auto-lock (or manual lock)
+  // transitions the screen back to locked
+  useEffect(() => {
+    const unsubscribe = onLockStateChange((state) => {
+      if (state === 'locked') {
+        setScreen((current) => (current === 'main' ? 'locked' : current));
+      }
+    });
+    return unsubscribe;
   }, []);
 
   if (screen === 'loading') {

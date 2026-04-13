@@ -8,6 +8,7 @@ import {
 } from '../../crypto';
 import { db } from '../../db/schema';
 import { writeMeta, VERIFICATION_TOKEN } from '../../db/meta';
+import { encodeMetaPayload, DEFAULT_SETTINGS } from '../../db/settings';
 import { validatePassword, estimateStrength, type PasswordStrength } from './passwordValidation';
 
 export type OnboardingState = 'setup' | 'confirm' | 'deriving' | 'done';
@@ -92,11 +93,15 @@ export function useOnboarding(onComplete: () => void): OnboardingHook {
     const key = await deriveKeyFromPassword(password, salt);
     unlockWithKey(key);
 
-    // Encrypt the verification token BEFORE the Dexie transaction.
-    // Dexie transactions only stay alive for synchronous work or Dexie promises.
-    // Awaiting crypto.subtle inside a transaction causes PrematureCommitError.
-    const encoded = new TextEncoder().encode(VERIFICATION_TOKEN);
-    const encrypted = await encryptWithStoredKey(encoded);
+    // Encrypt the meta payload (verification token + default settings) BEFORE the
+    // Dexie transaction. Dexie transactions only stay alive for synchronous work
+    // or Dexie promises. Awaiting crypto.subtle inside a transaction causes
+    // PrematureCommitError.
+    const payloadBytes = encodeMetaPayload({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: DEFAULT_SETTINGS,
+    });
+    const encrypted = await encryptWithStoredKey(payloadBytes);
     const saltBuffer = new Uint8Array(salt).buffer;
     const payloadBuffer = new Uint8Array(encrypted).buffer;
 

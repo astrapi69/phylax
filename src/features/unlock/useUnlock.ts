@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { deriveKeyFromPassword, unlockWithKey, decryptWithStoredKey, lock } from '../../crypto';
 import { readMeta, VERIFICATION_TOKEN } from '../../db/meta';
+import { decodeMetaPayload } from '../../db/settings';
 
 export type UnlockState = 'idle' | 'entering' | 'deriving' | 'done' | 'error';
 
@@ -66,9 +67,9 @@ export function useUnlock(onUnlocked: () => void): UnlockHook {
 
     try {
       const decrypted = await decryptWithStoredKey(new Uint8Array(meta.payload));
-      const token = new TextDecoder().decode(decrypted);
+      const metaPayload = decodeMetaPayload(decrypted);
 
-      if (token !== VERIFICATION_TOKEN) {
+      if (metaPayload.verificationToken !== VERIFICATION_TOKEN) {
         lock();
         setFailedAttempts((prev) => prev + 1);
         setError('Falsches Passwort.');

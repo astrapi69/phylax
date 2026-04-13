@@ -1,6 +1,7 @@
 import Dexie from 'dexie';
 import { db } from './schema';
 import { writeMeta, VERIFICATION_TOKEN } from './meta';
+import { encodeMetaPayload, DEFAULT_SETTINGS } from './settings';
 import {
   generateSalt,
   deriveKeyFromPassword,
@@ -40,8 +41,11 @@ export async function setupCompletedOnboarding(password: string): Promise<void> 
 
   unlockWithKey(key);
 
-  const encoded = new TextEncoder().encode(VERIFICATION_TOKEN);
-  const encrypted = await encryptWithStoredKey(encoded);
+  const payloadBytes = encodeMetaPayload({
+    verificationToken: VERIFICATION_TOKEN,
+    settings: DEFAULT_SETTINGS,
+  });
+  const encrypted = await encryptWithStoredKey(payloadBytes);
   await writeMeta(new Uint8Array(salt).buffer, new Uint8Array(encrypted).buffer);
 
   lock();

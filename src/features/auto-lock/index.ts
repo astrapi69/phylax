@@ -1,0 +1,1 @@
+export { useAutoLock } from './useAutoLock';
