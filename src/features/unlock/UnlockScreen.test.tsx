@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -15,26 +16,33 @@ beforeEach(async () => {
   onUnlocked.mockReset();
 });
 
+function renderUnlock() {
+  return render(
+    <MemoryRouter>
+      <UnlockScreen onUnlocked={onUnlocked} />
+    </MemoryRouter>,
+  );
+}
+
 describe('UnlockScreen', () => {
   it('renders password input', () => {
-    render(<UnlockScreen onUnlocked={onUnlocked} />);
+    renderUnlock();
     expect(screen.getByLabelText('Master-Passwort')).toBeInTheDocument();
   });
 
   it('submit disabled when empty', () => {
-    render(<UnlockScreen onUnlocked={onUnlocked} />);
+    renderUnlock();
     const button = screen.getByRole('button', { name: 'Entsperren' });
     expect(button).toBeDisabled();
   });
 
   it('shows spinner during derivation', async () => {
     const user = userEvent.setup();
-    render(<UnlockScreen onUnlocked={onUnlocked} />);
+    renderUnlock();
 
     await user.type(screen.getByLabelText('Master-Passwort'), TEST_PASSWORD);
     await user.click(screen.getByRole('button', { name: 'Entsperren' }));
 
-    // Spinner may be brief due to fast PBKDF2 in Node, so just wait for done
     await waitFor(
       () => {
         expect(onUnlocked).toHaveBeenCalledOnce();
@@ -47,7 +55,7 @@ describe('UnlockScreen', () => {
 
   it('wrong password shows error message', async () => {
     const user = userEvent.setup();
-    render(<UnlockScreen onUnlocked={onUnlocked} />);
+    renderUnlock();
 
     await user.type(screen.getByLabelText('Master-Passwort'), 'wrong-password1');
     await user.click(screen.getByRole('button', { name: 'Entsperren' }));
@@ -64,7 +72,7 @@ describe('UnlockScreen', () => {
 
   it('correct password calls onUnlocked', async () => {
     const user = userEvent.setup();
-    render(<UnlockScreen onUnlocked={onUnlocked} />);
+    renderUnlock();
 
     await user.type(screen.getByLabelText('Master-Passwort'), TEST_PASSWORD);
     await user.click(screen.getByRole('button', { name: 'Entsperren' }));

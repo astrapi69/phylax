@@ -69,6 +69,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/**', 'scripts/**'],
+    ignores: ['dist/**', 'dev-dist/**', 'scripts/**'],
   },
 ];

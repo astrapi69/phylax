@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getSafeReturnTo } from '../../router/returnTo';
 import { useUnlock } from './useUnlock';
 
 interface UnlockScreenProps {
-  onUnlocked: () => void;
+  onUnlocked?: () => void;
 }
 
 function LoadingSpinner() {
@@ -29,7 +31,18 @@ function LoadingSpinner() {
 }
 
 export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
-  const hook = useUnlock(onUnlocked);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const handleUnlocked = useCallback(() => {
+    if (onUnlocked) {
+      onUnlocked();
+    }
+    const target = getSafeReturnTo(searchParams);
+    navigate(target, { replace: true });
+  }, [onUnlocked, searchParams, navigate]);
+
+  const hook = useUnlock(handleUnlocked);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
