@@ -50,7 +50,7 @@ Goal: the living medical profile as core artifact. Observation CRUD grouped by t
 - [x] **O-01** Domain types for profile, observation (fact/pattern/self-regulation/status), lab value, supplement, open point, profile version in `domain/`
 - [x] **O-02** Validation rules for observations (required fields, theme non-empty, status enum)
 - [x] **O-03** Profile repository: create default profile on first unlock, read, update base data
-- [ ] **O-04** Observation repository: create, read, update, delete, list by theme, all encrypted
+- [x] **O-04** Observation repository: create, read, update, delete, list by theme, all encrypted
 - [ ] **O-05** Lab value repository: create, read, update, delete, list by date, all encrypted
 - [ ] **O-06** Supplement repository: create, read, update, delete, list, all encrypted
 - [ ] **O-07** Open point repository: create, read, update (toggle), delete, list, all encrypted
