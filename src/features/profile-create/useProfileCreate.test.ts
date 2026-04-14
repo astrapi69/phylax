@@ -87,6 +87,20 @@ describe('useProfileCreate', () => {
     lock();
   });
 
+  it('submit persists the name into baseData.name', async () => {
+    const { result } = renderHook(() => useProfileCreate(onComplete));
+    act(() => result.current.setName('  Asterios Profil  '));
+
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    const repo = new ProfileRepository();
+    const profile = await repo.getCurrentProfile();
+    expect(profile?.baseData.name).toBe('Asterios Profil');
+    lock();
+  });
+
   it('submit with proxy stores managedBy', async () => {
     const { result } = renderHook(() => useProfileCreate(onComplete));
     act(() => {

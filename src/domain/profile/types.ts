@@ -27,6 +27,12 @@ export interface WeightEntry {
  * Value type embedded in Profile. Not a separate persistent entity.
  */
 export interface BaseData {
+  /**
+   * User-visible profile name. Optional for backwards compatibility with
+   * profiles created before the field existed. Use `getDisplayName` to
+   * render with a type-aware fallback rather than reading this directly.
+   */
+  name?: string;
   /** ISO date "YYYY-MM-DD" */
   birthDate?: string;
   age?: number;

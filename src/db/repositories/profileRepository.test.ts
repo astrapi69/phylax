@@ -192,6 +192,26 @@ describe('ProfileRepository', () => {
     lock();
   });
 
+  it('list returns empty array when no profiles exist', async () => {
+    const profiles = await repo.list();
+    expect(profiles).toEqual([]);
+    lock();
+  });
+
+  it('list returns all profiles with full decrypted content', async () => {
+    await repo.create(makeProfileData());
+    const proxyData = makeProfileData();
+    proxyData.baseData.profileType = 'proxy';
+    proxyData.baseData.managedBy = 'Anna';
+    await repo.create(proxyData);
+
+    const profiles = await repo.list();
+    expect(profiles).toHaveLength(2);
+    const types = profiles.map((p) => p.baseData.profileType).sort();
+    expect(types).toEqual(['proxy', 'self']);
+    lock();
+  });
+
   it('managedBy preserved for proxy profiles', async () => {
     const data = makeProfileData();
     data.baseData.profileType = 'proxy';

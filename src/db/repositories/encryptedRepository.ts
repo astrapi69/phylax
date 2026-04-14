@@ -126,7 +126,19 @@ export abstract class EncryptedRepository<T extends DomainEntity> {
     return Promise.all(rows.map((row) => this.deserialize(row)));
   }
 
-  protected async serialize(entity: T): Promise<EncryptedRow> {
+  /**
+   * Encrypt a fully-formed entity into a storable row without touching
+   * the database. The caller is responsible for `id`, `profileId`,
+   * `createdAt`, and `updatedAt`.
+   *
+   * Use this when pre-encrypting many entities outside a Dexie
+   * transaction, so the transaction body can stay synchronous over
+   * Dexie calls only (bulk imports, migrations, bulk exports). Dexie
+   * commits a transaction as soon as it detects an await on a
+   * non-Dexie promise, so crypto must not happen inside the
+   * transaction body.
+   */
+  async serialize(entity: T): Promise<EncryptedRow> {
     const { id, profileId, createdAt, updatedAt, ...domainFields } = entity;
     const json = JSON.stringify(domainFields);
     const bytes = new TextEncoder().encode(json);
@@ -141,7 +153,11 @@ export abstract class EncryptedRepository<T extends DomainEntity> {
     };
   }
 
-  protected async deserialize(row: EncryptedRow): Promise<T> {
+  /**
+   * Decrypt a raw EncryptedRow back into a domain entity. Exposed for
+   * the same bulk-operation reasons as `serialize`.
+   */
+  async deserialize(row: EncryptedRow): Promise<T> {
     const payload = new Uint8Array(row.payload);
     const bytes = await decryptWithStoredKey(payload);
     const json = new TextDecoder().decode(bytes);

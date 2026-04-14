@@ -48,6 +48,7 @@ export function useProfileCreate(onComplete: (profileId: string) => void): Profi
       const repo = new ProfileRepository();
       const profile = await repo.create({
         baseData: {
+          name: name.trim(),
           weightHistory: [],
           knownDiagnoses: [],
           currentMedications: [],
@@ -67,7 +68,7 @@ export function useProfileCreate(onComplete: (profileId: string) => void): Profi
       const message = err instanceof Error ? err.message : 'Profil konnte nicht erstellt werden.';
       setState({ kind: 'error', message });
     }
-  }, [isValid, state.kind, profileType, managedBy, version, onComplete]);
+  }, [isValid, state.kind, name, profileType, managedBy, version, onComplete]);
 
   return {
     state,

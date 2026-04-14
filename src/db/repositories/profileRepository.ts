@@ -44,6 +44,21 @@ export class ProfileRepository extends EncryptedRepository<Profile> {
   }
 
   /**
+   * List all profiles in the database.
+   *
+   * Order is insertion order. Callers that need a specific order
+   * should sort by `createdAt` on the returned array.
+   *
+   * Intended for the import flow's profile selection UI. The MVP still
+   * enforces single-profile semantics elsewhere; this method does not
+   * change that constraint, it only surfaces what already exists.
+   */
+  async list(): Promise<Profile[]> {
+    const rows = await this.table.toArray();
+    return Promise.all(rows.map((row) => this.deserialize(row)));
+  }
+
+  /**
    * Get the current (single) profile. Returns null if no profile exists.
    *
    * In the MVP there is at most one profile. If multiple exist (future
