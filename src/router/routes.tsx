@@ -6,7 +6,7 @@ import { AppShell } from '../features/app-shell';
 import { OnboardingFlow } from '../features/onboarding';
 import { UnlockScreen } from '../features/unlock';
 import { ProfileCreateForm } from '../features/profile-create';
-import { ProfilePlaceholder } from '../features/profile/ProfilePlaceholder';
+import { ProfileView } from '../features/profile-view';
 import { ObservationsPlaceholder } from '../features/observations/ObservationsPlaceholder';
 import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
@@ -70,7 +70,7 @@ export function AppRoutes() {
         }
       >
         <Route index element={<Navigate to="/profile" replace />} />
-        <Route path="/profile" element={<ProfilePlaceholder />} />
+        <Route path="/profile" element={<ProfileView />} />
         <Route path="/observations" element={<ObservationsPlaceholder />} />
         <Route path="/lab-values" element={<LabValuesPlaceholder />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />

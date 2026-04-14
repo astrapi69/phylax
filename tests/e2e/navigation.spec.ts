@@ -10,7 +10,7 @@ test.describe('Navigation', () => {
     await setupAuthenticatedSession(page, { password: VALID_PASSWORD });
 
     await expect(page).toHaveURL(/\/profile$/);
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Test-Profil' })).toBeVisible();
   });
 
   test('clicking nav items navigates to correct routes', async ({ page }) => {
@@ -42,7 +42,7 @@ test.describe('Navigation', () => {
 
     await unlockApp(page, { password: VALID_PASSWORD });
 
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Test-Profil' })).toBeVisible();
   });
 
   // 404 route is verified by unit tests. E2E test is unreliable because

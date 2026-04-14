@@ -36,7 +36,9 @@ test.describe('Profile creation', () => {
     await page.getByLabel('Profilname').fill('Mein Profil');
     await page.getByRole('button', { name: 'Profil erstellen' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Mein Profil' })).toBeVisible({
+      timeout: 10000,
+    });
     await expect(page).toHaveURL(/\/profile$/);
   });
 
@@ -46,6 +48,8 @@ test.describe('Profile creation', () => {
     await page.getByLabel('Dein Name (als Betreuer)').fill('Asterios');
     await page.getByRole('button', { name: 'Profil erstellen' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Mutters Profil' })).toBeVisible({
+      timeout: 10000,
+    });
   });
 });

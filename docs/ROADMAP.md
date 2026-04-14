@@ -14,6 +14,7 @@ Task ID prefixes:
 - **M** Multi-profile (future, proxy profile support)
 - **DP** Derived plans (diet, training, supplement, medication plans)
 - **IM** Import (parse external Markdown profiles into the local database)
+- **V** Views (read-only screens that render imported profile data)
 
 ---
 
@@ -83,6 +84,19 @@ Note on IDs: the parser was originally committed under the `[O-07]` tag before t
 - [x] **IM-03b** Import UI: file picker or paste-in, structured preview with counts/warnings/unrecognized, profile selection, confirm-replace dialog (commit pending)
 - [ ] **IM-04** Post-import navigation: land on the imported profile, create profile version entry automatically
 - [ ] **IM-05** Import conflict handling beyond replace-all: detect existing data, offer replace vs. selective merge vs. cancel
+
+---
+
+## Phase 2c: Profile Views
+
+Goal: render imported profile data as readable screens. All read-only in this phase; editing is deferred to a later phase that has its own form patterns. First view task replaces the `/profile` placeholder with actual BaseData; subsequent tasks cover the other entity types one at a time.
+
+- [x] **V-01** Profile overview view at `/profile`: BaseData, doctor, diagnoses, medications, limitations, warning signs, external references, context notes (commit pending)
+- [ ] **V-02** Observations view: list grouped by theme, expandable detail per observation
+- [ ] **V-03** Lab values view: reports with values table, per-category assessments, reference ranges
+- [ ] **V-04** Supplements view: list grouped by category (daily / regular / paused / on-demand) with rationale
+- [ ] **V-05** Open points checklist view: grouped by context, priority and time-horizon badges
+- [ ] **V-06** Timeline / Verlaufsnotizen view: chronological list of entries with Markdown bodies
 
 ---
 

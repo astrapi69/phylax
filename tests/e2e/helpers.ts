@@ -47,8 +47,10 @@ export async function setupAuthenticatedSession(
   await page.getByLabel('Profilname').fill(profileName);
   await page.getByRole('button', { name: 'Profil erstellen' }).click();
 
-  // Wait for profile view
-  await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+  // Wait for profile view (H1 shows the profile's display name)
+  await expect(page.getByRole('heading', { level: 1, name: profileName })).toBeVisible({
+    timeout: 10000,
+  });
 }
 
 /**

@@ -25,12 +25,16 @@ test.describe('Unlock flow', () => {
 
   test('correct password unlocks and navigates to profile', async ({ page }) => {
     await unlockApp(page, { password: VALID_PASSWORD });
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Test-Profil' })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('after unlock and reload, unlock screen appears again', async ({ page }) => {
     await unlockApp(page, { password: VALID_PASSWORD });
-    await expect(page.getByRole('heading', { name: 'Profil' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('heading', { level: 1, name: 'Test-Profil' })).toBeVisible({
+      timeout: 10000,
+    });
 
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();

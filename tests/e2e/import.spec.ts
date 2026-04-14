@@ -82,5 +82,9 @@ test.describe('Import flow', () => {
     });
     // Summary shows observation count from the real fixture
     await expect(page.getByText(/18 Beobachtungen/)).toBeVisible();
+
+    // Navigating home lands on /profile showing the imported profile's name.
+    await page.getByRole('button', { name: 'Zur Übersicht' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Test-Profil' })).toBeVisible();
   });
 });
