@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseProfile } from './parseProfile';
+import exampleProfileV131 from '../../../../tests/fixtures/example-profile-v1.3.1.md?raw';
 
 describe('parseProfile', () => {
   describe('basic parsing', () => {
@@ -208,15 +209,55 @@ describe('parseProfile', () => {
     });
   });
 
-  // Integration test with real fixture: enabled when fixture is committed
-  // See tests/fixtures/example-profile-v1.3.1.md
-  //
-  // it.skip('parses the full example profile', async () => {
-  //   const fs = await import('node:fs');
-  //   const path = await import('node:path');
-  //   const fixturePath = path.resolve(__dirname, '../../../../tests/fixtures/example-profile-v1.3.1.md');
-  //   const markdown = fs.readFileSync(fixturePath, 'utf-8');
-  //   const result = parseProfile(markdown);
-  //   // Assertions TBD after fixture is uploaded
-  // });
+  describe('integration: real example profile v1.3.1', () => {
+    it('parses tests/fixtures/example-profile-v1.3.1.md', () => {
+      const markdown = exampleProfileV131;
+      const result = parseProfile(markdown);
+
+      // Metadata
+      expect(result.report.metadata.profileVersion).toBe('1.3.1');
+      expect(result.report.metadata.lastUpdate).toBe('März 2026');
+      expect(result.report.metadata.changeReason).toBeDefined();
+
+      // Profile base data
+      expect(result.profile).not.toBeNull();
+      expect(result.profile?.baseData.birthDate).toBe('1969-09-07');
+      expect(result.profile?.baseData.age).toBe(56);
+      expect(result.profile?.baseData.heightCm).toBe(183);
+      expect(result.profile?.baseData.weightKg).toBe(92);
+      expect(result.profile?.version).toBe('1.3.1');
+
+      // Observations: 10 history items (2.1-2.10) + belastungsreaktionen sub-sections + gewichtsmanagement
+      expect(result.observations.length).toBeGreaterThanOrEqual(10);
+
+      // Lab report with lab values across multiple tables
+      expect(result.labReports).toHaveLength(1);
+      expect(result.labReports[0]?.reportDate).toBe('2026-02-27');
+      expect(result.labValues.length).toBeGreaterThanOrEqual(20);
+
+      // Supplements from the Einnahmeplan table (9 rows). The Elektrolyt
+      // table that follows has a different schema and must not be merged.
+      expect(result.supplements).toHaveLength(9);
+      expect(result.supplements[0]?.name).toBe('Vitamin D3 2000 IE');
+      expect(result.supplements[0]?.brand).toBe('tetesept');
+
+      // Open points across several sub-contexts
+      expect(result.openPoints.length).toBeGreaterThan(0);
+
+      // Timeline: 3 entries (Dez 2024, Feb/März 2026, März 2026)
+      expect(result.timelineEntries).toHaveLength(3);
+
+      // Profile versions: 5 rows in Versionshistorie
+      expect(result.profileVersions).toHaveLength(5);
+
+      // Warning signs captured
+      expect(result.profile?.warningSigns.length).toBeGreaterThan(0);
+
+      // External references captured
+      expect(result.profile?.externalReferences.length).toBeGreaterThan(0);
+
+      // originalMarkdown preserved for re-export
+      expect(result.originalMarkdown).toBe(markdown);
+    });
+  });
 });

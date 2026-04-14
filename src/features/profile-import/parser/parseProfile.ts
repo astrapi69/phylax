@@ -37,9 +37,10 @@ const SECTION_PATTERNS: Array<{
   { pattern: /offene\s+punkte/i, key: 'offene_punkte' },
 ];
 
-const VERSION_PATTERN = /(?:Medizinisches\s+)?Profil.*?(?:Version|v)\s*([\d.]+)/i;
-const UPDATE_PATTERN = /Letzte\s+Aktualisierung:?\s*(.+)/i;
-const CHANGE_REASON_PATTERN = /(?:Aenderungsgrund|Grund)\s+v[\d.]+:?\s*(.+)/i;
+const VERSION_PATTERN = /(?:\*\*)?Version:?(?:\*\*)?\s*([\d.]+)/i;
+const UPDATE_PATTERN = /(?:\*\*)?Letzte\s+Aktualisierung:?(?:\*\*)?\s*([^\n*]+)/i;
+const CHANGE_REASON_PATTERN =
+  /(?:\*\*)?(?:Änderungsgrund|Aenderungsgrund|Grund)\s+v[\d.]+:?(?:\*\*)?\s*([^\n]+)/i;
 
 /**
  * Parse a Markdown living health profile into structured domain objects.

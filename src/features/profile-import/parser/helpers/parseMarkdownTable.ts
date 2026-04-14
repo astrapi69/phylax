@@ -22,10 +22,20 @@ export interface TableRow {
  * Returns an empty array if the input has no valid table.
  */
 export function parseMarkdownTable(markdown: string): TableRow[] {
-  const lines = markdown
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('|'));
+  // Extract only the first contiguous block of pipe-prefixed lines.
+  // Multiple tables in the same input are parsed independently; callers
+  // that need subsequent tables should split the content first.
+  const allLines = markdown.split('\n').map((line) => line.trim());
+  const lines: string[] = [];
+  let inTable = false;
+  for (const line of allLines) {
+    if (line.startsWith('|')) {
+      lines.push(line);
+      inTable = true;
+    } else if (inTable) {
+      break;
+    }
+  }
 
   if (lines.length < 2) return [];
 
