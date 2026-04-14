@@ -77,7 +77,7 @@ export function ImportFlow() {
 
     case 'parsing':
       return (
-        <div role="status" aria-live="polite" className="text-sm text-gray-700">
+        <div role="status" aria-live="polite" className="text-sm text-gray-700 dark:text-gray-300">
           Markdown wird verarbeitet...
         </div>
       );
@@ -121,7 +121,7 @@ export function ImportFlow() {
 
     case 'importing':
       return (
-        <div role="status" aria-live="polite" className="text-sm text-gray-700">
+        <div role="status" aria-live="polite" className="text-sm text-gray-700 dark:text-gray-300">
           Daten werden importiert...
         </div>
       );

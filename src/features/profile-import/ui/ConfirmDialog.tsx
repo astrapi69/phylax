@@ -76,22 +76,24 @@ export function ConfirmDialog({
     >
       <div
         ref={dialogRef}
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+        className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-900 dark:shadow-black/60"
         role="document"
       >
         <h2
           id="confirm-replace-title"
-          className="mb-3 flex items-center gap-2 text-lg font-bold text-gray-900"
+          className="mb-3 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100"
         >
           <span aria-hidden>⚠</span> Bestehende Daten ersetzen?
         </h2>
-        <p className="mb-3 text-sm text-gray-700">"{targetProfileName}" enthält bereits:</p>
-        <ul className="mb-4 space-y-1 text-sm text-gray-800">
+        <p className="mb-3 text-sm text-gray-700 dark:text-gray-300">
+          "{targetProfileName}" enthält bereits:
+        </p>
+        <ul className="mb-4 space-y-1 text-sm text-gray-800 dark:text-gray-200">
           {lines.map((l) => (
             <li key={l}>{l}</li>
           ))}
         </ul>
-        <p className="mb-6 text-sm text-red-700">
+        <p className="mb-6 text-sm text-red-700 dark:text-red-300">
           Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.
         </p>
         <div className="flex justify-end gap-3">
@@ -99,14 +101,14 @@ export function ConfirmDialog({
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             Abbrechen
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+            className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
           >
             Ja, ersetzen
           </button>

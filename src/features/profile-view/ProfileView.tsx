@@ -16,7 +16,7 @@ export function ProfileView() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite" className="text-sm text-gray-600">
+      <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
         Profil wird geladen...
       </div>
     );
@@ -26,7 +26,7 @@ export function ProfileView() {
     return (
       <div
         role="alert"
-        className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
       >
         {state.message}
       </div>
@@ -42,19 +42,19 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
 
   return (
     <article className="space-y-6">
-      <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 md:flex-row md:items-start md:justify-between">
+      <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h1>
           <div className="mt-1">
             <ProfileTypeBadge profileType={baseData.profileType} managedBy={baseData.managedBy} />
           </div>
         </div>
-        <div className="text-sm text-gray-600 md:text-right">
+        <div className="text-sm text-gray-600 dark:text-gray-400 md:text-right">
           <p>
-            Version <span className="font-medium text-gray-900">v{version}</span>
+            Version <span className="font-medium text-gray-900 dark:text-gray-100">v{version}</span>
           </p>
           {lastUpdateReason && (
-            <p className="mt-1 max-w-xs text-xs text-gray-500 md:ml-auto">
+            <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400 md:ml-auto">
               Letzte Änderung: {lastUpdateReason}
             </p>
           )}
@@ -65,7 +65,10 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
 
       {baseData.primaryDoctor && (
         <section aria-labelledby="hausarzt-heading">
-          <h2 id="hausarzt-heading" className="mb-3 text-lg font-semibold text-gray-900">
+          <h2
+            id="hausarzt-heading"
+            className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
             Hausarzt
           </h2>
           <DoctorCard doctor={baseData.primaryDoctor} />
@@ -96,10 +99,13 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
 
       {externalReferences.length > 0 && (
         <section aria-labelledby="refs-heading">
-          <h2 id="refs-heading" className="mb-3 text-lg font-semibold text-gray-900">
+          <h2
+            id="refs-heading"
+            className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
             Externe Referenzen
           </h2>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-gray-800">
+          <ul className="list-disc space-y-1 pl-5 text-sm text-gray-800 dark:text-gray-200">
             {externalReferences.map((ref, i) => (
               <li key={i}>{renderReference(ref)}</li>
             ))}
@@ -113,10 +119,13 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
 function BulletSection({ id, title, items }: { id: string; title: string; items: string[] }) {
   return (
     <section aria-labelledby={`${id}-heading`}>
-      <h2 id={`${id}-heading`} className="mb-3 text-lg font-semibold text-gray-900">
+      <h2
+        id={`${id}-heading`}
+        className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+      >
         {title}
       </h2>
-      <ul className="list-disc space-y-1 pl-5 text-sm text-gray-800">
+      <ul className="list-disc space-y-1 pl-5 text-sm text-gray-800 dark:text-gray-200">
         {items.map((item, i) => (
           <li key={i}>{item}</li>
         ))}
@@ -132,7 +141,7 @@ function renderReference(ref: string): React.ReactNode {
         href={ref}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-600 underline hover:text-blue-800"
+        className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
       >
         {ref}
       </a>

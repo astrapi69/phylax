@@ -106,7 +106,7 @@ Goal: render imported profile data as readable screens. All read-only in this ph
 Goal: comfortable cross-environment appearance. Starts with dark mode; future tasks may add high-contrast or reduced-motion variants if a need emerges.
 
 - [x] **T-01a** Theme state infrastructure: ThemeProvider + useTheme + ThemeToggle + SettingsScreen with ThemeSection, flash-prevention inline script, matchMedia test shim (commit pending)
-- [ ] **T-01b** Dark mode variants applied across every existing screen and component
+- [x] **T-01b** Dark mode variants applied across every existing screen and component (commit pending)
 
 ---
 

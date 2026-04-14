@@ -70,16 +70,16 @@ describe('ThemeProvider', () => {
   });
 
   it('persists setTheme calls to localStorage', () => {
-    let api: ReturnType<typeof useTheme> | null = null;
+    const captured: { current: ReturnType<typeof useTheme> | null } = { current: null };
     render(
       <ThemeProvider>
-        <Probe onValue={(v) => (api = v)} />
+        <Probe onValue={(v) => (captured.current = v)} />
       </ThemeProvider>,
     );
+    const api = captured.current;
     if (!api) throw new Error('Probe did not receive a value');
-    const setTheme = api.setTheme;
     act(() => {
-      setTheme('dark');
+      api.setTheme('dark');
     });
     expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });
@@ -87,14 +87,15 @@ describe('ThemeProvider', () => {
   it('listens to prefers-color-scheme changes in auto mode', () => {
     const m = mockMatchMedia(false);
     window.localStorage.setItem(THEME_STORAGE_KEY, 'auto');
-    let api: ReturnType<typeof useTheme> | null = null;
+    const captured: { current: ReturnType<typeof useTheme> | null } = { current: null };
     render(
       <ThemeProvider>
-        <Probe onValue={(v) => (api = v)} />
+        <Probe onValue={(v) => (captured.current = v)} />
       </ThemeProvider>,
     );
+    const api = captured.current;
     if (!api) throw new Error('Probe did not receive a value');
-    expect((api as ReturnType<typeof useTheme>).resolvedTheme).toBe('light');
+    expect(api.resolvedTheme).toBe('light');
     act(() => {
       m.fireChange(true);
     });

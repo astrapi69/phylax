@@ -22,8 +22,8 @@ function formatBirthDate(iso: string): string {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-      <dt className="text-sm font-medium text-gray-600 sm:w-32">{label}</dt>
-      <dd className="text-sm text-gray-900">{children}</dd>
+      <dt className="text-sm font-medium text-gray-600 dark:text-gray-400 sm:w-32">{label}</dt>
+      <dd className="text-sm text-gray-900 dark:text-gray-100">{children}</dd>
     </div>
   );
 }
@@ -56,7 +56,9 @@ export function BaseDataSection({ baseData }: BaseDataSectionProps) {
     rows.push(
       <Row key="weight" label="Gewicht">
         {baseData.weightKg} kg
-        {target !== undefined && <span className="text-gray-500"> (Ziel: {target} kg)</span>}
+        {target !== undefined && (
+          <span className="text-gray-500 dark:text-gray-400"> (Ziel: {target} kg)</span>
+        )}
       </Row>,
     );
   }
@@ -67,13 +69,18 @@ export function BaseDataSection({ baseData }: BaseDataSectionProps) {
 
   return (
     <section aria-labelledby="basisdaten-heading">
-      <h2 id="basisdaten-heading" className="mb-3 text-lg font-semibold text-gray-900">
+      <h2
+        id="basisdaten-heading"
+        className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+      >
         Basisdaten
       </h2>
       {rows.length > 0 && <dl className="space-y-2">{rows}</dl>}
       {hasNotes && (
         <div className="mt-4">
-          <h3 className="mb-2 text-sm font-medium text-gray-700">Kontextnotizen</h3>
+          <h3 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+            Kontextnotizen
+          </h3>
           <MarkdownContent>{baseData.contextNotes}</MarkdownContent>
         </div>
       )}
@@ -90,13 +97,13 @@ export function ProfileTypeBadge({ profileType, managedBy }: ProfileTypeBadgePro
   if (profileType === 'proxy') {
     const mb = managedBy?.trim();
     return (
-      <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
+      <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/40 dark:text-purple-200">
         {mb ? `Stellvertretend für ${mb}` : 'Stellvertreterprofil'}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
       Eigenes Profil
     </span>
   );

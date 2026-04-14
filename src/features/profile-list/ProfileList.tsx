@@ -69,27 +69,29 @@ export function ProfileList({
               <div
                 className={`flex h-full flex-col justify-between gap-3 rounded border p-4 transition-colors ${
                   isSelected
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950/40'
+                    : 'border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600'
                 }`}
                 aria-current={isSelected ? 'true' : undefined}
                 data-testid="profile-card"
               >
                 <div>
-                  <h3 className="mb-1 text-base font-semibold text-gray-900">
+                  <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
                     {getDisplayName(profile)}
                   </h3>
-                  <p className="text-xs uppercase tracking-wide text-gray-500">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     {profileTypeBadge(profile)}
                   </p>
                   {counts !== undefined && (
-                    <p className="mt-2 text-sm text-gray-700">{formatCounts(counts)}</p>
+                    <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                      {formatCounts(counts)}
+                    </p>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={() => onSelect(profile.id)}
-                  className="self-start rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  className="self-start rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                 >
                   {selectLabel}
                 </button>
@@ -104,7 +106,7 @@ export function ProfileList({
           <button
             type="button"
             onClick={onCreateNew}
-            className="w-full rounded border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 md:w-auto"
+            className="w-full rounded border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-800 md:w-auto"
           >
             + Neues Profil erstellen
           </button>

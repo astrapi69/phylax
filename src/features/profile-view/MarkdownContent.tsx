@@ -22,7 +22,7 @@ export function MarkdownContent({ children, className }: MarkdownContentProps) {
   if (content.trim() === '') return null;
 
   return (
-    <div className={`prose prose-sm max-w-none ${className ?? ''}`.trim()}>
+    <div className={`prose prose-sm max-w-none dark:prose-invert ${className ?? ''}`.trim()}>
       <ReactMarkdown>{content}</ReactMarkdown>
     </div>
   );

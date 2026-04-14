@@ -43,7 +43,7 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
   if (error) {
     return (
       <div>
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       </div>
@@ -53,7 +53,7 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
   if (profiles === null) {
     return (
       <div>
-        <p className="text-sm text-gray-600">Profile werden geladen...</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Profile werden geladen...</p>
       </div>
     );
   }
@@ -62,11 +62,11 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-bold text-gray-900">
+      <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">
         {zeroProfiles ? 'Profil erstellen' : 'In welches Profil importieren?'}
       </h1>
       {zeroProfiles && (
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
           Erstelle zuerst ein Profil, um den Import zu starten.
         </p>
       )}
@@ -89,7 +89,7 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
             <button
               type="button"
               onClick={() => setShowCreate(false)}
-              className="mt-4 text-sm text-gray-600 underline hover:text-gray-900"
+              className="mt-4 text-sm text-gray-600 underline hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
             >
               Zurück zur Profilauswahl
             </button>
@@ -102,7 +102,7 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             Abbrechen
           </button>

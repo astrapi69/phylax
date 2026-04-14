@@ -22,8 +22,10 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-2 text-xl font-bold text-gray-900">Neues Profil erstellen</h1>
-      <p className="mb-6 text-sm text-gray-600">
+      <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">
+        Neues Profil erstellen
+      </h1>
+      <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
         Erstelle dein erstes Gesundheitsprofil. Du kannst alle Details spaeter ergaenzen.
       </p>
 
@@ -35,7 +37,10 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
         noValidate
       >
         <div className="mb-4">
-          <label htmlFor="profileName" className="mb-1 block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="profileName"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
             Profilname
           </label>
           <input
@@ -48,14 +53,16 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             placeholder="Mein Profil"
             maxLength={60}
             disabled={isSubmitting}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
           />
         </div>
 
         <fieldset className="mb-4">
-          <legend className="mb-1 block text-sm font-medium text-gray-700">Profiltyp</legend>
+          <legend className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
+            Profiltyp
+          </legend>
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
               <input
                 type="radio"
                 name="profileType"
@@ -66,7 +73,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
               />
               Fuer mich selbst
             </label>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
               <input
                 type="radio"
                 name="profileType"
@@ -82,7 +89,10 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
 
         {hook.profileType === 'proxy' && (
           <div className="mb-4">
-            <label htmlFor="managedBy" className="mb-1 block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="managedBy"
+              className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+            >
               Dein Name (als Betreuer)
             </label>
             <input
@@ -93,16 +103,19 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
               onChange={(e) => hook.setManagedBy(e.target.value)}
               placeholder="Asterios"
               disabled={isSubmitting}
-              className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Wird gespeichert, um zu kennzeichnen, wer dieses Profil verwaltet.
             </p>
           </div>
         )}
 
         <div className="mb-6">
-          <label htmlFor="version" className="mb-1 block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="version"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
             Initiale Version
           </label>
           <input
@@ -113,15 +126,15 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             onChange={(e) => hook.setVersion(e.target.value)}
             placeholder="1.0"
             disabled={isSubmitting}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Semver-Format empfohlen. Wird bei kuenftigen Aenderungen fortgeschrieben.
           </p>
         </div>
 
         {hook.state.kind === 'error' && (
-          <p className="mb-4 text-sm text-red-600" role="alert">
+          <p className="mb-4 text-sm text-red-600 dark:text-red-400" role="alert">
             {hook.state.message}
           </p>
         )}
@@ -129,7 +142,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
         <button
           type="submit"
           disabled={!hook.isValid || isSubmitting}
-          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
           {isSubmitting ? 'Erstellen...' : 'Profil erstellen'}
         </button>

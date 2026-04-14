@@ -57,17 +57,21 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
 
   return (
     <div>
-      <h1 className="mb-2 text-xl font-bold text-gray-900">Import aus Markdown</h1>
-      <p className="mb-6 text-sm text-gray-600">
+      <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">
+        Import aus Markdown
+      </h1>
+      <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
         Importiere ein bestehendes Lebende-Gesundheit Profil als Markdown-Datei oder Text.
       </p>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <section>
-          <h2 className="mb-2 text-sm font-medium text-gray-800">Datei auswählen</h2>
+          <h2 className="mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
+            Datei auswählen
+          </h2>
           <label
             htmlFor="import-file"
-            className="flex w-full cursor-pointer items-center justify-center rounded border border-dashed border-gray-300 bg-white px-4 py-8 text-sm text-gray-600 hover:border-gray-400 hover:bg-gray-50"
+            className="flex w-full cursor-pointer items-center justify-center rounded border border-dashed border-gray-300 bg-white px-4 py-8 text-sm text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-800"
           >
             <span>Markdown-Datei wählen (.md)</span>
           </label>
@@ -81,9 +85,9 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
             aria-describedby="import-file-status"
           />
           <div id="import-file-status" className="mt-2 text-xs" aria-live="polite">
-            {fileError && <p className="text-red-600">{fileError}</p>}
+            {fileError && <p className="text-red-600 dark:text-red-400">{fileError}</p>}
             {fileContent && (
-              <p className="text-green-700">
+              <p className="text-green-700 dark:text-green-400">
                 Geladen: {fileContent.name} ({formatSize(fileContent.content.length)})
               </p>
             )}
@@ -91,7 +95,9 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
         </section>
 
         <section>
-          <h2 className="mb-2 text-sm font-medium text-gray-800">Oder Text einfügen</h2>
+          <h2 className="mb-2 text-sm font-medium text-gray-800 dark:text-gray-200">
+            Oder Text einfügen
+          </h2>
           <label htmlFor="import-paste" className="sr-only">
             Markdown-Text einfügen
           </label>
@@ -100,9 +106,9 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
             value={pasted}
             onChange={(e) => setPasted(e.target.value)}
             placeholder="# Medizinisches Profil..."
-            className="min-h-48 w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="min-h-48 w-full rounded border border-gray-300 bg-white px-3 py-2 font-mono text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
-          <p className="mt-1 text-xs text-gray-500" aria-live="polite">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400" aria-live="polite">
             {pasted.length} Zeichen (mindestens {MIN_PASTE_LENGTH})
           </p>
         </section>
@@ -113,14 +119,14 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
           type="button"
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
           Weiter
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         >
           Abbrechen
         </button>
