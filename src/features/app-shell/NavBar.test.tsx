@@ -3,7 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { NavBar } from './NavBar';
 
-const EXPECTED_ITEMS = ['Profil', 'Beobachtungen', 'Laborwerte', 'Dokumente', 'Einstellungen'];
+const EXPECTED_ITEMS = [
+  'Profil',
+  'Beobachtungen',
+  'Laborwerte',
+  'Dokumente',
+  'Import',
+  'Einstellungen',
+];
 
 describe('NavBar', () => {
   it('shows all expected navigation items', () => {
@@ -44,7 +51,7 @@ describe('NavBar', () => {
 
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
     const links = nav.querySelectorAll('a');
-    // 5 items x 2 (mobile + desktop) = 10 links
-    expect(links.length).toBe(10);
+    // 6 items x 2 (mobile + desktop) = 12 links
+    expect(links.length).toBe(EXPECTED_ITEMS.length * 2);
   });
 });

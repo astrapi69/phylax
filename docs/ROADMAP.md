@@ -80,7 +80,7 @@ Note on IDs: the parser was originally committed under the `[O-07]` tag before t
 - [x] **IM-01** Markdown profile parser for Living Health format: pure function, no DB/crypto coupling, ParseResult + ParseReport with warnings and unrecognized blocks (commits `eac9eae`, `4ffab8e`)
 - [x] **IM-02** Anonymized example fixture and integration test against the real profile shape (commit `4ffab8e`)
 - [x] **IM-03a** Headless import: `importProfile` with pre-encrypt + Dexie bulk-put transaction, `useImport` state machine, `BaseData.name` field with display-name helper (commit pending)
-- [ ] **IM-03b** Import UI: file picker or paste-in, structured preview with counts/warnings/unrecognized, profile selection, confirm-replace dialog
+- [x] **IM-03b** Import UI: file picker or paste-in, structured preview with counts/warnings/unrecognized, profile selection, confirm-replace dialog (commit pending)
 - [ ] **IM-04** Post-import navigation: land on the imported profile, create profile version entry automatically
 - [ ] **IM-05** Import conflict handling beyond replace-all: detect existing data, offer replace vs. selective merge vs. cancel
 

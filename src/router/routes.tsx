@@ -11,6 +11,7 @@ import { ObservationsPlaceholder } from '../features/observations/ObservationsPl
 import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
 import { SettingsPlaceholder } from '../features/settings/SettingsPlaceholder';
+import { ImportFlow } from '../features/profile-import/ui';
 import { NotFound } from '../features/not-found/NotFound';
 
 function OnboardingPage() {
@@ -73,6 +74,7 @@ export function AppRoutes() {
         <Route path="/observations" element={<ObservationsPlaceholder />} />
         <Route path="/lab-values" element={<LabValuesPlaceholder />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
+        <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsPlaceholder />} />
       </Route>
     </Routes>
