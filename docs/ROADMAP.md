@@ -13,6 +13,7 @@ Task ID prefixes:
 - **P** Polish (UI, i18n, accessibility)
 - **M** Multi-profile (future, proxy profile support)
 - **DP** Derived plans (diet, training, supplement, medication plans)
+- **IM** Import (parse external Markdown profiles into the local database)
 
 ---
 
@@ -67,6 +68,20 @@ Goal: the living medical profile as core artifact. Observation CRUD grouped by t
 - [ ] **O-18** Date range filter for observations and lab values
 - [ ] **O-19** Empty states and loading skeletons
 - [ ] **O-20** Edit and delete confirmations via modal, no `confirm()`
+
+---
+
+## Phase 2b: Profile Import
+
+Goal: users with an existing Markdown profile in the "Lebende Gesundheit" (Living Health) format can bring it into Phylax in one step, instead of re-entering every observation, lab value, and supplement by hand. Pure client-side parsing, no upload.
+
+Note on IDs: the parser was originally committed under the `[O-07]` tag before this section existed. The ROADMAP's `O-07` refers to the Open Point Repository; the commits are preserved as-is (git history is immutable) and the task lives here instead.
+
+- [x] **IM-01** Markdown profile parser for Living Health format: pure function, no DB/crypto coupling, ParseResult + ParseReport with warnings and unrecognized blocks (commits `eac9eae`, `4ffab8e`)
+- [x] **IM-02** Anonymized example fixture and integration test against the real profile shape (commit `4ffab8e`)
+- [ ] **IM-03** Import UI: file picker or paste-in, run parser, show structured preview with counts, warnings, unrecognized blocks
+- [ ] **IM-04** Import confirm: write parsed entities to repositories within a single transaction, assign profileId, create a profile version entry
+- [ ] **IM-05** Import conflict handling: detect existing profile, offer replace vs. merge vs. cancel
 
 ---
 
