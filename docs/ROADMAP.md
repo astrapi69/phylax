@@ -107,6 +107,8 @@ Goal: comfortable cross-environment appearance. Starts with dark mode; future ta
 
 - [x] **T-01a** Theme state infrastructure: ThemeProvider + useTheme + ThemeToggle + SettingsScreen with ThemeSection, flash-prevention inline script, matchMedia test shim (commit pending)
 - [x] **T-01b** Dark mode variants applied across every existing screen and component (commit pending)
+- [x] **T-02a** Theme and a11y smoke infrastructure: helpers, axe integration, onboarding smoke test as first screen (commit pending)
+- [ ] **T-02b** Smoke tests extended to the remaining screens plus any a11y fixes surfaced by the matrix
 
 ---
 

@@ -58,8 +58,8 @@
 
 ## Allowed dependencies (locked list)
 
-Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `i18next`, `react-i18next`, `tailwindcss`.
+Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `i18next`, `react-i18next`, `tailwindcss`, `react-markdown` (ADR-0008).
 
-Dev: `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `typescript`, `vitest`, `@vitest/coverage-v8`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `fake-indexeddb`, `jsdom`, `@playwright/test`, `eslint`, `prettier`, `husky`, `lint-staged`.
+Dev: `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `typescript`, `vitest`, `@vitest/coverage-v8`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `fake-indexeddb`, `jsdom`, `@playwright/test`, `@axe-core/playwright`, `@tailwindcss/typography` (ADR-0008), `eslint`, `prettier`, `husky`, `lint-staged`.
 
 Adding a new dependency requires explicit approval and an entry in `docs/decisions/`.
