@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { lock } from '../../crypto';
+import { ThemeToggle } from '../theme';
 
 /**
  * Top header bar with app name and lock button.
@@ -12,28 +13,31 @@ export function Header() {
         Phylax
       </Link>
 
-      <button
-        type="button"
-        onClick={() => lock()}
-        className="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
-        aria-label="Phylax sperren"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-4 w-4"
-          aria-hidden="true"
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
+        <button
+          type="button"
+          onClick={() => lock()}
+          className="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          aria-label="Phylax sperren"
         >
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-        <span className="hidden md:inline">Sperren</span>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span className="hidden md:inline">Sperren</span>
+        </button>
+      </div>
     </header>
   );
 }

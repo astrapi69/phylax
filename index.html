@@ -3,8 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1f2937" />
+    <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="Dein lokales, verschluesseltes Gesundheitsprofil." />
+
+    <!--
+      Flash-prevention: apply the dark class before React mounts. Logic is
+      intentionally duplicated from src/features/theme/themeStorage.ts because
+      extracting it would reintroduce the bootstrap-order problem. See ADR-0009.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = window.localStorage.getItem('phylax-theme');
+          var theme =
+            stored === 'light' || stored === 'dark' || stored === 'auto' ? stored : 'auto';
+          var isDark =
+            theme === 'dark' ||
+            (theme === 'auto' &&
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // localStorage disabled or error; fall through to light.
+        }
+      })();
+    </script>
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

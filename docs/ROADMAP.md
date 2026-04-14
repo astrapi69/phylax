@@ -15,6 +15,7 @@ Task ID prefixes:
 - **DP** Derived plans (diet, training, supplement, medication plans)
 - **IM** Import (parse external Markdown profiles into the local database)
 - **V** Views (read-only screens that render imported profile data)
+- **T** Theming (dark mode and other appearance concerns)
 
 ---
 
@@ -97,6 +98,15 @@ Goal: render imported profile data as readable screens. All read-only in this ph
 - [ ] **V-04** Supplements view: list grouped by category (daily / regular / paused / on-demand) with rationale
 - [ ] **V-05** Open points checklist view: grouped by context, priority and time-horizon badges
 - [ ] **V-06** Timeline / Verlaufsnotizen view: chronological list of entries with Markdown bodies
+
+---
+
+## Phase 2d: Theming
+
+Goal: comfortable cross-environment appearance. Starts with dark mode; future tasks may add high-contrast or reduced-motion variants if a need emerges.
+
+- [x] **T-01a** Theme state infrastructure: ThemeProvider + useTheme + ThemeToggle + SettingsScreen with ThemeSection, flash-prevention inline script, matchMedia test shim (commit pending)
+- [ ] **T-01b** Dark mode variants applied across every existing screen and component
 
 ---
 

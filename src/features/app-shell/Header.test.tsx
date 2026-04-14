@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../theme';
 import { Header } from './Header';
 
 // Mock the lock function
@@ -13,7 +14,9 @@ describe('Header', () => {
   it('shows app name "Phylax"', () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText('Phylax')).toBeInTheDocument();
@@ -25,7 +28,9 @@ describe('Header', () => {
 
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>,
     );
 
@@ -36,7 +41,9 @@ describe('Header', () => {
   it('app name links to /profile', () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>,
     );
 

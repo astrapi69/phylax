@@ -1,17 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '../theme';
 import { AppShell } from './AppShell';
 
 function renderShell() {
   return render(
-    <MemoryRouter initialEntries={['/test']}>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route path="/test" element={<p>Test Content</p>} />
-        </Route>
-      </Routes>
-    </MemoryRouter>,
+    <ThemeProvider>
+      <MemoryRouter initialEntries={['/test']}>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route path="/test" element={<p>Test Content</p>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
   );
 }
 

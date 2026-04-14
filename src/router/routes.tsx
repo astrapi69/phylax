@@ -10,7 +10,7 @@ import { ProfileView } from '../features/profile-view';
 import { ObservationsPlaceholder } from '../features/observations/ObservationsPlaceholder';
 import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
-import { SettingsPlaceholder } from '../features/settings/SettingsPlaceholder';
+import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
 import { NotFound } from '../features/not-found/NotFound';
 
@@ -75,7 +75,7 @@ export function AppRoutes() {
         <Route path="/lab-values" element={<LabValuesPlaceholder />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
         <Route path="/import" element={<ImportFlow />} />
-        <Route path="/settings" element={<SettingsPlaceholder />} />
+        <Route path="/settings" element={<SettingsScreen />} />
       </Route>
     </Routes>
   );

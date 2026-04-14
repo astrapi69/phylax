@@ -42,11 +42,23 @@ test.describe('PWA', () => {
   test('app has correct meta tags for PWA', async ({ page }) => {
     await page.goto('/');
 
-    const themeColor = await page.evaluate(() => {
-      const meta = document.querySelector('meta[name="theme-color"]');
-      return meta?.getAttribute('content');
+    // Two theme-color tags, one per prefers-color-scheme variant (see ADR-0009).
+    const themeColors = await page.evaluate(() => {
+      const metas = document.querySelectorAll('meta[name="theme-color"]');
+      return Array.from(metas).map((m) => ({
+        content: m.getAttribute('content'),
+        media: m.getAttribute('media'),
+      }));
     });
-    expect(themeColor).toBe('#1f2937');
+    expect(themeColors).toHaveLength(2);
+    expect(themeColors).toContainEqual({
+      content: '#f9fafb',
+      media: '(prefers-color-scheme: light)',
+    });
+    expect(themeColors).toContainEqual({
+      content: '#111827',
+      media: '(prefers-color-scheme: dark)',
+    });
 
     const appleMeta = await page.evaluate(() => {
       const meta = document.querySelector('meta[name="apple-mobile-web-app-capable"]');
