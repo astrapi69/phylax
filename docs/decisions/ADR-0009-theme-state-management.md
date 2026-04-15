@@ -37,35 +37,36 @@ Two `<meta name="theme-color">` tags in `index.html` use the `media` attribute t
 
 These are the light-to-dark mappings used across the codebase. Future UI tasks use this table as the reference rather than inventing new pairs:
 
-| Light class        | Dark class              | Usage                                      |
-| ------------------ | ----------------------- | ------------------------------------------ |
-| `bg-white`         | `dark:bg-gray-900`      | Main surfaces, app shell background        |
-| `bg-gray-50`       | `dark:bg-gray-800`      | Elevated cards, distinct panels            |
-| `bg-gray-100`      | `dark:bg-gray-800`      | Secondary surfaces, subtle chrome          |
-| `text-gray-900`    | `dark:text-gray-100`    | Primary text                               |
-| `text-gray-700`    | `dark:text-gray-200`    | Medium-emphasis text                       |
-| `text-gray-600`    | `dark:text-gray-400`    | Secondary text, labels                     |
-| `text-gray-500`    | `dark:text-gray-400`    | Placeholder text, hints                    |
-| `border-gray-200`  | `dark:border-gray-700`  | Default borders, dividers                  |
-| `border-gray-300`  | `dark:border-gray-600`  | Input borders, interactive edges           |
-| `bg-blue-600`      | `dark:bg-blue-500`      | Primary button surface                     |
-| `text-blue-700`    | `dark:text-blue-300`    | Active nav link, primary link              |
-| `bg-blue-50`       | `dark:bg-blue-950/40`   | Active nav link background, selected state |
-| `bg-red-50`        | `dark:bg-red-950/40`    | Error banner background                    |
-| `text-red-800`     | `dark:text-red-200`     | Error banner text                          |
-| `border-red-200`   | `dark:border-red-800`   | Error banner border                        |
-| `bg-amber-50`      | `dark:bg-amber-950/40`  | Warning sign background                    |
-| `border-amber-300` | `dark:border-amber-700` | Warning sign border                        |
-| `text-amber-900`   | `dark:text-amber-200`   | Warning sign text                          |
-| `bg-green-600`     | `dark:bg-green-500`     | Success button                             |
-| `text-green-700`   | `dark:text-green-400`   | Success text                               |
-| `prose`            | `dark:prose-invert`     | Markdown-rendered content                  |
+| Light class        | Dark class              | Usage                                                                                                                                                                                                |
+| ------------------ | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bg-white`         | `dark:bg-gray-900`      | Main surfaces, app shell background                                                                                                                                                                  |
+| `bg-gray-50`       | `dark:bg-gray-800`      | Elevated cards, distinct panels                                                                                                                                                                      |
+| `bg-gray-100`      | `dark:bg-gray-800`      | Secondary surfaces, subtle chrome                                                                                                                                                                    |
+| `text-gray-900`    | `dark:text-gray-100`    | Primary text                                                                                                                                                                                         |
+| `text-gray-700`    | `dark:text-gray-200`    | Medium-emphasis text                                                                                                                                                                                 |
+| `text-gray-600`    | `dark:text-gray-400`    | Secondary text, labels                                                                                                                                                                               |
+| `text-gray-500`    | `dark:text-gray-400`    | Placeholder text, hints                                                                                                                                                                              |
+| `border-gray-200`  | `dark:border-gray-700`  | Default borders, dividers                                                                                                                                                                            |
+| `border-gray-300`  | `dark:border-gray-600`  | Input borders, interactive edges                                                                                                                                                                     |
+| `bg-blue-600`      | (no override)           | Primary button surface. Blue-500 was tried but failed WCAG AA color contrast against `text-white` (3.67:1, axe check flagged during T-02b). Blue-600 on white gives 4.94:1 and works in both themes. |
+| `text-blue-700`    | `dark:text-blue-300`    | Active nav link, primary link                                                                                                                                                                        |
+| `bg-blue-50`       | `dark:bg-blue-950/40`   | Active nav link background, selected state                                                                                                                                                           |
+| `bg-red-50`        | `dark:bg-red-950/40`    | Error banner background                                                                                                                                                                              |
+| `text-red-800`     | `dark:text-red-200`     | Error banner text                                                                                                                                                                                    |
+| `border-red-200`   | `dark:border-red-800`   | Error banner border                                                                                                                                                                                  |
+| `bg-amber-50`      | `dark:bg-amber-950/40`  | Warning sign background                                                                                                                                                                              |
+| `border-amber-300` | `dark:border-amber-700` | Warning sign border                                                                                                                                                                                  |
+| `text-amber-900`   | `dark:text-amber-200`   | Warning sign text                                                                                                                                                                                    |
+| `bg-red-600`       | (no override)           | Destructive button surface. Same AA failure as `bg-blue-500`: white on red-500 is 3.76:1. Red-600 on white is 5.25:1.                                                                                |
+| `bg-green-600`     | (no override)           | Success button. Same rule as blue: stay at -600 in both themes for AA compliance.                                                                                                                    |
+| `text-green-700`   | `dark:text-green-400`   | Success text                                                                                                                                                                                         |
+| `prose`            | `dark:prose-invert`     | Markdown-rendered content                                                                                                                                                                            |
 
 Palette choices:
 
 - Dark surfaces use `gray-900` rather than `black` so shadows and borders stay visible.
 - Semantic tints (amber, red, blue) use a `-950/40` background so the color intent survives while reading well on dark.
-- Primary buttons shift from `-600` to `-500` in dark because the darker shades disappear against `gray-900`.
+- Primary buttons stay at `bg-blue-600` in both themes. An initial plan shifted them to `bg-blue-500` in dark for perceived vibrance, but that pair fails WCAG AA color contrast against `text-white` (3.67:1 vs. the 4.5:1 threshold for normal text). Blue-600 against white reaches 4.94:1 and stands out well enough on `bg-gray-900` too.
 
 ## Consequences
 

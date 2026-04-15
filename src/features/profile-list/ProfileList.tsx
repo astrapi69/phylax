@@ -91,7 +91,7 @@ export function ProfileList({
                 <button
                   type="button"
                   onClick={() => onSelect(profile.id)}
-                  className="self-start rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  className="self-start rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
                   {selectLabel}
                 </button>

@@ -144,14 +144,19 @@ export async function assertNoA11yViolations(
 
   if (violations.length > 0) {
     const summary = violations
-      .map(
-        (v) =>
-          `  - ${v.id}: ${v.description} (${v.nodes.length} node${v.nodes.length === 1 ? '' : 's'})\n` +
-          v.nodes
-            .slice(0, 3)
-            .map((n) => `      target: ${n.target.join(' ')}`)
-            .join('\n'),
-      )
+      .map((v) => {
+        const header = `  - ${v.id}: ${v.description} (${v.nodes.length} node${v.nodes.length === 1 ? '' : 's'})`;
+        const nodes = v.nodes
+          .slice(0, 5)
+          .map((n) => {
+            const target = n.target.join(' ');
+            const fail = n.failureSummary?.replace(/\n/g, ' | ') ?? '';
+            const html = n.html ? n.html.substring(0, 200) : '';
+            return `      target: ${target}\n      html: ${html}\n      why: ${fail}`;
+          })
+          .join('\n');
+        return `${header}\n${nodes}`;
+      })
       .join('\n');
     throw new Error(`Axe violations on ${options.screen ?? 'page'}:\n${summary}`);
   }
