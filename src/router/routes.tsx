@@ -7,7 +7,7 @@ import { OnboardingFlow } from '../features/onboarding';
 import { UnlockScreen } from '../features/unlock';
 import { ProfileCreateForm } from '../features/profile-create';
 import { ProfileView } from '../features/profile-view';
-import { ObservationsPlaceholder } from '../features/observations/ObservationsPlaceholder';
+import { ObservationsView } from '../features/observations';
 import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
 import { SettingsScreen } from '../features/settings';
@@ -71,7 +71,7 @@ export function AppRoutes() {
       >
         <Route index element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<ProfileView />} />
-        <Route path="/observations" element={<ObservationsPlaceholder />} />
+        <Route path="/observations" element={<ObservationsView />} />
         <Route path="/lab-values" element={<LabValuesPlaceholder />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
         <Route path="/import" element={<ImportFlow />} />

@@ -93,7 +93,7 @@ Note on IDs: the parser was originally committed under the `[O-07]` tag before t
 Goal: render imported profile data as readable screens. All read-only in this phase; editing is deferred to a later phase that has its own form patterns. First view task replaces the `/profile` placeholder with actual BaseData; subsequent tasks cover the other entity types one at a time.
 
 - [x] **V-01** Profile overview view at `/profile`: BaseData, doctor, diagnoses, medications, limitations, warning signs, external references, context notes (commit pending)
-- [ ] **V-02** Observations view: list grouped by theme, expandable detail per observation
+- [x] **V-02** Observations view: list grouped by theme, expandable detail per observation (commit pending)
 - [ ] **V-03** Lab values view: reports with values table, per-category assessments, reference ranges
 - [ ] **V-04** Supplements view: list grouped by category (daily / regular / paused / on-demand) with rationale
 - [ ] **V-05** Open points checklist view: grouped by context, priority and time-horizon badges

@@ -226,11 +226,26 @@ matrixTests('Smoke: settings', 'settings', async (page, { theme, sysPref }) => {
 
 // -- Placeholders ---------------------------------------------------------
 
-matrixTests('Smoke: observations placeholder', 'observations', async (page, { theme, sysPref }) => {
+matrixTests('Smoke: observations empty', 'observations-empty', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Beobachtungen' }).click();
-  await expect(page.getByRole('heading', { name: 'Beobachtungen' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
+  await expect(page.getByText(/Noch keine Beobachtungen/)).toBeVisible();
 });
+
+matrixTests(
+  'Smoke: observations populated',
+  'observations-populated',
+  async (page, { theme, sysPref }) => {
+    await setupAuthenticatedState(page, theme, sysPref);
+    await importFixture(page);
+    await page.getByRole('link', { name: 'Beobachtungen' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
+    // At least one theme group heading is present
+    const themeHeadings = page.getByRole('heading', { level: 2 });
+    await expect(themeHeadings.first()).toBeVisible();
+  },
+);
 
 matrixTests('Smoke: lab values placeholder', 'lab-values', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
