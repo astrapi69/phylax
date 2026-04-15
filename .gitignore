@@ -44,3 +44,6 @@ playwright/.cache/
 *.war
 *.ear
 *.rar
+
+# prompt files
+/docs/journal/
