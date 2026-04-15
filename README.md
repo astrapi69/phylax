@@ -124,7 +124,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task list.
 
 ## Quick start
 
-Requires Node.js 18 or later.
+Requires Node.js 20 LTS or later. If you use nvm, `nvm use` picks up the pinned version from `.nvmrc`.
 
 ```bash
 git clone https://github.com/astrapi69/phylax.git

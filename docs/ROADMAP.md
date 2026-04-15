@@ -113,6 +113,14 @@ Goal: comfortable cross-environment appearance. Starts with dark mode; future ta
 
 ---
 
+## Infrastructure (I-series)
+
+Cross-cutting infrastructure maintenance that is not tied to a product phase.
+
+- [x] **I-01** Node 20 LTS requirement (drop Node 18, add `.nvmrc`, `engines` field, update CI matrix to 20 + 22) (commit pending)
+
+---
+
 ## Phase 3: AI-Guided Input
 
 Goal: AI as primary input method for profile creation and updates. User provides fragments, AI structures them into the profile format.
