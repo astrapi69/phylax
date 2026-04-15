@@ -8,6 +8,10 @@ dev-dist/
 # Test coverage
 coverage/
 
+# Stryker mutation testing
+reports/mutation/
+.stryker-tmp/
+
 # Playwright
 test-results/
 playwright-report/

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size build check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick build check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -58,6 +58,12 @@ test-e2e-production: ## Run Playwright E2E against production build
 
 test-bundle-size: build ## Check production bundle against size-limit budgets
 	npm run size
+
+test-mutation-dry: ## Validate Stryker config without running mutations
+	npx stryker run --dryRunOnly
+
+test-mutation-quick: ## Run Stryker mutation tests for the crypto module only
+	npx stryker run
 
 # -- Build and release --
 
