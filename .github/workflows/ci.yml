@@ -81,37 +81,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: make build
-      - name: Check bundle size
+      - name: Check bundle size (size-limit, budgets in .size-limit.json)
+        run: npm run size
+      - name: Bundle size summary
+        if: always()
         run: |
-          BUDGET=153600
-          TOTAL_JS=0
-
           echo "## Bundle size" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Asset | Gzipped |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-
-          for f in dist/assets/*.js; do
-            SIZE=$(gzip -c "$f" | wc -c)
-            TOTAL_JS=$((TOTAL_JS + SIZE))
-            echo "| $(basename "$f") | $(numfmt --to=iec "$SIZE") |" >> $GITHUB_STEP_SUMMARY
-          done
-
-          for f in dist/assets/*.css; do
+          for f in dist/assets/*.js dist/assets/*.css; do
+            [ -e "$f" ] || continue
             SIZE=$(gzip -c "$f" | wc -c)
             echo "| $(basename "$f") | $(numfmt --to=iec "$SIZE") |" >> $GITHUB_STEP_SUMMARY
           done
-
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Total JS (gzipped): $(numfmt --to=iec $TOTAL_JS)**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Budget: 150 KB gzipped" >> $GITHUB_STEP_SUMMARY
-
-          echo "Total gzipped JS: $TOTAL_JS bytes (budget: $BUDGET)"
-          if [ "$TOTAL_JS" -gt "$BUDGET" ]; then
-            echo "FAIL: JS bundle exceeds budget"
-            exit 1
-          fi
+          echo "Budgets enforced by size-limit (see .size-limit.json)." >> $GITHUB_STEP_SUMMARY
       - uses: actions/upload-artifact@v4
         with:
           name: production-build
