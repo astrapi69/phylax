@@ -26,6 +26,7 @@ function notifyListeners(state: LockState): void {
     try {
       listener(state);
     } catch (err) {
+      // Stryker disable next-line StringLiteral: diagnostic message, asserting on wording would couple tests to log text
       console.error('Lock state listener threw:', err);
     }
   }

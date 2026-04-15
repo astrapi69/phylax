@@ -151,6 +151,8 @@ describe('AES-256-GCM encrypt/decrypt', () => {
       const tooShort = new Uint8Array(IV_LENGTH);
 
       await expect(decrypt(key, tooShort)).rejects.toThrow(RangeError);
+      await expect(decrypt(key, tooShort)).rejects.toThrow(/Payload too short/);
+      await expect(decrypt(key, tooShort)).rejects.toThrow(new RegExp(`${IV_LENGTH}`));
     });
 
     it('throws on empty payload', async () => {
@@ -158,6 +160,7 @@ describe('AES-256-GCM encrypt/decrypt', () => {
       const empty = new Uint8Array(0);
 
       await expect(decrypt(key, empty)).rejects.toThrow(RangeError);
+      await expect(decrypt(key, empty)).rejects.toThrow(/Payload too short/);
     });
   });
 });
