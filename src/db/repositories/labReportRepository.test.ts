@@ -134,15 +134,33 @@ describe('LabReportRepository', () => {
   });
 
   it('listByProfileDateDescending sorts correctly', async () => {
-    await repo.create(makeReportData({ reportDate: '2024-03-15' }));
-    await repo.create(makeReportData({ reportDate: '2026-01-10' }));
-    await repo.create(makeReportData({ reportDate: '2025-07-20' }));
+    // Use 6 entries created in ascending date order. fake-indexeddb
+    // returns by UUID primary-key order which is random. With 6 entries,
+    // there are 720 permutations and only 1 is the correct descending
+    // order, so the probability of the no-sort mutant accidentally
+    // passing is ~0.14% per run. Relational assertions double-check.
+    const dates = [
+      '2022-01-01',
+      '2023-03-15',
+      '2024-06-20',
+      '2024-11-01',
+      '2025-07-20',
+      '2026-01-10',
+    ];
+    for (const d of dates) {
+      await repo.create(makeReportData({ reportDate: d }));
+    }
 
     const sorted = await repo.listByProfileDateDescending(profileId);
-    expect(sorted).toHaveLength(3);
-    expect(sorted[0]?.reportDate).toBe('2026-01-10');
-    expect(sorted[1]?.reportDate).toBe('2025-07-20');
-    expect(sorted[2]?.reportDate).toBe('2024-03-15');
+    expect(sorted).toHaveLength(6);
+    const sortedDates = sorted.map((r) => r.reportDate);
+    expect(sortedDates).toEqual([...dates].reverse());
+    // Relational: every consecutive pair is strictly descending
+    for (let i = 0; i < sortedDates.length - 1; i++) {
+      const current = sortedDates[i] ?? '';
+      const next = sortedDates[i + 1] ?? '';
+      expect(current > next).toBe(true);
+    }
     lock();
   });
 

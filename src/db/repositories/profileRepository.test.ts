@@ -105,13 +105,20 @@ describe('ProfileRepository', () => {
   });
 
   it('getCurrentProfile returns the profile', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     const created = await repo.create(makeProfileData());
     const current = await repo.getCurrentProfile();
 
     expect(current).not.toBeNull();
     expect(current?.id).toBe(created.id);
     expect(current?.version).toBe('1.3.1');
+    // Negative assertion: the multi-profile warning branch must NOT fire
+    // for a single profile. Guards the `rows.length > 1` condition
+    // against mutations that always enter the branch.
+    expect(warnSpy).not.toHaveBeenCalled();
 
+    warnSpy.mockRestore();
     lock();
   });
 

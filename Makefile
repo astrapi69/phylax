@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick build check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos build check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -59,11 +59,18 @@ test-e2e-production: ## Run Playwright E2E against production build
 test-bundle-size: build ## Check production bundle against size-limit budgets
 	npm run size
 
+# Blanket Stryker exclusions re-specified here because --mutate overrides
+# the config's mutate array entirely. Kept in sync with stryker.config.mjs.
+STRYKER_EXCLUDES := !src/**/*.test.ts,!src/**/*.test.tsx,!src/**/test-setup.ts,!src/**/test-helpers.ts,!src/**/index.ts
+
 test-mutation-dry: ## Validate Stryker config without running mutations
 	npx stryker run --dryRunOnly
 
 test-mutation-quick: ## Run Stryker mutation tests for the crypto module only
-	npx stryker run
+	npx stryker run --mutate "src/crypto/**/*.ts,$(STRYKER_EXCLUDES)"
+
+test-mutation-repos: ## Run Stryker mutation tests for the repositories module only
+	npx stryker run --mutate "src/db/repositories/**/*.ts,$(STRYKER_EXCLUDES)"
 
 # -- Build and release --
 

@@ -145,6 +145,12 @@ describe('LabValueRepository', () => {
     expect(result[0]?.id).toBe(v1.id);
     expect(result[1]?.id).toBe(v2.id);
     expect(result[2]?.id).toBe(v3.id);
+    // Relational assertion: ascending createdAt order enforced by the sort
+    const t0 = result[0]?.createdAt ?? 0;
+    const t1 = result[1]?.createdAt ?? 0;
+    const t2 = result[2]?.createdAt ?? 0;
+    expect(t0).toBeLessThan(t1);
+    expect(t1).toBeLessThan(t2);
     lock();
   });
 

@@ -25,6 +25,7 @@ export default {
 
   mutate: [
     'src/crypto/**/*.ts',
+    'src/db/repositories/**/*.ts',
     '!src/**/*.test.ts',
     '!src/**/*.test.tsx',
     '!src/**/test-setup.ts',
