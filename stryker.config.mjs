@@ -56,6 +56,7 @@ export default {
     'src/crypto/**/*.ts',
     'src/db/repositories/**/*.ts',
     'src/features/profile-import/parser/**/*.ts',
+    'src/features/profile-import/import/**/*.ts',
     ...STRYKER_EXCLUDES,
   ],
 

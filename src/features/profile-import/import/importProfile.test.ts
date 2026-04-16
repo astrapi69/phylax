@@ -168,6 +168,8 @@ describe('importProfile', () => {
     }
     expect(thrown).toBeInstanceOf(ImportTargetNotEmptyError);
     const err = thrown as ImportTargetNotEmptyError;
+    expect(err.name).toBe('ImportTargetNotEmptyError');
+    expect(err.message).toContain('existing data');
     expect(err.targetProfileId).toBe(profileId);
     expect(err.existingCounts.observations).toBe(1);
   });
@@ -306,6 +308,58 @@ describe('importProfile', () => {
     const profileRepo = new ProfileRepository();
     const loaded = await profileRepo.getById(profileId);
     expect(loaded?.baseData.profileType).toBe('self');
+  });
+
+  it('merge falls back to existing values when parsed fields are absent', async () => {
+    // Seed the existing profile with data that should survive the merge
+    const profileRepo = new ProfileRepository();
+    await profileRepo.update(profileId, {
+      baseData: {
+        name: 'Mein Profil',
+        weightHistory: [{ date: '2025-01-01', weightKg: 80 }],
+        knownDiagnoses: ['Asthma'],
+        currentMedications: ['Ibuprofen'],
+        relevantLimitations: ['Keine Spruenge'],
+        profileType: 'proxy',
+        managedBy: 'Tochter',
+      },
+      warningSigns: ['Schwindel'],
+      externalReferences: ['https://example.com'],
+      lastUpdateReason: 'Ersterfassung',
+    });
+
+    // Parse result with all fallback-relevant fields explicitly undefined.
+    // The merge logic uses `??` to fall back to existing values when
+    // parsed fields are absent. Cast needed because ParsedBaseData
+    // declares arrays as required; at runtime the parser can produce
+    // undefined when a section is missing from the source Markdown.
+    const parseResult = emptyParseResult({
+      profile: {
+        baseData: {
+          weightHistory: undefined as unknown as [],
+          knownDiagnoses: undefined as unknown as string[],
+          currentMedications: undefined as unknown as string[],
+          relevantLimitations: undefined as unknown as string[],
+          // managedBy deliberately omitted (already optional)
+        },
+        warningSigns: [], // empty array -> falls back to existing
+        externalReferences: [], // empty array -> falls back to existing
+        version: '2.0',
+        // No lastUpdateReason -> falls back to existing
+      },
+    });
+    await importProfile(parseResult, profileId);
+
+    const loaded = await profileRepo.getById(profileId);
+    // All ?? fields should have preserved the existing values
+    expect(loaded?.baseData.managedBy).toBe('Tochter');
+    expect(loaded?.baseData.weightHistory).toEqual([{ date: '2025-01-01', weightKg: 80 }]);
+    expect(loaded?.baseData.currentMedications).toEqual(['Ibuprofen']);
+    expect(loaded?.baseData.relevantLimitations).toEqual(['Keine Spruenge']);
+    expect(loaded?.lastUpdateReason).toBe('Ersterfassung');
+    // Array fields with .length > 0 check: empty parsed -> keep existing
+    expect(loaded?.warningSigns).toEqual(['Schwindel']);
+    expect(loaded?.externalReferences).toEqual(['https://example.com']);
   });
 
   it('throws when target profile does not exist', async () => {

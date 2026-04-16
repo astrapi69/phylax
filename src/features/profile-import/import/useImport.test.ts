@@ -72,6 +72,24 @@ describe('useImport', () => {
     }
   });
 
+  it('loadMarkdown accepts a parse result with only a profile update (no entities)', async () => {
+    // A parse result with a profile but zero entities should NOT be
+    // treated as empty. This kills the isEmptyParseResult mutant that
+    // flips `r.profile === null` to `true`.
+    const PROFILE_ONLY_MARKDOWN = [
+      '# Medizinisches Profil - Version 2.0',
+      '',
+      '## 1. Basisdaten',
+      '- **Alter:** 55',
+    ].join('\n');
+    const { result } = renderHook(() => useImport());
+    await act(async () => {
+      await result.current.loadMarkdown(PROFILE_ONLY_MARKDOWN);
+    });
+    // Should move to profile-selection, not error
+    expect(result.current.state.kind).toBe('profile-selection');
+  });
+
   it('selectProfile on empty target goes to preview', async () => {
     const { result } = renderHook(() => useImport());
     await act(async () => {

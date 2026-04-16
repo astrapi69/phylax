@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation build check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -70,6 +70,9 @@ test-mutation-repos: ## Run Stryker mutation tests for repositories only (per-mo
 
 test-mutation-parser: ## Run Stryker mutation tests for parser only (per-module threshold)
 	npx stryker run stryker.parser.mjs
+
+test-mutation-import: ## Run Stryker mutation tests for import only (per-module threshold)
+	npx stryker run stryker.import.mjs
 
 test-mutation: ## Run Stryker across all modules (combined threshold)
 	npx stryker run

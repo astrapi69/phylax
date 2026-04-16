@@ -70,6 +70,7 @@ export function useImport(): ImportHook {
     } catch (err) {
       setState({ kind: 'error', message: toMessage(err) });
     }
+    // Stryker disable next-line ArrayDeclaration: React dep array; changing [] to non-empty affects render frequency, not behavior
   }, []);
 
   const selectProfile = useCallback(
@@ -127,10 +128,12 @@ export function useImport(): ImportHook {
     }
   }, [state]);
 
+  // Stryker disable next-line ArrayDeclaration: React dep array cosmetic
   const cancel = useCallback((): void => {
     setState({ kind: 'entry' });
   }, []);
 
+  // Stryker disable next-line ArrayDeclaration: React dep array cosmetic
   const reset = useCallback((): void => {
     setState({ kind: 'entry' });
   }, []);

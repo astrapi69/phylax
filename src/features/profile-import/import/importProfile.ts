@@ -166,6 +166,7 @@ export async function importProfile(
       db.timelineEntries,
     ],
     async () => {
+      // Stryker disable next-line ConditionalExpression: defense-in-depth; only reached when target is empty (no-op) or replaceExisting=true
       if (replaceExisting) {
         await Promise.all([
           deleteByProfileId(db.observations, targetProfileId),
