@@ -110,6 +110,15 @@ Goal: comfortable cross-environment appearance. Starts with dark mode; future ta
 - [x] **T-02a** Theme and a11y smoke infrastructure: helpers, axe integration, onboarding smoke test as first screen (commit pending)
 - [x] **T-02b** Smoke tests extended to the remaining screens plus any a11y fixes surfaced by the matrix (commit pending)
 - [x] **T-03** Bundle size budgets via size-limit (per-asset gzipped budgets enforced in CI, ADR-0010) (commit pending)
+- [x] **T-04a** Stryker installation and minimal config (crypto scope, dry-run validated) (commit pending)
+- [x] **T-04c** Crypto mutation baseline: 100% killed, threshold 95, 1 Category A fix, 2 Category B exclusions (commit pending)
+- [x] **T-04e** Repositories mutation baseline: 100% killed, threshold 95, 3 Category A fixes (commit pending)
+- [x] **T-04f** Parser mutation baseline: 57.81%, threshold 55, per-module config strategy, 1 Category A fix (commit pending)
+- [x] **T-04g** Import mutation baseline: 81.16%, threshold 75, 9 Category A fixes, 8 Category B exclusions (commit pending)
+- [x] **T-04h** Nightly CI workflow, ADR-0011 (mutation testing strategy with baselines and survivor-handling policy) (commit pending)
+
+> Parser test hardening deferred: 271 survivors in T-04f, sample triage showed ~25% Category A,
+> ~45% Category B, ~30% Category C. Dedicated edge-case fixtures needed per section parser.
 
 ---
 

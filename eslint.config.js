@@ -69,6 +69,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/**', 'dev-dist/**', 'scripts/**'],
+    ignores: ['dist/**', 'dev-dist/**', 'scripts/**', '.stryker-tmp/**', 'reports/**'],
   },
 ];
