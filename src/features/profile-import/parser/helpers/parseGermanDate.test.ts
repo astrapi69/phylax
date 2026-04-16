@@ -10,10 +10,19 @@ describe('parseGermanDate', () => {
     expect(parseGermanDate('5.3.2024')).toBe('2024-03-05');
   });
 
-  it('parses German month name + year', () => {
-    expect(parseGermanDate('Dezember 2024')).toBe('2024-12-01');
-    expect(parseGermanDate('Maerz 2026')).toBe('2026-03-01');
+  it('parses German month name + year for all 12 months', () => {
     expect(parseGermanDate('Januar 2025')).toBe('2025-01-01');
+    expect(parseGermanDate('Februar 2025')).toBe('2025-02-01');
+    expect(parseGermanDate('Maerz 2025')).toBe('2025-03-01');
+    expect(parseGermanDate('April 2025')).toBe('2025-04-01');
+    expect(parseGermanDate('Mai 2025')).toBe('2025-05-01');
+    expect(parseGermanDate('Juni 2025')).toBe('2025-06-01');
+    expect(parseGermanDate('Juli 2025')).toBe('2025-07-01');
+    expect(parseGermanDate('August 2025')).toBe('2025-08-01');
+    expect(parseGermanDate('September 2025')).toBe('2025-09-01');
+    expect(parseGermanDate('Oktober 2025')).toBe('2025-10-01');
+    expect(parseGermanDate('November 2025')).toBe('2025-11-01');
+    expect(parseGermanDate('Dezember 2025')).toBe('2025-12-01');
   });
 
   it('is case-insensitive for month names', () => {

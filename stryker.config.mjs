@@ -1,5 +1,5 @@
 /**
- * Stryker mutation testing configuration.
+ * Stryker mutation testing - shared base configuration.
  *
  * See docs/decisions/ADR-0011 (added in T-04h) for scope, thresholds,
  * survivor-handling policy, and cadence. Per-module scope is extended
@@ -15,23 +15,29 @@
  * are annotated inline in the source via `// Stryker disable next-line ...`
  * comments rather than collected here. That keeps the justification next
  * to the code it concerns.
+ *
+ * Per-module configs (stryker.crypto.mjs, stryker.repos.mjs, etc.)
+ * import this base and override mutate + thresholds. The base config
+ * itself contains ALL modules with the lowest threshold (parser's 55)
+ * so that a single `npx stryker run` sanity-checks the full codebase.
+ * The nightly CI runs each per-module config for accurate per-module
+ * threshold enforcement.
  */
-export default {
+
+export const STRYKER_EXCLUDES = [
+  '!src/**/*.test.ts',
+  '!src/**/*.test.tsx',
+  '!src/**/test-setup.ts',
+  '!src/**/test-helpers.ts',
+  '!src/**/index.ts',
+];
+
+export const strykerBase = {
   packageManager: 'npm',
   testRunner: 'vitest',
   checkers: ['typescript'],
   tsconfigFile: 'tsconfig.json',
   coverageAnalysis: 'perTest',
-
-  mutate: [
-    'src/crypto/**/*.ts',
-    'src/db/repositories/**/*.ts',
-    '!src/**/*.test.ts',
-    '!src/**/*.test.tsx',
-    '!src/**/test-setup.ts',
-    '!src/**/test-helpers.ts',
-    '!src/**/index.ts',
-  ],
 
   reporters: ['html', 'clear-text', 'progress'],
   htmlReporter: {
@@ -40,17 +46,24 @@ export default {
 
   timeoutMS: 60000,
   concurrency: 4,
+};
 
-  // Threshold set in T-04c based on the measured post-fix baseline.
-  // Policy: break = measured - 5 (rounded down) to absorb minor
-  // measurement noise without masking real regressions.
-  //
-  // Baseline after T-04c (crypto only): 100.00% on covered code (45/45
-  // killed, compile-error mutants excluded). Break set at 95 so a real
-  // regression of more than one covered mutant breaks CI.
+// Default export: full combined scope, lowest module threshold.
+export default {
+  ...strykerBase,
+
+  mutate: [
+    'src/crypto/**/*.ts',
+    'src/db/repositories/**/*.ts',
+    'src/features/profile-import/parser/**/*.ts',
+    ...STRYKER_EXCLUDES,
+  ],
+
+  // Combined threshold = lowest module (parser at 55).
+  // Per-module enforcement happens via module-specific configs.
   thresholds: {
-    high: 95,
-    low: 85,
-    break: 95,
+    high: 90,
+    low: 70,
+    break: 55,
   },
 };
