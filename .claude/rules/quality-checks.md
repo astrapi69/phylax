@@ -5,18 +5,21 @@
 ### 1. Run tests
 
 ```bash
-npm test                    # Vitest unit tests, must be green
-npm run test:e2e            # Playwright end-to-end, must be green before commit
-npm run typecheck           # tsc --noEmit
-npm run lint                # ESLint
-npm run format:check        # Prettier
+make test                   # Vitest unit tests, must be green
+make test-e2e               # Playwright end-to-end, must be green before commit
+make typecheck              # tsc --noEmit
+make lint                   # ESLint
+make format-check           # Prettier
 ```
+
+Use Make targets, not npm scripts directly (see ai-workflow.md).
 
 A single failing test blocks the commit. No exceptions.
 
 ### 2. Manual smoke test
 
 After any change touching crypto, storage, or the lock flow, manually verify:
+
 1. Fresh install: open app in incognito, set a master password, create one entry of each type, lock, unlock, see entries.
 2. Wrong password: lock, enter wrong password, see error, no data leak in console.
 3. Auto-lock: wait for timeout, confirm app locks and key is cleared.
@@ -34,6 +37,7 @@ After any change touching crypto, storage, or the lock flow, manually verify:
 ### End-to-end tests (Playwright)
 
 Critical flows that must always work:
+
 - Onboarding: set master password, see empty dashboard.
 - Create one entry of each type and confirm it appears in the list.
 - Lock and unlock with correct password.
@@ -82,15 +86,49 @@ Coverage is checked in CI. Drops below threshold block the merge.
 Coverage audits are written to `docs/audits/current-coverage.md`. This is the single canonical file for the latest audit.
 
 When a new audit runs, the previous version is archived:
+
 1. Read the "Audit date" header from the existing `current-coverage.md`.
 2. Move it to `docs/audits/history/YYYY-MM-DD-coverage.md` using that date.
 3. Write the new audit to `docs/audits/current-coverage.md`.
 
 Never overwrite the current audit without archiving the previous version first.
 
+## Mutation testing thresholds
+
+Per-module thresholds enforced by nightly CI (ADR-0011). Each module has its own Stryker config.
+
+| Module       | Config             | Threshold | Baseline | Date       |
+| ------------ | ------------------ | --------- | -------- | ---------- |
+| Crypto       | stryker.crypto.mjs | 95%       | 100.00%  | 2026-04-16 |
+| Repositories | stryker.repos.mjs  | 95%       | 100.00%  | 2026-04-16 |
+| Parser       | stryker.parser.mjs | 55%       | 57.81%   | 2026-04-16 |
+| Import       | stryker.import.mjs | 75%       | 81.16%   | 2026-04-16 |
+
+### Threshold policy
+
+- Initial threshold: measured baseline minus 5%, rounded down.
+- Ratchet up when test-hardening work improves the score.
+- Parser threshold is intentionally low (fixture-dependent code with many equivalent regex mutants).
+- UI modules are not mutation-tested (JSX mutations produce mostly equivalent output).
+
+### Survivor categories
+
+- **A (fix)**: real test gap, fixable with a quick test addition. Fix immediately.
+- **B (exclude)**: equivalent mutant or test-environment limitation. Add inline `// Stryker disable` with one-line justification.
+- **C (defer)**: real gap but requires substantial test refactoring. Document in commit message, defer to dedicated task.
+
+### How to update thresholds
+
+When a test-hardening task raises a module's score:
+
+1. Re-run the module-specific mutation target (e.g., `make test-mutation-parser`).
+2. Update the threshold in the module's stryker config file.
+3. Update the table above with new baseline and date.
+4. Note the change in the commit message.
+
 ## Performance budget
 
-- Initial JS bundle: under 250KB gzipped.
+- Initial JS bundle: under 250KB gzipped (project-wide ceiling). Per-chunk budgets enforced by size-limit via `make test-bundle-size` (see ADR-0010, `.size-limit.json`). The per-chunk budgets are the operative CI gate; 250 KB is the absolute maximum before code-splitting is required.
 - Time to interactive on a mid-range phone (Moto G class): under 3 seconds on a cold load.
 - Encrypt/decrypt of a single entry: under 50ms.
 - App must remain usable with 5,000 entries in the database.
