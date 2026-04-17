@@ -94,7 +94,7 @@ Goal: render imported profile data as readable screens. All read-only in this ph
 
 - [x] **V-01** Profile overview view at `/profile`: BaseData, doctor, diagnoses, medications, limitations, warning signs, external references, context notes (commit pending)
 - [x] **V-02** Observations view: list grouped by theme, expandable detail per observation (commit pending)
-- [ ] **V-03** Lab values view: reports with values table, per-category assessments, reference ranges
+- [x] **V-03** Lab values view: reports with values table, per-category assessments, reference ranges (commit pending)
 - [ ] **V-04** Supplements view: list grouped by category (daily / regular / paused / on-demand) with rationale
 - [ ] **V-05** Open points checklist view: grouped by context, priority and time-horizon badges
 - [ ] **V-06** Timeline / Verlaufsnotizen view: chronological list of entries with Markdown bodies

@@ -247,11 +247,25 @@ matrixTests(
   },
 );
 
-matrixTests('Smoke: lab values placeholder', 'lab-values', async (page, { theme, sysPref }) => {
+matrixTests('Smoke: lab values empty', 'lab-values-empty', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Laborwerte' }).click();
-  await expect(page.getByRole('heading', { name: 'Laborwerte' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Laborwerte' })).toBeVisible();
+  await expect(page.getByText(/Noch keine Laborwerte/)).toBeVisible();
 });
+
+matrixTests(
+  'Smoke: lab values populated',
+  'lab-values-populated',
+  async (page, { theme, sysPref }) => {
+    await setupAuthenticatedState(page, theme, sysPref);
+    await importFixture(page);
+    await page.getByRole('link', { name: 'Laborwerte' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Laborwerte' })).toBeVisible();
+    // At least one report heading visible
+    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+  },
+);
 
 matrixTests('Smoke: documents placeholder', 'documents', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);

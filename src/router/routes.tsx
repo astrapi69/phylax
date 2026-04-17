@@ -8,7 +8,7 @@ import { UnlockScreen } from '../features/unlock';
 import { ProfileCreateForm } from '../features/profile-create';
 import { ProfileView } from '../features/profile-view';
 import { ObservationsView } from '../features/observations';
-import { LabValuesPlaceholder } from '../features/lab-values/LabValuesPlaceholder';
+import { LabValuesView } from '../features/lab-values';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
@@ -72,7 +72,7 @@ export function AppRoutes() {
         <Route index element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<ProfileView />} />
         <Route path="/observations" element={<ObservationsView />} />
-        <Route path="/lab-values" element={<LabValuesPlaceholder />} />
+        <Route path="/lab-values" element={<LabValuesView />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
         <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsScreen />} />
