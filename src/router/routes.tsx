@@ -15,6 +15,7 @@ import { TimelineView } from '../features/timeline';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
+import { ChatView } from '../features/ai-chat';
 import { NotFound } from '../features/not-found/NotFound';
 
 function OnboardingPage() {
@@ -80,6 +81,7 @@ export function AppRoutes() {
         <Route path="/open-points" element={<OpenPointsView />} />
         <Route path="/timeline" element={<TimelineView />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
+        <Route path="/chat" element={<ChatView />} />
         <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsScreen />} />
       </Route>

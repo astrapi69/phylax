@@ -224,6 +224,15 @@ matrixTests('Smoke: settings', 'settings', async (page, { theme, sysPref }) => {
   await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
 });
 
+// -- Chat (empty welcome state; never triggers an API call) --------------
+
+matrixTests('Smoke: chat empty', 'chat', async (page, { theme, sysPref }) => {
+  await setupAuthenticatedState(page, theme, sysPref);
+  await page.getByRole('link', { name: 'KI-Assistent' }).first().click();
+  await expect(page.getByRole('heading', { level: 1, name: 'KI-Assistent' })).toBeVisible();
+  await expect(page.getByText(/Willkommen beim KI-Assistenten/)).toBeVisible();
+});
+
 // -- Placeholders ---------------------------------------------------------
 
 matrixTests('Smoke: observations empty', 'observations-empty', async (page, { theme, sysPref }) => {

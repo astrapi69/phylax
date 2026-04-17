@@ -11,6 +11,7 @@ const EXPECTED_ITEMS = [
   'Offene Punkte',
   'Verlauf',
   'Dokumente',
+  'KI-Assistent',
   'Import',
   'Einstellungen',
 ];
@@ -54,7 +55,7 @@ describe('NavBar', () => {
 
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
     const links = nav.querySelectorAll('a');
-    // 6 items x 2 (mobile + desktop) = 12 links
+    // Each nav item renders twice (mobile bottom bar + desktop side panel)
     expect(links.length).toBe(EXPECTED_ITEMS.length * 2);
   });
 });

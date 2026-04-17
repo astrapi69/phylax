@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/open-points', label: 'Offene Punkte' },
   { to: '/timeline', label: 'Verlauf' },
   { to: '/documents', label: 'Dokumente' },
+  { to: '/chat', label: 'KI-Assistent' },
   { to: '/import', label: 'Import' },
   { to: '/settings', label: 'Einstellungen' },
 ];
