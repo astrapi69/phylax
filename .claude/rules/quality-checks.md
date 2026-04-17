@@ -10,11 +10,18 @@ make test-e2e               # Playwright end-to-end, must be green before commit
 make typecheck              # tsc --noEmit
 make lint                   # ESLint
 make format-check           # Prettier
+make test-bundle-size       # Production bundle vs size-limit budgets
 ```
 
 Use Make targets, not npm scripts directly (see ai-workflow.md).
 
 A single failing test blocks the commit. No exceptions.
+
+Coverage thresholds are enforced by GitHub Actions CI (I-03), not locally.
+Local coverage instrumentation roughly doubles CPU/memory load on 800+
+tests with crypto operations, which is expensive on developer machines.
+For a manual local coverage check before pushing: `make test-coverage`.
+`make ci-local-full` deliberately omits it; CI is the source of truth.
 
 ### 2. Manual smoke test
 

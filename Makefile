@@ -44,7 +44,10 @@ test: ## Run all unit tests once
 test-watch: ## Run unit tests in watch mode
 	npm run test:watch
 
-test-coverage: ## Run tests with coverage report
+# Coverage runs on GitHub Actions CI only.
+# Local coverage instrumentation doubles CPU/memory load on 800+ tests
+# with crypto operations. Use 'make test-coverage' manually if needed.
+test-coverage: ## Run tests with coverage report (CI-only; resource-intensive locally)
 	npm run test:coverage
 
 test-e2e: ## Run Playwright end-to-end tests
@@ -88,7 +91,7 @@ check: lint typecheck test build ## Run lint, typecheck, test, and build (CI gat
 
 ci-local-fast: lint typecheck test ## Fast CI check (no build, no E2E)
 
-ci-local-full: lint typecheck test-coverage test-bundle-size test-e2e test-e2e-production ## Full CI check
+ci-local-full: lint typecheck test test-bundle-size test-e2e test-e2e-production ## Full CI check (coverage runs in GitHub Actions CI only)
 
 # -- Meta --
 
