@@ -1,0 +1,101 @@
+import { useEffect, useState } from 'react';
+import type { Supplement, SupplementCategory } from '../../domain';
+import { ProfileRepository, SupplementRepository } from '../../db/repositories';
+
+export interface SupplementGroup {
+  category: SupplementCategory;
+  label: string;
+  supplements: Supplement[];
+}
+
+export type SupplementsState =
+  | { kind: 'loading' }
+  | { kind: 'loaded'; groups: SupplementGroup[] }
+  | { kind: 'error'; message: string };
+
+export interface UseSupplementsResult {
+  state: SupplementsState;
+}
+
+const CATEGORY_ORDER: readonly SupplementCategory[] = [
+  'daily',
+  'regular',
+  'on-demand',
+  'paused',
+] as const;
+
+const CATEGORY_LABELS: Record<SupplementCategory, string> = {
+  daily: 'Taeglich',
+  regular: 'Regelmaessig',
+  'on-demand': 'Bei Bedarf',
+  paused: 'Pausiert',
+};
+
+/**
+ * Load all supplements for the current profile and group by category.
+ * Active categories (daily, regular, on-demand) come first; paused
+ * last. Empty categories are excluded. Within each group, supplements
+ * are sorted by createdAt ascending (preserves import order).
+ */
+export function useSupplements(): UseSupplementsResult {
+  const [state, setState] = useState<SupplementsState>({ kind: 'loading' });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const profileRepo = new ProfileRepository();
+        const profile = await profileRepo.getCurrentProfile();
+        if (cancelled) return;
+        if (!profile) {
+          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          return;
+        }
+
+        const repo = new SupplementRepository();
+        const all = await repo.listByProfile(profile.id);
+        if (cancelled) return;
+
+        const groups = buildGroups(all);
+        setState({ kind: 'loaded', groups });
+      } catch (err) {
+        if (!cancelled) {
+          setState({
+            kind: 'error',
+            message:
+              err instanceof Error ? err.message : 'Supplemente konnten nicht geladen werden.',
+          });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return { state };
+}
+
+function buildGroups(supplements: Supplement[]): SupplementGroup[] {
+  const byCategory = new Map<SupplementCategory, Supplement[]>();
+  for (const s of supplements) {
+    const existing = byCategory.get(s.category);
+    if (existing) {
+      existing.push(s);
+    } else {
+      byCategory.set(s.category, [s]);
+    }
+  }
+
+  const groups: SupplementGroup[] = [];
+  for (const category of CATEGORY_ORDER) {
+    const list = byCategory.get(category);
+    if (!list || list.length === 0) continue;
+    groups.push({
+      category,
+      label: CATEGORY_LABELS[category],
+      supplements: [...list].sort((a, b) => a.createdAt - b.createdAt),
+    });
+  }
+  return groups;
+}

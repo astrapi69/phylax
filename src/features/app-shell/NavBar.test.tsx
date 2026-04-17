@@ -7,6 +7,7 @@ const EXPECTED_ITEMS = [
   'Profil',
   'Beobachtungen',
   'Laborwerte',
+  'Supplemente',
   'Dokumente',
   'Import',
   'Einstellungen',

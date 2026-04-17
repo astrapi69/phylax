@@ -267,6 +267,25 @@ matrixTests(
   },
 );
 
+matrixTests('Smoke: supplements empty', 'supplements-empty', async (page, { theme, sysPref }) => {
+  await setupAuthenticatedState(page, theme, sysPref);
+  await page.getByRole('link', { name: 'Supplemente' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Supplemente' })).toBeVisible();
+  await expect(page.getByText(/Noch keine Supplemente/)).toBeVisible();
+});
+
+matrixTests(
+  'Smoke: supplements populated',
+  'supplements-populated',
+  async (page, { theme, sysPref }) => {
+    await setupAuthenticatedState(page, theme, sysPref);
+    await importFixture(page);
+    await page.getByRole('link', { name: 'Supplemente' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Supplemente' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+  },
+);
+
 matrixTests('Smoke: documents placeholder', 'documents', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Dokumente' }).click();

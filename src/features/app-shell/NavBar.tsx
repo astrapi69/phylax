@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { to: '/profile', label: 'Profil' },
   { to: '/observations', label: 'Beobachtungen' },
   { to: '/lab-values', label: 'Laborwerte' },
+  { to: '/supplements', label: 'Supplemente' },
   { to: '/documents', label: 'Dokumente' },
   { to: '/import', label: 'Import' },
   { to: '/settings', label: 'Einstellungen' },
