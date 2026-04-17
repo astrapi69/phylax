@@ -1,0 +1,1 @@
+export { OpenPointsView } from './OpenPointsView';

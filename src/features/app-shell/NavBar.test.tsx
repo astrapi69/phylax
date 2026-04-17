@@ -8,6 +8,7 @@ const EXPECTED_ITEMS = [
   'Beobachtungen',
   'Laborwerte',
   'Supplemente',
+  'Offene Punkte',
   'Dokumente',
   'Import',
   'Einstellungen',

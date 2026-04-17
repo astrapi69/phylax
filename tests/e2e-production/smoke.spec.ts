@@ -286,6 +286,25 @@ matrixTests(
   },
 );
 
+matrixTests('Smoke: open points empty', 'open-points-empty', async (page, { theme, sysPref }) => {
+  await setupAuthenticatedState(page, theme, sysPref);
+  await page.getByRole('link', { name: 'Offene Punkte' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Offene Punkte' })).toBeVisible();
+  await expect(page.getByText(/Keine offenen Punkte/)).toBeVisible();
+});
+
+matrixTests(
+  'Smoke: open points populated',
+  'open-points-populated',
+  async (page, { theme, sysPref }) => {
+    await setupAuthenticatedState(page, theme, sysPref);
+    await importFixture(page);
+    await page.getByRole('link', { name: 'Offene Punkte' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Offene Punkte' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+  },
+);
+
 matrixTests('Smoke: documents placeholder', 'documents', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Dokumente' }).click();
