@@ -4,6 +4,7 @@ import {
   decodeMetaPayload,
   DEFAULT_SETTINGS,
   type MetaPayload,
+  type AIProviderConfig,
 } from './settings';
 import { VERIFICATION_TOKEN } from './meta';
 
@@ -84,5 +85,56 @@ describe('MetaPayload encoding/decoding', () => {
 
     expect(decodedLow.settings.autoLockMinutes).toBe(1);
     expect(decodedHigh.settings.autoLockMinutes).toBe(60);
+  });
+
+  it('round-trips aiConfig alongside settings', () => {
+    const aiConfig: AIProviderConfig = {
+      provider: 'anthropic',
+      apiKey: 'sk-ant-abc123',
+      model: 'claude-sonnet-4-20250514',
+    };
+    const payload: MetaPayload = {
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig,
+    };
+
+    const decoded = decodeMetaPayload(encodeMetaPayload(payload));
+
+    expect(decoded.aiConfig).toEqual(aiConfig);
+    expect(decoded.settings.autoLockMinutes).toBe(5);
+  });
+
+  it('decodes payload without aiConfig as undefined (backward compat)', () => {
+    const payload: MetaPayload = {
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+    };
+
+    const decoded = decodeMetaPayload(encodeMetaPayload(payload));
+
+    expect(decoded.aiConfig).toBeUndefined();
+  });
+
+  it('rejects malformed aiConfig (missing apiKey)', () => {
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: { provider: 'anthropic' },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+
+    expect(decoded.aiConfig).toBeUndefined();
+  });
+
+  it('omits aiConfig from encoded JSON when absent', () => {
+    const payload: MetaPayload = {
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+    };
+
+    const encoded = new TextDecoder().decode(encodeMetaPayload(payload));
+
+    expect(encoded).not.toContain('aiConfig');
   });
 });

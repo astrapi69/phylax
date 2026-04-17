@@ -16,12 +16,34 @@ export const MIN_AUTO_LOCK_MINUTES = 1;
 export const MAX_AUTO_LOCK_MINUTES = 60;
 
 /**
+ * Known AI providers. Only Anthropic is supported in the foundation task;
+ * the union exists so future providers (OpenAI, OpenAI-compatible) can be
+ * added without reshaping the type.
+ */
+export type AIProvider = 'anthropic';
+
+/**
+ * User-supplied AI configuration. Stored inside the encrypted meta payload,
+ * treated as sensitive (reveals API key and provider selection).
+ */
+export interface AIProviderConfig {
+  provider: AIProvider;
+  apiKey: string;
+  /** Optional model override. Defaults are resolved in the feature layer. */
+  model?: string;
+  /** Optional base URL for future OpenAI-compatible endpoints. */
+  baseUrl?: string;
+}
+
+/**
  * The structured payload stored in meta.payload (encrypted).
- * Contains the verification token and user settings.
+ * Contains the verification token, user settings, and optional AI config.
  */
 export interface MetaPayload {
   verificationToken: string;
   settings: AppSettings;
+  /** Absent when the user has not configured AI. */
+  aiConfig?: AIProviderConfig;
 }
 
 /**
@@ -47,12 +69,16 @@ export function sanitizeSettings(settings: AppSettings): AppSettings {
 /**
  * Encode a MetaPayload to UTF-8 bytes for encryption.
  * Settings are sanitized (clamped) before encoding.
+ * aiConfig is included only when present; absence means "not configured".
  */
 export function encodeMetaPayload(payload: MetaPayload): Uint8Array {
   const sanitized: MetaPayload = {
     verificationToken: payload.verificationToken,
     settings: sanitizeSettings(payload.settings),
   };
+  if (payload.aiConfig) {
+    sanitized.aiConfig = payload.aiConfig;
+  }
   return new TextEncoder().encode(JSON.stringify(sanitized));
 }
 
@@ -85,6 +111,8 @@ export function decodeMetaPayload(bytes: Uint8Array): MetaPayload {
         ? parsed['verificationToken']
         : VERIFICATION_TOKEN;
 
+    const aiConfig = parseAIConfig(parsed['aiConfig']);
+
     const rawSettings = parsed['settings'];
     if (
       typeof rawSettings === 'object' &&
@@ -93,10 +121,13 @@ export function decodeMetaPayload(bytes: Uint8Array): MetaPayload {
     ) {
       const rawMinutes = (rawSettings as Record<string, unknown>)['autoLockMinutes'];
       if (typeof rawMinutes === 'number' && isValidAutoLockMinutes(rawMinutes)) {
-        return {
-          verificationToken: token,
-          settings: { autoLockMinutes: rawMinutes },
-        };
+        return withAIConfig(
+          {
+            verificationToken: token,
+            settings: { autoLockMinutes: rawMinutes },
+          },
+          aiConfig,
+        );
       }
       // Out-of-range value: fall back to default, warn
       console.warn(
@@ -104,10 +135,13 @@ export function decodeMetaPayload(bytes: Uint8Array): MetaPayload {
       );
     }
 
-    return {
-      verificationToken: token,
-      settings: { ...DEFAULT_SETTINGS },
-    };
+    return withAIConfig(
+      {
+        verificationToken: token,
+        settings: { ...DEFAULT_SETTINGS },
+      },
+      aiConfig,
+    );
   } catch {
     console.warn('Failed to parse meta payload, using defaults.');
     return {
@@ -115,6 +149,28 @@ export function decodeMetaPayload(bytes: Uint8Array): MetaPayload {
       settings: { ...DEFAULT_SETTINGS },
     };
   }
+}
+
+function withAIConfig(base: MetaPayload, aiConfig: AIProviderConfig | undefined): MetaPayload {
+  return aiConfig ? { ...base, aiConfig } : base;
+}
+
+function parseAIConfig(raw: unknown): AIProviderConfig | undefined {
+  if (typeof raw !== 'object' || raw === null) return undefined;
+  const obj = raw as Record<string, unknown>;
+  const provider = obj['provider'];
+  const apiKey = obj['apiKey'];
+  if (provider !== 'anthropic' || typeof apiKey !== 'string' || apiKey.length === 0) {
+    return undefined;
+  }
+  const config: AIProviderConfig = { provider, apiKey };
+  if (typeof obj['model'] === 'string' && obj['model'].length > 0) {
+    config.model = obj['model'];
+  }
+  if (typeof obj['baseUrl'] === 'string' && obj['baseUrl'].length > 0) {
+    config.baseUrl = obj['baseUrl'];
+  }
+  return config;
 }
 
 function isValidAutoLockMinutes(value: number): boolean {

@@ -135,8 +135,8 @@ Cross-cutting infrastructure maintenance that is not tied to a product phase.
 
 Goal: AI as primary input method for profile creation and updates. User provides fragments, AI structures them into the profile format.
 
-- [ ] **AI-01** Settings: API key input (OpenAI / Anthropic), encrypted in storage, provider selection
-- [ ] **AI-02** Disclaimer on first activation: not medical advice, data leaves device to AI provider, user controls key
+- [x] **AI-01** Settings: API key input (Anthropic), encrypted in storage, provider selection (OpenAI follow-up)
+- [x] **AI-02** Disclaimer on first activation: not medical advice, data leaves device to AI provider, user controls key
 - [ ] **AI-03** System prompt implementing the prompt contract: structure only, no diagnosis, mark uncertainties, use observation model (fact/pattern/self-regulation)
 - [ ] **AI-04** Extended system prompt for proxy profiles: mark caregiver-perspective, distinguish observed vs. reported
 - [ ] **AI-05** Chat UI: ephemeral messages (not persisted), clear "AI assistant" labeling
@@ -145,7 +145,7 @@ Goal: AI as primary input method for profile creation and updates. User provides
 - [ ] **AI-08** Review and commit flow: user reviews AI output, edits if needed, commits to profile with version entry
 - [ ] **AI-09** Paste-in mode: user pastes markdown from external AI session, Phylax parses and imports into profile sections
 - [ ] **AI-10** Network call only when chat is actively used, no background calls
-- [ ] **AI-11** One-click disable: removes API key, disables AI features, manual mode only
+- [x] **AI-11** One-click disable: removes API key, disables AI features, manual mode only
 
 ---
 
