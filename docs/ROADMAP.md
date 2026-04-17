@@ -137,8 +137,8 @@ Goal: AI as primary input method for profile creation and updates. User provides
 
 - [x] **AI-01** Settings: API key input (Anthropic), encrypted in storage, provider selection (OpenAI follow-up)
 - [x] **AI-02** Disclaimer on first activation: not medical advice, data leaves device to AI provider, user controls key
-- [ ] **AI-03** System prompt implementing the prompt contract: structure only, no diagnosis, mark uncertainties, use observation model (fact/pattern/self-regulation)
-- [ ] **AI-04** Extended system prompt for proxy profiles: mark caregiver-perspective, distinguish observed vs. reported
+- [x] **AI-03** System prompt implementing the prompt contract: structure only, no diagnosis, mark uncertainties, use observation model (fact/pattern/self-regulation)
+- [x] **AI-04** Extended system prompt for proxy profiles: mark caregiver-perspective, distinguish observed vs. reported
 - [ ] **AI-05** Chat UI: ephemeral messages (not persisted), clear "AI assistant" labeling
 - [ ] **AI-06** Guided profile session flow: AI walks user through profile sections (base data, observations, lab values, supplements, open points)
 - [ ] **AI-07** Structured output: AI produces markdown profile fragment at end of session
