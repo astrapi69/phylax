@@ -11,6 +11,7 @@ import { ObservationsView } from '../features/observations';
 import { LabValuesView } from '../features/lab-values';
 import { SupplementsView } from '../features/supplements';
 import { OpenPointsView } from '../features/open-points';
+import { TimelineView } from '../features/timeline';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
@@ -77,6 +78,7 @@ export function AppRoutes() {
         <Route path="/lab-values" element={<LabValuesView />} />
         <Route path="/supplements" element={<SupplementsView />} />
         <Route path="/open-points" element={<OpenPointsView />} />
+        <Route path="/timeline" element={<TimelineView />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
         <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsScreen />} />

@@ -305,6 +305,21 @@ matrixTests(
   },
 );
 
+matrixTests('Smoke: timeline empty', 'timeline-empty', async (page, { theme, sysPref }) => {
+  await setupAuthenticatedState(page, theme, sysPref);
+  await page.getByRole('link', { name: 'Verlauf' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeVisible();
+  await expect(page.getByText(/Noch keine Verlaufseintraege/)).toBeVisible();
+});
+
+matrixTests('Smoke: timeline populated', 'timeline-populated', async (page, { theme, sysPref }) => {
+  await setupAuthenticatedState(page, theme, sysPref);
+  await importFixture(page);
+  await page.getByRole('link', { name: 'Verlauf' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+});
+
 matrixTests('Smoke: documents placeholder', 'documents', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Dokumente' }).click();

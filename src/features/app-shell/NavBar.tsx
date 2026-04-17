@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/lab-values', label: 'Laborwerte' },
   { to: '/supplements', label: 'Supplemente' },
   { to: '/open-points', label: 'Offene Punkte' },
+  { to: '/timeline', label: 'Verlauf' },
   { to: '/documents', label: 'Dokumente' },
   { to: '/import', label: 'Import' },
   { to: '/settings', label: 'Einstellungen' },

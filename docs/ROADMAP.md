@@ -97,7 +97,7 @@ Goal: render imported profile data as readable screens. All read-only in this ph
 - [x] **V-03** Lab values view: reports with values table, per-category assessments, reference ranges (commit pending)
 - [x] **V-04** Supplements view: list grouped by category (daily / regular / paused / on-demand) with rationale (commit pending)
 - [x] **V-05** Open points checklist view: grouped by context, priority and time-horizon badges (commit pending)
-- [ ] **V-06** Timeline / Verlaufsnotizen view: chronological list of entries with Markdown bodies
+- [x] **V-06** Timeline / Verlaufsnotizen view: chronological list of entries with Markdown bodies (commit pending)
 
 ---
 
