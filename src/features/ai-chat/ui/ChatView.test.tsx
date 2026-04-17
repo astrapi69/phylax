@@ -159,4 +159,25 @@ describe('ChatView', () => {
     render(<ChatView />);
     expect(screen.getByRole('button', { name: 'Profil teilen' })).toBeDisabled();
   });
+
+  it('clicking "In Profil uebernehmen" on an assistant message opens the preview modal', async () => {
+    mockUseChat({
+      messages: [
+        {
+          id: 'a1',
+          role: 'assistant',
+          content: '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
+          timestamp: 0,
+        },
+      ],
+    });
+    const user = userEvent.setup();
+    render(<ChatView />);
+
+    await user.click(screen.getByTestId('commit-preview-button'));
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'commit-preview-title');
+
+    await user.click(screen.getByRole('button', { name: 'Schliessen' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 });

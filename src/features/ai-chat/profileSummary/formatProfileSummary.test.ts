@@ -347,6 +347,21 @@ describe('formatProfileShareSummary', () => {
     });
   });
 
+  it('skips observations whose four core fields are all empty', () => {
+    const empty = makeObservation('Ausgangslage', {
+      status: '',
+      fact: '',
+      pattern: '',
+      selfRegulation: '',
+    });
+    const populated = makeObservation('Schulter', { fact: 'Schmerzen links' });
+    const { markdown } = formatProfileShareSummary(
+      baseInputs({ observations: [empty, populated] }),
+    );
+    expect(markdown).not.toContain('### Ausgangslage');
+    expect(markdown).toContain('### Schulter');
+  });
+
   it('for proxy profiles, includes a "Gefuehrt von" line', () => {
     const proxy = makeProfile({
       baseData: {

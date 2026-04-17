@@ -4,6 +4,7 @@ import {
   STRUCTURE_CONTRACT,
   BOUNDARIES,
   UNCERTAINTY_MARKING,
+  PROFILE_OUTPUT_FORMAT,
   proxyExtensionFragment,
 } from './promptFragments';
 import { extractProfileSummary, formatProfileSummary } from './profileContext';
@@ -38,7 +39,13 @@ export interface SystemPromptOptions {
 export function generateSystemPrompt(options: SystemPromptOptions): string {
   const { profile, observations = [], includeProfileSummary = true } = options;
 
-  const sections: string[] = [ROLE_DEFINITION, STRUCTURE_CONTRACT, BOUNDARIES, UNCERTAINTY_MARKING];
+  const sections: string[] = [
+    ROLE_DEFINITION,
+    STRUCTURE_CONTRACT,
+    BOUNDARIES,
+    UNCERTAINTY_MARKING,
+    PROFILE_OUTPUT_FORMAT,
+  ];
 
   if (includeProfileSummary) {
     const summary = extractProfileSummary(profile, observations);

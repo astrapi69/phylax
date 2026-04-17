@@ -142,7 +142,7 @@ Goal: AI as primary input method for profile creation and updates. User provides
 - [x] **AI-04** Extended system prompt for proxy profiles: mark caregiver-perspective, distinguish observed vs. reported
 - [x] **AI-05** Chat UI: ephemeral messages (not persisted), clear "AI assistant" labeling
 - [ ] **AI-06** Guided profile session flow: AI walks user through profile sections (base data, observations, lab values, supplements, open points)
-- [ ] **AI-07** Structured output: AI produces markdown profile fragment at end of session
+- [x] **AI-07** Structured output: AI produces markdown profile fragment at end of session (detection + preview modal; commit lands in AI-08)
 - [ ] **AI-08** Review and commit flow: user reviews AI output, edits if needed, commits to profile with version entry
 - [ ] **AI-09** Paste-in mode: user pastes markdown from external AI session, Phylax parses and imports into profile sections
 - [x] **AI-10** Network call only when chat is actively used, no background calls

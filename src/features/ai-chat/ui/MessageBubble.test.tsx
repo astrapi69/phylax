@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MessageBubble } from './MessageBubble';
@@ -33,8 +33,9 @@ describe('MessageBubble', () => {
   it('renders an assistant message with the "KI" label and left alignment', () => {
     render(<MessageBubble message={assistantMsg('Strukturierte Antwort.')} />);
     const bubble = screen.getByTestId('message-bubble-assistant');
-    expect(bubble.parentElement).toHaveClass('justify-start');
-    // The KI label is present and exposes the full name via aria-label
+    // The assistant bubble's wrapper is a left-aligned column so the
+    // "In Profil uebernehmen" action can sit directly under the bubble.
+    expect(bubble.parentElement).toHaveClass('items-start');
     const label = screen.getByLabelText('KI-Assistent');
     expect(label).toHaveTextContent('KI');
     expect(bubble).toHaveTextContent('Strukturierte Antwort.');
@@ -117,6 +118,52 @@ describe('MessageBubble', () => {
       'aria-expanded',
       'true',
     );
+  });
+
+  it('shows "In Profil uebernehmen" on an assistant message when a fragment is detected', async () => {
+    const onCommitPreview = vi.fn();
+    const user = userEvent.setup();
+    const msg: ChatMessage = assistantMsg(
+      '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
+    );
+    render(<MessageBubble message={msg} onCommitPreview={onCommitPreview} />);
+
+    const btn = screen.getByTestId('commit-preview-button');
+    expect(btn).toHaveTextContent('In Profil uebernehmen');
+
+    await user.click(btn);
+    expect(onCommitPreview).toHaveBeenCalledOnce();
+    const fragment = onCommitPreview.mock.calls[0]?.[0];
+    expect(fragment.hasObservations).toBe(true);
+  });
+
+  it('hides "In Profil uebernehmen" when the assistant message has no fragment', () => {
+    const msg = assistantMsg('Das war eine reine Rueckfrage - kein Block hier.');
+    render(<MessageBubble message={msg} onCommitPreview={vi.fn()} />);
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
+  });
+
+  it('hides "In Profil uebernehmen" while the assistant message is streaming', () => {
+    const msg = assistantMsg(
+      '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
+      true,
+    );
+    render(<MessageBubble message={msg} onCommitPreview={vi.fn()} />);
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
+  });
+
+  it('does not render the button for user, system, or context messages', () => {
+    const obsFragment = '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz';
+    const { rerender } = render(
+      <MessageBubble message={userMsg(obsFragment)} onCommitPreview={vi.fn()} />,
+    );
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
+
+    rerender(<MessageBubble message={systemMsg(obsFragment)} onCommitPreview={vi.fn()} />);
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
+
+    rerender(<MessageBubble message={contextMsg(obsFragment)} onCommitPreview={vi.fn()} />);
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
   });
 
   it('context card falls back to "keine Inhalte" when every count is zero', () => {

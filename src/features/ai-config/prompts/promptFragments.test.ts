@@ -4,6 +4,7 @@ import {
   STRUCTURE_CONTRACT,
   BOUNDARIES,
   UNCERTAINTY_MARKING,
+  PROFILE_OUTPUT_FORMAT,
   proxyExtensionFragment,
 } from './promptFragments';
 
@@ -69,6 +70,39 @@ describe('promptFragments', () => {
 
     it('instructs the model not to fabricate', () => {
       expect(UNCERTAINTY_MARKING).toMatch(/Erfinde keine Informationen/);
+    });
+  });
+
+  describe('PROFILE_OUTPUT_FORMAT', () => {
+    it('names the three supported block types', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toContain('### [Thema]');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('## Supplemente');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('## Offene Punkte');
+    });
+
+    it('excludes Laborwerte from chat-structured output', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/Laborwerte werden nicht im Chat strukturiert/);
+    });
+
+    it('documents the supplement table categories', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toContain('taeglich');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('regelmaessig');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('bei Bedarf');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('pausiert');
+    });
+
+    it('forbids the outer "# Profil:" wrapper', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/Kein "# Profil: \.\.\." am Anfang/);
+    });
+
+    it('tells the model to skip the format for questions or pure explanations', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/nur eine Frage stellt/);
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/keinen Block erzeugen/);
+    });
+
+    it('provides contrasting positive and negative examples', () => {
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/Beispiel OHNE Format/);
+      expect(PROFILE_OUTPUT_FORMAT).toMatch(/Beispiel MIT Format/);
     });
   });
 

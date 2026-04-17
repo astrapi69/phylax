@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useChat } from '../useChat';
+import type { DetectedFragment } from '../detection';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
+import { CommitPreviewModal } from './CommitPreviewModal';
 
 /**
  * Full-page chat interface for the AI assistant. Messages are ephemeral:
@@ -23,6 +25,7 @@ export function ChatView() {
   } = useChat();
   const logRef = useRef<HTMLDivElement>(null);
   const [focusKey, setFocusKey] = useState(0);
+  const [previewFragment, setPreviewFragment] = useState<DetectedFragment | null>(null);
   const prevStreamingRef = useRef(isStreaming);
 
   // Auto-scroll to the bottom as new content arrives.
@@ -80,7 +83,7 @@ export function ChatView() {
       >
         {messages.length === 0 ? <WelcomeMessage /> : null}
         {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
+          <MessageBubble key={m.id} message={m} onCommitPreview={setPreviewFragment} />
         ))}
       </div>
 
@@ -97,6 +100,10 @@ export function ChatView() {
       )}
 
       <ChatInput onSend={handleSend} disabled={isStreaming} resetFocusKey={focusKey} />
+
+      {previewFragment && (
+        <CommitPreviewModal fragment={previewFragment} onClose={() => setPreviewFragment(null)} />
+      )}
     </div>
   );
 }

@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ChatMessage } from '../useChat';
 import type { ProfileShareCounts } from '../profileSummary';
+import { detectProfileFragment, type DetectedFragment } from '../detection';
 import { MarkdownContent } from '../../profile-view/MarkdownContent';
 import { StreamingIndicator } from './StreamingIndicator';
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  /**
+   * Called when the user clicks "In Profil uebernehmen" on an assistant
+   * message whose body contains a parser-compatible profile fragment.
+   * Parent (ChatView) owns the modal state so only one preview is open
+   * at a time.
+   */
+  onCommitPreview?: (fragment: DetectedFragment) => void;
 }
 
 /**
@@ -23,7 +31,14 @@ interface MessageBubbleProps {
  * While an assistant message is streaming, the indicator is appended inside
  * the bubble and the content may be empty on first paint.
  */
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onCommitPreview }: MessageBubbleProps) {
+  // Detect a commit-ready fragment only for completed assistant messages.
+  // Cheap regex scan; useMemo keeps it stable across renders.
+  const fragment = useMemo<DetectedFragment | null>(() => {
+    if (message.role !== 'assistant' || message.streaming) return null;
+    return detectProfileFragment(message.content);
+  }, [message.role, message.streaming, message.content]);
+
   if (message.role === 'system') {
     return (
       <div
@@ -54,7 +69,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   // assistant
   return (
-    <div className="flex justify-start">
+    <div className="flex flex-col items-start">
       <div
         data-testid="message-bubble-assistant"
         className="my-1 max-w-[85%] rounded-2xl rounded-bl-sm bg-gray-100 px-4 py-2 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
@@ -72,6 +87,16 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           </span>
         )}
       </div>
+      {fragment && onCommitPreview && (
+        <button
+          type="button"
+          onClick={() => onCommitPreview(fragment)}
+          data-testid="commit-preview-button"
+          className="mb-2 ml-2 text-xs font-medium text-blue-700 underline-offset-2 hover:underline dark:text-blue-300"
+        >
+          In Profil uebernehmen
+        </button>
+      )}
     </div>
   );
 }

@@ -115,6 +115,16 @@ describe('generateSystemPrompt', () => {
     });
   });
 
+  describe('output format', () => {
+    it('includes the Phylax profile-output format contract in every prompt', () => {
+      const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
+      expect(prompt).toMatch(/Format fuer Profil-Aenderungen/);
+      expect(prompt).toContain('### [Thema]');
+      expect(prompt).toContain('## Supplemente');
+      expect(prompt).toContain('## Offene Punkte');
+    });
+  });
+
   describe('uncertainty marking', () => {
     it('instructs the model to flag uncertainty and not fabricate', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });

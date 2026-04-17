@@ -157,11 +157,14 @@ function appendBaseData(lines: string[], profile: Profile): void {
 }
 
 function appendObservations(lines: string[], observations: Observation[]): void {
-  if (observations.length === 0) return;
+  // Skip observations whose four core fields are all empty - the theme
+  // name alone is no signal and a bare `### Theme` header would be noise.
+  const nonEmpty = observations.filter(hasObservationContent);
+  if (nonEmpty.length === 0) return;
 
   const collator = new Intl.Collator('de');
   const byTheme = new Map<string, Observation[]>();
-  for (const obs of observations) {
+  for (const obs of nonEmpty) {
     const list = byTheme.get(obs.theme);
     if (list) list.push(obs);
     else byTheme.set(obs.theme, [obs]);
@@ -186,6 +189,15 @@ function appendObservations(lines: string[], observations: Observation[]): void 
       }
     }
   }
+}
+
+function hasObservationContent(obs: Observation): boolean {
+  return (
+    obs.status.trim().length > 0 ||
+    obs.fact.trim().length > 0 ||
+    obs.pattern.trim().length > 0 ||
+    obs.selfRegulation.trim().length > 0
+  );
 }
 
 function appendLabValues(
