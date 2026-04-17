@@ -1,29 +1,59 @@
 import { useCallback, useRef, useState } from 'react';
 import { generateId } from '../../crypto';
 import { DEFAULT_ANTHROPIC_MODEL } from '../../db/aiConfig';
-import { ObservationRepository, ProfileRepository } from '../../db/repositories';
+import {
+  LabReportRepository,
+  LabValueRepository,
+  ObservationRepository,
+  OpenPointRepository,
+  ProfileRepository,
+  SupplementRepository,
+} from '../../db/repositories';
 import { useAIConfig, generateSystemPrompt } from '../ai-config';
 import { streamCompletion } from './api';
 import type { AnthropicMessage, ChatError } from './api/types';
+import { formatProfileShareSummary, type ProfileShareCounts } from './profileSummary';
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant' | 'system' | 'context';
   content: string;
   timestamp: number;
   /** True while the assistant message is being streamed. */
   streaming?: boolean;
   /** Set on system messages that surface a structured error. */
   errorKind?: ChatError['kind'];
+  /**
+   * Counts for a `context` message so the UI can render a collapsed card
+   * (observation / lab / supplement / open-point / warning-sign totals)
+   * without parsing the Markdown body.
+   */
+  contextCounts?: ProfileShareCounts;
 }
 
 export interface UseChatResult {
   messages: ChatMessage[];
   isStreaming: boolean;
+  isSharingProfile: boolean;
   sendMessage: (content: string) => Promise<void>;
   cancelStream: () => void;
   clearChat: () => void;
+  /**
+   * Load the current profile plus its child entities, format a compact
+   * Markdown summary, and append it to the chat as a `context` message.
+   * Does NOT trigger an API call; the AI sees the summary on the next
+   * sendMessage (which matches AI-10: no background network calls).
+   */
+  shareProfile: () => Promise<void>;
 }
+
+/**
+ * Framing line prepended to every projected context message when it is
+ * sent to the API. Tells the model "this is context, not a question" so
+ * it does not treat a 3000-token profile dump as a list of user queries.
+ */
+const CONTEXT_FRAMING =
+  '[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext fuer die folgende Konversation verwenden]';
 
 /**
  * Chat state machine for the Anthropic-backed AI assistant.
@@ -42,6 +72,7 @@ export interface UseChatResult {
 export function useChat(): UseChatResult {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isSharingProfile, setIsSharingProfile] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const systemPromptRef = useRef<string | null>(null);
   const { state: configState } = useAIConfig();
@@ -169,7 +200,64 @@ export function useChat(): UseChatResult {
     systemPromptRef.current = null;
   }, []);
 
-  return { messages, isStreaming, sendMessage, cancelStream, clearChat };
+  const shareProfile = useCallback(async () => {
+    if (isSharingProfile || isStreaming) return;
+    setIsSharingProfile(true);
+    try {
+      const profile = await new ProfileRepository().getCurrentProfile();
+      if (!profile) {
+        setMessages((prev) => [...prev, makeSystemMessage('Kein Profil gefunden.')]);
+        return;
+      }
+      const profileId = profile.id;
+      const labValueRepo = new LabValueRepository();
+      const [observations, reports, supplements, openPoints] = await Promise.all([
+        new ObservationRepository().listByProfile(profileId),
+        new LabReportRepository(labValueRepo).listByProfileDateDescending(profileId),
+        new SupplementRepository().listByProfile(profileId),
+        new OpenPointRepository().listUnresolved(profileId),
+      ]);
+      const latestReport = reports[0] ?? null;
+      const latestReportValues = latestReport
+        ? await labValueRepo.listByReport(latestReport.id)
+        : [];
+
+      const { markdown, counts } = formatProfileShareSummary({
+        profile,
+        observations,
+        latestReport,
+        latestReportValues,
+        supplements,
+        unresolvedOpenPoints: openPoints,
+      });
+
+      const contextMsg: ChatMessage = {
+        id: generateId(),
+        role: 'context',
+        content: markdown,
+        timestamp: Date.now(),
+        contextCounts: counts,
+      };
+      setMessages((prev) => [...prev, contextMsg]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        makeSystemMessage('App ist gesperrt. Bitte entsperre sie erneut.'),
+      ]);
+    } finally {
+      setIsSharingProfile(false);
+    }
+  }, [isSharingProfile, isStreaming]);
+
+  return {
+    messages,
+    isStreaming,
+    isSharingProfile,
+    sendMessage,
+    cancelStream,
+    clearChat,
+    shareProfile,
+  };
 }
 
 function makeMessage(
@@ -197,23 +285,36 @@ function makeSystemMessage(content: string): ChatMessage {
 
 /**
  * Project the chat transcript into the shape Anthropic's API expects.
- * System messages (local-only errors/warnings) and the currently streaming
- * assistant placeholder are stripped. Consecutive same-role messages are
- * merged because Anthropic rejects repeated roles in a single request.
+ *
+ * - System messages (local-only errors/warnings) are stripped.
+ * - The currently streaming assistant placeholder is stripped.
+ * - Context messages (shared profile summaries) are projected to the user
+ *   role with the CONTEXT_FRAMING prefix so the model understands it is
+ *   receiving context, not a question.
+ * - Consecutive same-role messages are merged because Anthropic rejects
+ *   repeated roles in a single request; this merge naturally combines a
+ *   context message with the next user message.
  */
 function toApiMessages(chatMessages: ChatMessage[]): AnthropicMessage[] {
-  const filtered = chatMessages
-    .filter((m) => m.role === 'user' || m.role === 'assistant')
-    .filter((m) => !m.streaming)
-    .filter((m) => m.content.length > 0);
+  const projected: AnthropicMessage[] = [];
+  for (const m of chatMessages) {
+    if (m.streaming) continue;
+    if (m.content.length === 0) continue;
+    if (m.role === 'system') continue;
+    if (m.role === 'context') {
+      projected.push({ role: 'user', content: `${CONTEXT_FRAMING}\n\n${m.content}` });
+    } else {
+      projected.push({ role: m.role, content: m.content });
+    }
+  }
 
   const merged: AnthropicMessage[] = [];
-  for (const m of filtered) {
+  for (const m of projected) {
     const last = merged[merged.length - 1];
     if (last && last.role === m.role) {
       last.content = `${last.content}\n\n${m.content}`;
     } else {
-      merged.push({ role: m.role as 'user' | 'assistant', content: m.content });
+      merged.push(m);
     }
   }
   return merged;

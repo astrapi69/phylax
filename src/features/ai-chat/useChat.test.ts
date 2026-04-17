@@ -297,6 +297,80 @@ describe('useChat', () => {
     expect(lastStreamCall?.apiKey).toBe('sk-ant-configured-key-test-1234');
     expect(lastStreamCall?.model).toBe('claude-sonnet-4-20250514');
   });
+
+  it('shareProfile appends a context message with counts and does NOT call the API', async () => {
+    const streamSpy = vi.spyOn(anthropicClient, 'streamCompletion');
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    await act(async () => {
+      await result.current.shareProfile();
+    });
+
+    expect(streamSpy).not.toHaveBeenCalled();
+    expect(result.current.messages).toHaveLength(1);
+    const ctx = result.current.messages[0];
+    expect(ctx?.role).toBe('context');
+    expect(ctx?.content).toMatch(/^# Profil: Max/);
+    expect(ctx?.contextCounts).toEqual({
+      observationCount: 0,
+      abnormalLabCount: 0,
+      supplementCount: 0,
+      openPointCount: 0,
+      warningSignCount: 0,
+    });
+    expect(result.current.isSharingProfile).toBe(false);
+  });
+
+  it('shareProfile without a profile appends a "Kein Profil gefunden" system message', async () => {
+    const { db } = await import('../../db/schema');
+    await db.profiles.clear();
+
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    await act(async () => {
+      await result.current.shareProfile();
+    });
+
+    const sys = result.current.messages.find((m) => m.role === 'system');
+    expect(sys?.content).toMatch(/Kein Profil/i);
+    expect(result.current.isSharingProfile).toBe(false);
+  });
+
+  it('shareProfile when locked appends the lock system message', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+    lock();
+
+    await act(async () => {
+      await result.current.shareProfile();
+    });
+
+    const sys = result.current.messages.find((m) => m.role === 'system');
+    expect(sys?.content).toMatch(/gesperrt/i);
+    expect(result.current.isSharingProfile).toBe(false);
+  });
+
+  it('after shareProfile, the next sendMessage sends framed context + user merged into a single user message', async () => {
+    mockStreamSuccess(['ok']);
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    await act(async () => {
+      await result.current.shareProfile();
+    });
+    await act(async () => {
+      await result.current.sendMessage('Hallo');
+    });
+
+    const apiMessages = lastStreamCall?.messages ?? [];
+    expect(apiMessages).toHaveLength(1);
+    expect(apiMessages[0]?.role).toBe('user');
+    expect(apiMessages[0]?.content).toMatch(/bitte als Kontext/);
+    expect(apiMessages[0]?.content).toMatch(/# Profil: Max/);
+    expect(apiMessages[0]?.content).toMatch(/Hallo$/);
+  });
 });
 
 describe('errorMessageFor', () => {

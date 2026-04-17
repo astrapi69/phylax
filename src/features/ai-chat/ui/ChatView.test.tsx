@@ -9,9 +9,11 @@ function mockUseChat(overrides: Partial<UseChatResult> = {}): UseChatResult {
   const base: UseChatResult = {
     messages: [],
     isStreaming: false,
+    isSharingProfile: false,
     sendMessage: vi.fn().mockResolvedValue(undefined),
     cancelStream: vi.fn(),
     clearChat: vi.fn(),
+    shareProfile: vi.fn().mockResolvedValue(undefined),
   };
   const mocked = { ...base, ...overrides };
   vi.spyOn(useChatModule, 'useChat').mockReturnValue(mocked);
@@ -132,5 +134,29 @@ describe('ChatView', () => {
     expect(screen.getByTestId('message-bubble-system')).toHaveTextContent(
       /API-Schluessel ungueltig/,
     );
+  });
+
+  it('"Profil teilen" button is visible on the empty state and calls shareProfile', async () => {
+    const mocked = mockUseChat();
+    const user = userEvent.setup();
+    render(<ChatView />);
+    await user.click(screen.getByRole('button', { name: 'Profil teilen' }));
+    expect(mocked.shareProfile).toHaveBeenCalledOnce();
+  });
+
+  it('"Profil teilen" label swaps to "Lade Profil..." and the button is disabled while sharing', () => {
+    mockUseChat({ isSharingProfile: true });
+    render(<ChatView />);
+    const btn = screen.getByRole('button', { name: 'Lade Profil...' });
+    expect(btn).toBeDisabled();
+  });
+
+  it('"Profil teilen" is disabled during streaming', () => {
+    mockUseChat({
+      isStreaming: true,
+      messages: [{ id: 'a1', role: 'assistant', content: '', timestamp: 0, streaming: true }],
+    });
+    render(<ChatView />);
+    expect(screen.getByRole('button', { name: 'Profil teilen' })).toBeDisabled();
   });
 });

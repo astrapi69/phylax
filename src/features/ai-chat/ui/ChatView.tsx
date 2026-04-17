@@ -12,7 +12,15 @@ import { ChatInput } from './ChatInput';
  * announce new content without interrupting what the user is doing.
  */
 export function ChatView() {
-  const { messages, isStreaming, sendMessage, cancelStream, clearChat } = useChat();
+  const {
+    messages,
+    isStreaming,
+    isSharingProfile,
+    sendMessage,
+    cancelStream,
+    clearChat,
+    shareProfile,
+  } = useChat();
   const logRef = useRef<HTMLDivElement>(null);
   const [focusKey, setFocusKey] = useState(0);
   const prevStreamingRef = useRef(isStreaming);
@@ -38,17 +46,28 @@ export function ChatView() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col md:h-[calc(100vh-4rem)]">
-      <header className="flex items-center justify-between border-b border-gray-200 pb-3 dark:border-gray-700">
+      <header className="flex items-center justify-between gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">KI-Assistent</h1>
-        {messages.length > 0 && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={clearChat}
-            className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            onClick={() => void shareProfile()}
+            disabled={isStreaming || isSharingProfile}
+            className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Leeren
+            {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
           </button>
-        )}
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={clearChat}
+              disabled={isStreaming || isSharingProfile}
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            >
+              Leeren
+            </button>
+          )}
+        </div>
       </header>
 
       <div
