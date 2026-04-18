@@ -130,7 +130,7 @@ Cross-cutting infrastructure maintenance that is not tied to a product phase.
 - [x] **I-01** Node 20 LTS requirement (drop Node 18, add `.nvmrc`, `engines` field, update CI matrix to 20 + 22) (commit pending)
 - [x] **I-02** Rules update: test strategy, task series conventions, mutation thresholds in quality-checks (commit pending)
 - [x] **I-03** Move coverage checks to CI-only (drop `test-coverage` from `ci-local-full`; CI runs it, local devs skip the instrumentation overhead)
-- [x] **I-04** Privacy disclosure precision: AI-02 disclaimer names 30-day Anthropic retention, BYOK ownership, no-training guarantee; PrivacyInfoPopover in chat header + settings (commit pending)
+- [x] **I-04** Privacy disclosure precision: AI-02 disclaimer names 30-day Anthropic retention, BYOK ownership, no-training guarantee; PrivacyInfoPopover in chat header + settings (commit `e067bae`)
 
 ---
 
@@ -143,10 +143,10 @@ Goal: AI as primary input method for profile creation and updates. User provides
 - [x] **AI-03** System prompt implementing the prompt contract: structure only, no diagnosis, mark uncertainties, use observation model (fact/pattern/self-regulation)
 - [x] **AI-04** Extended system prompt for proxy profiles: mark caregiver-perspective, distinguish observed vs. reported
 - [x] **AI-05** Chat UI: ephemeral messages (not persisted), clear "AI assistant" labeling
-- [x] **AI-06** Guided profile session flow: AI walks user through profile sections (observations, supplements, open points; base data + lab values + Verlaufsnotizen explicitly out of scope) (commit pending)
+- [x] **AI-06** Guided profile session flow: AI walks user through profile sections (observations, supplements, open points; base data + lab values + Verlaufsnotizen explicitly out of scope) (commit `a825416`)
 - [x] **AI-07** Structured output: AI produces markdown profile fragment at end of session (detection + preview modal; commit lands in AI-08)
 - [x] **AI-08** Review and commit flow: user reviews AI output, edits if needed, commits to profile with version entry
-- [x] **AI-09** Parser fallback via AI: on parse failure (empty or low+warnings), offer "KI-Hilfe anfordern" that reformats user paste into Phylax markdown, re-parses, and routes back through the import flow (commit pending)
+- [x] **AI-09** Parser fallback via AI: on parse failure (empty or low+warnings), offer "KI-Hilfe anfordern" that reformats user paste into Phylax markdown, re-parses, and routes back through the import flow (commit `3fa3e26`)
 - [x] **AI-10** Network call only when chat is actively used, no background calls
 - [x] **AI-11** One-click disable: removes API key, disables AI features, manual mode only
 
@@ -250,8 +250,8 @@ This phase depends on Phase 2 (profile data must exist before plans can be deriv
 
 Repository-level release preparation. No deployment.
 
-- [x] **R-01** Finalize PWA icons (72 through 512, plus maskable-192) and manifest (lang/dir/categories, full icon set) (commit pending)
-- [ ] **R-02** README rewrite for external readers
+- [x] **R-01** Finalize PWA icons (72 through 512, plus maskable-192) and manifest (lang/dir/categories, full icon set) (commit `f0bc6a8`)
+- [x] **R-02** README rewrite for external readers: features, screenshots placeholders, privacy summary, AI opt-in, donation link, acknowledgments (commit `40d7b1c`; screenshots tracked in issues #6-#9)
 - [ ] **R-03** CHANGELOG.md with Keep-a-Changelog format
 - [ ] **R-04** GitHub repo metadata: description, topics, social preview
 - [ ] **R-05** v1.0.0 git tag and GitHub Release
@@ -270,7 +270,21 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 
 ## Next Steps
 
-The next task to work on is **O-01**. Confirm this before starting.
+Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
+complete. The v1.0.0 public release is in progress via the R-series.
+
+Current active task: **R-03** (CHANGELOG.md). Remaining release tasks:
+R-03 -> R-04 -> R-05.
+
+Open backlog (deferred; not part of v1.0.0):
+
+- **F-06b**: cross-browser Playwright (Firefox, WebKit)
+- **O-10 through O-20**: editing forms (observation, lab value,
+  supplement, open-point, base-data). Currently only read-only views exist.
+- **IM-04**: auto-create a "Imported from file" profile version entry on
+  successful import, land directly on the imported profile
+- **IM-05**: import conflict handling beyond replace-all (selective merge)
+- **Phase 4** (Documents) through **Phase 9** (Derived plans): all future
 
 When a phase is complete:
 
