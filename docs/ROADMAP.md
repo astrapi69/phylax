@@ -296,7 +296,7 @@ distinct.
       German loading, 15 empty namespace stubs, LanguageSwitcher (null
       render until multi-lang), contributing docs (commit `53070ea`)
 - [x] **I18N-01b** Extract donation strings: 16 keys across 4 components, proactive plural forms for the reminder banner's month count, test setup synchronously initializes i18n (commit `56132b6`)
-- [ ] **I18N-01c** Extract settings strings
+- [x] **I18N-01c** Extract settings strings: screen heading, theme radio group (Darstellung, Hell, Dunkel, System folgen), language-switcher label, settings-embedded export block (commit `19be817`)
 - [ ] **I18N-01d** Extract ai-config strings
 - [ ] **I18N-01e** Extract onboarding strings
 - [ ] **I18N-01f** Extract profile-view strings
