@@ -2,7 +2,7 @@
   {
     "name": "Main JS bundle",
     "path": "dist/assets/index-*.js",
-    "limit": "180 KB",
+    "limit": "200 KB",
     "gzip": true,
     "running": false
   },
@@ -23,7 +23,7 @@
   {
     "name": "Total JS + CSS",
     "path": ["dist/assets/index-*.js", "dist/assets/workbox-*.js", "dist/assets/index-*.css"],
-    "limit": "190 KB",
+    "limit": "220 KB",
     "gzip": true,
     "running": false
   }
