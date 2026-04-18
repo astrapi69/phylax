@@ -295,7 +295,7 @@ distinct.
       bundle-size reasons while German is the only language), synchronous
       German loading, 15 empty namespace stubs, LanguageSwitcher (null
       render until multi-lang), contributing docs (commit `53070ea`)
-- [ ] **I18N-01b** Extract donation strings (smallest, recently added)
+- [x] **I18N-01b** Extract donation strings: 16 keys across 4 components, proactive plural forms for the reminder banner's month count, test setup synchronously initializes i18n (commit `56132b6`)
 - [ ] **I18N-01c** Extract settings strings
 - [ ] **I18N-01d** Extract ai-config strings
 - [ ] **I18N-01e** Extract onboarding strings
