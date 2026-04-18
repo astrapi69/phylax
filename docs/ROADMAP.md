@@ -290,9 +290,11 @@ Deployment section. Commits and ROADMAP entries in this series carry
 the `[I18N-01x]` label in commit messages and task IDs to keep scope
 distinct.
 
-- [ ] **I18N-01a** Install and configure i18next infrastructure: deps,
-      synchronous German loading, 15 empty namespace stubs, LanguageSwitcher
-      (null render until multi-lang), contributing docs (commit pending)
+- [x] **I18N-01a** Install and configure i18next infrastructure: deps
+      (i18next + react-i18next; language-detector deferred to I18N-02 for
+      bundle-size reasons while German is the only language), synchronous
+      German loading, 15 empty namespace stubs, LanguageSwitcher (null
+      render until multi-lang), contributing docs (commit `53070ea`)
 - [ ] **I18N-01b** Extract donation strings (smallest, recently added)
 - [ ] **I18N-01c** Extract settings strings
 - [ ] **I18N-01d** Extract ai-config strings
