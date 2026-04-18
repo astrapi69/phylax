@@ -7,5 +7,7 @@ export {
   STRUCTURE_CONTRACT,
   BOUNDARIES,
   UNCERTAINTY_MARKING,
+  PROFILE_OUTPUT_FORMAT,
+  GUIDED_SESSION_FRAMING,
   proxyExtensionFragment,
 } from './promptFragments';

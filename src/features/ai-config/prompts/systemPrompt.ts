@@ -5,6 +5,7 @@ import {
   BOUNDARIES,
   UNCERTAINTY_MARKING,
   PROFILE_OUTPUT_FORMAT,
+  GUIDED_SESSION_FRAMING,
   proxyExtensionFragment,
 } from './promptFragments';
 import { extractProfileSummary, formatProfileSummary } from './profileContext';
@@ -24,6 +25,12 @@ export interface SystemPromptOptions {
    * duplicate observations and route new information to existing themes.
    */
   includeProfileSummary?: boolean;
+  /**
+   * Append the guided-session framing (AI-06). When true, the model is told
+   * to systematically walk the user through observations, supplements, and
+   * open points, and which sections are out of scope. Default: false.
+   */
+  guided?: boolean;
 }
 
 /**
@@ -37,7 +44,7 @@ export interface SystemPromptOptions {
  * parses the structure from the natural delimiters.
  */
 export function generateSystemPrompt(options: SystemPromptOptions): string {
-  const { profile, observations = [], includeProfileSummary = true } = options;
+  const { profile, observations = [], includeProfileSummary = true, guided = false } = options;
 
   const sections: string[] = [
     ROLE_DEFINITION,
@@ -46,6 +53,10 @@ export function generateSystemPrompt(options: SystemPromptOptions): string {
     UNCERTAINTY_MARKING,
     PROFILE_OUTPUT_FORMAT,
   ];
+
+  if (guided) {
+    sections.push(GUIDED_SESSION_FRAMING);
+  }
 
   if (includeProfileSummary) {
     const summary = extractProfileSummary(profile, observations);

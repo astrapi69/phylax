@@ -17,6 +17,10 @@ function mockUseChat(overrides: Partial<UseChatResult> = {}): UseChatResult {
     committedMessageIds: new Set<string>(),
     markMessageCommitted: vi.fn(),
     appendSystemMessage: vi.fn(),
+    guidedSession: { active: false, sectionsCompleted: [], startedAt: null },
+    startGuidedSession: vi.fn(),
+    endGuidedSession: vi.fn(),
+    markGuidedSessionCommit: vi.fn(),
   };
   const mocked = { ...base, ...overrides };
   vi.spyOn(useChatModule, 'useChat').mockReturnValue(mocked);
@@ -182,6 +186,52 @@ describe('ChatView', () => {
 
     await user.click(screen.getByRole('button', { name: 'Schliessen' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('"Gefuehrte Sitzung starten" button is visible when no guided session is active', () => {
+    mockUseChat();
+    render(<ChatView />);
+    expect(screen.getByRole('button', { name: 'Gefuehrte Sitzung starten' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sitzung beenden' })).not.toBeInTheDocument();
+  });
+
+  it('clicking "Gefuehrte Sitzung starten" calls startGuidedSession', async () => {
+    const mocked = mockUseChat();
+    const user = userEvent.setup();
+    render(<ChatView />);
+    await user.click(screen.getByRole('button', { name: 'Gefuehrte Sitzung starten' }));
+    expect(mocked.startGuidedSession).toHaveBeenCalledOnce();
+  });
+
+  it('header shows the guided label and the progress indicator when a session is active', () => {
+    mockUseChat({
+      guidedSession: {
+        active: true,
+        sectionsCompleted: ['observations'],
+        startedAt: 1,
+      },
+    });
+    render(<ChatView />);
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'KI-Assistent - Gefuehrte Sitzung' }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('guided-session-indicator')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sitzung beenden' })).toBeInTheDocument();
+  });
+
+  it('"Sitzung beenden" requires confirmation before calling endGuidedSession', async () => {
+    const mocked = mockUseChat({
+      guidedSession: { active: true, sectionsCompleted: [], startedAt: 1 },
+    });
+    const user = userEvent.setup();
+    render(<ChatView />);
+
+    await user.click(screen.getByRole('button', { name: 'Sitzung beenden' }));
+    expect(screen.getByTestId('guided-session-end-confirm')).toBeInTheDocument();
+    expect(mocked.endGuidedSession).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Ja, beenden' }));
+    expect(mocked.endGuidedSession).toHaveBeenCalledOnce();
   });
 
   it('committed assistant messages show the "In Profil uebernommen" badge instead of the button', () => {

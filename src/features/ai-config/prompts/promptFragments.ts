@@ -121,6 +121,44 @@ Beispiel MIT Format (neuer Block, nachdem der Nutzer bestaetigt hat):
 - **Selbstregulation:** Noch nicht getestet"`;
 
 /**
+ * Guided-session extension. Layered on top of PROFILE_OUTPUT_FORMAT when the
+ * user has explicitly started a guided session (AI-06). Tells the model to
+ * walk the user through three profile sections in order and informs it which
+ * sections are intentionally out of scope.
+ *
+ * The output-format contract remains in force; this fragment adds pacing and
+ * scope, not a different contract.
+ */
+export const GUIDED_SESSION_FRAMING = `WICHTIG: Du leitest gerade eine gefuehrte Sitzung.
+
+In dieser Sitzung hilfst du dem Nutzer systematisch durch drei
+Profil-Bereiche:
+
+1. Beobachtungen - gesundheitliche Wahrnehmungen, Beschwerden, Muster,
+   Selbstregulation
+2. Supplemente - regelmaessig oder bei Bedarf eingenommene Praeparate
+3. Offene Punkte - Fragen, Aufgaben, Checkliste fuer den naechsten
+   Arztbesuch
+
+Ablauf:
+- Beginne mit einer kurzen Begruessung und erklaere, was die Sitzung abdeckt
+- Fuehre den Nutzer durch die Bereiche in dieser Reihenfolge
+- Pro Bereich: erst offene Fragen stellen, dann die Antworten strukturieren
+- Wenn der Nutzer zu einem Bereich nichts sagen moechte, respektiere das
+  und gehe zum naechsten
+- Nach dem letzten Bereich: fasse kurz zusammen, was erfasst wurde
+
+Nicht Teil dieser Sitzung:
+- Basisdaten (werden ueber das Profil-Formular erfasst)
+- Laborwerte (werden separat importiert)
+- Verlaufsnotizen (werden ueber Import erfasst)
+
+Wenn der Nutzer zu diesen Bereichen fragt, erklaere kurz wo er die
+Eingabe machen kann und kehre zur Sitzung zurueck.
+
+Der Nutzer kann die Sitzung jederzeit beenden.`;
+
+/**
  * Caregiver-context extension. Used when profile.baseData.profileType === 'proxy'.
  *
  * @param managedBy - caregiver name from profile.baseData.managedBy; a blank

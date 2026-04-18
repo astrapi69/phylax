@@ -9,6 +9,8 @@ import { ProfileRepository } from '../../db/repositories';
 import * as anthropicClient from './api/anthropicClient';
 import type { AnthropicStreamOptions, ChatError } from './api/types';
 import { useChat, errorMessageFor } from './useChat';
+import type { ProfileDiff } from './commit';
+import { GUIDED_SESSION_OPENING_MESSAGE } from './guided';
 
 const TEST_PASSWORD = 'test-password-12';
 
@@ -427,6 +429,150 @@ describe('useChat', () => {
     expect(apiMessages[0]?.content).toMatch(/bitte als Kontext/);
     expect(apiMessages[0]?.content).toMatch(/# Profil: Max/);
     expect(apiMessages[0]?.content).toMatch(/Hallo$/);
+  });
+});
+
+function diffWith(
+  parts: Partial<{
+    observationsNew: number;
+    observationsChanged: number;
+    supplementsNew: number;
+    openPointsNew: number;
+  }>,
+): ProfileDiff {
+  return {
+    observations: {
+      new: Array.from({ length: parts.observationsNew ?? 0 }, () => ({}) as never),
+      changed: Array.from({ length: parts.observationsChanged ?? 0 }, () => ({}) as never),
+      unchanged: [],
+    },
+    supplements: {
+      new: Array.from({ length: parts.supplementsNew ?? 0 }, () => ({}) as never),
+      changed: [],
+      unchanged: [],
+    },
+    openPoints: {
+      new: Array.from({ length: parts.openPointsNew ?? 0 }, () => ({}) as never),
+    },
+    warnings: [],
+  };
+}
+
+describe('useChat guided session (AI-06)', () => {
+  it('initial guided session state is inactive with no completed sections', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+    expect(result.current.guidedSession).toEqual({
+      active: false,
+      sectionsCompleted: [],
+      startedAt: null,
+    });
+  });
+
+  it('startGuidedSession appends the hardcoded opening assistant message', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.startGuidedSession();
+    });
+
+    expect(result.current.guidedSession.active).toBe(true);
+    const last = result.current.messages[result.current.messages.length - 1];
+    expect(last?.role).toBe('assistant');
+    expect(last?.content).toBe(GUIDED_SESSION_OPENING_MESSAGE);
+  });
+
+  it('endGuidedSession deactivates and appends a system message', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.startGuidedSession();
+    });
+    act(() => {
+      result.current.endGuidedSession();
+    });
+
+    expect(result.current.guidedSession.active).toBe(false);
+    const sys = result.current.messages.find((m) => m.role === 'system');
+    expect(sys?.content).toMatch(/Gefuehrte Sitzung beendet/);
+  });
+
+  it('system prompt includes the guided framing when a session is active', async () => {
+    mockStreamSuccess(['ok']);
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.startGuidedSession();
+    });
+    await act(async () => {
+      await result.current.sendMessage('Ich habe Schulterschmerzen.');
+    });
+
+    expect(lastStreamCall?.system).toMatch(/gefuehrte Sitzung/i);
+    expect(lastStreamCall?.system).toMatch(/Offene Punkte - Fragen/);
+  });
+
+  it('system prompt excludes the guided framing when no session is active', async () => {
+    mockStreamSuccess(['ok']);
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    await act(async () => {
+      await result.current.sendMessage('Ich habe Schulterschmerzen.');
+    });
+
+    expect(lastStreamCall?.system).not.toMatch(/gefuehrte Sitzung/i);
+  });
+
+  it('markGuidedSessionCommit with a mixed diff marks all touched sections', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.startGuidedSession();
+    });
+    act(() => {
+      result.current.markGuidedSessionCommit(
+        diffWith({ observationsNew: 1, supplementsNew: 1, openPointsNew: 1 }),
+      );
+    });
+
+    expect(result.current.guidedSession.sectionsCompleted).toEqual([
+      'observations',
+      'supplements',
+      'open-points',
+    ]);
+  });
+
+  it('markGuidedSessionCommit is a no-op when no session is active', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.markGuidedSessionCommit(diffWith({ observationsNew: 1 }));
+    });
+
+    expect(result.current.guidedSession.active).toBe(false);
+    expect(result.current.guidedSession.sectionsCompleted).toEqual([]);
+  });
+
+  it('clearChat also ends an active guided session', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.startGuidedSession();
+    });
+    expect(result.current.guidedSession.active).toBe(true);
+
+    act(() => {
+      result.current.clearChat();
+    });
+    expect(result.current.guidedSession.active).toBe(false);
+    expect(result.current.guidedSession.sectionsCompleted).toEqual([]);
   });
 });
 

@@ -182,6 +182,35 @@ describe('generateSystemPrompt', () => {
     });
   });
 
+  describe('guided-session framing', () => {
+    it('omits the guided framing by default', () => {
+      const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
+      expect(prompt).not.toMatch(/gefuehrte Sitzung/i);
+    });
+
+    it('appends the guided framing when guided is true', () => {
+      const prompt = generateSystemPrompt({
+        profile: makeProfile(),
+        observations: [],
+        guided: true,
+      });
+      expect(prompt).toMatch(/gefuehrte Sitzung/i);
+      expect(prompt).toMatch(/Basisdaten \(werden ueber das Profil-Formular erfasst\)/);
+    });
+
+    it('places the guided framing after the output-format contract', () => {
+      const prompt = generateSystemPrompt({
+        profile: makeProfile(),
+        observations: [],
+        guided: true,
+      });
+      const outputIdx = prompt.indexOf('Format fuer Profil-Aenderungen');
+      const guidedIdx = prompt.indexOf('gefuehrte Sitzung');
+      expect(outputIdx).toBeGreaterThan(-1);
+      expect(guidedIdx).toBeGreaterThan(outputIdx);
+    });
+  });
+
   describe('composition', () => {
     it('joins sections with blank lines (no runaway concatenation)', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });

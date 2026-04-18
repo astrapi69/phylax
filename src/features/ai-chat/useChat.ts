@@ -13,6 +13,16 @@ import { useAIConfig, generateSystemPrompt } from '../ai-config';
 import { streamCompletion } from './api';
 import type { AnthropicMessage, ChatError } from './api/types';
 import { formatProfileShareSummary, type ProfileShareCounts } from './profileSummary';
+import type { ProfileDiff } from './commit';
+import {
+  GUIDED_SESSION_END_MESSAGE,
+  GUIDED_SESSION_OPENING_MESSAGE,
+  type GuidedSessionState,
+  endGuidedSession as endGuidedSessionState,
+  initGuidedSession,
+  markSectionsFromDiff as markGuidedSectionsFromDiff,
+  startGuidedSession as startGuidedSessionState,
+} from './guided';
 
 export interface ChatMessage {
   id: string;
@@ -55,6 +65,26 @@ export interface UseChatResult {
   markMessageCommitted: (id: string) => void;
   /** Append a locally-generated system message (commit summary, errors). */
   appendSystemMessage: (content: string, errorKind?: ChatError['kind']) => void;
+  /** AI-06 guided-session state. Ephemeral, not persisted. */
+  guidedSession: GuidedSessionState;
+  /**
+   * Start a guided session. Appends the hardcoded opening assistant message
+   * and invalidates the cached system prompt so the next sendMessage rebuilds
+   * it with the guided-session framing.
+   */
+  startGuidedSession: () => void;
+  /**
+   * End the active guided session. Appends a system message, clears guided
+   * state, and invalidates the cached system prompt so subsequent turns use
+   * the normal (non-guided) system prompt.
+   */
+  endGuidedSession: () => void;
+  /**
+   * Record a successful commit against the guided session. Marks any section
+   * (observations / supplements / open-points) that received new or changed
+   * content. No-op when the guided session is inactive.
+   */
+  markGuidedSessionCommit: (diff: ProfileDiff) => void;
 }
 
 /**
@@ -86,8 +116,13 @@ export function useChat(): UseChatResult {
   const [committedMessageIds, setCommittedMessageIds] = useState<ReadonlySet<string>>(
     () => new Set<string>(),
   );
+  const [guidedSession, setGuidedSession] = useState<GuidedSessionState>(() => initGuidedSession());
   const abortRef = useRef<AbortController | null>(null);
   const systemPromptRef = useRef<string | null>(null);
+  // Kept in sync with guidedSession.active so sendMessage builds the prompt
+  // with the correct `guided` flag when the cached prompt is rebuilt. State
+  // updates are async; a ref captures the latest value synchronously.
+  const guidedActiveRef = useRef<boolean>(false);
   const { state: configState } = useAIConfig();
 
   const sendMessage = useCallback(
@@ -134,7 +169,11 @@ export function useChat(): UseChatResult {
             return;
           }
           const observations = await new ObservationRepository().listByProfile(profile.id);
-          systemPromptRef.current = generateSystemPrompt({ profile, observations });
+          systemPromptRef.current = generateSystemPrompt({
+            profile,
+            observations,
+            guided: guidedActiveRef.current,
+          });
         } catch {
           setMessages((prev) => [
             ...prev,
@@ -212,6 +251,10 @@ export function useChat(): UseChatResult {
     setIsStreaming(false);
     systemPromptRef.current = null;
     setCommittedMessageIds(new Set<string>());
+    // clearChat ends any active guided session; progress is tied to the
+    // transcript it lived in.
+    guidedActiveRef.current = false;
+    setGuidedSession(initGuidedSession());
   }, []);
 
   const shareProfile = useCallback(async () => {
@@ -272,6 +315,40 @@ export function useChat(): UseChatResult {
     });
   }, []);
 
+  const startGuidedSession = useCallback(() => {
+    guidedActiveRef.current = true;
+    // Invalidate the cached prompt so the next sendMessage rebuilds it with
+    // the guided framing appended.
+    systemPromptRef.current = null;
+    setGuidedSession(startGuidedSessionState());
+    const openingMsg: ChatMessage = {
+      id: generateId(),
+      role: 'assistant',
+      content: GUIDED_SESSION_OPENING_MESSAGE,
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, openingMsg]);
+  }, []);
+
+  const endGuidedSession = useCallback(() => {
+    guidedActiveRef.current = false;
+    systemPromptRef.current = null;
+    setGuidedSession(endGuidedSessionState());
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: generateId(),
+        role: 'system',
+        content: GUIDED_SESSION_END_MESSAGE,
+        timestamp: Date.now(),
+      },
+    ]);
+  }, []);
+
+  const markGuidedSessionCommit = useCallback((diff: ProfileDiff) => {
+    setGuidedSession((prev) => (prev.active ? markGuidedSectionsFromDiff(prev, diff) : prev));
+  }, []);
+
   const appendSystemMessage = useCallback((content: string, errorKind?: ChatError['kind']) => {
     setMessages((prev) => [
       ...prev,
@@ -296,6 +373,10 @@ export function useChat(): UseChatResult {
     committedMessageIds,
     markMessageCommitted,
     appendSystemMessage,
+    guidedSession,
+    startGuidedSession,
+    endGuidedSession,
+    markGuidedSessionCommit,
   };
 }
 

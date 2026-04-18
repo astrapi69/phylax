@@ -27,6 +27,12 @@ interface CommitPreviewModalProps {
    * and the result counts. Parent is expected to close the modal.
    */
   onCommitSuccess?: (summary: string) => void;
+  /**
+   * Called after a successful commit with the raw diff. Used by the AI-06
+   * guided session to mark sections that received new or changed content.
+   * Fires alongside onCommitSuccess; no ordering guarantee.
+   */
+  onCommitted?: (diff: ProfileDiff) => void;
 }
 
 type ModalState =
@@ -75,6 +81,7 @@ export function CommitPreviewModal({
   fragment,
   onClose,
   onCommitSuccess,
+  onCommitted,
 }: CommitPreviewModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -177,6 +184,7 @@ export function CommitPreviewModal({
         profileId: state.profileId,
       });
       const summary = commitSummaryText(result);
+      onCommitted?.(state.diff);
       onCommitSuccess?.(summary);
       onClose();
     } catch (err) {

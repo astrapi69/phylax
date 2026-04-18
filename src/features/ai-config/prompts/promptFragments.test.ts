@@ -5,6 +5,7 @@ import {
   BOUNDARIES,
   UNCERTAINTY_MARKING,
   PROFILE_OUTPUT_FORMAT,
+  GUIDED_SESSION_FRAMING,
   proxyExtensionFragment,
 } from './promptFragments';
 
@@ -103,6 +104,20 @@ describe('promptFragments', () => {
     it('provides contrasting positive and negative examples', () => {
       expect(PROFILE_OUTPUT_FORMAT).toMatch(/Beispiel OHNE Format/);
       expect(PROFILE_OUTPUT_FORMAT).toMatch(/Beispiel MIT Format/);
+    });
+  });
+
+  describe('GUIDED_SESSION_FRAMING', () => {
+    it('names all three in-scope sections for the guided session', () => {
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Beobachtungen/);
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Supplemente/);
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Offene Punkte/);
+    });
+
+    it('names the sections that are explicitly out of scope', () => {
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Basisdaten/);
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Laborwerte/);
+      expect(GUIDED_SESSION_FRAMING).toMatch(/Verlaufsnotizen/);
     });
   });
 

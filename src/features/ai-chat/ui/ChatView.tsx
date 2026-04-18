@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useChat } from '../useChat';
 import type { DetectedFragment } from '../detection';
+import { GuidedSessionIndicator } from '../guided';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { CommitPreviewModal } from './CommitPreviewModal';
@@ -25,6 +26,10 @@ export function ChatView() {
     committedMessageIds,
     markMessageCommitted,
     appendSystemMessage,
+    guidedSession,
+    startGuidedSession,
+    endGuidedSession,
+    markGuidedSessionCommit,
   } = useChat();
   const logRef = useRef<HTMLDivElement>(null);
   const [focusKey, setFocusKey] = useState(0);
@@ -32,6 +37,7 @@ export function ChatView() {
     fragment: DetectedFragment;
     messageId: string;
   } | null>(null);
+  const [confirmEnd, setConfirmEnd] = useState(false);
   const prevStreamingRef = useRef(isStreaming);
 
   // Auto-scroll to the bottom as new content arrives.
@@ -55,28 +61,104 @@ export function ChatView() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col md:h-[calc(100vh-4rem)]">
-      <header className="flex items-center justify-between gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">KI-Assistent</h1>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => void shareProfile()}
-            disabled={isStreaming || isSharingProfile}
-            className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-          >
-            {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
-          </button>
-          {messages.length > 0 && (
-            <button
-              type="button"
-              onClick={clearChat}
-              disabled={isStreaming || isSharingProfile}
-              className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-            >
-              Leeren
-            </button>
-          )}
+      <header className="flex flex-col gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {guidedSession.active ? 'KI-Assistent - Gefuehrte Sitzung' : 'KI-Assistent'}
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            {!guidedSession.active && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => void shareProfile()}
+                  disabled={isStreaming || isSharingProfile}
+                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
+                </button>
+                <button
+                  type="button"
+                  onClick={startGuidedSession}
+                  disabled={isStreaming || isSharingProfile}
+                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Gefuehrte Sitzung starten
+                </button>
+                {messages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearChat}
+                    disabled={isStreaming || isSharingProfile}
+                    className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  >
+                    Leeren
+                  </button>
+                )}
+              </>
+            )}
+            {guidedSession.active && !confirmEnd && (
+              <button
+                type="button"
+                onClick={() => setConfirmEnd(true)}
+                disabled={isStreaming || isSharingProfile}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+              >
+                Sitzung beenden
+              </button>
+            )}
+            {guidedSession.active && confirmEnd && (
+              <div
+                data-testid="guided-session-end-confirm"
+                className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
+              >
+                <span>Sitzung wirklich beenden?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    endGuidedSession();
+                    setConfirmEnd(false);
+                  }}
+                  className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Ja, beenden
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmEnd(false)}
+                  className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Weiter
+                </button>
+              </div>
+            )}
+          </div>
         </div>
+        {guidedSession.active && (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <GuidedSessionIndicator state={guidedSession} />
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void shareProfile()}
+                disabled={isStreaming || isSharingProfile}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+              >
+                {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
+              </button>
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearChat}
+                  disabled={isStreaming || isSharingProfile}
+                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Leeren
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
       <div
@@ -120,6 +202,7 @@ export function ChatView() {
             markMessageCommitted(preview.messageId);
             appendSystemMessage(summary);
           }}
+          onCommitted={(diff) => markGuidedSessionCommit(diff)}
         />
       )}
     </div>
