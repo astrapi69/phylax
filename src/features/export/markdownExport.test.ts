@@ -63,7 +63,7 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).not.toContain('## 2. Relevante Vorgeschichte');
     expect(md).not.toContain('## 3. Blutwerte');
     expect(md).not.toContain('## 5. Vertraeglichkeiten');
-    expect(md).not.toContain('## 9. Offene Punkte');
+    expect(md).not.toContain('## 11. Offene Punkte');
     expect(md).not.toContain('## 10. Verlaufsnotizen');
   });
 
@@ -191,7 +191,7 @@ describe('exportProfileAsMarkdown', () => {
       },
     ];
     const md = exportProfileAsMarkdown(profile, [], [], [], [], points, []);
-    expect(md).toContain('## 9. Offene Punkte');
+    expect(md).toContain('## 11. Offene Punkte');
     expect(md).toContain('### Beim naechsten Arztbesuch');
     expect(md).toContain('- [hoch] MRT besprechen');
     expect(md).toContain('- TSH nachmessen');
@@ -403,7 +403,7 @@ describe('exportProfileAsMarkdown', () => {
     const md = exportProfileAsMarkdown(profile, [], [], [], [], [], []);
     expect(md).toContain('## 7. Warnsignale');
     expect(md).toContain('- Akute Brustschmerzen');
-    expect(md).toContain('## 8. Externe Referenzen');
+    expect(md).toContain('## 9. Externe Referenzen');
     expect(md).toContain('- https://example.com/befund');
   });
 });

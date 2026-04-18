@@ -56,6 +56,13 @@ export function exportProfileAsMarkdown(
     (t) => new Date(t.updatedAt),
   );
 
+  // Section order + numbering follow the canonical Lebende-Gesundheit
+  // fixture: 1 Basisdaten, 2 Vorgeschichte, 3 Blutwerte, 5 Vertraeglichkeiten,
+  // 7 Warnsignale, 9 Externe Referenzen, 10 Verlaufsnotizen, 11 Offene Punkte.
+  // Sections 4 (Belastungsreaktionen), 6 (Gewichtsmanagement), 8
+  // (Selbstregulationsverhalten) exist in the fixture but are out of
+  // the export's domain model, so their numbers are skipped. The numbers
+  // are decorative; the parser matches by heading text regardless.
   const sections: string[] = [];
   sections.push(buildHeader(profile));
   const base = buildBasisdaten(baseData);
@@ -68,12 +75,12 @@ export function exportProfileAsMarkdown(
   if (suppBlock) sections.push(suppBlock);
   const warnBlock = buildWarnsignale(warningSigns);
   if (warnBlock) sections.push(warnBlock);
-  const openBlock = buildOffenePunkte(openPoints);
-  if (openBlock) sections.push(openBlock);
   const refsBlock = buildExterneReferenzen(externalReferences);
   if (refsBlock) sections.push(refsBlock);
   const timelineBlock = buildVerlaufsnotizen(filteredTimeline);
   if (timelineBlock) sections.push(timelineBlock);
+  const openBlock = buildOffenePunkte(openPoints);
+  if (openBlock) sections.push(openBlock);
   sections.push(buildFooter(version, lastUpdateReason));
 
   return sections.join('\n\n') + '\n';
@@ -221,29 +228,9 @@ function buildWarnsignale(warningSigns: readonly string[]): string | null {
   return lines.join('\n');
 }
 
-function buildOffenePunkte(points: readonly OpenPoint[]): string | null {
-  const unresolved = points.filter((p) => !p.resolved);
-  if (unresolved.length === 0) return null;
-  const byContext = new Map<string, OpenPoint[]>();
-  for (const p of unresolved) {
-    const list = byContext.get(p.context) ?? [];
-    list.push(p);
-    byContext.set(p.context, list);
-  }
-  const lines: string[] = ['## 9. Offene Punkte'];
-  for (const [context, items] of byContext) {
-    lines.push('', `### ${context}`, '');
-    for (const item of items) {
-      const prefix = item.priority ? `[${item.priority}] ` : '';
-      lines.push(`- ${prefix}${item.text}`);
-    }
-  }
-  return lines.join('\n');
-}
-
 function buildExterneReferenzen(refs: readonly string[]): string | null {
   if (refs.length === 0) return null;
-  const lines: string[] = ['## 8. Externe Referenzen', ''];
+  const lines: string[] = ['## 9. Externe Referenzen', ''];
   for (const ref of refs) {
     lines.push(`- ${ref}`);
   }
@@ -256,6 +243,26 @@ function buildVerlaufsnotizen(entries: readonly TimelineEntry[]): string | null 
   const lines: string[] = ['## 10. Verlaufsnotizen'];
   for (const entry of sorted) {
     lines.push('', `### ${entry.period} - ${entry.title}`, '', entry.content.trim());
+  }
+  return lines.join('\n');
+}
+
+function buildOffenePunkte(points: readonly OpenPoint[]): string | null {
+  const unresolved = points.filter((p) => !p.resolved);
+  if (unresolved.length === 0) return null;
+  const byContext = new Map<string, OpenPoint[]>();
+  for (const p of unresolved) {
+    const list = byContext.get(p.context) ?? [];
+    list.push(p);
+    byContext.set(p.context, list);
+  }
+  const lines: string[] = ['## 11. Offene Punkte'];
+  for (const [context, items] of byContext) {
+    lines.push('', `### ${context}`, '');
+    for (const item of items) {
+      const prefix = item.priority ? `[${item.priority}] ` : '';
+      lines.push(`- ${prefix}${item.text}`);
+    }
   }
   return lines.join('\n');
 }
