@@ -22,7 +22,7 @@ beforeEach(async () => {
 });
 
 describe('SettingsScreen', () => {
-  it('renders the Einstellungen heading, ThemeSection, and AISettingsSection', () => {
+  it('renders the Einstellungen heading plus Theme, AI-Config, and Donation sections', () => {
     render(
       <ThemeProvider>
         <SettingsScreen />
@@ -31,6 +31,9 @@ describe('SettingsScreen', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Einstellungen' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Darstellung' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'KI-Assistent' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' }),
+    ).toBeInTheDocument();
     // All three theme options are present.
     expect(screen.getAllByRole('radio')).toHaveLength(3);
   });

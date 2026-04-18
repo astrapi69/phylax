@@ -245,6 +245,16 @@ This phase depends on Phase 2 (profile data must exist before plans can be deriv
 
 ---
 
+## Phase S: Donation integration
+
+Sustainability work. Makes donations discoverable without interrupting the core experience. All three tasks link out to `DONATE.md` in the repo root (Liberapay, GitHub Sponsors, Ko-fi, PayPal). No in-app payment processing, no analytics, no feature gating.
+
+- [x] **S-01** Settings section "Phylax unterstuetzen" with an external link to DONATE.md (always visible, no state)
+- [ ] **S-02** One-time onboarding hint after the first profile-create or import, dismissible, remembered in localStorage
+- [ ] **S-03** 90-day reminder banner on the Profile view with three dismiss paths (support / not now / close), cooldown 90d after dismiss and 180d after donating
+
+---
+
 ## Next Steps
 
 The next task to work on is **O-01**. Confirm this before starting.

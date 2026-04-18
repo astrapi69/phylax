@@ -1,10 +1,11 @@
 import { ThemeSection } from './ThemeSection';
 import { AISettingsSection } from '../ai-config';
+import { DonationSettingsSection } from '../donation';
 
 /**
- * Settings screen. Hosts the theme picker and the AI configuration.
- * Future settings (auto-lock timeout, language, etc.) attach as more
- * sections here.
+ * Settings screen. Hosts the theme picker, the AI configuration, and
+ * the donation link. Future settings (auto-lock timeout, language,
+ * etc.) attach as more sections here.
  */
 export function SettingsScreen() {
   return (
@@ -12,6 +13,7 @@ export function SettingsScreen() {
       <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Einstellungen</h1>
       <ThemeSection />
       <AISettingsSection />
+      <DonationSettingsSection />
     </div>
   );
 }
