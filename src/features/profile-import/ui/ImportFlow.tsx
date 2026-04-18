@@ -4,6 +4,7 @@ import { getDisplayName } from '../../../domain';
 import type { Profile } from '../../../domain';
 import { ProfileRepository } from '../../../db/repositories';
 import { useImport } from '../import';
+import { ImportCleanupScreen } from '../ai-fallback';
 import { ImportEntryScreen } from './ImportEntryScreen';
 import { ProfileSelectionScreen } from './ProfileSelectionScreen';
 import { PreviewScreen } from './PreviewScreen';
@@ -85,6 +86,18 @@ export function ImportFlow() {
     case 'profile-selection':
       return (
         <ProfileSelectionScreen onSelect={handleProfileSelect} onCancel={importState.cancel} />
+      );
+
+    case 'parse-failure':
+      return (
+        <ImportCleanupScreen
+          parseResult={state.parseResult}
+          cleanup={state.cleanup}
+          onRequestCleanup={() => void importState.requestAICleanup()}
+          onProceedWithPartial={importState.proceedWithPartial}
+          onRestart={importState.reset}
+          onNavigateSettings={() => navigate('/settings')}
+        />
       );
 
     case 'preview':

@@ -1,6 +1,12 @@
 import { useCallback, useState } from 'react';
 import { parseProfile } from '../parser/parseProfile';
 import type { ParseResult } from '../parser/types';
+import {
+  isEmptyParseResult,
+  requestCleanup,
+  shouldOfferCleanup,
+  type CleanupSubState,
+} from '../ai-fallback';
 import { countEntities } from './countEntities';
 import { importProfile } from './importProfile';
 import {
@@ -14,6 +20,12 @@ export type ImportState =
   | { kind: 'entry' }
   | { kind: 'parsing'; source: string }
   | { kind: 'profile-selection'; parseResult: ParseResult }
+  | {
+      kind: 'parse-failure';
+      originalMarkdown: string;
+      parseResult: ParseResult;
+      cleanup: CleanupSubState;
+    }
   | { kind: 'preview'; parseResult: ParseResult; targetProfileId: string }
   | {
       kind: 'confirm-replace';
@@ -31,6 +43,19 @@ export interface ImportHook {
   selectProfile: (targetProfileId: string) => Promise<void>;
   confirmReplace: () => void;
   startImport: () => Promise<void>;
+  /**
+   * Trigger AI-09 cleanup on a parse-failure state. Reads the original
+   * markdown, sends it to Anthropic with the cleanup system prompt, and
+   * routes the result: successful re-parse transitions to profile-selection,
+   * other outcomes update the cleanup sub-state in place so the screen
+   * can render the right message.
+   */
+  requestAICleanup: () => Promise<void>;
+  /**
+   * From a soft-failure parse-failure state, accept the partial parse
+   * result and continue to profile selection. No-op on empty results.
+   */
+  proceedWithPartial: () => void;
   cancel: () => void;
   reset: () => void;
 }
@@ -58,11 +83,12 @@ export function useImport(): ImportHook {
       // Parser is synchronous; the await keeps the call site ergonomic
       // and gives React a tick to render the parsing state.
       const parseResult = await Promise.resolve(parseProfile(markdown));
-      if (isEmptyParseResult(parseResult)) {
+      if (shouldOfferCleanup(parseResult)) {
         setState({
-          kind: 'error',
-          message:
-            'Kein interpretierbarer Inhalt gefunden. Ist die Datei eine Lebende-Gesundheit Markdown-Datei?',
+          kind: 'parse-failure',
+          originalMarkdown: markdown,
+          parseResult,
+          cleanup: { kind: 'idle' },
         });
         return;
       }
@@ -128,6 +154,63 @@ export function useImport(): ImportHook {
     }
   }, [state]);
 
+  const requestAICleanup = useCallback(async (): Promise<void> => {
+    if (state.kind !== 'parse-failure') return;
+    const { originalMarkdown, parseResult } = state;
+    setState({
+      kind: 'parse-failure',
+      originalMarkdown,
+      parseResult,
+      cleanup: { kind: 'loading' },
+    });
+
+    const result = await requestCleanup(originalMarkdown);
+
+    if (result.kind === 'not-configured' || result.kind === 'error') {
+      // not-configured should not happen here because the UI only shows
+      // the button when configured; route it through the same error banner
+      // defensively.
+      const error =
+        result.kind === 'error'
+          ? result.error
+          : ({ kind: 'unknown', message: 'KI nicht konfiguriert.' } as const);
+      setState({
+        kind: 'parse-failure',
+        originalMarkdown,
+        parseResult,
+        cleanup: { kind: 'error', error },
+      });
+      return;
+    }
+    if (result.kind === 'impossible') {
+      setState({
+        kind: 'parse-failure',
+        originalMarkdown,
+        parseResult,
+        cleanup: { kind: 'impossible' },
+      });
+      return;
+    }
+
+    const reparsed = parseProfile(result.cleaned);
+    if (isEmptyParseResult(reparsed)) {
+      setState({
+        kind: 'parse-failure',
+        originalMarkdown,
+        parseResult,
+        cleanup: { kind: 'parse-failed-after-cleanup', rawCleaned: result.cleaned },
+      });
+      return;
+    }
+    setState({ kind: 'profile-selection', parseResult: reparsed });
+  }, [state]);
+
+  const proceedWithPartial = useCallback((): void => {
+    if (state.kind !== 'parse-failure') return;
+    if (isEmptyParseResult(state.parseResult)) return;
+    setState({ kind: 'profile-selection', parseResult: state.parseResult });
+  }, [state]);
+
   // Stryker disable next-line ArrayDeclaration: React dep array cosmetic
   const cancel = useCallback((): void => {
     setState({ kind: 'entry' });
@@ -138,20 +221,17 @@ export function useImport(): ImportHook {
     setState({ kind: 'entry' });
   }, []);
 
-  return { state, loadMarkdown, selectProfile, confirmReplace, startImport, cancel, reset };
-}
-
-function isEmptyParseResult(r: ParseResult): boolean {
-  return (
-    r.profile === null &&
-    r.observations.length === 0 &&
-    r.labReports.length === 0 &&
-    r.labValues.length === 0 &&
-    r.supplements.length === 0 &&
-    r.openPoints.length === 0 &&
-    r.profileVersions.length === 0 &&
-    r.timelineEntries.length === 0
-  );
+  return {
+    state,
+    loadMarkdown,
+    selectProfile,
+    confirmReplace,
+    startImport,
+    requestAICleanup,
+    proceedWithPartial,
+    cancel,
+    reset,
+  };
 }
 
 function toMessage(err: unknown): string {

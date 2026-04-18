@@ -146,7 +146,7 @@ Goal: AI as primary input method for profile creation and updates. User provides
 - [x] **AI-06** Guided profile session flow: AI walks user through profile sections (observations, supplements, open points; base data + lab values + Verlaufsnotizen explicitly out of scope) (commit pending)
 - [x] **AI-07** Structured output: AI produces markdown profile fragment at end of session (detection + preview modal; commit lands in AI-08)
 - [x] **AI-08** Review and commit flow: user reviews AI output, edits if needed, commits to profile with version entry
-- [ ] **AI-09** Paste-in mode: user pastes markdown from external AI session, Phylax parses and imports into profile sections
+- [x] **AI-09** Parser fallback via AI: on parse failure (empty or low+warnings), offer "KI-Hilfe anfordern" that reformats user paste into Phylax markdown, re-parses, and routes back through the import flow (commit pending)
 - [x] **AI-10** Network call only when chat is actively used, no background calls
 - [x] **AI-11** One-click disable: removes API key, disables AI features, manual mode only
 
