@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ANTHROPIC_MODELS,
   DEFAULT_ANTHROPIC_MODEL,
@@ -25,6 +26,7 @@ function maskKey(apiKey: string): string {
  * masked preview. Editing the key requires entering a new value.
  */
 export function AISettingsSection() {
+  const { t } = useTranslation('ai-config');
   const { state, saveConfig, deleteConfig, acceptDisclaimer } = useAIConfig();
 
   const [mode, setMode] = useState<FormMode>('idle');
@@ -92,7 +94,7 @@ export function AISettingsSection() {
         id="ai-settings-heading"
         className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
-        KI-Assistent
+        {t('settings-section.heading')}
       </h2>
       <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
         <button
@@ -100,18 +102,16 @@ export function AISettingsSection() {
           onClick={() => setShowPrivacyInfo(true)}
           className="text-blue-700 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          Datenschutz beim KI-Chat
+          {t('settings-section.privacy-link')}
         </button>
       </p>
 
       {status === 'loading' && (
-        <p className="text-sm text-gray-600 dark:text-gray-400">Lade KI-Einstellungen...</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{t('settings-section.loading')}</p>
       )}
 
       {status === 'error' && (
-        <p className="text-sm text-red-700 dark:text-red-300">
-          KI-Einstellungen konnten nicht geladen werden.
-        </p>
+        <p className="text-sm text-red-700 dark:text-red-300">{t('settings-section.error')}</p>
       )}
 
       {status === 'unconfigured' && (
@@ -169,10 +169,11 @@ function UnconfiguredForm({
   suspicious,
   onActivate,
 }: UnconfiguredFormProps) {
+  const { t } = useTranslation('ai-config');
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        <span aria-hidden>○</span> Status: Nicht aktiv
+        <span aria-hidden>○</span> {t('settings-section.status-inactive')}
       </p>
 
       <ProviderSelect />
@@ -182,7 +183,7 @@ function UnconfiguredForm({
           htmlFor="ai-api-key"
           className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          API-Schluessel
+          {t('settings-section.api-key-label')}
         </label>
         <input
           id="ai-api-key"
@@ -196,7 +197,7 @@ function UnconfiguredForm({
         />
         {suspicious && (
           <p className="mt-1 text-xs text-amber-700 dark:text-amber-400" role="alert">
-            Schluesselformat sieht ungewoehnlich aus. Bitte pruefen.
+            {t('settings-section.suspicious-warning')}
           </p>
         )}
       </div>
@@ -207,7 +208,7 @@ function UnconfiguredForm({
         disabled={apiKey.length === 0}
         className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
       >
-        KI aktivieren
+        {t('settings-section.activate-button')}
       </button>
     </div>
   );
@@ -303,10 +304,11 @@ function ConfiguredForm({
   onCancelChangeKey,
   onDelete,
 }: ConfiguredFormProps) {
+  const { t } = useTranslation('ai-config');
   return (
     <div className="space-y-4">
       <p className="text-sm text-green-700 dark:text-green-400">
-        <span aria-hidden>✓</span> Status: Konfiguriert
+        <span aria-hidden>✓</span> {t('settings-section.status-configured')}
       </p>
 
       <ProviderSelect />
@@ -316,7 +318,7 @@ function ConfiguredForm({
           htmlFor="ai-api-key-masked"
           className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          API-Schluessel
+          {t('settings-section.api-key-label')}
         </label>
         {isEntering ? (
           <div className="space-y-2">
@@ -332,7 +334,7 @@ function ConfiguredForm({
             />
             {suspicious && (
               <p className="text-xs text-amber-700 dark:text-amber-400" role="alert">
-                Schluesselformat sieht ungewoehnlich aus. Bitte pruefen.
+                {t('settings-section.suspicious-warning')}
               </p>
             )}
             <div className="flex gap-2">
@@ -342,14 +344,14 @@ function ConfiguredForm({
                 disabled={newKey.length === 0}
                 className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
               >
-                Speichern
+                {t('settings-section.save-button')}
               </button>
               <button
                 type="button"
                 onClick={onCancelChangeKey}
                 className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                Abbrechen
+                {t('settings-section.cancel-button')}
               </button>
             </div>
           </div>
@@ -367,7 +369,7 @@ function ConfiguredForm({
               onClick={onChangeKey}
               className="rounded border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
             >
-              Aendern
+              {t('settings-section.change-button')}
             </button>
           </div>
         )}
@@ -378,7 +380,7 @@ function ConfiguredForm({
           htmlFor="ai-model"
           className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          Modell
+          {t('settings-section.model-label')}
         </label>
         <select
           id="ai-model"
@@ -387,7 +389,9 @@ function ConfiguredForm({
           className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         >
           {!ANTHROPIC_MODELS.includes(modelInput) && modelInput && (
-            <option value="">{modelInput} (benutzerdefiniert)</option>
+            <option value="">
+              {modelInput} {t('settings-section.model-custom-suffix')}
+            </option>
           )}
           {ANTHROPIC_MODELS.map((m) => (
             <option key={m} value={m}>
@@ -402,20 +406,21 @@ function ConfiguredForm({
         onClick={() => void onDelete()}
         className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
       >
-        KI deaktivieren
+        {t('settings-section.deactivate-button')}
       </button>
     </div>
   );
 }
 
 function ProviderSelect() {
+  const { t } = useTranslation('ai-config');
   return (
     <div>
       <label
         htmlFor="ai-provider"
         className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
       >
-        Anbieter
+        {t('settings-section.provider-label')}
       </label>
       <select
         id="ai-provider"

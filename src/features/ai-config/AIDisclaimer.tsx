@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface AIDisclaimerProps {
   onConfirm: () => void;
@@ -14,6 +15,7 @@ interface AIDisclaimerProps {
  * Escape cancels. Tab is trapped inside the dialog.
  */
 export function AIDisclaimer({ onConfirm, onCancel }: AIDisclaimerProps) {
+  const { t } = useTranslation('ai-config');
   const cancelRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -65,45 +67,38 @@ export function AIDisclaimer({ onConfirm, onCancel }: AIDisclaimerProps) {
           id="ai-disclaimer-title"
           className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100"
         >
-          KI-Assistent aktivieren
+          {t('disclaimer.heading')}
         </h2>
         <p className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">
-          Wichtige Hinweise:
+          {t('disclaimer.important-notice')}
         </p>
         <ol className="mb-6 list-decimal space-y-3 pl-5 text-sm text-gray-700 dark:text-gray-300">
           <li>
             <span className="font-medium text-gray-900 dark:text-gray-100">
-              Keine medizinische Beratung:
+              {t('disclaimer.point-1.heading')}
             </span>{' '}
-            Der KI-Assistent strukturiert deine Eingaben, stellt aber keine Diagnosen und gibt keine
-            medizinischen Empfehlungen.
+            {t('disclaimer.point-1.body')}
           </li>
           <li>
             <span className="font-medium text-gray-900 dark:text-gray-100">
-              Daten verlassen dein Geraet:
+              {t('disclaimer.point-2.heading')}
             </span>{' '}
-            Wenn du den KI-Assistenten nutzt, werden deine Eingaben an Anthropic gesendet, ueber
-            deinen eigenen Anthropic-Account und mit deinem eigenen API-Schluessel. Anthropic
-            behandelt dich als direkten Kunden, nicht Phylax. Anthropic speichert Anfragen und
-            Antworten fuer 30 Tage zur Sicherheitspruefung und loescht sie dann automatisch.
-            Anfragen werden nicht fuer KI-Training verwendet. Phylax selbst speichert keine
-            Chat-Verlaeufe auf deinem Geraet. Details zur Datenverarbeitung durch Anthropic:{' '}
+            {t('disclaimer.point-2.body-prefix')}
             <a
               href="https://privacy.claude.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-700 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              privacy.claude.com
+              {t('disclaimer.point-2.link-label')}
             </a>
-            .
+            {t('disclaimer.point-2.body-suffix')}
           </li>
           <li>
             <span className="font-medium text-gray-900 dark:text-gray-100">
-              Du kontrollierst den Zugang:
+              {t('disclaimer.point-3.heading')}
             </span>{' '}
-            Dein API-Schluessel wird verschluesselt auf deinem Geraet gespeichert. Du kannst die
-            KI-Funktion jederzeit deaktivieren und den Schluessel loeschen.
+            {t('disclaimer.point-3.body')}
           </li>
         </ol>
         <div className="flex justify-end gap-3">
@@ -113,14 +108,14 @@ export function AIDisclaimer({ onConfirm, onCancel }: AIDisclaimerProps) {
             onClick={onCancel}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Abbrechen
+            {t('disclaimer.cancel-button')}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >
-            Verstanden, KI aktivieren
+            {t('disclaimer.confirm-button')}
           </button>
         </div>
       </div>

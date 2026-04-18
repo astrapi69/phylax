@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PrivacyInfoContent } from './PrivacyInfoContent';
 
 interface PrivacyInfoPopoverProps {
@@ -17,6 +18,7 @@ interface PrivacyInfoPopoverProps {
  * behavior across the app's dialogs.
  */
 export function PrivacyInfoPopover({ open, onClose }: PrivacyInfoPopoverProps) {
+  const { t } = useTranslation('ai-config');
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -75,7 +77,7 @@ export function PrivacyInfoPopover({ open, onClose }: PrivacyInfoPopoverProps) {
             id="privacy-info-title"
             className="text-lg font-bold text-gray-900 dark:text-gray-100"
           >
-            Datenschutz beim KI-Chat
+            {t('privacy-info.title')}
           </h2>
         </header>
 
@@ -90,7 +92,7 @@ export function PrivacyInfoPopover({ open, onClose }: PrivacyInfoPopoverProps) {
             onClick={onClose}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Schliessen
+            {t('privacy-info.close-button')}
           </button>
         </footer>
       </div>
