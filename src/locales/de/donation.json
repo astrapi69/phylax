@@ -1,1 +1,26 @@
-{}
+{
+  "settings-section": {
+    "heading": "Phylax unterstuetzen",
+    "description": "Phylax wird als Open-Source-Projekt ohne Tracking, ohne Cloud und ohne Werbung entwickelt. Wenn dir die App hilft und du das Projekt unterstuetzen moechtest, findest du alle Spenden-Moeglichkeiten unter dem Link unten.",
+    "link": "Projekt unterstuetzen"
+  },
+  "onboarding-card": {
+    "heading": "Willkommen bei Phylax",
+    "description-1": "Phylax ist ein Open-Source-Projekt eines einzelnen Entwicklers. Keine Cloud, kein Tracking, keine Werbung.",
+    "description-2": "Wenn dir Phylax hilft und du das Projekt unterstuetzen moechtest:",
+    "support-button": "Projekt unterstuetzen",
+    "dismiss-button": "Verstanden",
+    "settings-hint": "Du findest diesen Hinweis jederzeit in den Einstellungen."
+  },
+  "reminder-banner": {
+    "aria-label": "Spenden-Hinweis",
+    "text_one": "Du nutzt Phylax jetzt seit einem Monat. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
+    "text_other": "Du nutzt Phylax jetzt seit {{count}} Monaten. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
+    "support-button": "Unterstuetzen",
+    "not-now-button": "Nicht jetzt",
+    "close-aria": "Schliessen"
+  },
+  "link": {
+    "new-tab": "(oeffnet in neuem Tab)"
+  }
+}

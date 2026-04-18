@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { DonateLink } from './DonateLink';
 
 /**
@@ -9,20 +10,19 @@ import { DonateLink } from './DonateLink';
  * banner can still come back here on their own schedule.
  */
 export function DonationSettingsSection() {
+  const { t } = useTranslation('donation');
   return (
     <section aria-labelledby="donation-section-heading">
       <h2
         id="donation-section-heading"
         className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
-        Phylax unterstuetzen
+        {t('settings-section.heading')}
       </h2>
       <p className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-        Phylax wird als Open-Source-Projekt ohne Tracking, ohne Cloud und ohne Werbung entwickelt.
-        Wenn dir die App hilft und du das Projekt unterstuetzen moechtest, findest du alle
-        Spenden-Moeglichkeiten unter dem Link unten.
+        {t('settings-section.description')}
       </p>
-      <DonateLink>Projekt unterstuetzen</DonateLink>
+      <DonateLink>{t('settings-section.link')}</DonateLink>
     </section>
   );
 }

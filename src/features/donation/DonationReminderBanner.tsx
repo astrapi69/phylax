@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProfileVersionRepository } from '../../db/repositories';
 import { DonateLink } from './DonateLink';
 import { readDonationState, writeDonationState } from './donationStorage';
@@ -24,6 +25,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
  * errors of its own.
  */
 export function DonationReminderBanner({ profileId }: DonationReminderBannerProps) {
+  const { t } = useTranslation('donation');
   const [firstVersionDate, setFirstVersionDate] = useState<Date | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -63,29 +65,28 @@ export function DonationReminderBanner({ profileId }: DonationReminderBannerProp
 
   return (
     <section
-      aria-label="Spenden-Hinweis"
+      aria-label={t('reminder-banner.aria-label')}
       data-testid="donation-reminder-banner"
       className="flex items-start gap-3 rounded border border-gray-200 bg-gray-50 px-4 py-3 text-sm dark:border-gray-700 dark:bg-gray-800/60"
     >
       <p className="flex-1 text-gray-700 dark:text-gray-300">
-        Du nutzt Phylax jetzt seit {months} Monaten. Wenn dir das Projekt gefaellt, kannst du die
-        Entwicklung unterstuetzen.
+        {t('reminder-banner.text', { count: months })}
       </p>
       <div className="flex items-center gap-2">
         <DonateLink variant="subtle" onBeforeNavigate={() => recordAndHide('donated')}>
-          Unterstuetzen
+          {t('reminder-banner.support-button')}
         </DonateLink>
         <button
           type="button"
           onClick={() => recordAndHide('dismissed')}
           className="rounded border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
         >
-          Nicht jetzt
+          {t('reminder-banner.not-now-button')}
         </button>
         <button
           type="button"
           onClick={() => recordAndHide('dismissed')}
-          aria-label="Schliessen"
+          aria-label={t('reminder-banner.close-aria')}
           className="rounded px-2 text-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
         >
           &times;

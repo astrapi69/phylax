@@ -2,6 +2,10 @@ import '@testing-library/jest-dom/vitest';
 import 'fake-indexeddb/auto';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
+// Side-effect import: initialize i18next once per test process so every
+// component that calls useTranslation() resolves German keys instead of
+// rendering literal key strings. Matches main.tsx's runtime bootstrap.
+import '../i18n/config';
 
 // jsdom does not implement matchMedia. Install a minimal shim that tests can
 // override per-test when they need to simulate a specific prefers-color-scheme.

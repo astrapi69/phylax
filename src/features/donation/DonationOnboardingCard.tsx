@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { DonateLink } from './DonateLink';
 import { writeDonationState } from './donationStorage';
 
@@ -25,6 +26,8 @@ interface DonationOnboardingCardProps {
  * hidden, even if they close the new tab without scrolling around.
  */
 export function DonationOnboardingCard({ onDismiss }: DonationOnboardingCardProps) {
+  const { t } = useTranslation('donation');
+
   function markSeenAndDismiss() {
     writeDonationState({ onboardingSeen: true });
     onDismiss();
@@ -40,29 +43,28 @@ export function DonationOnboardingCard({ onDismiss }: DonationOnboardingCardProp
         id="donation-onboarding-heading"
         className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
-        Willkommen bei Phylax
+        {t('onboarding-card.heading')}
       </h2>
       <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
-        Phylax ist ein Open-Source-Projekt eines einzelnen Entwicklers. Keine Cloud, kein Tracking,
-        keine Werbung.
+        {t('onboarding-card.description-1')}
       </p>
       <p className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-        Wenn dir Phylax hilft und du das Projekt unterstuetzen moechtest:
+        {t('onboarding-card.description-2')}
       </p>
       <div className="mb-3 flex flex-wrap gap-3">
         <DonateLink variant="primary" onBeforeNavigate={markSeenAndDismiss}>
-          Projekt unterstuetzen
+          {t('onboarding-card.support-button')}
         </DonateLink>
         <button
           type="button"
           onClick={markSeenAndDismiss}
           className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
         >
-          Verstanden
+          {t('onboarding-card.dismiss-button')}
         </button>
       </div>
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        Du findest diesen Hinweis jederzeit in den Einstellungen.
+        {t('onboarding-card.settings-hint')}
       </p>
     </section>
   );

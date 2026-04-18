@@ -1,4 +1,5 @@
 import type { MouseEvent, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DONATION_URL } from './constants';
 
 interface DonateLinkProps {
@@ -32,6 +33,7 @@ export function DonateLink({
   onBeforeNavigate,
   className,
 }: DonateLinkProps) {
+  const { t } = useTranslation('donation');
   const base = 'inline-flex items-center gap-1 transition-colors';
   const style =
     variant === 'primary'
@@ -52,7 +54,7 @@ export function DonateLink({
     >
       {children}
       <span aria-hidden>↗</span>
-      <span className="sr-only">(oeffnet in neuem Tab)</span>
+      <span className="sr-only">{t('link.new-tab')}</span>
     </a>
   );
 }
