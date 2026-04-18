@@ -1,4 +1,5 @@
 import { ThemeSection } from './ThemeSection';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
 import { ExportButton } from '../export';
@@ -12,6 +13,7 @@ export function SettingsScreen() {
   return (
     <div className="space-y-8">
       <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Einstellungen</h1>
+      <LanguageSwitcher />
       <ThemeSection />
       <AISettingsSection />
       <section aria-labelledby="export-settings-heading">

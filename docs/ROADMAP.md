@@ -277,6 +277,40 @@ avoid ambiguity, Deployment tasks in this section are written with the
 
 ---
 
+## Internationalization (I18N-series)
+
+Cross-cutting infrastructure to decouple user-facing strings from code
+location. I18N-01 installs the runtime and extracts every hardcoded
+German string into JSON namespaces feature-by-feature. User experience
+stays unchanged at every step: app still works in German with the same
+strings. I18N-02 adds English; P-11 extends to additional languages.
+
+Prefix note: the `D-` prefix is shared with Phase 4 Documents and the
+Deployment section. Commits and ROADMAP entries in this series carry
+the `[I18N-01x]` label in commit messages and task IDs to keep scope
+distinct.
+
+- [ ] **I18N-01a** Install and configure i18next infrastructure: deps,
+      synchronous German loading, 15 empty namespace stubs, LanguageSwitcher
+      (null render until multi-lang), contributing docs (commit pending)
+- [ ] **I18N-01b** Extract donation strings (smallest, recently added)
+- [ ] **I18N-01c** Extract settings strings
+- [ ] **I18N-01d** Extract ai-config strings
+- [ ] **I18N-01e** Extract onboarding strings
+- [ ] **I18N-01f** Extract profile-view strings
+- [ ] **I18N-01g** Extract observations view strings
+- [ ] **I18N-01h** Extract lab-values view strings
+- [ ] **I18N-01i** Extract supplements view strings
+- [ ] **I18N-01j** Extract open-points view strings
+- [ ] **I18N-01k** Extract timeline view strings
+- [ ] **I18N-01l** Extract import strings (incl. ai-fallback cleanup screen)
+- [ ] **I18N-01m** Extract ai-chat strings (chat + guided session + commit preview)
+- [ ] **I18N-01n** Extract remaining common + errors strings
+- [ ] **I18N-01o** Reveal language switcher with second language wiring
+- [ ] **I18N-02** Add English translations
+
+---
+
 ## Phase S: Donation integration
 
 Sustainability work. Makes donations discoverable without interrupting the core experience. All three tasks link out to `DONATE.md` in the repo root (Liberapay, GitHub Sponsors, Ko-fi, PayPal). No in-app payment processing, no analytics, no feature gating.
