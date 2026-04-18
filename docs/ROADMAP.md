@@ -176,7 +176,7 @@ Goal: upload PDFs and images, store them encrypted, view them, link them to prof
 
 Goal: export the profile as PDF for doctor visits, as markdown for archiving, as CSV for lab values.
 
-- [ ] **X-01** Markdown export: render the full profile as a single `.md` file for download
+- [x] **X-01** Markdown export: pure export function round-trip compatible with IM-01 parser, download trigger, filename convention, ExportOptions contract (dateRange + themes) for future filter UIs, useExportData hook, ExportDialog + ExportButton wired into ProfileView header and Settings (commits `4d2bdc4` budget bump ADR-0012, `a7b5e21` feature)
 - [ ] **X-02** PDF export with `jsPDF`: header, base data, observations by theme, lab values, supplements, open points
 - [ ] **X-03** Date range selector for export
 - [ ] **X-04** Theme filter for export (include only selected observation themes)
