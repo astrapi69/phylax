@@ -253,7 +253,7 @@ Repository-level release preparation. No deployment.
 - [x] **R-01** Finalize PWA icons (72 through 512, plus maskable-192) and manifest (lang/dir/categories, full icon set) (commit `f0bc6a8`)
 - [x] **R-02** README rewrite for external readers: features, screenshots placeholders, privacy summary, AI opt-in, donation link, acknowledgments (commit `40d7b1c`; screenshots tracked in issues #6-#9)
 - [x] **R-03** CHANGELOG.md with Keep-a-Changelog format, grouped by user-facing category with task-ID traceability (commit `1a576cd`)
-- [ ] **R-04** GitHub repo metadata: description, topics, social preview
+- [x] **R-04** GitHub repo metadata: 20 topics (added `privacy-first` + `claude-api`), private vulnerability reporting enabled, SECURITY.md, .github/FUNDING.yml with 5 channels; existing description preserved (commit pending)
 - [ ] **R-05** v1.0.0 git tag and GitHub Release
 
 ---
@@ -273,8 +273,8 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
 complete. The v1.0.0 public release is in progress via the R-series.
 
-Current active task: **R-04** (GitHub repo metadata). Remaining release
-tasks: R-04 -> R-05.
+Current active task: **R-05** (v1.0.0 git tag and GitHub Release).
+Final release task.
 
 Open backlog (deferred; not part of v1.0.0):
 
