@@ -2,6 +2,8 @@
 
 Your local-first, zero-knowledge living health profile.
 
+**Live demo**: https://astrapi69.github.io/phylax/ (install as a PWA via your browser's address bar)
+
 [![CI](https://github.com/astrapi69/phylax/actions/workflows/ci.yml/badge.svg)](https://github.com/astrapi69/phylax/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Bundle budget](https://img.shields.io/badge/bundle-%3C180%20KB-blue)](./size-limit.json)
@@ -195,6 +197,15 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task breakdown and
 [CHANGELOG.md](CHANGELOG.md) for the release history.
 
 ## Quick start
+
+### Try it live
+
+Open https://astrapi69.github.io/phylax/ in Chrome, Edge, or any
+Chromium-based browser. Click "Install Phylax" from the address bar (or
+three-dot menu) to add it to your home screen / app drawer. Phylax runs
+entirely in the browser and works offline after the first visit.
+
+### Run from source
 
 Requires Node.js 20 LTS or later. If you use nvm, `nvm use` picks up the
 pinned version from `.nvmrc`.
