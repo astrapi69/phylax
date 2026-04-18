@@ -1,5 +1,8 @@
 # Phylax Roadmap
 
+> **v1.0.0 shipped on 2026-04-18** ([release](https://github.com/astrapi69/phylax/releases/tag/v1.0.0)).
+> Tag points at commit `b0b91e6`. Future changes land in `[Unreleased]` in CHANGELOG.md.
+
 This document is the source of truth for what to build next. Tasks are grouped by phase. Each task has an ID. When a task is finished, check its box and update the commit reference.
 
 Task ID prefixes:
@@ -254,7 +257,7 @@ Repository-level release preparation. No deployment.
 - [x] **R-02** README rewrite for external readers: features, screenshots placeholders, privacy summary, AI opt-in, donation link, acknowledgments (commit `40d7b1c`; screenshots tracked in issues #6-#9)
 - [x] **R-03** CHANGELOG.md with Keep-a-Changelog format, grouped by user-facing category with task-ID traceability (commit `1a576cd`)
 - [x] **R-04** GitHub repo metadata: 20 topics (added `privacy-first` + `claude-api`), private vulnerability reporting enabled, SECURITY.md, .github/FUNDING.yml with 5 channels; existing description preserved (commit `8399749`)
-- [ ] **R-05** v1.0.0 git tag and GitHub Release
+- [x] **R-05** v1.0.0 git tag and GitHub Release (tag at `b0b91e6`, [release page](https://github.com/astrapi69/phylax/releases/tag/v1.0.0))
 
 ---
 
@@ -273,8 +276,10 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
 complete. The v1.0.0 public release is in progress via the R-series.
 
-Current active task: **R-05** (v1.0.0 git tag and GitHub Release).
-Final release task.
+v1.0.0 shipped. Next up: **D-series** (deployment). D-01 will set up
+GitHub Pages hosting so the app is reachable at a public URL; the
+`homepageUrl` in the repo metadata and the forward-reference in the
+v1.0.0 release notes will point there once live.
 
 Open backlog (deferred; not part of v1.0.0):
 
