@@ -1,20 +1,43 @@
 # src/features/export
 
-PDF and CSV export UI. Generates reports for doctor visits with date range and type filters.
+Profile export in Markdown, PDF, and CSV formats. Users trigger exports
+from the Profile view or the Settings screen; the dialog owns the format
+choice; each export is client-side only (no server, no network).
 
-Uses jsPDF for PDF generation. Reports include a header, patient info section (user-editable), and entries grouped by type. CSV export produces one file per entry type. All exports use the naming convention `phylax-report-YYYY-MM-DD`.
+## Boundaries
 
-## What does NOT belong here
-
-- No direct `crypto.subtle` calls. Decrypted data comes from repositories.
+- No direct `crypto.subtle` calls. Decrypted data arrives via
+  repositories through `useExportData`.
 - No Dexie imports. Data access goes through repositories.
-- No jsPDF logic mixed into components. PDF generation belongs in a dedicated service.
+- No PDF / Markdown / CSV formatting inside React components. Pure
+  format functions (`markdownExport.ts` and future `pdfExport.ts` /
+  `csvExport.ts`) produce strings or Blobs; components only trigger the
+  download.
 
-## Planned contents
+## Current contents
 
-- `PdfReport.tsx` (X-01): PDF report generation orchestrator
-- `DateRangeSelector.tsx` (X-02): date range picker for report scope
-- `TypeFilter.tsx` (X-03): entry type selection for the report
-- `CsvExport.tsx` (X-05): CSV export per entry type
-- `ExportPreview.tsx` (X-06): preview before download
-- `index.ts`: public API re-exports
+- `markdownExport.ts` (X-01): pure `(profile, entities, options) => string`
+  in the "Lebende Gesundheit" format, round-trip compatible with the
+  IM-01 parser.
+- `download.ts`: `triggerDownload(content, filename, mimeType)` Blob +
+  anchor click helper, reused by every export format.
+- `filenames.ts`: `phylax-profil-YYYY-MM-DD.{md,pdf}` and
+  `phylax-labor-YYYY-MM-DD.csv` generators.
+- `exportOptions.ts`: shared `ExportOptions` type (date range, theme
+  filter, linked documents). Accepted by every export function so filter
+  UIs land in X-03 / X-04 / X-05 without refactoring the contract.
+- `useExportData.ts`: one hook that loads the current profile plus all
+  entity lists via repositories; returns a typed Result.
+- `ExportDialog.tsx`: format-choice modal. X-01 renders the Markdown
+  button only; PDF (X-02) and CSV (X-06) buttons appear once those
+  tasks ship.
+- `ExportButton.tsx`: entry-point button that opens the dialog. Mounted
+  prominently in the Profile view and as a subtle link in Settings.
+
+## Planned
+
+- `pdfExport.ts` (X-02a): basic `jsPDF` profile report
+- `csvExport.ts` (X-06): lab-values-only CSV
+- Filter UIs (X-03 date range, X-04 theme)
+- Preview dialog (X-07) applies to all three formats
+- Linked-documents appendix (X-05 / X-02b)

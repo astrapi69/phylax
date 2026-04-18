@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getDisplayName } from '../../domain';
 import type { Profile } from '../../domain';
 import { DonationOnboardingCard, DonationReminderBanner, readDonationState } from '../donation';
+import { ExportButton } from '../export';
 import { BaseDataSection, ProfileTypeBadge } from './BaseDataSection';
 import { DoctorCard } from './DoctorCard';
 import { WarningSignsSection } from './WarningSignsSection';
@@ -61,15 +62,19 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
             <ProfileTypeBadge profileType={baseData.profileType} managedBy={baseData.managedBy} />
           </div>
         </div>
-        <div className="text-sm text-gray-600 dark:text-gray-400 md:text-right">
-          <p>
-            Version <span className="font-medium text-gray-900 dark:text-gray-100">v{version}</span>
-          </p>
-          {lastUpdateReason && (
-            <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400 md:ml-auto">
-              Letzte Änderung: {lastUpdateReason}
+        <div className="flex flex-col items-start gap-3 text-sm text-gray-600 dark:text-gray-400 md:items-end md:text-right">
+          <ExportButton />
+          <div>
+            <p>
+              Version{' '}
+              <span className="font-medium text-gray-900 dark:text-gray-100">v{version}</span>
             </p>
-          )}
+            {lastUpdateReason && (
+              <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400 md:ml-auto">
+                Letzte Änderung: {lastUpdateReason}
+              </p>
+            )}
+          </div>
         </div>
       </header>
 

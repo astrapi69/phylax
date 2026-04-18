@@ -1,11 +1,12 @@
 import { ThemeSection } from './ThemeSection';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
+import { ExportButton } from '../export';
 
 /**
- * Settings screen. Hosts the theme picker, the AI configuration, and
- * the donation link. Future settings (auto-lock timeout, language,
- * etc.) attach as more sections here.
+ * Settings screen. Hosts the theme picker, the AI configuration, the
+ * export entry point, and the donation link. Future settings (auto-lock
+ * timeout, language, etc.) attach as more sections here.
  */
 export function SettingsScreen() {
   return (
@@ -13,6 +14,21 @@ export function SettingsScreen() {
       <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Einstellungen</h1>
       <ThemeSection />
       <AISettingsSection />
+      <section aria-labelledby="export-settings-heading">
+        <h2
+          id="export-settings-heading"
+          className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+        >
+          Export
+        </h2>
+        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum
+          naechsten Arztbesuch mit.
+        </p>
+        <ExportButton className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+          Profil exportieren
+        </ExportButton>
+      </section>
       <DonationSettingsSection />
     </div>
   );

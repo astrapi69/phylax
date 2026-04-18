@@ -34,6 +34,8 @@ describe('SettingsScreen', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Export' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Profil exportieren' })).toBeInTheDocument();
     // All three theme options are present.
     expect(screen.getAllByRole('radio')).toHaveLength(3);
   });
