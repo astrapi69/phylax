@@ -271,7 +271,7 @@ Note on prefix: the Phase 4 Documents tasks also use the `D-` prefix
 avoid ambiguity, Deployment tasks in this section are written with the
 `[Deployment]` label alongside the task ID in commits and CHANGELOG.
 
-- [x] **D-01** GitHub Pages deployment via Actions: conditional Vite base `/phylax/` in production, BrowserRouter basename from `import.meta.env.BASE_URL`, VitePWA `start_url`/`scope`/`navigateFallback` rebased, workflow_run trigger after CI, 404.html SPA fallback, playwright prod config updated (commit pending)
+- [x] **D-01** GitHub Pages deployment via Actions: conditional Vite base `/phylax/` in production, BrowserRouter basename from `import.meta.env.BASE_URL`, VitePWA `start_url`/`scope`/`navigateFallback` rebased, workflow_run trigger after CI, 404.html SPA fallback, playwright prod config updated (infra commit `eef1763`, docs follow-up `4d08e84`; live at https://astrapi69.github.io/phylax/)
 - [ ] **D-02** Custom domain (optional; requires registrar + CNAME + DNS verification)
 - [ ] **D-03** PWABuilder packaging for app stores (needs D-01 live URL)
 
