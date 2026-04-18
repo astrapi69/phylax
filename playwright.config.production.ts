@@ -17,7 +17,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:6174',
+    // Production build uses base=/phylax/ for GitHub Pages deployment (D-01).
+    // The preview server mirrors that base path, so the test baseURL must
+    // include it; otherwise requests to '/' hit the root and 404.
+    baseURL: 'http://localhost:6174/phylax/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

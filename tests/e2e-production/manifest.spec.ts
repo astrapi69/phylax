@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('PWA manifest (production build)', () => {
   test('manifest is served with correct fields from production build', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
 
     const manifestHref = await page.evaluate(() => {
       const link = document.querySelector('link[rel="manifest"]');
@@ -11,14 +11,16 @@ test.describe('PWA manifest (production build)', () => {
 
     expect(manifestHref).toBeTruthy();
 
-    const response = await page.goto(manifestHref ?? '/manifest.webmanifest');
+    const response = await page.goto(manifestHref ?? 'manifest.webmanifest');
     expect(response?.status()).toBe(200);
 
     const manifest = await response?.json();
     expect(manifest.name).toBe('Phylax');
     expect(manifest.short_name).toBe('Phylax');
     expect(manifest.display).toBe('standalone');
-    expect(manifest.start_url).toBe('/');
+    // D-01: production build uses /phylax/ base for GitHub Pages deployment.
+    expect(manifest.start_url).toBe('/phylax/');
+    expect(manifest.scope).toBe('/phylax/');
     expect(manifest.lang).toBe('de');
     expect(manifest.theme_color).toBe('#1f2937');
     expect(manifest.categories).toEqual(expect.arrayContaining(['health']));
@@ -31,7 +33,7 @@ test.describe('PWA manifest (production build)', () => {
   });
 
   test('service worker registers and activates in production', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
 
     const swActive = await page.waitForFunction(
       async () => {

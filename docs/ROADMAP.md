@@ -261,6 +261,22 @@ Repository-level release preparation. No deployment.
 
 ---
 
+## Deployment
+
+Public hosting of the PWA. Follows R-series; depends on v1.0.0 being
+tagged so release notes can link to the live URL.
+
+Note on prefix: the Phase 4 Documents tasks also use the `D-` prefix
+(D-01 through D-10 for Document repository, upload, viewers, etc.). To
+avoid ambiguity, Deployment tasks in this section are written with the
+`[Deployment]` label alongside the task ID in commits and CHANGELOG.
+
+- [x] **D-01** GitHub Pages deployment via Actions: conditional Vite base `/phylax/` in production, BrowserRouter basename from `import.meta.env.BASE_URL`, VitePWA `start_url`/`scope`/`navigateFallback` rebased, workflow_run trigger after CI, 404.html SPA fallback, playwright prod config updated (commit pending)
+- [ ] **D-02** Custom domain (optional; requires registrar + CNAME + DNS verification)
+- [ ] **D-03** PWABuilder packaging for app stores (needs D-01 live URL)
+
+---
+
 ## Phase S: Donation integration
 
 Sustainability work. Makes donations discoverable without interrupting the core experience. All three tasks link out to `DONATE.md` in the repo root (Liberapay, GitHub Sponsors, Ko-fi, PayPal). No in-app payment processing, no analytics, no feature gating.
@@ -276,10 +292,10 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
 complete. The v1.0.0 public release is in progress via the R-series.
 
-v1.0.0 shipped. Next up: **D-series** (deployment). D-01 will set up
-GitHub Pages hosting so the app is reachable at a public URL; the
-`homepageUrl` in the repo metadata and the forward-reference in the
-v1.0.0 release notes will point there once live.
+v1.0.0 shipped. D-01 (GitHub Pages deployment) landed. Verify live at
+https://astrapi69.github.io/phylax/ once the `Deploy to GitHub Pages`
+workflow completes for this commit, then update repo `homepageUrl` and
+edit the v1.0.0 release notes to link the live URL.
 
 Open backlog (deferred; not part of v1.0.0):
 

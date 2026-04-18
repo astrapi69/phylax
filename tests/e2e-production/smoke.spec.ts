@@ -32,7 +32,7 @@ const FIXTURE_PATH = resolve(
 );
 
 async function clearDatabase(page: Page) {
-  await page.goto('/');
+  await page.goto('./');
   await page.evaluate(() => {
     return new Promise<void>((resolve, reject) => {
       const req = indexedDB.deleteDatabase('phylax');
@@ -64,7 +64,7 @@ async function createDefaultProfile(page: Page) {
 async function setupOnboardedState(page: Page, theme: ThemeMode, sysPref: SystemPreference) {
   await prepareTheme(page, theme, sysPref);
   await clearDatabase(page);
-  await page.goto('/onboarding');
+  await page.goto('onboarding');
   await completeOnboarding(page);
 }
 
@@ -115,7 +115,7 @@ function matrixTests(
 matrixTests('Smoke: onboarding', 'onboarding', async (page, { theme, sysPref }) => {
   await prepareTheme(page, theme, sysPref);
   await clearDatabase(page);
-  await page.goto('/onboarding');
+  await page.goto('onboarding');
   await expect(page.getByRole('heading', { name: 'Phylax einrichten' })).toBeVisible();
 });
 

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Offline support (production build)', () => {
   test('app loads offline after first visit', async ({ context, page }) => {
     // First visit: service worker installs and precaches assets
-    await page.goto('/');
+    await page.goto('./');
     await expect(page.locator('h1')).toBeVisible();
 
     // Wait for service worker to activate and finish caching.
