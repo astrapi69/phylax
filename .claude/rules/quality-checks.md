@@ -135,7 +135,7 @@ When a test-hardening task raises a module's score:
 
 ## Performance budget
 
-- Initial JS bundle: under 250KB gzipped (project-wide ceiling). Per-chunk budgets enforced by size-limit via `make test-bundle-size` (see ADR-0010, `.size-limit.json`). The per-chunk budgets are the operative CI gate; 250 KB is the absolute maximum before code-splitting is required.
+- Initial JS bundle: under 300 KB gzipped (project-wide ceiling, ADR-0013). Per-chunk budgets enforced by size-limit via `make test-bundle-size`: main JS 250 KB, Workbox chunk 8 KB, CSS bundle 15 KB, total JS+CSS 280 KB (ADR-0010, ADR-0012, ADR-0013, `.size-limit.json`). The per-chunk budgets are the operative CI gate; 300 KB is the absolute maximum before code-splitting is required. Any new runtime dependency >10 KB gzipped needs its own ADR entry.
 - Time to interactive on a mid-range phone (Moto G class): under 3 seconds on a cold load.
 - Encrypt/decrypt of a single entry: under 50ms.
 - App must remain usable with 5,000 entries in the database.
