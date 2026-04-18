@@ -1,4 +1,5 @@
 export { DonationSettingsSection } from './DonationSettingsSection';
+export { DonationOnboardingCard } from './DonationOnboardingCard';
 export { DonateLink } from './DonateLink';
 export {
   readDonationState,

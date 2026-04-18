@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { getDisplayName } from '../../domain';
 import type { Profile } from '../../domain';
+import { DonationOnboardingCard, readDonationState } from '../donation';
 import { BaseDataSection, ProfileTypeBadge } from './BaseDataSection';
 import { DoctorCard } from './DoctorCard';
 import { WarningSignsSection } from './WarningSignsSection';
@@ -40,8 +42,17 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
   const { baseData, warningSigns, externalReferences, version, lastUpdateReason } = profile;
   const name = getDisplayName(profile);
 
+  // One-time donation hint (S-02). Hidden on mount if the user already
+  // dismissed it in any previous session; otherwise flips to hidden the
+  // moment the user clicks either action on the card.
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(
+    () => !readDonationState().onboardingSeen,
+  );
+
   return (
     <article className="space-y-6">
+      {showOnboarding && <DonationOnboardingCard onDismiss={() => setShowOnboarding(false)} />}
+
       <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h1>

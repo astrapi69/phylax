@@ -17,6 +17,7 @@ async function unlockSession() {
 }
 
 beforeEach(async () => {
+  window.localStorage.clear();
   lock();
   await setupCompletedOnboarding(TEST_PASSWORD);
   await unlockSession();
@@ -153,5 +154,37 @@ describe('ProfileView', () => {
     render(<ProfileView />);
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
     expect(screen.getByRole('alert').textContent).toMatch(/Kein Profil/);
+  });
+
+  describe('donation onboarding card (S-02)', () => {
+    it('renders the onboarding card when the user has never seen it', async () => {
+      await renderWithProfile(makeProfile());
+      expect(screen.getByTestId('donation-onboarding-card')).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Willkommen bei Phylax' }),
+      ).toBeInTheDocument();
+    });
+
+    it('does NOT render the card when onboardingSeen is already true in storage', async () => {
+      window.localStorage.setItem(
+        'phylax-donation-state',
+        JSON.stringify({
+          onboardingSeen: true,
+          lastReminderAction: null,
+          lastReminderDate: null,
+        }),
+      );
+      await renderWithProfile(makeProfile());
+      expect(screen.queryByTestId('donation-onboarding-card')).not.toBeInTheDocument();
+    });
+
+    it('"Verstanden" click hides the card in the same render cycle', async () => {
+      const user = (await import('@testing-library/user-event')).default.setup();
+      await renderWithProfile(makeProfile());
+      expect(screen.getByTestId('donation-onboarding-card')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Verstanden' }));
+      expect(screen.queryByTestId('donation-onboarding-card')).not.toBeInTheDocument();
+    });
   });
 });
