@@ -1,0 +1,103 @@
+# Changelog
+
+All notable changes to Phylax will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.0.0] - 2026-04-18
+
+First public release. Phylax is a privacy-first, local-first health profile
+Progressive Web App. All data is encrypted on your device; there is no
+backend, no cloud, no telemetry. AI features are opt-in and use the user's
+own Anthropic API key.
+
+### Added
+
+#### Data management
+
+- Encrypted local storage with AES-256-GCM per record, PBKDF2-SHA256 key derivation at 1.2 million iterations, in-memory master key cleared on lock or page close (F-07, F-08, F-09)
+- Master password onboarding flow, unlock with salt verification, and auto-lock after 5 minutes of inactivity (F-12, F-13, F-14)
+- Encrypted IndexedDB schema via Dexie with eight tables (profiles, observations, lab values, supplements, open points, profile versions, documents, meta); every entity carries a profileId from day one (F-10, F-11)
+- Domain model for self and proxy profiles, observations (fact / pattern / self-regulation / status), lab values, supplements, open points, timeline entries, and profile versions (O-01 to O-09)
+- Generic encrypted repository base class that encrypts before put and decrypts after get, with repository implementations for every entity (F-11, O-03 to O-08)
+- Tolerant markdown importer for the "Lebende Gesundheit" format with parse warnings, unrecognized-block tracking, and bulk-put transaction (IM-01, IM-02, IM-03a, IM-03b)
+
+#### Views and UI
+
+- App shell with routing, locked and unlocked states, protected routes (F-16)
+- Profile overview view at /profile showing base data, diagnoses, medications, relevant limitations, warning signs, external references, and context notes (V-01)
+- Observations view grouped by theme with alphabetical and recent-first sort modes, plus post-commit highlight so AI updates surface immediately (V-02, V-02b)
+- Lab values view with per-report tables, category assessments, and reference ranges (V-03)
+- Supplements view grouped by category (daily / regular / on-demand / paused) with rationale display (V-04)
+- Open points checklist view grouped by context, with priority and time-horizon badges (V-05)
+- Timeline view rendering chronological entries with markdown bodies (V-06)
+- Dark mode with system-preference detection, manual override, and flash-prevention inline script for first render (T-01a, T-01b)
+- Mobile-first responsive layout across all screens (no horizontal scroll at 360 px width)
+
+#### AI assistant
+
+- Optional AI structuring partner via Anthropic Claude with bring-your-own-API-key model; key stored encrypted, never transmitted to a Phylax server (AI-01, AI-11)
+- Activation disclaimer that must be accepted before the key is persisted; disclaimer acceptance remembered in localStorage (AI-02)
+- System prompt contract: structures user input, never diagnoses, never interprets lab values clinically, flags uncertainty, emits profile updates in a parser-compatible markdown format (AI-03)
+- Proxy-profile system prompt extension that distinguishes observed versus reported information and adapts caregiver-perspective language (AI-04)
+- Ephemeral chat UI with streaming responses, "Profil teilen" context sharing, and clear assistant labeling; chat messages never persist to storage (AI-05, AI-10)
+- Structured-fragment detection that recognizes Phylax-format blocks in AI replies and surfaces a one-click "In Profil uebernehmen" button (AI-07)
+- Commit preview modal with field-level diff, three-bucket display (new / changed / unchanged), version-description input, and tolerant merge semantics (AI-08)
+- Guided session mode that walks the user through observations, supplements, and open points in sequence with progress pills and inline end-confirmation (AI-06)
+- AI-assisted cleanup fallback when the markdown parser cannot read pasted input; routes cleaned output through the normal import flow on success, surfaces the raw AI output when cleanup still fails (AI-09)
+
+#### Progressive Web App
+
+- Installable PWA via vite-plugin-pwa with autoUpdate service worker and Workbox precaching (F-15)
+- Complete icon set: standard icons at 72, 96, 128, 144, 152, 192, 384, and 512 pixels; maskable variants at 192 and 512 for Android adaptive icons; 180 px Apple touch icon; 32 px favicon (R-01)
+- Manifest metadata: lang=de, dir=ltr, categories=[health, productivity], theme and background colors, portrait orientation preference (R-01)
+- Regeneration pipeline via @resvg/resvg-js (pure WASM) wired to `make icons`; SVG masters in public/icons/ are the single source of truth (R-01)
+
+#### Accessibility
+
+- WCAG 2.1 AA compliance via axe-core checks integrated into the production E2E suite; zero violations across the smoke matrix (T-02a, T-02b)
+- Keyboard navigation and focus management across modals and the chat interface (commit-preview modal, privacy popover, cleanup screen)
+- ARIA labels on structural controls, aria-live regions for chat streaming and guided-session progress
+
+#### Donation integration
+
+- Settings section "Phylax unterstuetzen" with an always-visible external link to DONATE.md (Liberapay, GitHub Sponsors, Ko-fi, PayPal) (S-01)
+- One-time onboarding hint on the Profile view, dismissible via "Projekt unterstuetzen" or "Verstanden" and remembered in localStorage (S-02)
+- 90-day reminder banner on the Profile view with three dismiss paths (support, not now, close), with cooldown heuristics (90 days after dismiss, 180 days after donating) (S-03)
+
+#### Documentation
+
+- Public-release README with features list, privacy summary, AI opt-in walkthrough, screenshot placeholders tracked as issues, and acknowledgments (R-02)
+- DONATE.md with four support options and Liberapay highlighted as recommended
+- Architectural Decision Records under docs/decisions/ (ADR-0008 dependencies, ADR-0009 flash-prevention script, ADR-0010 size-limit budgets, ADR-0011 mutation testing strategy)
+- Living-health concept documentation at docs/CONCEPT.md (German) covering data model, AI role, and threat model
+
+### Security
+
+- All health data encrypted before persistence to IndexedDB; the crypto module is the only call site for the Web Crypto API, enforced by ESLint (F-03, F-07)
+- Dexie imports restricted to src/db/ so no UI code can reach the database directly, enforced by ESLint (F-03)
+- No telemetry, no analytics, no error reporting services; network calls only fire on user-initiated AI requests (AI-10)
+- Key store holds the derived CryptoKey in a module-level variable only; never written to disk, cleared on auto-lock (F-09, F-14)
+- Auto-lock default of 5 minutes, configurable by the user (F-14)
+- Precise data-retention disclosure: the in-app disclaimer and the "Datenschutz beim KI-Chat" popover name the 30-day Anthropic retention window, the no-training guarantee, and the user-owned API key model; link out to privacy.claude.com (I-04)
+- One-click disable removes the API key and deactivates all AI features without affecting stored profile data (AI-11)
+
+### Technical
+
+- Node 20 LTS requirement with .nvmrc and engines field; CI matrix covers Node 20 and Node 22 (I-01)
+- 1096 unit tests (Vitest with fake-indexeddb) and 95 production E2E tests (Playwright against the built bundle)
+- Three-layer architecture (UI / domain / storage) with ESLint-enforced import boundaries
+- Per-module coverage thresholds enforced in CI only (not locally) to avoid the instrumentation cost on developer machines (I-03)
+- Mutation-testing thresholds enforced by nightly CI: crypto 95 percent (100 percent baseline), repositories 95 percent (100 percent baseline), parser 55 percent (57.81 percent baseline), import 75 percent (81.16 percent baseline) (T-04a, T-04c, T-04e, T-04f, T-04g, T-04h)
+- Bundle-size budget of 180 KB gzipped for the main JS bundle, enforced by size-limit in CI; current 177.99 KB (T-03)
+- Rules framework under .claude/rules/ covering architecture, coding standards, quality checks, release workflow, and AI workflow (I-02)
+
+## Notes on pre-1.0 history
+
+Earlier development history is available in the git log; the v1.0.0 release
+is the baseline for SemVer going forward. Future changes land in
+[Unreleased] above, and each release bumps according to
+[Semantic Versioning](https://semver.org/).

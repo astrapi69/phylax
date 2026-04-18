@@ -191,7 +191,8 @@ violations. Bundle size: 177.99 / 180 KB gzipped. Mutation testing
 thresholds per-module (crypto 95%, repositories 95%, parser 55%, import
 75%).
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task breakdown.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task breakdown and
+[CHANGELOG.md](CHANGELOG.md) for the release history.
 
 ## Quick start
 
