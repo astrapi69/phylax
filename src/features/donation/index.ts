@@ -1,6 +1,8 @@
 export { DonationSettingsSection } from './DonationSettingsSection';
 export { DonationOnboardingCard } from './DonationOnboardingCard';
+export { DonationReminderBanner } from './DonationReminderBanner';
 export { DonateLink } from './DonateLink';
+export { shouldShowReminder } from './shouldShowReminder';
 export {
   readDonationState,
   writeDonationState,

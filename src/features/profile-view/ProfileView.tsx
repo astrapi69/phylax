@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getDisplayName } from '../../domain';
 import type { Profile } from '../../domain';
-import { DonationOnboardingCard, readDonationState } from '../donation';
+import { DonationOnboardingCard, DonationReminderBanner, readDonationState } from '../donation';
 import { BaseDataSection, ProfileTypeBadge } from './BaseDataSection';
 import { DoctorCard } from './DoctorCard';
 import { WarningSignsSection } from './WarningSignsSection';
@@ -52,6 +52,7 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
   return (
     <article className="space-y-6">
       {showOnboarding && <DonationOnboardingCard onDismiss={() => setShowOnboarding(false)} />}
+      <DonationReminderBanner profileId={profile.id} />
 
       <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700 md:flex-row md:items-start md:justify-between">
         <div>

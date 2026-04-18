@@ -251,7 +251,7 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 
 - [x] **S-01** Settings section "Phylax unterstuetzen" with an external link to DONATE.md (always visible, no state)
 - [x] **S-02** One-time onboarding hint on ProfileView when `onboardingSeen=false`, dismissible via "Projekt unterstuetzen" or "Verstanden", remembered in localStorage
-- [ ] **S-03** 90-day reminder banner on the Profile view with three dismiss paths (support / not now / close), cooldown 90d after dismiss and 180d after donating
+- [x] **S-03** 90-day reminder banner on the Profile view with three dismiss paths (support / not now / close), cooldown 90d after dismiss and 180d after donating
 
 ---
 

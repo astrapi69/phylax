@@ -187,4 +187,38 @@ describe('ProfileView', () => {
       expect(screen.queryByTestId('donation-onboarding-card')).not.toBeInTheDocument();
     });
   });
+
+  describe('donation reminder banner (S-03)', () => {
+    it('renders the reminder banner when onboardingSeen is true and there is a 100-day-old version', async () => {
+      // Seed onboardingSeen=true so the S-02 card does not mount and the
+      // S-03 gate can fire.
+      window.localStorage.setItem(
+        'phylax-donation-state',
+        JSON.stringify({
+          onboardingSeen: true,
+          lastReminderAction: null,
+          lastReminderDate: null,
+        }),
+      );
+      const profile = makeProfile();
+      // Seed a ProfileVersion with a changeDate 100 days in the past so
+      // shouldShowReminder returns true.
+      const { ProfileVersionRepository } = await import('../../db/repositories');
+      const changeDate = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10);
+      await new ProfileVersionRepository().create({
+        profileId: profile.id,
+        version: '1.0',
+        changeDescription: 'Erstprofil',
+        changeDate,
+      });
+
+      await renderWithProfile(profile);
+      await waitFor(() =>
+        expect(screen.getByTestId('donation-reminder-banner')).toBeInTheDocument(),
+      );
+      expect(screen.queryByTestId('donation-onboarding-card')).not.toBeInTheDocument();
+    });
+  });
 });
