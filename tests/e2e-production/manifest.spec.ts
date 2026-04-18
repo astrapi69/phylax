@@ -19,8 +19,15 @@ test.describe('PWA manifest (production build)', () => {
     expect(manifest.short_name).toBe('Phylax');
     expect(manifest.display).toBe('standalone');
     expect(manifest.start_url).toBe('/');
+    expect(manifest.lang).toBe('de');
+    expect(manifest.theme_color).toBe('#1f2937');
+    expect(manifest.categories).toEqual(expect.arrayContaining(['health']));
     expect(manifest.icons).toBeDefined();
-    expect(manifest.icons.length).toBeGreaterThanOrEqual(3);
+    expect(manifest.icons.length).toBeGreaterThanOrEqual(8);
+    const maskable = manifest.icons.filter(
+      (icon: { purpose?: string }) => icon.purpose === 'maskable',
+    );
+    expect(maskable.length).toBeGreaterThanOrEqual(2);
   });
 
   test('service worker registers and activates in production', async ({ page }) => {

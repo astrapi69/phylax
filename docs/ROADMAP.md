@@ -246,6 +246,18 @@ This phase depends on Phase 2 (profile data must exist before plans can be deriv
 
 ---
 
+## Release (R-series)
+
+Repository-level release preparation. No deployment.
+
+- [x] **R-01** Finalize PWA icons (72 through 512, plus maskable-192) and manifest (lang/dir/categories, full icon set) (commit pending)
+- [ ] **R-02** README rewrite for external readers
+- [ ] **R-03** CHANGELOG.md with Keep-a-Changelog format
+- [ ] **R-04** GitHub repo metadata: description, topics, social preview
+- [ ] **R-05** v1.0.0 git tag and GitHub Release
+
+---
+
 ## Phase S: Donation integration
 
 Sustainability work. Makes donations discoverable without interrupting the core experience. All three tasks link out to `DONATE.md` in the repo root (Liberapay, GitHub Sponsors, Ko-fi, PayPal). No in-app payment processing, no analytics, no feature gating.
