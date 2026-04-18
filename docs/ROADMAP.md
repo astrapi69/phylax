@@ -253,7 +253,7 @@ Repository-level release preparation. No deployment.
 - [x] **R-01** Finalize PWA icons (72 through 512, plus maskable-192) and manifest (lang/dir/categories, full icon set) (commit `f0bc6a8`)
 - [x] **R-02** README rewrite for external readers: features, screenshots placeholders, privacy summary, AI opt-in, donation link, acknowledgments (commit `40d7b1c`; screenshots tracked in issues #6-#9)
 - [x] **R-03** CHANGELOG.md with Keep-a-Changelog format, grouped by user-facing category with task-ID traceability (commit `1a576cd`)
-- [x] **R-04** GitHub repo metadata: 20 topics (added `privacy-first` + `claude-api`), private vulnerability reporting enabled, SECURITY.md, .github/FUNDING.yml with 5 channels; existing description preserved (commit pending)
+- [x] **R-04** GitHub repo metadata: 20 topics (added `privacy-first` + `claude-api`), private vulnerability reporting enabled, SECURITY.md, .github/FUNDING.yml with 5 channels; existing description preserved (commit `8399749`)
 - [ ] **R-05** v1.0.0 git tag and GitHub Release
 
 ---
