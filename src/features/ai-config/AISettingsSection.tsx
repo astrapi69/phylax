@@ -6,6 +6,7 @@ import {
 } from '../../db/aiConfig';
 import { useAIConfig } from './useAIConfig';
 import { AIDisclaimer } from './AIDisclaimer';
+import { PrivacyInfoPopover } from './PrivacyInfoPopover';
 
 type FormMode = 'idle' | 'entering';
 
@@ -31,6 +32,7 @@ export function AISettingsSection() {
   const [modelInput, setModelInput] = useState(DEFAULT_ANTHROPIC_MODEL);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [pending, setPending] = useState<AIProviderConfig | null>(null);
+  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
 
   const status = state.status;
   const suspicious =
@@ -88,10 +90,19 @@ export function AISettingsSection() {
     <section aria-labelledby="ai-settings-heading">
       <h2
         id="ai-settings-heading"
-        className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+        className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
         KI-Assistent
       </h2>
+      <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
+        <button
+          type="button"
+          onClick={() => setShowPrivacyInfo(true)}
+          className="text-blue-700 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          Datenschutz beim KI-Chat
+        </button>
+      </p>
 
       {status === 'loading' && (
         <p className="text-sm text-gray-600 dark:text-gray-400">Lade KI-Einstellungen...</p>
@@ -139,6 +150,8 @@ export function AISettingsSection() {
           onCancel={handleDisclaimerCancel}
         />
       )}
+
+      <PrivacyInfoPopover open={showPrivacyInfo} onClose={() => setShowPrivacyInfo(false)} />
     </section>
   );
 }

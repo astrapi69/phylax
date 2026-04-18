@@ -13,6 +13,31 @@ describe('AIDisclaimer', () => {
     expect(screen.getByText(/Du kontrollierst den Zugang/i)).toBeInTheDocument();
   });
 
+  it('point 2 names the BYOK model (user-owned Anthropic account and key)', () => {
+    render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText(/ueber deinen eigenen Anthropic-Account/)).toBeInTheDocument();
+    expect(screen.getByText(/direkten Kunden, nicht Phylax/)).toBeInTheDocument();
+  });
+
+  it('point 2 names the 30-day retention window and auto-deletion', () => {
+    render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+    expect(screen.getByText(/dann automatisch/)).toBeInTheDocument();
+  });
+
+  it('point 2 states that inputs are not used for AI training', () => {
+    render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByText(/nicht fuer KI-Training/)).toBeInTheDocument();
+  });
+
+  it('point 2 links to privacy.claude.com with safe target/rel attributes', () => {
+    render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    const link = screen.getByRole('link', { name: /privacy\.claude\.com/ });
+    expect(link).toHaveAttribute('href', 'https://privacy.claude.com/');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
   it('confirm button calls onConfirm', async () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();

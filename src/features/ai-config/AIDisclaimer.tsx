@@ -82,8 +82,21 @@ export function AIDisclaimer({ onConfirm, onCancel }: AIDisclaimerProps) {
             <span className="font-medium text-gray-900 dark:text-gray-100">
               Daten verlassen dein Geraet:
             </span>{' '}
-            Wenn du den KI-Assistenten nutzt, werden deine Eingaben an den gewaehlten KI-Anbieter
-            (Anthropic) gesendet. Phylax speichert keine Chat-Verlaeufe.
+            Wenn du den KI-Assistenten nutzt, werden deine Eingaben an Anthropic gesendet, ueber
+            deinen eigenen Anthropic-Account und mit deinem eigenen API-Schluessel. Anthropic
+            behandelt dich als direkten Kunden, nicht Phylax. Anthropic speichert Anfragen und
+            Antworten fuer 30 Tage zur Sicherheitspruefung und loescht sie dann automatisch.
+            Anfragen werden nicht fuer KI-Training verwendet. Phylax selbst speichert keine
+            Chat-Verlaeufe auf deinem Geraet. Details zur Datenverarbeitung durch Anthropic:{' '}
+            <a
+              href="https://privacy.claude.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              privacy.claude.com
+            </a>
+            .
           </li>
           <li>
             <span className="font-medium text-gray-900 dark:text-gray-100">

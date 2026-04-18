@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useChat } from '../useChat';
 import type { DetectedFragment } from '../detection';
 import { GuidedSessionIndicator } from '../guided';
+import { PrivacyInfoPopover } from '../../ai-config';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { CommitPreviewModal } from './CommitPreviewModal';
@@ -38,6 +39,7 @@ export function ChatView() {
     messageId: string;
   } | null>(null);
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
   const prevStreamingRef = useRef(isStreaming);
 
   // Auto-scroll to the bottom as new content arrives.
@@ -132,6 +134,7 @@ export function ChatView() {
                 </button>
               </div>
             )}
+            <PrivacyInfoButton onOpen={() => setShowPrivacyInfo(true)} />
           </div>
         </div>
         {guidedSession.active && (
@@ -205,7 +208,37 @@ export function ChatView() {
           onCommitted={(diff) => markGuidedSessionCommit(diff)}
         />
       )}
+
+      <PrivacyInfoPopover open={showPrivacyInfo} onClose={() => setShowPrivacyInfo(false)} />
     </div>
+  );
+}
+
+function PrivacyInfoButton({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label="Datenschutz-Informationen anzeigen"
+      data-testid="chat-privacy-info-button"
+      className="inline-flex h-9 w-9 items-center justify-center rounded border border-gray-300 text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+    >
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="10" cy="10" r="8" />
+        <path d="M10 9v5" />
+        <circle cx="10" cy="6.5" r="0.5" fill="currentColor" />
+      </svg>
+    </button>
   );
 }
 

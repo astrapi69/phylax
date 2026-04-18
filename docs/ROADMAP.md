@@ -130,6 +130,7 @@ Cross-cutting infrastructure maintenance that is not tied to a product phase.
 - [x] **I-01** Node 20 LTS requirement (drop Node 18, add `.nvmrc`, `engines` field, update CI matrix to 20 + 22) (commit pending)
 - [x] **I-02** Rules update: test strategy, task series conventions, mutation thresholds in quality-checks (commit pending)
 - [x] **I-03** Move coverage checks to CI-only (drop `test-coverage` from `ci-local-full`; CI runs it, local devs skip the instrumentation overhead)
+- [x] **I-04** Privacy disclosure precision: AI-02 disclaimer names 30-day Anthropic retention, BYOK ownership, no-training guarantee; PrivacyInfoPopover in chat header + settings (commit pending)
 
 ---
 

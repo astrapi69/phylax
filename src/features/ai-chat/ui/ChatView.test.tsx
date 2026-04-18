@@ -234,6 +234,20 @@ describe('ChatView', () => {
     expect(mocked.endGuidedSession).toHaveBeenCalledOnce();
   });
 
+  it('privacy info icon is present in the header and opens the popover when clicked', async () => {
+    mockUseChat();
+    const user = userEvent.setup();
+    render(<ChatView />);
+
+    const iconBtn = screen.getByTestId('chat-privacy-info-button');
+    expect(iconBtn).toHaveAttribute('aria-label', 'Datenschutz-Informationen anzeigen');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await user.click(iconBtn);
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'privacy-info-title');
+    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+  });
+
   it('committed assistant messages show the "In Profil uebernommen" badge instead of the button', () => {
     mockUseChat({
       messages: [

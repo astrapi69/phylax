@@ -190,4 +190,25 @@ describe('AISettingsSection', () => {
     const stored = await readAIConfig();
     expect(stored?.apiKey).toBe('sk-ant-xxxxxxxxxxxxxxxxKEEP');
   });
+
+  it('renders the Datenschutz link below the heading in every state', async () => {
+    render(<AISettingsSection />);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument(),
+    );
+  });
+
+  it('clicking Datenschutz opens the privacy info popover', async () => {
+    const user = userEvent.setup();
+    render(<AISettingsSection />);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument(),
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-labelledby', 'privacy-info-title');
+    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+  });
 });

@@ -1,5 +1,7 @@
 export { AISettingsSection } from './AISettingsSection';
 export { AIDisclaimer } from './AIDisclaimer';
+export { PrivacyInfoContent } from './PrivacyInfoContent';
+export { PrivacyInfoPopover } from './PrivacyInfoPopover';
 export { useAIConfig } from './useAIConfig';
 export type { UseAIConfigResult } from './useAIConfig';
 export type { AIConfigState, AIConfigStatus, KeyFormatWarning } from './types';
