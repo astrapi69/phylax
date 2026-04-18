@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ThemeSection } from './ThemeSection';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { AISettingsSection } from '../ai-config';
@@ -10,9 +11,10 @@ import { ExportButton } from '../export';
  * timeout, language, etc.) attach as more sections here.
  */
 export function SettingsScreen() {
+  const { t } = useTranslation('settings');
   return (
     <div className="space-y-8">
-      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Einstellungen</h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('screen.heading')}</h1>
       <LanguageSwitcher />
       <ThemeSection />
       <AISettingsSection />
@@ -21,14 +23,11 @@ export function SettingsScreen() {
           id="export-settings-heading"
           className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
         >
-          Export
+          {t('export.heading')}
         </h2>
-        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-          Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum
-          naechsten Arztbesuch mit.
-        </p>
+        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t('export.description')}</p>
         <ExportButton className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
-          Profil exportieren
+          {t('export.button')}
         </ExportButton>
       </section>
       <DonationSettingsSection />

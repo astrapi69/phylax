@@ -16,7 +16,7 @@ const LANGUAGE_LABEL: Record<string, string> = {
  * automatically without any callsite change.
  */
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('settings');
 
   if (SUPPORTED_LANGUAGES.length < 2) {
     return null;
@@ -28,7 +28,7 @@ export function LanguageSwitcher() {
         htmlFor="language-switcher"
         className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
       >
-        Sprache
+        {t('language.label')}
       </label>
       <select
         id="language-switcher"

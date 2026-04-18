@@ -1,22 +1,24 @@
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../theme';
 import type { Theme } from '../theme';
-
-const OPTIONS: Array<{ value: Theme; label: string; description?: string }> = [
-  { value: 'light', label: 'Hell' },
-  { value: 'dark', label: 'Dunkel' },
-  {
-    value: 'auto',
-    label: 'System folgen',
-    description: 'Folgt den Einstellungen deines Geräts.',
-  },
-];
 
 /**
  * Radio group for the three theme states. Lives on the settings screen;
  * the header has a quick-cycle toggle for the same state.
  */
 export function ThemeSection() {
+  const { t } = useTranslation('settings');
   const { theme, setTheme } = useTheme();
+
+  const options: Array<{ value: Theme; label: string; description?: string }> = [
+    { value: 'light', label: t('theme.options.light') },
+    { value: 'dark', label: t('theme.options.dark') },
+    {
+      value: 'auto',
+      label: t('theme.options.auto'),
+      description: t('theme.options.auto-description'),
+    },
+  ];
 
   return (
     <section aria-labelledby="theme-section-heading">
@@ -24,12 +26,12 @@ export function ThemeSection() {
         id="theme-section-heading"
         className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
-        Darstellung
+        {t('theme.heading')}
       </h2>
       <fieldset>
-        <legend className="sr-only">Theme auswählen</legend>
+        <legend className="sr-only">{t('theme.legend')}</legend>
         <div className="space-y-2">
-          {OPTIONS.map((option) => {
+          {options.map((option) => {
             const id = `theme-option-${option.value}`;
             return (
               <div key={option.value}>
