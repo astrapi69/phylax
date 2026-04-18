@@ -41,6 +41,26 @@ const SUPPLEMENTS_HEADING = /^##\s+Supplemente\b/i;
 const OPEN_POINTS_HEADING = /^##\s+Offene\s+Punkte\b/i;
 const LEVEL2_HEADING = /^##\s+/;
 const LEVEL3_HEADING = /^###\s+(.+?)\s*$/;
+const BULLET = /^\s*[-*+]\s/;
+const HEADING = /^#{1,4}\s/;
+const TABLE_ROW = /^\s*\|/;
+const INDENTED = /^\s/;
+
+/**
+ * Decide whether a line is part of a structured content block as opposed
+ * to trailing conversational prose. Blank lines, bullets, headings, table
+ * rows, and indented continuations all count as content. Anything else
+ * (a standalone sentence like "Moechtest du das uebernehmen?") terminates
+ * the surrounding block.
+ */
+function isContentLine(line: string): boolean {
+  if (line.trim().length === 0) return true;
+  if (BULLET.test(line)) return true;
+  if (HEADING.test(line)) return true;
+  if (TABLE_ROW.test(line)) return true;
+  if (INDENTED.test(line)) return true;
+  return false;
+}
 
 /**
  * Return a DetectedFragment if the message contains recognizable profile
@@ -104,17 +124,20 @@ function extractObservationBlocks(lines: string[]): string[] {
       i += 1;
       continue;
     }
-    // Collect body lines until the next heading (any level) or EOF.
+    // Collect body lines until the next heading (any level), trailing
+    // conversational prose, or EOF.
     let j = i + 1;
     while (j < lines.length) {
       const next = lines[j];
-      if (next && (LEVEL3_HEADING.test(next) || /^#{1,2}\s+/.test(next))) break;
+      if (!next && next !== '') break;
+      if (LEVEL3_HEADING.test(next) || /^#{1,2}\s+/.test(next)) break;
+      if (!isContentLine(next)) break;
       j += 1;
     }
-    const body = lines.slice(i + 1, j);
+    const body = trimTrailingBlanks(lines.slice(i + 1, j));
     const hasField = body.some((l) => OBSERVATION_FIELD.test(l));
     if (hasField) {
-      blocks.push([line, ...body].join('\n').replace(/\s+$/, ''));
+      blocks.push([line, ...body].join('\n'));
     }
     i = j;
   }
@@ -134,16 +157,25 @@ function extractLevel2Block(lines: string[], headingPattern: RegExp): string | n
     let j = i + 1;
     while (j < lines.length) {
       const next = lines[j];
-      if (next && LEVEL2_HEADING.test(next) && !headingPattern.test(next)) break;
+      if (!next && next !== '') break;
+      if (LEVEL2_HEADING.test(next) && !headingPattern.test(next)) break;
+      if (!isContentLine(next)) break;
       j += 1;
     }
-    const block = lines.slice(i, j).join('\n').replace(/\s+$/, '');
-    // Require non-empty body (at least one non-blank line after the heading).
-    const hasBody = lines.slice(i + 1, j).some((l) => l && l.trim().length > 0);
+    const body = trimTrailingBlanks(lines.slice(i + 1, j));
+    const hasBody = body.some((l) => l.trim().length > 0);
     if (!hasBody) return null;
-    return block;
+    return [line, ...body].join('\n');
   }
   return null;
+}
+
+function trimTrailingBlanks(lines: string[]): string[] {
+  const out = [...lines];
+  while (out.length > 0 && (out[out.length - 1] ?? '').trim().length === 0) {
+    out.pop();
+  }
+  return out;
 }
 
 function assembleMarkdown(

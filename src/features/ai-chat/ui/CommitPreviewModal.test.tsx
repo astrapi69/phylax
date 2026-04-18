@@ -1,22 +1,73 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import 'fake-indexeddb/auto';
+import { lock, unlock } from '../../../crypto';
+import { setupCompletedOnboarding } from '../../../db/test-helpers';
+import { readMeta } from '../../../db/meta';
+import { ProfileRepository, ObservationRepository } from '../../../db/repositories';
+import type { Profile } from '../../../domain';
 import { CommitPreviewModal } from './CommitPreviewModal';
 import { detectProfileFragment, type DetectedFragment } from '../detection';
 
-function requireFragment(raw: string): DetectedFragment {
-  const fragment = detectProfileFragment(raw);
-  if (!fragment) throw new Error('expected a detected fragment');
-  return fragment;
+const TEST_PASSWORD = 'test-password-12';
+
+async function unlockSession(): Promise<void> {
+  const meta = await readMeta();
+  await unlock(TEST_PASSWORD, new Uint8Array(meta?.salt ?? new ArrayBuffer(0)));
 }
 
-const OBSERVATION_FRAGMENT = requireFragment(
-  `### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz bei Bankdruecken\n- **Muster:** Gurtbelastung\n- **Selbstregulation:** SCM-Routine`,
+async function seedProfile(): Promise<Profile> {
+  lock();
+  await setupCompletedOnboarding(TEST_PASSWORD);
+  await unlockSession();
+  const repo = new ProfileRepository();
+  return repo.create({
+    baseData: {
+      name: 'Max',
+      weightHistory: [],
+      knownDiagnoses: [],
+      currentMedications: [],
+      relevantLimitations: [],
+      profileType: 'self',
+    },
+    warningSigns: [],
+    externalReferences: [],
+    version: '1.0',
+  });
+}
+
+function requireFragment(raw: string): DetectedFragment {
+  const f = detectProfileFragment(raw);
+  if (!f) throw new Error('expected a detected fragment');
+  return f;
+}
+
+beforeEach(async () => {
+  window.localStorage.clear();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+const NEW_OBS_FRAGMENT = requireFragment(
+  `### Knie rechts
+- **Status:** Akut
+- **Beobachtung:** Schmerzen nach dem Lauftraining
+- **Muster:** Belastungsabhaengig
+- **Selbstregulation:** Pause, Waerme`,
 );
 
-const MIXED_FRAGMENT = requireFragment(`### Knie rechts
+const MIXED_FRAGMENT = requireFragment(`### Linke Schulter
+- **Status:** Stabil
+- **Beobachtung:** Deutlich weniger Druckschmerz
+- **Muster:** SCM-Kompensation
+- **Selbstregulation:** SCM-Routine + Mobility
+
+### Knie rechts
 - **Status:** Akut
-- **Beobachtung:** Schmerzen nach Lauftraining
+- **Beobachtung:** Schmerzen nach dem Lauftraining
 
 ## Supplemente
 
@@ -26,83 +77,202 @@ const MIXED_FRAGMENT = requireFragment(`### Knie rechts
 
 ## Offene Punkte
 
-### Laufen
-- Laufschuh-Check`);
+### Beim naechsten Arztbesuch
+- MRT Knie rechts besprechen
+- TSH-Wert nachmessen`);
 
-describe('CommitPreviewModal', () => {
-  it('renders the observation preview with theme and all four fields', () => {
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={vi.fn()} />);
-    const section = screen.getByTestId('commit-preview-observations');
-    expect(section).toHaveTextContent('Linke Schulter');
-    expect(section).toHaveTextContent('Status:');
-    expect(section).toHaveTextContent('Akut');
-    expect(section).toHaveTextContent('Druckschmerz bei Bankdruecken');
-    expect(section).toHaveTextContent('SCM-Routine');
+describe('CommitPreviewModal (diff view)', () => {
+  it('renders a loading state while profile data is fetched', async () => {
+    await seedProfile();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    expect(screen.getByTestId('commit-preview-loading')).toBeInTheDocument();
+    // Wait for the async load to settle before unmounting so React doesn't
+    // warn about a state update on an unmounted component.
+    await waitFor(() =>
+      expect(screen.queryByTestId('commit-preview-loading')).not.toBeInTheDocument(),
+    );
   });
 
-  it('renders the supplements preview with the German category label', () => {
+  it('renders an error when the key store is locked', async () => {
+    await seedProfile();
+    lock();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() =>
+      expect(screen.getByTestId('commit-preview-error')).toHaveTextContent(/gesperrt/),
+    );
+  });
+
+  it('renders a [neu] badge for an entirely new observation', async () => {
+    await seedProfile();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() =>
+      expect(screen.getByTestId('commit-preview-observations')).toBeInTheDocument(),
+    );
+
+    const row = screen.getByTestId('observation-new');
+    expect(row).toHaveTextContent(/neu/i);
+    expect(row).toHaveTextContent('Knie rechts');
+    expect(row).toHaveTextContent('Akut');
+  });
+
+  it('renders an [aktualisiert] badge for a changed observation and shows old -> new for changed fields', async () => {
+    const profile = await seedProfile();
+    const obsRepo = new ObservationRepository();
+    await obsRepo.create({
+      profileId: profile.id,
+      theme: 'Linke Schulter',
+      status: 'Chronisch',
+      fact: 'Druckschmerz',
+      pattern: 'SCM-Kompensation',
+      selfRegulation: 'SCM-Routine + Mobility',
+      source: 'user',
+      extraSections: {},
+    });
+
     render(<CommitPreviewModal fragment={MIXED_FRAGMENT} onClose={vi.fn()} />);
-    const section = screen.getByTestId('commit-preview-supplements');
-    expect(section).toHaveTextContent('Magnesium 400');
-    expect(section).toHaveTextContent('taeglich');
+    await waitFor(() => expect(screen.getByTestId('observation-changed')).toBeInTheDocument());
+
+    const changedRow = screen.getByTestId('observation-changed');
+    expect(changedRow).toHaveTextContent(/aktualisiert/i);
+    expect(changedRow).toHaveTextContent('Linke Schulter');
+    // Changed field (Status) shows old and new values
+    expect(changedRow).toHaveTextContent('Chronisch');
+    expect(changedRow).toHaveTextContent('Stabil');
   });
 
-  it('renders the open points preview grouped by context', () => {
+  it('hides "(unveraendert)" lines by default and reveals them when the toggle is on', async () => {
+    const profile = await seedProfile();
+    await new ObservationRepository().create({
+      profileId: profile.id,
+      theme: 'Linke Schulter',
+      status: 'Chronisch',
+      fact: 'Druckschmerz',
+      pattern: 'SCM-Kompensation',
+      selfRegulation: 'SCM-Routine + Mobility',
+      source: 'user',
+      extraSections: {},
+    });
+
+    const user = userEvent.setup();
     render(<CommitPreviewModal fragment={MIXED_FRAGMENT} onClose={vi.fn()} />);
-    const section = screen.getByTestId('commit-preview-open-points');
-    expect(section).toHaveTextContent('Laufen');
-    expect(section).toHaveTextContent('Laufschuh-Check');
+    await waitFor(() => expect(screen.getByTestId('observation-changed')).toBeInTheDocument());
+
+    const changedRow = screen.getByTestId('observation-changed');
+    // Default: unchanged fields hidden (no "(unveraendert)" visible)
+    expect(changedRow).not.toHaveTextContent(/unveraendert/);
+
+    await user.click(screen.getByTestId('commit-preview-unchanged-toggle'));
+
+    // Toggle on: unchanged fields appear
+    expect(screen.getByTestId('observation-changed')).toHaveTextContent(/unveraendert/i);
   });
 
-  it('"Uebernehmen" is rendered disabled with the AI-08 tooltip', () => {
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={vi.fn()} />);
+  it('auto-populates the version description from the diff, and the user can edit it', async () => {
+    await seedProfile();
+    const user = userEvent.setup();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
+    const input = screen.getByLabelText('Beschreibung der Aenderung') as HTMLInputElement;
+    expect(input.value).toContain('KI-Update');
+    expect(input.value).toContain('Knie rechts neu');
+
+    await user.clear(input);
+    await user.type(input, 'Meine Beschreibung');
+    expect(input).toHaveValue('Meine Beschreibung');
+  });
+
+  it('shows the "Keine Aenderungen" banner when the diff is empty', async () => {
+    const profile = await seedProfile();
+    // Seed an observation identical to what the fragment carries, so the
+    // diff comes out all-unchanged.
+    await new ObservationRepository().create({
+      profileId: profile.id,
+      theme: 'Knie rechts',
+      status: 'Akut',
+      fact: 'Schmerzen nach dem Lauftraining',
+      pattern: 'Belastungsabhaengig',
+      selfRegulation: 'Pause, Waerme',
+      source: 'user',
+      extraSections: {},
+    });
+
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-empty')).toBeInTheDocument());
+    expect(screen.getByTestId('commit-preview-empty')).toHaveTextContent(/Keine Aenderungen/i);
+  });
+
+  it('renders the parser / diff warnings block when multi-match observations are found', async () => {
+    const profile = await seedProfile();
+    const repo = new ObservationRepository();
+    await repo.create({
+      profileId: profile.id,
+      theme: 'Linke Schulter',
+      status: 'Alt-A',
+      fact: '',
+      pattern: '',
+      selfRegulation: '',
+      source: 'user',
+      extraSections: {},
+    });
+    await repo.create({
+      profileId: profile.id,
+      theme: 'Linke Schulter',
+      status: 'Alt-B',
+      fact: '',
+      pattern: '',
+      selfRegulation: '',
+      source: 'user',
+      extraSections: {},
+    });
+
+    render(<CommitPreviewModal fragment={MIXED_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-warnings')).toBeInTheDocument());
+    expect(screen.getByTestId('commit-preview-warnings')).toHaveTextContent(
+      /Mehrere Beobachtungen mit Thema "Linke Schulter"/,
+    );
+  });
+
+  it('renders [neu] supplement and open-points blocks for the mixed fragment', async () => {
+    await seedProfile();
+    render(<CommitPreviewModal fragment={MIXED_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() =>
+      expect(screen.getByTestId('commit-preview-supplements')).toBeInTheDocument(),
+    );
+    expect(screen.getByTestId('supplement-new')).toHaveTextContent('Magnesium 400');
+    expect(screen.getByTestId('commit-preview-open-points')).toHaveTextContent(
+      'MRT Knie rechts besprechen',
+    );
+  });
+
+  it('Uebernehmen button stays disabled with the AI-08b tooltip', async () => {
+    await seedProfile();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
+
     const btn = screen.getByRole('button', { name: 'Uebernehmen' });
     expect(btn).toBeDisabled();
     expect(btn).toHaveAttribute('aria-disabled', 'true');
-    expect(btn).toHaveAttribute('title', 'Wird in AI-08 aktiviert');
+    expect(btn).toHaveAttribute('title', expect.stringMatching(/AI-08b/));
   });
 
   it('"Schliessen" button calls onClose', async () => {
-    const user = userEvent.setup();
+    await seedProfile();
     const onClose = vi.fn();
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={onClose} />);
+    const user = userEvent.setup();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={onClose} />);
     await user.click(screen.getByRole('button', { name: 'Schliessen' }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('Escape key also calls onClose', async () => {
-    const user = userEvent.setup();
-    const onClose = vi.fn();
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={onClose} />);
-    await user.keyboard('{Escape}');
-    expect(onClose).toHaveBeenCalledOnce();
-  });
+  it('exposes a dialog role with aria-modal and focuses "Schliessen" on mount', async () => {
+    await seedProfile();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
-  it('exposes a dialog role with aria-modal and focuses "Schliessen" on mount', () => {
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={vi.fn()} />);
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
     expect(dialog).toHaveAttribute('aria-labelledby', 'commit-preview-title');
     expect(screen.getByRole('button', { name: 'Schliessen' })).toHaveFocus();
-  });
-
-  it('exposes a Roh-Markdown toggle', () => {
-    render(<CommitPreviewModal fragment={OBSERVATION_FRAGMENT} onClose={vi.fn()} />);
-    expect(screen.getByTestId('commit-preview-raw-toggle')).toHaveTextContent(
-      'Roh-Markdown anzeigen',
-    );
-  });
-
-  it('shows an amber banner when the parser produces nothing usable', async () => {
-    // Build a fragment whose observation heading has a field marker (passes
-    // detection) but whose body contains only the field marker with no
-    // accompanying theme recognizable by the parser. Here we hand-craft a
-    // bare supplement block with an empty table body so parseProfile returns
-    // zero entities.
-    const emptyTable = requireFragment(
-      `## Supplemente\n\n| Kategorie | Praeparat |\n| --- | --- |`,
-    );
-    render(<CommitPreviewModal fragment={emptyTable} onClose={vi.fn()} />);
-    expect(screen.getByTestId('commit-preview-empty')).toBeInTheDocument();
   });
 });

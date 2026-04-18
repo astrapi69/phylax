@@ -155,4 +155,86 @@ Rein erklaerender Text ohne Bullet-Felder.`;
 `;
     expect(detectProfileFragment(message)).toBeNull();
   });
+
+  describe('block termination (AI-08a fix)', () => {
+    it('trims the trailing "Moechtest du das uebernehmen?" question after an open-points block', () => {
+      const message = `Hier ist der Punkt fuer deinen naechsten Arztbesuch:
+
+## Offene Punkte
+
+### Beim naechsten Arztbesuch
+- TSH-Wert nachmessen
+
+Moechtest du das so uebernehmen?`;
+
+      const result = detectProfileFragment(message);
+      expect(result?.hasOpenPoints).toBe(true);
+      expect(result?.openPointsBlock).toContain('TSH-Wert nachmessen');
+      expect(result?.openPointsBlock).not.toContain('Moechtest du');
+      expect(result?.markdown).not.toContain('Moechtest du');
+    });
+
+    it('preserves multiline indented bullet continuations inside an observation block', () => {
+      const message = `### Knie rechts
+- **Status:** Akut
+- **Beobachtung:** Schmerzen nach Lauftraining
+  insbesondere bei Bergauflaeufen
+  auf hartem Untergrund
+- **Muster:** Belastungsabhaengig`;
+
+      const result = detectProfileFragment(message);
+      expect(result?.observationBlocks[0]).toContain('insbesondere bei Bergauflaeufen');
+      expect(result?.observationBlocks[0]).toContain('auf hartem Untergrund');
+    });
+
+    it('excludes a trailing prose sentence that follows the last bullet', () => {
+      const message = `## Supplemente
+
+| Kategorie | Praeparat |
+| --- | --- |
+| taeglich | Magnesium 400 |
+
+Ich hoffe das hilft.`;
+
+      const result = detectProfileFragment(message);
+      expect(result?.supplementsBlock).toContain('Magnesium 400');
+      expect(result?.supplementsBlock).not.toContain('Ich hoffe');
+    });
+
+    it('treats Markdown table rows as content so the whole table stays inside the block', () => {
+      const message = `## Supplemente
+
+| Kategorie | Praeparat |
+| --- | --- |
+| taeglich | Vitamin D3 |
+| bei Bedarf | Magnesium 400 |
+
+Noch Fragen?`;
+
+      const result = detectProfileFragment(message);
+      expect(result?.supplementsBlock).toContain('| --- | --- |');
+      expect(result?.supplementsBlock).toContain('Vitamin D3');
+      expect(result?.supplementsBlock).toContain('Magnesium 400');
+      expect(result?.supplementsBlock).not.toContain('Noch Fragen');
+    });
+
+    it('real-world regression: TSH-Wert nachmessen block produced clean from the AI response', () => {
+      // Exact pattern observed in browser testing: the trailing question
+      // used to be absorbed into the open-point text.
+      const message = `Hier ist der Punkt fuer deinen naechsten Arztbesuch:
+
+## Offene Punkte
+### Beim naechsten Arztbesuch
+- TSH-Wert nachmessen
+
+Moechtest du das so uebernehmen?`;
+
+      const result = detectProfileFragment(message);
+      if (!result) throw new Error('expected a detected fragment');
+      expect(result.hasOpenPoints).toBe(true);
+      expect(result.openPointsBlock).toBe(
+        '## Offene Punkte\n### Beim naechsten Arztbesuch\n- TSH-Wert nachmessen',
+      );
+    });
+  });
 });
