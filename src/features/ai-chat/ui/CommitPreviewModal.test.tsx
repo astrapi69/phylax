@@ -245,15 +245,94 @@ describe('CommitPreviewModal (diff view)', () => {
     );
   });
 
-  it('Uebernehmen button stays disabled with the AI-08b tooltip', async () => {
+  it('Uebernehmen is enabled once the diff loads and the description is non-empty', async () => {
     await seedProfile();
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
     const btn = screen.getByRole('button', { name: 'Uebernehmen' });
+    expect(btn).toBeEnabled();
+    expect(btn).not.toHaveAttribute('title');
+  });
+
+  it('Uebernehmen is disabled and carries the German hint when the diff is empty', async () => {
+    const profile = await seedProfile();
+    await new ObservationRepository().create({
+      profileId: profile.id,
+      theme: 'Knie rechts',
+      status: 'Akut',
+      fact: 'Schmerzen nach dem Lauftraining',
+      pattern: 'Belastungsabhaengig',
+      selfRegulation: 'Pause, Waerme',
+      source: 'user',
+      extraSections: {},
+    });
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-empty')).toBeInTheDocument());
+
+    const btn = screen.getByRole('button', { name: 'Uebernehmen' });
     expect(btn).toBeDisabled();
-    expect(btn).toHaveAttribute('aria-disabled', 'true');
-    expect(btn).toHaveAttribute('title', expect.stringMatching(/AI-08b/));
+    expect(btn.getAttribute('title')).toMatch(/Keine Aenderungen/);
+  });
+
+  it('Uebernehmen is disabled when the description input is cleared', async () => {
+    await seedProfile();
+    const user = userEvent.setup();
+    render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
+
+    await user.clear(screen.getByLabelText('Beschreibung der Aenderung'));
+    expect(screen.getByRole('button', { name: 'Uebernehmen' })).toBeDisabled();
+  });
+
+  it('clicking Uebernehmen commits, surfaces the summary via onCommitSuccess, and closes the modal', async () => {
+    const profile = await seedProfile();
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const onCommitSuccess = vi.fn();
+    render(
+      <CommitPreviewModal
+        fragment={NEW_OBS_FRAGMENT}
+        onClose={onClose}
+        onCommitSuccess={onCommitSuccess}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: 'Uebernehmen' }));
+
+    await waitFor(() => expect(onCommitSuccess).toHaveBeenCalledOnce());
+    const summary = onCommitSuccess.mock.calls[0]?.[0];
+    expect(summary).toMatch(/Profil-Update gespeichert/);
+    expect(summary).toMatch(/Version 1\.1/);
+    expect(onClose).toHaveBeenCalledOnce();
+
+    // Verify the observation was actually written
+    const stored = await new ObservationRepository().listByProfile(profile.id);
+    expect(stored.some((o) => o.theme === 'Knie rechts' && o.source === 'ai')).toBe(true);
+  });
+
+  it('commit failure keeps the modal open and shows an inline error banner', async () => {
+    await seedProfile();
+    const onClose = vi.fn();
+    const onCommitSuccess = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <CommitPreviewModal
+        fragment={NEW_OBS_FRAGMENT}
+        onClose={onClose}
+        onCommitSuccess={onCommitSuccess}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
+
+    // Lock the store so the pre-encryption step inside commitFragment throws.
+    lock();
+    await user.click(screen.getByRole('button', { name: 'Uebernehmen' }));
+
+    await waitFor(() => expect(screen.getByTestId('commit-error')).toBeInTheDocument());
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onCommitSuccess).not.toHaveBeenCalled();
   });
 
   it('"Schliessen" button calls onClose', async () => {

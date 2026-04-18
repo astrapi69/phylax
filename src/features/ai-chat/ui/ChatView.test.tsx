@@ -14,6 +14,9 @@ function mockUseChat(overrides: Partial<UseChatResult> = {}): UseChatResult {
     cancelStream: vi.fn(),
     clearChat: vi.fn(),
     shareProfile: vi.fn().mockResolvedValue(undefined),
+    committedMessageIds: new Set<string>(),
+    markMessageCommitted: vi.fn(),
+    appendSystemMessage: vi.fn(),
   };
   const mocked = { ...base, ...overrides };
   vi.spyOn(useChatModule, 'useChat').mockReturnValue(mocked);
@@ -179,5 +182,25 @@ describe('ChatView', () => {
 
     await user.click(screen.getByRole('button', { name: 'Schliessen' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('committed assistant messages show the "In Profil uebernommen" badge instead of the button', () => {
+    mockUseChat({
+      messages: [
+        {
+          id: 'a1',
+          role: 'assistant',
+          content: '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
+          timestamp: 0,
+        },
+      ],
+      committedMessageIds: new Set<string>(['a1']),
+    });
+    render(<ChatView />);
+
+    expect(screen.getByTestId('commit-preview-committed-badge')).toHaveTextContent(
+      'In Profil uebernommen',
+    );
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
   });
 });

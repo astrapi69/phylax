@@ -45,6 +45,16 @@ export interface UseChatResult {
    * sendMessage (which matches AI-10: no background network calls).
    */
   shareProfile: () => Promise<void>;
+  /**
+   * Message IDs that already had their profile fragment committed to the
+   * database. Used by MessageBubble to hide the "In Profil uebernehmen"
+   * button so the user cannot commit the same fragment twice.
+   */
+  committedMessageIds: ReadonlySet<string>;
+  /** Mark an assistant message as committed. Idempotent. */
+  markMessageCommitted: (id: string) => void;
+  /** Append a locally-generated system message (commit summary, errors). */
+  appendSystemMessage: (content: string, errorKind?: ChatError['kind']) => void;
 }
 
 /**
@@ -73,6 +83,9 @@ export function useChat(): UseChatResult {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isSharingProfile, setIsSharingProfile] = useState(false);
+  const [committedMessageIds, setCommittedMessageIds] = useState<ReadonlySet<string>>(
+    () => new Set<string>(),
+  );
   const abortRef = useRef<AbortController | null>(null);
   const systemPromptRef = useRef<string | null>(null);
   const { state: configState } = useAIConfig();
@@ -198,6 +211,7 @@ export function useChat(): UseChatResult {
     setMessages([]);
     setIsStreaming(false);
     systemPromptRef.current = null;
+    setCommittedMessageIds(new Set<string>());
   }, []);
 
   const shareProfile = useCallback(async () => {
@@ -249,6 +263,28 @@ export function useChat(): UseChatResult {
     }
   }, [isSharingProfile, isStreaming]);
 
+  const markMessageCommitted = useCallback((id: string) => {
+    setCommittedMessageIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  const appendSystemMessage = useCallback((content: string, errorKind?: ChatError['kind']) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: generateId(),
+        role: 'system',
+        content,
+        timestamp: Date.now(),
+        ...(errorKind ? { errorKind } : {}),
+      },
+    ]);
+  }, []);
+
   return {
     messages,
     isStreaming,
@@ -257,6 +293,9 @@ export function useChat(): UseChatResult {
     cancelStream,
     clearChat,
     shareProfile,
+    committedMessageIds,
+    markMessageCommitted,
+    appendSystemMessage,
   };
 }
 

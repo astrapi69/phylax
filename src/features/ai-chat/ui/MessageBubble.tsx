@@ -14,6 +14,12 @@ interface MessageBubbleProps {
    * at a time.
    */
   onCommitPreview?: (fragment: DetectedFragment) => void;
+  /**
+   * When true, the "In Profil uebernehmen" button is replaced by a small
+   * "In Profil uebernommen" badge. Prevents committing the same fragment
+   * twice.
+   */
+  committed?: boolean;
 }
 
 /**
@@ -31,7 +37,7 @@ interface MessageBubbleProps {
  * While an assistant message is streaming, the indicator is appended inside
  * the bubble and the content may be empty on first paint.
  */
-export function MessageBubble({ message, onCommitPreview }: MessageBubbleProps) {
+export function MessageBubble({ message, onCommitPreview, committed }: MessageBubbleProps) {
   // Detect a commit-ready fragment only for completed assistant messages.
   // Cheap regex scan; useMemo keeps it stable across renders.
   const fragment = useMemo<DetectedFragment | null>(() => {
@@ -87,7 +93,15 @@ export function MessageBubble({ message, onCommitPreview }: MessageBubbleProps) 
           </span>
         )}
       </div>
-      {fragment && onCommitPreview && (
+      {fragment && committed && (
+        <span
+          data-testid="commit-preview-committed-badge"
+          className="mb-2 ml-2 text-xs font-medium text-green-700 dark:text-green-400"
+        >
+          In Profil uebernommen
+        </span>
+      )}
+      {fragment && !committed && onCommitPreview && (
         <button
           type="button"
           onClick={() => onCommitPreview(fragment)}

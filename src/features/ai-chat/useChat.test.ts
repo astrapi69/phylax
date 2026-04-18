@@ -352,6 +352,63 @@ describe('useChat', () => {
     expect(result.current.isSharingProfile).toBe(false);
   });
 
+  it('markMessageCommitted records the id and survives as a ReadonlySet', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    expect(result.current.committedMessageIds.size).toBe(0);
+
+    act(() => {
+      result.current.markMessageCommitted('msg-1');
+    });
+    expect(result.current.committedMessageIds.has('msg-1')).toBe(true);
+
+    // Idempotent
+    act(() => {
+      result.current.markMessageCommitted('msg-1');
+    });
+    expect(result.current.committedMessageIds.size).toBe(1);
+
+    act(() => {
+      result.current.markMessageCommitted('msg-2');
+    });
+    expect(result.current.committedMessageIds.has('msg-2')).toBe(true);
+  });
+
+  it('appendSystemMessage adds a system message with optional errorKind', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.appendSystemMessage('Profil-Update gespeichert.');
+    });
+    const last1 = result.current.messages[result.current.messages.length - 1];
+    expect(last1?.role).toBe('system');
+    expect(last1?.content).toBe('Profil-Update gespeichert.');
+    expect(last1?.errorKind).toBeUndefined();
+
+    act(() => {
+      result.current.appendSystemMessage('Fehler beim Speichern.', 'unknown');
+    });
+    const last2 = result.current.messages[result.current.messages.length - 1];
+    expect(last2?.errorKind).toBe('unknown');
+  });
+
+  it('clearChat also clears committed message ids', async () => {
+    const { result } = renderHook(() => useChat());
+    await waitForConfigReady();
+
+    act(() => {
+      result.current.markMessageCommitted('msg-1');
+    });
+    expect(result.current.committedMessageIds.size).toBe(1);
+
+    act(() => {
+      result.current.clearChat();
+    });
+    expect(result.current.committedMessageIds.size).toBe(0);
+  });
+
   it('after shareProfile, the next sendMessage sends framed context + user merged into a single user message', async () => {
     mockStreamSuccess(['ok']);
     const { result } = renderHook(() => useChat());

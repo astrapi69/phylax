@@ -137,6 +137,17 @@ describe('MessageBubble', () => {
     expect(fragment.hasObservations).toBe(true);
   });
 
+  it('renders the "In Profil uebernommen" badge instead of the button when committed=true', () => {
+    const msg = assistantMsg(
+      '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
+    );
+    render(<MessageBubble message={msg} onCommitPreview={vi.fn()} committed={true} />);
+    expect(screen.getByTestId('commit-preview-committed-badge')).toHaveTextContent(
+      'In Profil uebernommen',
+    );
+    expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
+  });
+
   it('hides "In Profil uebernehmen" when the assistant message has no fragment', () => {
     const msg = assistantMsg('Das war eine reine Rueckfrage - kein Block hier.');
     render(<MessageBubble message={msg} onCommitPreview={vi.fn()} />);

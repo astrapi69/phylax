@@ -10,6 +10,8 @@ import {
 } from '../../../db/repositories';
 import {
   computeDiff,
+  commitFragment,
+  commitSummaryText,
   diffItemCount,
   buildVersionDescription,
   type ProfileDiff,
@@ -20,12 +22,19 @@ import {
 interface CommitPreviewModalProps {
   fragment: DetectedFragment;
   onClose: () => void;
+  /**
+   * Called after a successful commit with the German summary sentence
+   * and the result counts. Parent is expected to close the modal.
+   */
+  onCommitSuccess?: (summary: string) => void;
 }
 
 type ModalState =
   | { kind: 'loading' }
-  | { kind: 'ready'; diff: ProfileDiff; wrapped: string }
+  | { kind: 'ready'; diff: ProfileDiff; wrapped: string; profileId: string }
   | { kind: 'error'; message: string };
+
+type CommitState = { kind: 'idle' } | { kind: 'committing' } | { kind: 'error'; message: string };
 
 const SUPPLEMENT_CATEGORY_LABEL: Record<Supplement['category'], string> = {
   daily: 'taeglich',
@@ -62,13 +71,18 @@ const SUPPLEMENT_FIELD_LABEL: Record<
  * AI-08a is still preview-only. The Uebernehmen button is disabled and
  * the version description is editable but unused until AI-08b lands.
  */
-export function CommitPreviewModal({ fragment, onClose }: CommitPreviewModalProps) {
+export function CommitPreviewModal({
+  fragment,
+  onClose,
+  onCommitSuccess,
+}: CommitPreviewModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useState<ModalState>({ kind: 'loading' });
   const [versionDescription, setVersionDescription] = useState('');
   const [showUnchanged, setShowUnchanged] = useState(false);
+  const [commitState, setCommitState] = useState<CommitState>({ kind: 'idle' });
 
   useEffect(() => {
     let cancelled = false;
@@ -88,7 +102,7 @@ export function CommitPreviewModal({ fragment, onClose }: CommitPreviewModalProp
         const parseResult = parseProfile(wrapped);
         const diff = computeDiff(parseResult, { observations, supplements });
         if (cancelled) return;
-        setState({ kind: 'ready', diff, wrapped });
+        setState({ kind: 'ready', diff, wrapped, profileId: profile.id });
         setVersionDescription(buildVersionDescription(diff));
       } catch {
         if (!cancelled) {
@@ -140,8 +154,9 @@ export function CommitPreviewModal({ fragment, onClose }: CommitPreviewModalProp
 
   const canCommit = useMemo(() => {
     if (state.kind !== 'ready') return false;
+    if (commitState.kind === 'committing') return false;
     return diffItemCount(state.diff) > 0 && versionDescription.trim().length > 0;
-  }, [state, versionDescription]);
+  }, [state, versionDescription, commitState]);
 
   const commitDisabledReason = useMemo(() => {
     if (state.kind !== 'ready') return '';
@@ -151,6 +166,26 @@ export function CommitPreviewModal({ fragment, onClose }: CommitPreviewModalProp
     if (versionDescription.trim().length === 0) return 'Beschreibung erforderlich.';
     return '';
   }, [state, versionDescription]);
+
+  async function handleCommit(): Promise<void> {
+    if (state.kind !== 'ready' || !canCommit) return;
+    setCommitState({ kind: 'committing' });
+    try {
+      const result = await commitFragment({
+        diff: state.diff,
+        versionDescription: versionDescription.trim(),
+        profileId: state.profileId,
+      });
+      const summary = commitSummaryText(result);
+      onCommitSuccess?.(summary);
+      onClose();
+    } catch (err) {
+      setCommitState({
+        kind: 'error',
+        message: commitErrorMessage(err),
+      });
+    }
+  }
 
   return (
     <div
@@ -208,27 +243,35 @@ export function CommitPreviewModal({ fragment, onClose }: CommitPreviewModalProp
           )}
         </div>
 
+        {commitState.kind === 'error' && (
+          <div
+            data-testid="commit-error"
+            className="border-t border-red-300 bg-red-50 px-6 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+            role="alert"
+          >
+            {commitState.message}
+          </div>
+        )}
+
         <footer className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-3 dark:border-gray-700">
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            disabled={commitState.kind === 'committing'}
+            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             Schliessen
           </button>
           <button
             type="button"
-            disabled
-            aria-disabled="true"
-            title={
-              canCommit
-                ? 'Wird in AI-08b aktiviert'
-                : commitDisabledReason || 'Wird in AI-08b aktiviert'
-            }
-            className="cursor-not-allowed rounded bg-blue-600/60 px-4 py-2 text-sm font-medium text-white dark:bg-blue-700/50"
+            onClick={() => void handleCommit()}
+            disabled={!canCommit}
+            aria-disabled={!canCommit}
+            title={canCommit ? undefined : commitDisabledReason || 'Profil wird geladen...'}
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
           >
-            Uebernehmen
+            {commitState.kind === 'committing' ? 'Wird uebernommen...' : 'Uebernehmen'}
           </button>
         </footer>
       </div>
@@ -613,4 +656,20 @@ function Field({ label, value }: { label: string; value: string }) {
       <dd className="whitespace-pre-line">{value}</dd>
     </>
   );
+}
+
+/**
+ * Map a commit error to a German sentence for the modal's inline banner.
+ * Crypto errors (key store locked) surface as a lock hint; anything else
+ * falls back to the original message prefixed with "Fehler:".
+ */
+function commitErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    if (msg.includes('no key') || msg.includes('locked') || msg.includes('unlock')) {
+      return 'App wurde gesperrt. Bitte entsperre sie und versuche erneut.';
+    }
+    if (err.message) return `Fehler beim Speichern: ${err.message}`;
+  }
+  return 'Fehler beim Speichern: Unbekannter Fehler.';
 }

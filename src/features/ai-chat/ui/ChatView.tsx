@@ -22,10 +22,16 @@ export function ChatView() {
     cancelStream,
     clearChat,
     shareProfile,
+    committedMessageIds,
+    markMessageCommitted,
+    appendSystemMessage,
   } = useChat();
   const logRef = useRef<HTMLDivElement>(null);
   const [focusKey, setFocusKey] = useState(0);
-  const [previewFragment, setPreviewFragment] = useState<DetectedFragment | null>(null);
+  const [preview, setPreview] = useState<{
+    fragment: DetectedFragment;
+    messageId: string;
+  } | null>(null);
   const prevStreamingRef = useRef(isStreaming);
 
   // Auto-scroll to the bottom as new content arrives.
@@ -83,7 +89,12 @@ export function ChatView() {
       >
         {messages.length === 0 ? <WelcomeMessage /> : null}
         {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} onCommitPreview={setPreviewFragment} />
+          <MessageBubble
+            key={m.id}
+            message={m}
+            onCommitPreview={(fragment) => setPreview({ fragment, messageId: m.id })}
+            committed={committedMessageIds.has(m.id)}
+          />
         ))}
       </div>
 
@@ -101,8 +112,15 @@ export function ChatView() {
 
       <ChatInput onSend={handleSend} disabled={isStreaming} resetFocusKey={focusKey} />
 
-      {previewFragment && (
-        <CommitPreviewModal fragment={previewFragment} onClose={() => setPreviewFragment(null)} />
+      {preview && (
+        <CommitPreviewModal
+          fragment={preview.fragment}
+          onClose={() => setPreview(null)}
+          onCommitSuccess={(summary) => {
+            markMessageCommitted(preview.messageId);
+            appendSystemMessage(summary);
+          }}
+        />
       )}
     </div>
   );
