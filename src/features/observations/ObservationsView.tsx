@@ -1,14 +1,63 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
+import { ObservationsSortToggle } from './ObservationsSortToggle';
+import { useSortPreference } from './useSortPreference';
+import { sortObservations, type ObservationSection } from './sorting';
+
+/** Window (ms) for treating an observation as "just committed" on mount. */
+const HIGHLIGHT_WINDOW_MS = 5000;
+
+/** How long the highlight stays visible before it fades back to normal. */
+const HIGHLIGHT_FADE_MS = 2000;
+
+const SECTION_HEADINGS: Record<'recent' | 'all', string> = {
+  recent: 'Kuerzlich aktualisiert',
+  all: 'Alle Themen',
+};
 
 /**
- * Read-only observations page at /observations. Groups by theme,
- * sorts groups alphabetically (German locale), and renders each
- * observation as a collapsible card.
+ * Read-only observations page at /observations.
+ *
+ * Default sort puts themes with recent activity (last 30 days) in a
+ * "Kuerzlich aktualisiert" section at the top, so an AI commit lands
+ * where the user can see it immediately. An alphabetical fallback
+ * is one toggle away and persists per-view in localStorage.
+ *
+ * Observations whose updatedAt is within HIGHLIGHT_WINDOW_MS of the
+ * view mount get a transient green background that fades back to
+ * neutral after HIGHLIGHT_FADE_MS. This is the subtle "it landed"
+ * signal after an AI commit: no auto-scroll, no banner, just a hint
+ * the eye can follow.
  */
 export function ObservationsView() {
   const { state } = useObservations();
+  const [mode, setMode] = useSortPreference('observations');
+
+  // Capture mount time ONCE. Used both to decide the initial highlight
+  // set and to key the fade-out timer. Re-mounts (navigation away + back)
+  // reset it, which is correct: each visit gets its own highlight window.
+  const mountedAtRef = useRef<number>(Date.now());
+  const [highlightVisible, setHighlightVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHighlightVisible(false), HIGHLIGHT_FADE_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const highlightedIds = useMemo<ReadonlySet<string>>(() => {
+    if (!highlightVisible) return new Set<string>();
+    if (state.kind !== 'loaded') return new Set<string>();
+    const cutoff = mountedAtRef.current - HIGHLIGHT_WINDOW_MS;
+    const ids = new Set<string>();
+    for (const group of state.groups) {
+      for (const obs of group.observations) {
+        if (obs.updatedAt >= cutoff) ids.add(obs.id);
+      }
+    }
+    return ids;
+  }, [state, highlightVisible]);
 
   if (state.kind === 'loading') {
     return (
@@ -29,22 +78,62 @@ export function ObservationsView() {
     );
   }
 
+  const sections = sortObservations(state.groups, mode);
+
   return (
     <article className="space-y-6">
-      <header className="border-b border-gray-200 pb-4 dark:border-gray-700">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Beobachtungen</h1>
+        {state.groups.length > 0 && <ObservationsSortToggle mode={mode} onChange={setMode} />}
       </header>
 
       {state.groups.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="space-y-8">
-          {state.groups.map((group) => (
-            <ThemeGroup key={group.theme} theme={group.theme} observations={group.observations} />
+        <div className="space-y-10">
+          {sections.map((section) => (
+            <Section
+              key={section.label ?? 'single'}
+              section={section}
+              highlightedIds={highlightedIds}
+            />
           ))}
         </div>
       )}
     </article>
+  );
+}
+
+function Section({
+  section,
+  highlightedIds,
+}: {
+  section: ObservationSection;
+  highlightedIds: ReadonlySet<string>;
+}) {
+  const hasLabel = section.label !== null;
+  const headingText = section.label ? SECTION_HEADINGS[section.label] : '';
+  // Rendered as a styled <p>, not a heading, so the theme <h2>s stay
+  // the top-level content headings inside each section.
+  return (
+    <div className="space-y-8">
+      {hasLabel && (
+        <p
+          data-testid={`section-heading-${section.label}`}
+          className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+        >
+          {headingText}
+        </p>
+      )}
+      {section.themeGroups.map((group) => (
+        <ThemeGroup
+          key={group.theme}
+          theme={group.theme}
+          observations={group.observations}
+          highlightedIds={highlightedIds}
+        />
+      ))}
+    </div>
   );
 }
 

@@ -6,6 +6,13 @@ interface ObservationCardProps {
   observation: Observation;
   /** When true, the disclosure renders open by default. */
   defaultOpen?: boolean;
+  /**
+   * When true, the card paints a transient green background for ~2s so
+   * a freshly committed observation catches the user's eye when they
+   * return from the chat. The caller controls when this flips false so
+   * the fade-out animation can play.
+   */
+  highlighted?: boolean;
 }
 
 /**
@@ -20,7 +27,11 @@ interface ObservationCardProps {
  * via MarkdownContent, plus optional medicalFinding, relevanceNotes and
  * extraSections with their German keys preserved verbatim.
  */
-export function ObservationCard({ observation, defaultOpen = false }: ObservationCardProps) {
+export function ObservationCard({
+  observation,
+  defaultOpen = false,
+  highlighted = false,
+}: ObservationCardProps) {
   const {
     fact,
     pattern,
@@ -37,7 +48,12 @@ export function ObservationCard({ observation, defaultOpen = false }: Observatio
   return (
     <details
       open={defaultOpen || undefined}
-      className="group rounded border border-gray-200 bg-white open:shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      data-highlighted={highlighted || undefined}
+      className={`group rounded border bg-white transition-colors duration-[1500ms] open:shadow-sm motion-reduce:transition-none dark:bg-gray-800 ${
+        highlighted
+          ? 'border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-950/30'
+          : 'border-gray-200 dark:border-gray-700'
+      }`}
     >
       <summary
         aria-label={accessibleLabel}

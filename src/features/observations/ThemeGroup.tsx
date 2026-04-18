@@ -4,6 +4,11 @@ import { ObservationCard } from './ObservationCard';
 interface ThemeGroupProps {
   theme: string;
   observations: Observation[];
+  /**
+   * IDs of observations that should render with the "just-committed"
+   * highlight. Passed through to ObservationCard unchanged.
+   */
+  highlightedIds?: ReadonlySet<string>;
 }
 
 /**
@@ -12,7 +17,7 @@ interface ThemeGroupProps {
  * A single-observation group auto-expands its card: a collapse-then-expand
  * interaction for a one-item group is friction without benefit.
  */
-export function ThemeGroup({ theme, observations }: ThemeGroupProps) {
+export function ThemeGroup({ theme, observations, highlightedIds }: ThemeGroupProps) {
   const headingId = `theme-${slugify(theme)}-heading`;
   const autoExpand = observations.length === 1;
 
@@ -30,7 +35,11 @@ export function ThemeGroup({ theme, observations }: ThemeGroupProps) {
       <ul className="space-y-2">
         {observations.map((obs) => (
           <li key={obs.id}>
-            <ObservationCard observation={obs} defaultOpen={autoExpand} />
+            <ObservationCard
+              observation={obs}
+              defaultOpen={autoExpand}
+              highlighted={highlightedIds?.has(obs.id) ?? false}
+            />
           </li>
         ))}
       </ul>

@@ -106,4 +106,127 @@ describe('ObservationsView', () => {
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
     expect(screen.getByRole('alert').textContent).toMatch(/boom/);
   });
+
+  describe('sort sections (V-02b)', () => {
+    const NOW = Date.now();
+    const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
+    const SIXTY_DAYS = 60 * 24 * 60 * 60 * 1000;
+
+    it('renders "Kuerzlich aktualisiert" + "Alle Themen" when recent and old coexist', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 'recent-1', theme: 'Schulter', updatedAt: NOW - TEN_DAYS }),
+          ],
+        },
+        {
+          theme: 'Adern',
+          observations: [
+            makeObservation({ id: 'old-1', theme: 'Adern', updatedAt: NOW - SIXTY_DAYS }),
+          ],
+        },
+      ]);
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByTestId('section-heading-recent')).toHaveTextContent(
+          'Kuerzlich aktualisiert',
+        ),
+      );
+      expect(screen.getByTestId('section-heading-all')).toHaveTextContent('Alle Themen');
+    });
+
+    it('omits both section headings when only recent themes exist', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 'r1', theme: 'Schulter', updatedAt: NOW - TEN_DAYS }),
+          ],
+        },
+      ]);
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument(),
+      );
+      expect(screen.queryByTestId('section-heading-recent')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('section-heading-all')).not.toBeInTheDocument();
+    });
+
+    it('switches to the alphabetical mode via the toggle, hiding section headings', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Zebra',
+          observations: [makeObservation({ id: 'r1', theme: 'Zebra', updatedAt: NOW - TEN_DAYS })],
+        },
+        {
+          theme: 'Adler',
+          observations: [
+            makeObservation({ id: 'o1', theme: 'Adler', updatedAt: NOW - SIXTY_DAYS }),
+          ],
+        },
+      ]);
+      const user = (await import('@testing-library/user-event')).default.setup();
+      renderView();
+      await waitFor(() => expect(screen.getByTestId('section-heading-recent')).toBeInTheDocument());
+
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: 'Sortierung' }),
+        'alphabetical',
+      );
+
+      expect(screen.queryByTestId('section-heading-recent')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('section-heading-all')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /Adler/ })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /Zebra/ })).toBeInTheDocument();
+    });
+
+    it('hides the sort toggle when there are no observations', async () => {
+      await mockLoadedState([]);
+      renderView();
+      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen/)).toBeInTheDocument());
+      expect(screen.queryByRole('combobox', { name: 'Sortierung' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('post-commit highlight (V-02b)', () => {
+    it('flags an observation updated within 5s of mount as highlighted', async () => {
+      const now = Date.now();
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 'freshly-committed', theme: 'Schulter', updatedAt: now - 1000 }),
+          ],
+        },
+      ]);
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument(),
+      );
+      const highlighted = document.querySelectorAll('details[data-highlighted="true"]');
+      expect(highlighted).toHaveLength(1);
+    });
+
+    it('does NOT flag an observation updated 6+ seconds before mount (remount edge case)', async () => {
+      // Scenario: user committed, navigated away for a few seconds, came
+      // back. The observation's updatedAt is 6s old relative to this
+      // mount -> no highlight. Documents that the highlight is strictly
+      // tied to the current visit, not "user saw it last time".
+      const now = Date.now();
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 'stale', theme: 'Schulter', updatedAt: now - 6000 }),
+          ],
+        },
+      ]);
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument(),
+      );
+      expect(document.querySelectorAll('details[data-highlighted="true"]')).toHaveLength(0);
+    });
+  });
 });
