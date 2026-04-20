@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { validatePassword, estimateStrength, MIN_PASSWORD_LENGTH } from './passwordValidation';
+import {
+  validatePassword,
+  estimateStrengthSync,
+  strengthFromZxcvbnScore,
+  validateSetup,
+  MIN_PASSWORD_LENGTH,
+} from './passwordValidation';
 
 describe('validatePassword', () => {
   it('rejects empty string', () => {
@@ -33,55 +39,113 @@ describe('validatePassword', () => {
   });
 
   it('handles Unicode passwords (umlauts, emoji)', () => {
-    // 12 code points: "Pässwörd1234" but with emoji it changes
-    const password = 'Hallo Welt 🔐🔑'; // 14 code points
+    const password = 'Hallo Welt 🔐🔑';
     const result = validatePassword(password);
     expect(result.valid).toBe(true);
   });
 
   it('counts code points, not UTF-16 code units', () => {
-    // Emoji like 🔐 is 1 code point but 2 UTF-16 code units
-    // 11 ASCII chars + 1 emoji = 12 code points
     const password = 'abcdefghijk🔐';
     expect([...password].length).toBe(12);
-    expect(password.length).toBe(13); // UTF-16 length differs
+    expect(password.length).toBe(13);
     const result = validatePassword(password);
     expect(result.valid).toBe(true);
   });
 });
 
-describe('estimateStrength', () => {
+describe('estimateStrengthSync', () => {
   it('returns weak for short passwords', () => {
-    expect(estimateStrength('abc')).toBe('weak');
+    expect(estimateStrengthSync('abc')).toBe('weak');
   });
 
   it('returns fair for 12-char lowercase-only password', () => {
-    expect(estimateStrength('abcxyzabcxyz')).toBe('fair');
+    expect(estimateStrengthSync('abcxyzabcxyz')).toBe('fair');
   });
 
   it('returns strong for 12-char mixed-class password', () => {
-    // lowercase + uppercase + digit = 3 classes
-    expect(estimateStrength('Abcdefgh123!')).toBe('strong');
+    expect(estimateStrengthSync('Abcdefgh123!')).toBe('strong');
   });
 
   it('returns strong for 16+ char password', () => {
-    expect(estimateStrength('abcdefghijklmnop')).toBe('strong');
+    expect(estimateStrengthSync('abcdefghijklmnop')).toBe('strong');
   });
 
   it('drops tier for common pattern (password in string)', () => {
-    // "password12345678" is 16 chars but contains "password" and "12345"
-    expect(estimateStrength('password12345678')).toBe('fair');
+    expect(estimateStrengthSync('password12345678')).toBe('fair');
   });
 
   it('returns weak for common pattern at short length', () => {
-    expect(estimateStrength('password1234')).toBe('weak');
+    expect(estimateStrengthSync('password1234')).toBe('weak');
   });
 
   it('returns weak for qwerty pattern at short length', () => {
-    expect(estimateStrength('qwerty123456')).toBe('weak');
+    expect(estimateStrengthSync('qwerty123456')).toBe('weak');
   });
 
   it('returns weak for 123456 pattern at short length', () => {
-    expect(estimateStrength('abc123456def')).toBe('weak');
+    expect(estimateStrengthSync('abc123456def')).toBe('weak');
+  });
+});
+
+describe('strengthFromZxcvbnScore', () => {
+  it('maps 0 to weak', () => {
+    expect(strengthFromZxcvbnScore(0)).toBe('weak');
+  });
+
+  it('maps 1 to weak', () => {
+    expect(strengthFromZxcvbnScore(1)).toBe('weak');
+  });
+
+  it('maps 2 to fair', () => {
+    expect(strengthFromZxcvbnScore(2)).toBe('fair');
+  });
+
+  it('maps 3 to strong', () => {
+    expect(strengthFromZxcvbnScore(3)).toBe('strong');
+  });
+
+  it('maps 4 to strong', () => {
+    expect(strengthFromZxcvbnScore(4)).toBe('strong');
+  });
+});
+
+describe('validateSetup', () => {
+  const validPassword = 'a'.repeat(MIN_PASSWORD_LENGTH);
+
+  it('flags empty password', () => {
+    const result = validateSetup('', '', false);
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.error).toEqual({ kind: 'empty' });
+  });
+
+  it('flags too-short password', () => {
+    const result = validateSetup('short', 'short', true);
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.error).toMatchObject({ kind: 'too-short' });
+    }
+  });
+
+  it('flags confirm mismatch', () => {
+    const result = validateSetup(validPassword, validPassword + 'x', true);
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.error).toEqual({ kind: 'mismatch' });
+  });
+
+  it('flags missing acknowledgment', () => {
+    const result = validateSetup(validPassword, validPassword, false);
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.error).toEqual({ kind: 'not-acknowledged' });
+  });
+
+  it('returns valid when all gates pass', () => {
+    const result = validateSetup(validPassword, validPassword, true);
+    expect(result.valid).toBe(true);
+  });
+
+  it('prioritizes password length over mismatch', () => {
+    const result = validateSetup('short', 'other', false);
+    expect(result.valid).toBe(false);
+    if (!result.valid) expect(result.error.kind).toBe('too-short');
   });
 });

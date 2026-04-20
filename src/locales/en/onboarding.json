@@ -1,35 +1,4 @@
 {
-  "title": "Set up Phylax",
-  "state": {
-    "setup": "Choose a master password",
-    "confirm": "Confirm password",
-    "deriving": "Setting up...",
-    "done": "Setup complete"
-  },
-  "done-alert": "Setup complete.",
-  "deriving-spinner": "Deriving key...",
-  "password": {
-    "label": "Master password",
-    "confirm-label": "Repeat password"
-  },
-  "strength": {
-    "weak": "Weak",
-    "fair": "Fair",
-    "strong": "Strong",
-    "aria-label": "Password strength: {{label}}"
-  },
-  "warning": {
-    "body": "If you forget your password, your data is lost. There is no recovery path. Write it down in a safe place before you continue.",
-    "acknowledge": "I understand"
-  },
-  "submit": {
-    "label": "Set up Phylax"
-  },
-  "validation": {
-    "empty": "Please enter a password.",
-    "too-short": "At least {{min}} characters required (currently: {{length}}).",
-    "mismatch": "Passwords do not match."
-  },
   "welcome": {
     "tagline": "Your health data. Local. Encrypted. Yours.",
     "trust": {
@@ -70,6 +39,38 @@
     "cta": {
       "primary": "Got it, continue",
       "back": "Back"
+    }
+  },
+  "setup": {
+    "headline": "Set your master password",
+    "intro": "This password encrypts all your data. Without the password there is no access, no recovery, and no support.",
+    "password": {
+      "label": "Master password",
+      "confirm-label": "Repeat password"
+    },
+    "strength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "strong": "Strong",
+      "aria-label": "Password strength: {{label}}"
+    },
+    "warning": {
+      "body": "If you forget your password, your data is lost. There is no recovery path. Write it down in a safe place before you continue.",
+      "acknowledge": "I understand"
+    },
+    "submit": {
+      "label": "Set up Phylax",
+      "deriving": "Setting up..."
+    },
+    "deriving-hint": "Deriving the key from your password. This may take a moment.",
+    "validation": {
+      "empty": "Please enter a password.",
+      "too-short": "At least {{min}} characters required.",
+      "mismatch": "The passwords do not match.",
+      "not-acknowledged": "Please confirm the password-loss notice."
+    },
+    "error": {
+      "meta-write-failed": "Setup failed. Please try again."
     }
   }
 }

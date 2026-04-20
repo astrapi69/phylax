@@ -4,7 +4,7 @@ import { EntryRouter } from './EntryRouter';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequireProfile } from './RequireProfile';
 import { AppShell } from '../features/app-shell';
-import { OnboardingFlow, WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
+import { WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
 import { UnlockScreen } from '../features/unlock';
 import { BackupImportSelectView, BackupImportUnlockView } from '../features/backup-import';
 import { ProfileCreateForm } from '../features/profile-create';
@@ -20,14 +20,6 @@ import { ImportFlow } from '../features/profile-import/ui';
 import { ChatView } from '../features/ai-chat';
 import { NotFound } from '../features/not-found/NotFound';
 
-function OnboardingPage() {
-  const navigate = useNavigate();
-  const handleComplete = useCallback(() => {
-    navigate('/profile/create', { replace: true });
-  }, [navigate]);
-  return <OnboardingFlow onComplete={handleComplete} />;
-}
-
 function ProfileCreatePage() {
   const navigate = useNavigate();
   const handleComplete = useCallback(() => {
@@ -41,13 +33,12 @@ function ProfileCreatePage() {
  *
  * - `/` mounts EntryRouter: picks /welcome, /unlock, or /profile based
  *   on vault + keystore state (ONB-01a).
- * - /welcome, /privacy, /setup: first-run onboarding flow screens (stubs
- *   in ONB-01a; filled in ONB-01b and ONB-01c).
+ * - /welcome, /privacy, /setup: first-run onboarding flow screens
+ *   (ONB-01b/c). SetupView owns the meta-row write and then navigates
+ *   to /profile/create.
  * - /backup/import/select, /backup/import/unlock: encrypted backup
  *   import flow (stubs in ONB-01a; filled in ONB-01e). Distinct from
  *   /import which handles Markdown profile import.
- * - /onboarding retained as safety net until ONB-01c replaces the old
- *   OnboardingFlow with SetupView.
  * - All full-screen routes (above) render without the app shell.
  * - /profile/create is protected but does NOT require an existing profile.
  * - Feature routes are protected AND require a profile.
@@ -65,7 +56,6 @@ export function AppRoutes() {
       <Route path="/setup" element={<SetupView />} />
       <Route path="/backup/import/select" element={<BackupImportSelectView />} />
       <Route path="/backup/import/unlock" element={<BackupImportUnlockView />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/unlock" element={<UnlockScreen />} />
 
       {/* Protected route: profile creation (no RequireProfile) */}

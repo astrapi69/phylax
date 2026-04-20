@@ -13,6 +13,18 @@ export type ValidationError =
 
 export type ValidationResult = { valid: true } | { valid: false; error: ValidationError };
 
+/**
+ * Setup-flow validation error. Covers the full submit gate: password
+ * validity, confirm match, and warning acknowledgment.
+ */
+export type SetupValidationError =
+  | { kind: 'empty' }
+  | { kind: 'too-short'; min: number; length: number }
+  | { kind: 'mismatch' }
+  | { kind: 'not-acknowledged' };
+
+export type SetupValidationResult = { valid: true } | { valid: false; error: SetupValidationError };
+
 const COMMON_PATTERNS = ['password', '123456', 'qwerty', 'letmein', 'welcome'];
 
 /**
@@ -42,8 +54,9 @@ export function validatePassword(password: string): ValidationResult {
 }
 
 /**
- * Estimate password strength for the UI indicator.
- * Informative only, does not block submission.
+ * Synchronous heuristic strength estimate. Serves as fallback while
+ * the zxcvbn bundle lazy-loads, and as final fallback if the lazy
+ * import fails. Informative only, does not block submission.
  *
  * Tiers:
  * - weak (red): length < 12, or common pattern detected at length < 16
@@ -53,7 +66,7 @@ export function validatePassword(password: string): ValidationResult {
  * Character variety: presence of lowercase, uppercase, digits, special chars.
  * Mixed = 3+ of these 4 classes.
  */
-export function estimateStrength(password: string): PasswordStrength {
+export function estimateStrengthSync(password: string): PasswordStrength {
   const codePoints = [...password];
   const length = codePoints.length;
 
@@ -74,6 +87,44 @@ export function estimateStrength(password: string): PasswordStrength {
   }
 
   return 'fair';
+}
+
+/**
+ * Map a zxcvbn-ts 0-4 score to the UI tier.
+ * - 0-1: weak (trivially guessable)
+ * - 2: fair (guessable by targeted attacker)
+ * - 3-4: strong (resistant to offline attack with slow hash)
+ */
+export function strengthFromZxcvbnScore(score: number): PasswordStrength {
+  if (score <= 1) return 'weak';
+  if (score === 2) return 'fair';
+  return 'strong';
+}
+
+/**
+ * Combined submit-gate validator. Returns the first blocking error in
+ * priority order: password length -> confirm match -> acknowledgment.
+ * Strength is advisory and does not block.
+ */
+export function validateSetup(
+  password: string,
+  confirmPassword: string,
+  acknowledged: boolean,
+): SetupValidationResult {
+  const passwordResult = validatePassword(password);
+  if (!passwordResult.valid) {
+    return { valid: false, error: passwordResult.error };
+  }
+
+  if (password !== confirmPassword) {
+    return { valid: false, error: { kind: 'mismatch' } };
+  }
+
+  if (!acknowledged) {
+    return { valid: false, error: { kind: 'not-acknowledged' } };
+  }
+
+  return { valid: true };
 }
 
 function containsCommonPattern(password: string): boolean {

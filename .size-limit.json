@@ -26,5 +26,12 @@
     "limit": "280 KB",
     "gzip": true,
     "running": false
+  },
+  {
+    "name": "Setup lazy chunks (zxcvbn-ts)",
+    "path": "dist/assets/index.esm-*.js",
+    "limit": "250 KB",
+    "gzip": true,
+    "running": false
   }
 ]

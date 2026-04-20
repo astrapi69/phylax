@@ -58,7 +58,7 @@
 
 ## Allowed dependencies (locked list)
 
-Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `i18next`, `react-i18next`, `tailwindcss`, `react-markdown` (ADR-0008).
+Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `i18next`, `react-i18next`, `tailwindcss`, `react-markdown` (ADR-0008), `@zxcvbn-ts/core`, `@zxcvbn-ts/language-common` (ADR-0014).
 
 Dev: `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `typescript`, `vitest`, `@vitest/coverage-v8`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `fake-indexeddb`, `jsdom`, `@playwright/test`, `@axe-core/playwright`, `@tailwindcss/typography` (ADR-0008), `size-limit`, `@size-limit/preset-app` (ADR-0010), `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`, `@stryker-mutator/typescript-checker` (ADR-0011), `eslint`, `prettier`, `husky`, `lint-staged`.
 
