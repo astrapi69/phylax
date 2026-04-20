@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { EntityCounts } from '../import';
 
 interface ConfirmDialogProps {
@@ -21,6 +22,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation('import');
   const cancelRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -57,15 +59,23 @@ export function ConfirmDialog({
   }, [onCancel]);
 
   const lines: string[] = [];
-  if (existingCounts.observations > 0) lines.push(`${existingCounts.observations} Beobachtungen`);
+  if (existingCounts.observations > 0)
+    lines.push(t('counts.observations', { count: existingCounts.observations }));
   if (existingCounts.labReports > 0)
-    lines.push(`${existingCounts.labReports} Laborbefunde (${existingCounts.labValues} Werte)`);
-  if (existingCounts.supplements > 0) lines.push(`${existingCounts.supplements} Supplemente`);
-  if (existingCounts.openPoints > 0) lines.push(`${existingCounts.openPoints} offene Punkte`);
+    lines.push(
+      t('confirm.lab-report-line', {
+        count: existingCounts.labReports,
+        values: existingCounts.labValues,
+      }),
+    );
+  if (existingCounts.supplements > 0)
+    lines.push(t('counts.supplements', { count: existingCounts.supplements }));
+  if (existingCounts.openPoints > 0)
+    lines.push(t('counts.open-points', { count: existingCounts.openPoints }));
   if (existingCounts.timelineEntries > 0)
-    lines.push(`${existingCounts.timelineEntries} Verlaufsnotizen`);
+    lines.push(t('counts.timeline-entries', { count: existingCounts.timelineEntries }));
   if (existingCounts.profileVersions > 0)
-    lines.push(`${existingCounts.profileVersions} Profilversionen`);
+    lines.push(t('counts.profile-versions', { count: existingCounts.profileVersions }));
 
   return (
     <div
@@ -83,19 +93,17 @@ export function ConfirmDialog({
           id="confirm-replace-title"
           className="mb-3 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100"
         >
-          <span aria-hidden>⚠</span> Bestehende Daten ersetzen?
+          <span aria-hidden>⚠</span> {t('confirm.heading')}
         </h2>
         <p className="mb-3 text-sm text-gray-700 dark:text-gray-300">
-          "{targetProfileName}" enthält bereits:
+          {t('confirm.body', { name: targetProfileName })}
         </p>
         <ul className="mb-4 space-y-1 text-sm text-gray-800 dark:text-gray-200">
           {lines.map((l) => (
             <li key={l}>{l}</li>
           ))}
         </ul>
-        <p className="mb-6 text-sm text-red-700 dark:text-red-300">
-          Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.
-        </p>
+        <p className="mb-6 text-sm text-red-700 dark:text-red-300">{t('confirm.warning')}</p>
         <div className="flex justify-end gap-3">
           <button
             ref={cancelRef}
@@ -103,14 +111,14 @@ export function ConfirmDialog({
             onClick={onCancel}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Abbrechen
+            {t('action.cancel')}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
           >
-            Ja, ersetzen
+            {t('confirm.replace')}
           </button>
         </div>
       </div>

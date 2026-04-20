@@ -35,7 +35,7 @@ export type ImportState =
     }
   | { kind: 'importing'; parseResult: ParseResult; targetProfileId: string }
   | { kind: 'done'; importResult: ImportResult }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; detail: string };
 
 export interface ImportHook {
   state: ImportState;
@@ -94,7 +94,7 @@ export function useImport(): ImportHook {
       }
       setState({ kind: 'profile-selection', parseResult });
     } catch (err) {
-      setState({ kind: 'error', message: toMessage(err) });
+      setState({ kind: 'error', detail: toDetail(err) });
     }
     // Stryker disable next-line ArrayDeclaration: React dep array; changing [] to non-empty affects render frequency, not behavior
   }, []);
@@ -116,7 +116,7 @@ export function useImport(): ImportHook {
           });
         }
       } catch (err) {
-        setState({ kind: 'error', message: toMessage(err) });
+        setState({ kind: 'error', detail: toDetail(err) });
       }
     },
     [state],
@@ -150,7 +150,7 @@ export function useImport(): ImportHook {
         });
         return;
       }
-      setState({ kind: 'error', message: toMessage(err) });
+      setState({ kind: 'error', detail: toDetail(err) });
     }
   }, [state]);
 
@@ -234,7 +234,7 @@ export function useImport(): ImportHook {
   };
 }
 
-function toMessage(err: unknown): string {
+function toDetail(err: unknown): string {
   if (err instanceof Error) return err.message;
-  return 'Unbekannter Fehler beim Import.';
+  return 'Unbekannter Fehler';
 }

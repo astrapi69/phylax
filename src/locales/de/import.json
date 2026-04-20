@@ -1,1 +1,123 @@
-{}
+{
+  "flow": {
+    "parsing": "Markdown wird verarbeitet...",
+    "importing": "Daten werden importiert...",
+    "source-unknown": "Unbekannt",
+    "target-fallback": "Zielprofil"
+  },
+  "entry": {
+    "heading": "Import aus Markdown",
+    "intro": "Importiere ein bestehendes Lebende-Gesundheit Profil als Markdown-Datei oder Text.",
+    "file": {
+      "heading": "Datei auswählen",
+      "cta": "Markdown-Datei wählen (.md)",
+      "loaded": "Geladen: {{name}} ({{size}})",
+      "too-large": "Datei ist zu gross ({{size}}). Maximum: {{max}}.",
+      "read-failed": "Datei konnte nicht gelesen werden."
+    },
+    "paste": {
+      "heading": "Oder Text einfügen",
+      "sr-label": "Markdown-Text einfügen",
+      "placeholder": "# Medizinisches Profil...",
+      "char-count": "{{chars}} Zeichen (mindestens {{min}})",
+      "source-label": "Eingefügter Text"
+    }
+  },
+  "selection": {
+    "loading": "Profile werden geladen...",
+    "heading": {
+      "zero-profiles": "Profil erstellen",
+      "choose": "In welches Profil importieren?"
+    },
+    "intro-zero": "Erstelle zuerst ein Profil, um den Import zu starten.",
+    "select-label": "Diesem Profil zuordnen",
+    "back-to-list": "Zurück zur Profilauswahl",
+    "error": {
+      "load-failed": "Profile konnten nicht geladen werden."
+    }
+  },
+  "preview": {
+    "heading": "Vorschau",
+    "source-label": "Quelle:",
+    "target-label": "Ziel:",
+    "content-heading": "Inhalt",
+    "warnings-summary": "{{count}} Warnungen beim Parsen",
+    "unrecognized-summary": "{{count}} nicht erkannte Blöcke",
+    "clean": "✓ Keine Probleme beim Parsen festgestellt.",
+    "view": {
+      "observations": "Beobachtungen anzeigen ({{count}})",
+      "lab-values": "Laborwerte anzeigen ({{count}})",
+      "supplements": "Supplemente anzeigen ({{count}})",
+      "open-points": "Offene Punkte anzeigen ({{count}})",
+      "timeline-entries": "Verlaufsnotizen anzeigen ({{count}})"
+    },
+    "start": "Import starten"
+  },
+  "confirm": {
+    "heading": "Bestehende Daten ersetzen?",
+    "body": "\"{{name}}\" enthält bereits:",
+    "warning": "Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.",
+    "lab-report-line": "{{count}} Laborbefunde ({{values}} Werte)",
+    "replace": "Ja, ersetzen"
+  },
+  "result": {
+    "success": {
+      "heading": "Import erfolgreich",
+      "body": "In \"{{name}}\" importiert:",
+      "home": "Zur Übersicht",
+      "restart": "Weiteren Import"
+    },
+    "failure": {
+      "heading": "Import fehlgeschlagen",
+      "body": "Der Import konnte nicht abgeschlossen werden.",
+      "label-error": "Fehler:",
+      "unchanged": "Deine Daten wurden nicht geändert.",
+      "retry": "Erneut versuchen"
+    }
+  },
+  "cleanup": {
+    "heading": "Parser-Ergebnis",
+    "summary": {
+      "empty": "Es konnten keine Inhalte extrahiert werden.",
+      "partial": "Nur wenige Eintraege erkannt ({{total}} insgesamt). Moeglicherweise ist das Format fuer unseren Parser ungewoehnlich."
+    },
+    "loading": "KI bereinigt Markdown...",
+    "impossible": "Die KI konnte keine verwertbare Struktur aus deiner Eingabe herauslesen. Bitte pruefe den Inhalt manuell.",
+    "parse-failed-after": "Auch die bereinigte Ausgabe konnte nicht geparst werden. Hier die Roh-Ausgabe der KI zur manuellen Pruefung:",
+    "not-configured": "Konfiguriere den KI-Assistenten in den Einstellungen, um automatische Bereinigung zu nutzen.",
+    "chat-error": {
+      "auth": "API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.",
+      "rate-limit": "Zu viele Anfragen. Bitte warte einen Moment und versuche erneut.",
+      "server": "Der KI-Dienst ist voruebergehend nicht erreichbar.",
+      "network": "Keine Internetverbindung.",
+      "unknown": "Fehler beim KI-Dienst.",
+      "unknown-with-detail": "Fehler beim KI-Dienst. ({{detail}})"
+    },
+    "button": {
+      "request": "KI-Hilfe anfordern",
+      "privacy-note": "Die KI bereinigt dein Markdown. Dies sendet deine Eingabe an Anthropic.",
+      "privacy-link": "Datenschutz"
+    },
+    "action": {
+      "restart": "Neu versuchen",
+      "go-to-settings": "Zu den Einstellungen",
+      "proceed-partial": "Mit Teilergebnis fortfahren"
+    }
+  },
+  "counts": {
+    "observations": "{{count}} Beobachtungen",
+    "lab-report-with-values_one": "{{count}} Laborbefund ({{values}} Werte)",
+    "lab-report-with-values_other": "{{count}} Laborbefunde ({{values}} Werte)",
+    "supplements": "{{count}} Supplemente",
+    "open-points": "{{count}} offene Punkte",
+    "timeline-entries": "{{count}} Verlaufsnotizen",
+    "profile-versions": "{{count}} Profilversionen",
+    "warning-signs": "{{count}} Warnhinweise",
+    "external-references": "{{count}} externe Referenzen"
+  },
+  "action": {
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "next": "Weiter"
+  }
+}

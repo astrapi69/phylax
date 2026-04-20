@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ParseResult } from '../parser/types';
 
 interface PreviewScreenProps {
@@ -16,6 +17,7 @@ export function PreviewScreen({
   onConfirm,
   onBack,
 }: PreviewScreenProps) {
+  const { t } = useTranslation('import');
   const counts = {
     observations: parseResult.observations.length,
     labReports: parseResult.labReports.length,
@@ -32,40 +34,50 @@ export function PreviewScreen({
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">Vorschau</h1>
+      <h1 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
+        {t('preview.heading')}
+      </h1>
 
       <dl className="mb-4 grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
         <div>
-          <dt className="inline font-medium text-gray-700 dark:text-gray-200">Quelle:</dt>{' '}
+          <dt className="inline font-medium text-gray-700 dark:text-gray-200">
+            {t('preview.source-label')}
+          </dt>{' '}
           <dd className="inline text-gray-900 dark:text-gray-100">{sourceLabel}</dd>
         </div>
         <div>
-          <dt className="inline font-medium text-gray-700 dark:text-gray-200">Ziel:</dt>{' '}
+          <dt className="inline font-medium text-gray-700 dark:text-gray-200">
+            {t('preview.target-label')}
+          </dt>{' '}
           <dd className="inline text-gray-900 dark:text-gray-100">{targetProfileName}</dd>
         </div>
       </dl>
 
       <section className="mb-4 rounded border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <h2 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Inhalt</h2>
+        <h2 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
+          {t('preview.content-heading')}
+        </h2>
         <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-200">
-          <li>{counts.observations} Beobachtungen</li>
+          <li>{t('counts.observations', { count: counts.observations })}</li>
           <li>
-            {counts.labReports} Laborbefund{counts.labReports === 1 ? '' : 'e'} ({counts.labValues}{' '}
-            Werte)
+            {t('counts.lab-report-with-values', {
+              count: counts.labReports,
+              values: counts.labValues,
+            })}
           </li>
-          <li>{counts.supplements} Supplemente</li>
-          <li>{counts.openPoints} offene Punkte</li>
-          <li>{counts.timelineEntries} Verlaufsnotizen</li>
-          <li>{counts.profileVersions} Profilversionen</li>
-          <li>{counts.warningSigns} Warnhinweise</li>
-          <li>{counts.externalReferences} externe Referenzen</li>
+          <li>{t('counts.supplements', { count: counts.supplements })}</li>
+          <li>{t('counts.open-points', { count: counts.openPoints })}</li>
+          <li>{t('counts.timeline-entries', { count: counts.timelineEntries })}</li>
+          <li>{t('counts.profile-versions', { count: counts.profileVersions })}</li>
+          <li>{t('counts.warning-signs', { count: counts.warningSigns })}</li>
+          <li>{t('counts.external-references', { count: counts.externalReferences })}</li>
         </ul>
       </section>
 
       <section className="mb-4">
         {hasWarnings ? (
           <Collapsible
-            summary={`${parseResult.report.warnings.length} Warnungen beim Parsen`}
+            summary={t('preview.warnings-summary', { count: parseResult.report.warnings.length })}
             icon="!"
             iconClass="bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200"
             testId="warnings-disclosure"
@@ -81,7 +93,9 @@ export function PreviewScreen({
         ) : null}
         {hasUnrecognized ? (
           <Collapsible
-            summary={`${parseResult.report.unrecognized.length} nicht erkannte Blöcke`}
+            summary={t('preview.unrecognized-summary', {
+              count: parseResult.report.unrecognized.length,
+            })}
             icon="i"
             iconClass="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200"
             testId="unrecognized-disclosure"
@@ -95,14 +109,14 @@ export function PreviewScreen({
         ) : null}
         {!hasWarnings && !hasUnrecognized && (
           <p className="text-sm text-green-700 dark:text-green-400" data-testid="parse-clean">
-            ✓ Keine Probleme beim Parsen festgestellt.
+            {t('preview.clean')}
           </p>
         )}
       </section>
 
       <section className="space-y-2">
         {counts.observations > 0 && (
-          <Collapsible summary={`Beobachtungen anzeigen (${counts.observations})`}>
+          <Collapsible summary={t('preview.view.observations', { count: counts.observations })}>
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
               {parseResult.observations.map((o, i) => (
                 <li key={i}>
@@ -113,7 +127,7 @@ export function PreviewScreen({
           </Collapsible>
         )}
         {counts.labValues > 0 && (
-          <Collapsible summary={`Laborwerte anzeigen (${counts.labValues})`}>
+          <Collapsible summary={t('preview.view.lab-values', { count: counts.labValues })}>
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
               {parseResult.labValues.map((v, i) => (
                 <li key={i}>
@@ -126,7 +140,7 @@ export function PreviewScreen({
           </Collapsible>
         )}
         {counts.supplements > 0 && (
-          <Collapsible summary={`Supplemente anzeigen (${counts.supplements})`}>
+          <Collapsible summary={t('preview.view.supplements', { count: counts.supplements })}>
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
               {parseResult.supplements.map((s, i) => (
                 <li key={i}>
@@ -138,7 +152,7 @@ export function PreviewScreen({
           </Collapsible>
         )}
         {counts.openPoints > 0 && (
-          <Collapsible summary={`Offene Punkte anzeigen (${counts.openPoints})`}>
+          <Collapsible summary={t('preview.view.open-points', { count: counts.openPoints })}>
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
               {parseResult.openPoints.map((p, i) => (
                 <li key={i}>
@@ -150,11 +164,13 @@ export function PreviewScreen({
           </Collapsible>
         )}
         {counts.timelineEntries > 0 && (
-          <Collapsible summary={`Verlaufsnotizen anzeigen (${counts.timelineEntries})`}>
+          <Collapsible
+            summary={t('preview.view.timeline-entries', { count: counts.timelineEntries })}
+          >
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
-              {parseResult.timelineEntries.map((t, i) => (
+              {parseResult.timelineEntries.map((e, i) => (
                 <li key={i}>
-                  <span className="font-medium">{t.period}:</span> {t.title}
+                  <span className="font-medium">{e.period}:</span> {e.title}
                 </li>
               ))}
             </ul>
@@ -168,14 +184,14 @@ export function PreviewScreen({
           onClick={onBack}
           className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         >
-          Zurück
+          {t('action.back')}
         </button>
         <button
           type="button"
           onClick={onConfirm}
           className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
-          Import starten
+          {t('preview.start')}
         </button>
       </div>
     </div>

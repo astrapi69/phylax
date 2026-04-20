@@ -56,30 +56,35 @@ describe('ResultScreen', () => {
     expect(onRestart).toHaveBeenCalledOnce();
   });
 
-  it('renders failure variant with message', () => {
+  it('renders failure variant with translated fallback and logs detail', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(
       <ResultScreen
-        outcome={{ kind: 'failure', message: 'Testfehler' }}
+        outcome={{ kind: 'failure', detail: 'Testfehler' }}
         onNavigateHome={vi.fn()}
         onRestart={vi.fn()}
       />,
     );
     expect(screen.getByRole('heading', { name: /Import fehlgeschlagen/i })).toBeInTheDocument();
-    expect(screen.getByText('Testfehler')).toBeInTheDocument();
+    expect(screen.getByRole('alert').textContent).toMatch(/Der Import konnte nicht/);
     expect(screen.getByText(/nicht geändert/i)).toBeInTheDocument();
+    expect(consoleSpy).toHaveBeenCalledWith('[ResultScreen]', 'Testfehler');
+    consoleSpy.mockRestore();
   });
 
   it('failure "Erneut versuchen" calls onRestart', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const user = userEvent.setup();
     const onRestart = vi.fn();
     render(
       <ResultScreen
-        outcome={{ kind: 'failure', message: 'Fehler' }}
+        outcome={{ kind: 'failure', detail: 'Fehler' }}
         onNavigateHome={vi.fn()}
         onRestart={onRestart}
       />,
     );
     await user.click(screen.getByRole('button', { name: 'Erneut versuchen' }));
     expect(onRestart).toHaveBeenCalledOnce();
+    consoleSpy.mockRestore();
   });
 });

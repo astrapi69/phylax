@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getDisplayName } from '../../../domain';
 import type { Profile } from '../../../domain';
 import { ProfileRepository } from '../../../db/repositories';
@@ -20,6 +21,7 @@ import { ResultScreen } from './ResultScreen';
  * - profilesById: cached for display-name lookups in preview/confirm/done.
  */
 export function ImportFlow() {
+  const { t } = useTranslation('import');
   const navigate = useNavigate();
   const importState = useImport();
   const [sourceLabel, setSourceLabel] = useState<string>('');
@@ -67,7 +69,7 @@ export function ImportFlow() {
 
   const targetName = (profileId: string): string => {
     const p = profilesById[profileId];
-    return p ? getDisplayName(p) : 'Zielprofil';
+    return p ? getDisplayName(p) : t('flow.target-fallback');
   };
 
   const state = importState.state;
@@ -79,7 +81,7 @@ export function ImportFlow() {
     case 'parsing':
       return (
         <div role="status" aria-live="polite" className="text-sm text-gray-700 dark:text-gray-300">
-          Markdown wird verarbeitet...
+          {t('flow.parsing')}
         </div>
       );
 
@@ -104,7 +106,7 @@ export function ImportFlow() {
       return (
         <PreviewScreen
           parseResult={state.parseResult}
-          sourceLabel={sourceLabel || 'Unbekannt'}
+          sourceLabel={sourceLabel || t('flow.source-unknown')}
           targetProfileName={targetName(state.targetProfileId)}
           onConfirm={importState.startImport}
           onBack={importState.cancel}
@@ -116,7 +118,7 @@ export function ImportFlow() {
         <>
           <PreviewScreen
             parseResult={state.parseResult}
-            sourceLabel={sourceLabel || 'Unbekannt'}
+            sourceLabel={sourceLabel || t('flow.source-unknown')}
             targetProfileName={targetName(state.targetProfileId)}
             onConfirm={() => {
               /* blocked by modal */
@@ -135,7 +137,7 @@ export function ImportFlow() {
     case 'importing':
       return (
         <div role="status" aria-live="polite" className="text-sm text-gray-700 dark:text-gray-300">
-          Daten werden importiert...
+          {t('flow.importing')}
         </div>
       );
 
@@ -155,7 +157,7 @@ export function ImportFlow() {
     case 'error':
       return (
         <ResultScreen
-          outcome={{ kind: 'failure', message: state.message }}
+          outcome={{ kind: 'failure', detail: state.detail }}
           onNavigateHome={handleNavigateHome}
           onRestart={importState.reset}
         />
