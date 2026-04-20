@@ -86,7 +86,7 @@ export function DonationReminderBanner({ profileId }: DonationReminderBannerProp
         <button
           type="button"
           onClick={() => recordAndHide('dismissed')}
-          aria-label={t('reminder-banner.close-aria')}
+          aria-label={t('common:action.close')}
           className="rounded px-2 text-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
         >
           &times;

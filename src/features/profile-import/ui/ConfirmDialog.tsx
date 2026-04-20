@@ -60,7 +60,7 @@ export function ConfirmDialog({
 
   const lines: string[] = [];
   if (existingCounts.observations > 0)
-    lines.push(t('counts.observations', { count: existingCounts.observations }));
+    lines.push(t('common:counts.observations', { count: existingCounts.observations }));
   if (existingCounts.labReports > 0)
     lines.push(
       t('confirm.lab-report-line', {
@@ -69,7 +69,7 @@ export function ConfirmDialog({
       }),
     );
   if (existingCounts.supplements > 0)
-    lines.push(t('counts.supplements', { count: existingCounts.supplements }));
+    lines.push(t('common:counts.supplements', { count: existingCounts.supplements }));
   if (existingCounts.openPoints > 0)
     lines.push(t('counts.open-points', { count: existingCounts.openPoints }));
   if (existingCounts.timelineEntries > 0)
@@ -111,7 +111,7 @@ export function ConfirmDialog({
             onClick={onCancel}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            {t('action.cancel')}
+            {t('common:action.cancel')}
           </button>
           <button
             type="button"

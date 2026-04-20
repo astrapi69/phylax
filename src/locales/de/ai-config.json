@@ -16,11 +16,9 @@
       "heading": "Du kontrollierst den Zugang:",
       "body": "Dein API-Schluessel wird verschluesselt auf deinem Geraet gespeichert. Du kannst die KI-Funktion jederzeit deaktivieren und den Schluessel loeschen."
     },
-    "cancel-button": "Abbrechen",
     "confirm-button": "Verstanden, KI aktivieren"
   },
   "settings-section": {
-    "heading": "KI-Assistent",
     "privacy-link": "Datenschutz beim KI-Chat",
     "loading": "Lade KI-Einstellungen...",
     "error": "KI-Einstellungen konnten nicht geladen werden.",
@@ -30,7 +28,6 @@
     "suspicious-warning": "Schluesselformat sieht ungewoehnlich aus. Bitte pruefen.",
     "activate-button": "KI aktivieren",
     "save-button": "Speichern",
-    "cancel-button": "Abbrechen",
     "change-button": "Aendern",
     "model-label": "Modell",
     "model-custom-suffix": "(benutzerdefiniert)",
@@ -61,7 +58,6 @@
       "bullet-4": "\"Profil teilen\" ist optional",
       "bullet-5": "Chat jederzeit mit \"Leeren\" entfernen",
       "bullet-6": "API-Schluessel direkt bei Anthropic widerrufen (sofortige Wirkung)"
-    },
-    "close-button": "Schliessen"
+    }
   }
 }

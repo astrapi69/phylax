@@ -1,7 +1,6 @@
 {
   "loading": "Profil wird geladen...",
   "error": {
-    "not-found": "Kein Profil gefunden.",
     "load-failed": "Profil konnte nicht geladen werden."
   },
   "header": {

@@ -7,7 +7,6 @@
     "suffix": ", um sie hier zu sehen."
   },
   "error": {
-    "no-profile": "Kein Profil gefunden.",
     "load-failed": "Verlaufseintraege konnten nicht geladen werden."
   }
 }

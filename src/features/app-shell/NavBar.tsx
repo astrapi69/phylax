@@ -2,16 +2,16 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const NAV_ITEMS = [
-  { to: '/profile', key: 'profile' },
-  { to: '/observations', key: 'observations' },
-  { to: '/lab-values', key: 'lab-values' },
-  { to: '/supplements', key: 'supplements' },
-  { to: '/open-points', key: 'open-points' },
-  { to: '/timeline', key: 'timeline' },
-  { to: '/documents', key: 'documents' },
-  { to: '/chat', key: 'ai-assistant' },
-  { to: '/import', key: 'import' },
-  { to: '/settings', key: 'settings' },
+  { to: '/profile', i18n: 'app-shell:nav.profile' },
+  { to: '/observations', i18n: 'app-shell:nav.observations' },
+  { to: '/lab-values', i18n: 'app-shell:nav.lab-values' },
+  { to: '/supplements', i18n: 'app-shell:nav.supplements' },
+  { to: '/open-points', i18n: 'common:entity.open-points' },
+  { to: '/timeline', i18n: 'app-shell:nav.timeline' },
+  { to: '/documents', i18n: 'app-shell:nav.documents' },
+  { to: '/chat', i18n: 'common:entity.ai-assistant' },
+  { to: '/import', i18n: 'app-shell:nav.import' },
+  { to: '/settings', i18n: 'app-shell:nav.settings' },
 ] as const;
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
@@ -33,7 +33,7 @@ export function NavBar() {
       <div className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:hidden">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            <span className="text-xs">{t(`nav.${item.key}`)}</span>
+            <span className="text-xs">{t(item.i18n)}</span>
           </NavLink>
         ))}
       </div>
@@ -42,7 +42,7 @@ export function NavBar() {
       <div className="hidden md:fixed md:bottom-0 md:left-0 md:top-14 md:flex md:w-48 md:flex-col md:gap-1 md:border-r md:border-gray-200 md:bg-white md:p-3 md:dark:border-gray-700 md:dark:bg-gray-900">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            {t(`nav.${item.key}`)}
+            {t(item.i18n)}
           </NavLink>
         ))}
       </div>

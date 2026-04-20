@@ -25,7 +25,7 @@ export function OpenPointsView() {
       console.error('[OpenPointsView]', state.error.detail);
     }
     const message =
-      state.error.kind === 'no-profile' ? t('error.no-profile') : t('error.load-failed');
+      state.error.kind === 'no-profile' ? t('common:error.no-profile') : t('error.load-failed');
     return (
       <div
         role="alert"
@@ -39,7 +39,9 @@ export function OpenPointsView() {
   return (
     <article className="space-y-6">
       <header className="border-b border-gray-200 pb-4 dark:border-gray-700">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {t('common:entity.open-points')}
+        </h1>
       </header>
 
       {state.groups.length === 0 ? (

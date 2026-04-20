@@ -20,7 +20,6 @@
     }
   },
   "error": {
-    "no-profile": "Kein Profil gefunden.",
     "load-failed": "Supplemente konnten nicht geladen werden."
   }
 }

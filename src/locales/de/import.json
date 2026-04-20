@@ -105,10 +105,8 @@
     }
   },
   "counts": {
-    "observations": "{{count}} Beobachtungen",
     "lab-report-with-values_one": "{{count}} Laborbefund ({{values}} Werte)",
     "lab-report-with-values_other": "{{count}} Laborbefunde ({{values}} Werte)",
-    "supplements": "{{count}} Supplemente",
     "open-points": "{{count}} offene Punkte",
     "timeline-entries": "{{count}} Verlaufsnotizen",
     "profile-versions": "{{count}} Profilversionen",
@@ -116,7 +114,6 @@
     "external-references": "{{count}} externe Referenzen"
   },
   "action": {
-    "cancel": "Abbrechen",
     "back": "Zurueck",
     "next": "Weiter"
   }

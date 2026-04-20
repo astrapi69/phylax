@@ -22,14 +22,14 @@ export function ResultScreen({ outcome, onNavigateHome, onRestart }: ResultScree
           {t('result.success.body', { name: outcome.targetProfileName })}
         </p>
         <ul className="mb-6 space-y-1 text-sm text-gray-800 dark:text-gray-200">
-          <li>{t('counts.observations', { count: created.observations })}</li>
+          <li>{t('common:counts.observations', { count: created.observations })}</li>
           <li>
             {t('counts.lab-report-with-values', {
               count: created.labReports,
               values: created.labValues,
             })}
           </li>
-          <li>{t('counts.supplements', { count: created.supplements })}</li>
+          <li>{t('common:counts.supplements', { count: created.supplements })}</li>
           <li>{t('counts.open-points', { count: created.openPoints })}</li>
           <li>{t('counts.timeline-entries', { count: created.timelineEntries })}</li>
           <li>{t('counts.profile-versions', { count: created.profileVersions })}</li>
@@ -85,7 +85,7 @@ export function ResultScreen({ outcome, onNavigateHome, onRestart }: ResultScree
           onClick={onNavigateHome}
           className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
         >
-          {t('action.cancel')}
+          {t('common:action.cancel')}
         </button>
       </div>
     </div>

@@ -26,9 +26,11 @@ export interface ProfileListProps {
 function formatCounts(t: TFunction<'profile-list'>, counts: EntityCounts): string {
   if (countsAreEmpty(counts)) return t('counts.empty');
   const parts: string[] = [];
-  if (counts.observations > 0) parts.push(t('counts.observations', { count: counts.observations }));
+  if (counts.observations > 0)
+    parts.push(t('common:counts.observations', { count: counts.observations }));
   if (counts.labValues > 0) parts.push(t('counts.lab-report', { count: counts.labReports }));
-  if (counts.supplements > 0) parts.push(t('counts.supplements', { count: counts.supplements }));
+  if (counts.supplements > 0)
+    parts.push(t('common:counts.supplements', { count: counts.supplements }));
   if (counts.openPoints > 0) parts.push(t('counts.open-points', { count: counts.openPoints }));
   if (counts.profileVersions > 0)
     parts.push(t('counts.versions', { count: counts.profileVersions }));

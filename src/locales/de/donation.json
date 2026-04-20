@@ -17,8 +17,7 @@
     "text_one": "Du nutzt Phylax jetzt seit einem Monat. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
     "text_other": "Du nutzt Phylax jetzt seit {{count}} Monaten. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
     "support-button": "Unterstuetzen",
-    "not-now-button": "Nicht jetzt",
-    "close-aria": "Schliessen"
+    "not-now-button": "Nicht jetzt"
   },
   "link": {
     "new-tab": "(oeffnet in neuem Tab)"

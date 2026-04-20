@@ -27,7 +27,10 @@ export function GuidedSessionIndicator({ state }: GuidedSessionIndicatorProps) {
     >
       {SECTION_ORDER.map((section) => {
         const completed = state.sectionsCompleted.includes(section);
-        const label = t(`guided.section.${section}`);
+        const label =
+          section === 'open-points'
+            ? t('common:entity.open-points')
+            : t(`guided.section.${section}`);
         const ariaLabel = completed
           ? t('guided.pill-aria-completed', { label })
           : t('guided.pill-aria-pending', { label });

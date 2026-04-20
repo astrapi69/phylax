@@ -68,7 +68,7 @@ export function ChatView() {
       <header className="flex flex-col gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {guidedSession.active ? t('heading.guided') : t('heading.default')}
+            {guidedSession.active ? t('heading.guided') : t('common:entity.ai-assistant')}
           </h1>
           <div className="flex flex-wrap items-center gap-2">
             {!guidedSession.active && (
@@ -192,7 +192,7 @@ export function ChatView() {
             onClick={cancelStream}
             className="rounded border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            {t('streaming.cancel')}
+            {t('common:action.cancel')}
           </button>
         </div>
       )}

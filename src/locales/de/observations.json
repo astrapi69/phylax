@@ -35,7 +35,6 @@
     }
   },
   "error": {
-    "no-profile": "Kein Profil gefunden.",
     "load-failed": "Beobachtungen konnten nicht geladen werden."
   }
 }

@@ -94,7 +94,7 @@ export function AISettingsSection() {
         id="ai-settings-heading"
         className="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
-        {t('settings-section.heading')}
+        {t('common:entity.ai-assistant')}
       </h2>
       <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
         <button
@@ -351,7 +351,7 @@ function ConfiguredForm({
                 onClick={onCancelChangeKey}
                 className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                {t('settings-section.cancel-button')}
+                {t('common:action.cancel')}
               </button>
             </div>
           </div>

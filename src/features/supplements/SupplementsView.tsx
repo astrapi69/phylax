@@ -24,7 +24,7 @@ export function SupplementsView() {
       console.error('[SupplementsView]', state.error.detail);
     }
     const message =
-      state.error.kind === 'no-profile' ? t('error.no-profile') : t('error.load-failed');
+      state.error.kind === 'no-profile' ? t('common:error.no-profile') : t('error.load-failed');
     return (
       <div
         role="alert"

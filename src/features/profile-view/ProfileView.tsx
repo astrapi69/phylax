@@ -33,7 +33,7 @@ export function ProfileView() {
       console.error('[ProfileView]', state.error.detail);
     }
     const message =
-      state.error.kind === 'not-found' ? t('error.not-found') : t('error.load-failed');
+      state.error.kind === 'not-found' ? t('common:error.no-profile') : t('error.load-failed');
     return (
       <div
         role="alert"

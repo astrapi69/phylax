@@ -10,10 +10,8 @@
   },
   "counts": {
     "empty": "Noch leer",
-    "observations": "{{count}} Beobachtungen",
     "lab-report_one": "{{count}} Laborbefund",
     "lab-report_other": "{{count}} Laborbefunde",
-    "supplements": "{{count}} Supplemente",
     "open-points": "{{count}} offene Punkte",
     "versions": "{{count}} Versionen",
     "timeline-entries": "{{count}} Verlaufsnotizen"

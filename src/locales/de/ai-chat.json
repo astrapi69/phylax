@@ -1,6 +1,5 @@
 {
   "heading": {
-    "default": "KI-Assistent",
     "guided": "KI-Assistent - Gefuehrte Sitzung"
   },
   "welcome": {
@@ -29,11 +28,9 @@
     "send": "Senden"
   },
   "streaming": {
-    "aria-label": "KI-Assistent schreibt",
-    "cancel": "Abbrechen"
+    "aria-label": "KI-Assistent schreibt"
   },
   "message": {
-    "ai-label": "KI-Assistent",
     "ai-badge": "KI",
     "committed-badge": "In Profil uebernommen",
     "commit-cta": "In Profil uebernehmen",
@@ -43,9 +40,7 @@
       "expand": "Details anzeigen",
       "empty": "keine Inhalte",
       "counts": {
-        "observations": "{{count}} Beobachtungen",
         "abnormal-labs": "{{count}} abweichende Laborwerte",
-        "supplements": "{{count}} Supplemente",
         "open-points": "{{count}} offene Punkte",
         "warning-signs": "{{count}} Warnsignale"
       }
@@ -57,8 +52,7 @@
     "pill-aria-pending": "{{label}}: ausstehend",
     "section": {
       "observations": "Beobachtungen",
-      "supplements": "Supplemente",
-      "open-points": "Offene Punkte"
+      "supplements": "Supplemente"
     },
     "end-message": "Gefuehrte Sitzung beendet.",
     "opening-message": "Willkommen zur gefuehrten Sitzung. Ich fuehre dich durch drei Bereiche deines Profils:\n\n1. Beobachtungen\n2. Supplemente\n3. Offene Punkte\n\nBasisdaten erfasst du ueber das Profil-Formular, Laborwerte importierst du separat, Verlaufsnotizen ebenfalls.\n\nDu kannst die Sitzung jederzeit beenden. Lass uns mit den Beobachtungen anfangen: gibt es etwas, das dir gesundheitlich gerade auffaellt oder dich beschaeftigt?"
@@ -67,7 +61,6 @@
     "config-loading": "Einstellungen werden geladen, bitte kurz warten.",
     "not-configured": "KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schluessel unter Einstellungen.",
     "locked": "App ist gesperrt. Bitte entsperre sie erneut.",
-    "no-profile": "Kein Profil gefunden.",
     "context-framing": "[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext fuer die folgende Konversation verwenden]"
   },
   "error": {
@@ -85,7 +78,6 @@
     "intro": "Die KI hat folgende Aenderungen strukturiert. Nichts davon ist bisher gespeichert.",
     "loading": "Profil wird geladen...",
     "error": {
-      "no-profile": "Kein Profil gefunden.",
       "locked": "App ist gesperrt. Bitte entsperre sie und versuche erneut."
     },
     "disabled-reason": {
@@ -98,7 +90,6 @@
     "section": {
       "observations": "Beobachtungen",
       "supplements": "Supplemente",
-      "open-points": "Offene Punkte",
       "version": "Versionseintrag"
     },
     "badge": {
@@ -136,7 +127,6 @@
     },
     "raw-toggle": "Roh-Markdown anzeigen",
     "footer": {
-      "close": "Schliessen",
       "commit": "Uebernehmen",
       "committing": "Wird uebernommen..."
     },

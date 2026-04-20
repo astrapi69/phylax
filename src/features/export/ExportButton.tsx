@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExportDialog } from './ExportDialog';
 
 interface ExportButtonProps {
@@ -16,6 +17,7 @@ interface ExportButtonProps {
  * of ExportDialog; the dialog owns the format choice + download logic.
  */
 export function ExportButton({ className, children }: ExportButtonProps) {
+  const { t } = useTranslation('export');
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,7 +31,7 @@ export function ExportButton({ className, children }: ExportButtonProps) {
           'rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700'
         }
       >
-        {children ?? 'Profil exportieren'}
+        {children ?? t('button')}
       </button>
       <ExportDialog open={open} onClose={() => setOpen(false)} />
     </>

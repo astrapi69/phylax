@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getLockState, onLockStateChange } from '../crypto';
 import { metaExists } from '../db/meta';
 
@@ -21,6 +22,7 @@ type AuthState = 'loading' | 'onboarding' | 'locked' | 'ready';
  * Uses `replace` on Navigate to keep /unlock out of back-button history.
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { t } = useTranslation('common');
   const [authState, setAuthState] = useState<AuthState>('loading');
   const location = useLocation();
 
@@ -49,7 +51,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (authState === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <p className="text-gray-500 dark:text-gray-400">Laden...</p>
+        <p className="text-gray-500 dark:text-gray-400">{t('status.loading')}</p>
       </div>
     );
   }

@@ -1,1 +1,23 @@
-{}
+{
+  "error": {
+    "no-profile": "Kein Profil gefunden."
+  },
+  "action": {
+    "cancel": "Abbrechen",
+    "close": "Schliessen"
+  },
+  "status": {
+    "loading": "Laden..."
+  },
+  "counts": {
+    "observations": "{{count}} Beobachtungen",
+    "supplements": "{{count}} Supplemente"
+  },
+  "entity": {
+    "open-points": "Offene Punkte",
+    "ai-assistant": "KI-Assistent",
+    "fallback-self": "Mein Profil",
+    "fallback-proxy": "Stellvertreterprofil",
+    "fallback-proxy-for": "Profil von {{name}}"
+  }
+}

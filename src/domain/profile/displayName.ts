@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+import i18n from '../../i18n/config';
 import type { Profile } from './types';
 
 /**
@@ -7,21 +9,31 @@ import type { Profile } from './types';
  * type-aware fallback keeps the UI meaningful for legacy profiles
  * created before the name field existed:
  *
- * - `self`  -> "Mein Profil"
- * - `proxy` -> "Profil von {managedBy}" if managedBy is set,
- *              otherwise "Stellvertreterprofil"
+ * - `self`  -> common:entity.fallback-self
+ * - `proxy` -> common:entity.fallback-proxy-for (with managedBy)
+ *              or common:entity.fallback-proxy (without)
  *
  * All consumers should route through this helper so that naming
  * conventions change in exactly one place.
+ *
+ * The `t` parameter is optional; when omitted the helper falls back to
+ * the initialized i18n instance. Callers inside React components
+ * should pass their own `t` so the function participates in the render
+ * cycle on language change.
  */
-export function getDisplayName(profile: Pick<Profile, 'baseData'>): string {
+export function getDisplayName(
+  profile: Pick<Profile, 'baseData'>,
+  t: TFunction = i18n.t.bind(i18n),
+): string {
   const { name, profileType, managedBy } = profile.baseData;
   const trimmedName = name?.trim();
   if (trimmedName) return trimmedName;
 
   if (profileType === 'proxy') {
     const trimmedManagedBy = managedBy?.trim();
-    return trimmedManagedBy ? `Profil von ${trimmedManagedBy}` : 'Stellvertreterprofil';
+    return trimmedManagedBy
+      ? t('common:entity.fallback-proxy-for', { name: trimmedManagedBy })
+      : t('common:entity.fallback-proxy');
   }
-  return 'Mein Profil';
+  return t('common:entity.fallback-self');
 }

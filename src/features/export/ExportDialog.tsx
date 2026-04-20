@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { exportProfileAsMarkdown } from './markdownExport';
 import { triggerDownload } from './download';
 import { generateMarkdownFilename } from './filenames';
@@ -18,6 +19,7 @@ type ExportStatus = { kind: 'idle' } | { kind: 'working' } | { kind: 'error'; me
  * component stays a simple opener.
  */
 export function ExportDialog({ open, onClose }: ExportDialogProps) {
+  const { t } = useTranslation('export');
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
@@ -63,18 +65,18 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     setStatus({ kind: 'working' });
     const result = await loadExportData();
     if (result.kind === 'no-profile') {
-      setStatus({ kind: 'error', message: 'Kein Profil zum Exportieren gefunden.' });
+      setStatus({ kind: 'error', message: t('error.no-profile') });
       return;
     }
     if (result.kind === 'locked') {
-      setStatus({
-        kind: 'error',
-        message: 'App ist gesperrt. Bitte entsperre sie und versuche erneut.',
-      });
+      setStatus({ kind: 'error', message: t('error.locked') });
       return;
     }
     if (result.kind === 'error') {
-      setStatus({ kind: 'error', message: `Fehler beim Laden: ${result.message}` });
+      setStatus({
+        kind: 'error',
+        message: t('error.load-failed', { detail: result.message }),
+      });
       return;
     }
     const {
@@ -125,11 +127,9 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             id="export-dialog-title"
             className="text-lg font-bold text-gray-900 dark:text-gray-100"
           >
-            Profil exportieren
+            {t('dialog.title')}
           </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Waehle ein Format. Die Datei wird direkt in deinen Downloads-Ordner geladen.
-          </p>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('dialog.description')}</p>
         </header>
 
         <div className="flex flex-col gap-3 px-6 py-4">
@@ -140,10 +140,10 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             data-testid="export-markdown-button"
             className="rounded border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
           >
-            <span className="font-semibold">Markdown (.md)</span>
+            <span className="font-semibold">{t('dialog.markdown.title')}</span>
             <br />
             <span className="text-xs text-gray-600 dark:text-gray-400">
-              Vollstaendiges Profil im Lebende-Gesundheit-Format; importierbar zurueck nach Phylax.
+              {t('dialog.markdown.description')}
             </span>
           </button>
 
@@ -164,7 +164,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
               data-testid="export-working"
               className="text-sm text-gray-700 dark:text-gray-300"
             >
-              Export wird vorbereitet...
+              {t('dialog.working')}
             </p>
           )}
         </div>
@@ -177,7 +177,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             disabled={working}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Abbrechen
+            {t('common:action.cancel')}
           </button>
         </footer>
       </div>

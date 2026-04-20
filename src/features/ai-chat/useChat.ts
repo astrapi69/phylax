@@ -144,7 +144,11 @@ export function useChat(): UseChatResult {
         try {
           const profile = await new ProfileRepository().getCurrentProfile();
           if (!profile) {
-            setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.no-profile'))]);
+            setMessages((prev) => [
+              ...prev,
+              userMsg,
+              makeSystemMessage(t('common:error.no-profile')),
+            ]);
             return;
           }
           const observations = await new ObservationRepository().listByProfile(profile.id);
@@ -238,7 +242,7 @@ export function useChat(): UseChatResult {
     try {
       const profile = await new ProfileRepository().getCurrentProfile();
       if (!profile) {
-        setMessages((prev) => [...prev, makeSystemMessage(t('system.no-profile'))]);
+        setMessages((prev) => [...prev, makeSystemMessage(t('common:error.no-profile'))]);
         return;
       }
       const profileId = profile.id;

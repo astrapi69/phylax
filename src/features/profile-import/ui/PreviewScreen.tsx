@@ -58,14 +58,14 @@ export function PreviewScreen({
           {t('preview.content-heading')}
         </h2>
         <ul className="space-y-1 text-sm text-gray-800 dark:text-gray-200">
-          <li>{t('counts.observations', { count: counts.observations })}</li>
+          <li>{t('common:counts.observations', { count: counts.observations })}</li>
           <li>
             {t('counts.lab-report-with-values', {
               count: counts.labReports,
               values: counts.labValues,
             })}
           </li>
-          <li>{t('counts.supplements', { count: counts.supplements })}</li>
+          <li>{t('common:counts.supplements', { count: counts.supplements })}</li>
           <li>{t('counts.open-points', { count: counts.openPoints })}</li>
           <li>{t('counts.timeline-entries', { count: counts.timelineEntries })}</li>
           <li>{t('counts.profile-versions', { count: counts.profileVersions })}</li>

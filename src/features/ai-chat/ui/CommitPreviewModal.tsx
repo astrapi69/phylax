@@ -99,8 +99,7 @@ export function CommitPreviewModal({
       try {
         const profile = await new ProfileRepository().getCurrentProfile();
         if (!profile) {
-          if (!cancelled)
-            setState({ kind: 'error', message: t('commit-preview.error.no-profile') });
+          if (!cancelled) setState({ kind: 'error', message: t('common:error.no-profile') });
           return;
         }
         const [observations, supplements] = await Promise.all([
@@ -272,7 +271,7 @@ export function CommitPreviewModal({
             disabled={commitState.kind === 'committing'}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            {t('commit-preview.footer.close')}
+            {t('common:action.close')}
           </button>
           <button
             type="button"
@@ -644,7 +643,7 @@ function OpenPointsSection({ diff }: { diff: ProfileDiff }) {
   return (
     <section className="mb-5" data-testid="commit-preview-open-points">
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-        {t('commit-preview.section.open-points')}
+        {t('common:entity.open-points')}
       </h3>
       <div className="space-y-2">
         {Array.from(byContext.entries()).map(([context, list]) => (

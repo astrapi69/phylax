@@ -1,1 +1,17 @@
-{}
+{
+  "button": "Profil exportieren",
+  "dialog": {
+    "title": "Profil exportieren",
+    "description": "Waehle ein Format. Die Datei wird direkt in deinen Downloads-Ordner geladen.",
+    "working": "Export wird vorbereitet...",
+    "markdown": {
+      "title": "Markdown (.md)",
+      "description": "Vollstaendiges Profil im Lebende-Gesundheit-Format; importierbar zurueck nach Phylax."
+    }
+  },
+  "error": {
+    "no-profile": "Kein Profil zum Exportieren gefunden.",
+    "locked": "App ist gesperrt. Bitte entsperre sie und versuche erneut.",
+    "load-failed": "Fehler beim Laden: {{detail}}"
+  }
+}

@@ -84,7 +84,7 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
         className="my-1 max-w-[85%] rounded-2xl rounded-bl-sm bg-gray-100 px-4 py-2 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
       >
         <span
-          aria-label={t('message.ai-label')}
+          aria-label={t('common:entity.ai-assistant')}
           className="mb-1 inline-block rounded bg-gray-300 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200"
         >
           {t('message.ai-badge')}
@@ -171,11 +171,11 @@ function formatCountsLine(t: TFunction<'ai-chat'>, counts?: ProfileShareCounts):
   if (!counts) return '';
   const parts: string[] = [];
   if (counts.observationCount > 0)
-    parts.push(t('message.context.counts.observations', { count: counts.observationCount }));
+    parts.push(t('common:counts.observations', { count: counts.observationCount }));
   if (counts.abnormalLabCount > 0)
     parts.push(t('message.context.counts.abnormal-labs', { count: counts.abnormalLabCount }));
   if (counts.supplementCount > 0)
-    parts.push(t('message.context.counts.supplements', { count: counts.supplementCount }));
+    parts.push(t('common:counts.supplements', { count: counts.supplementCount }));
   if (counts.openPointCount > 0)
     parts.push(t('message.context.counts.open-points', { count: counts.openPointCount }));
   if (counts.warningSignCount > 0)

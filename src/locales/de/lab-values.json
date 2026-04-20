@@ -27,7 +27,6 @@
     "assessment": "Bewertung"
   },
   "error": {
-    "no-profile": "Kein Profil gefunden.",
     "load-failed": "Laborwerte konnten nicht geladen werden."
   }
 }
