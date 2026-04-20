@@ -1,0 +1,158 @@
+# German-English Terminology Glossary
+
+Single source of truth for Phylax UI translations.
+
+I18N-02 sub-commits (02-a through 02-e) reference this document. Future
+translation targets (ES/FR/EL under P-11 and later) start from this
+DE-EN baseline rather than re-deriving choices.
+
+When a translation choice is not covered here, add it with a one-line
+reasoning note. Keep entries alphabetical within each section.
+
+## Core domain
+
+| DE                  | EN                     | Notes                                                         |
+| ------------------- | ---------------------- | ------------------------------------------------------------- |
+| Arzt / Aerztin      | doctor                 | generic                                                       |
+| Beobachtung         | observation            | fits "living health" concept                                  |
+| Betreuer            | caregiver              | proxy-profile context                                         |
+| Gefuehrte Sitzung   | guided session         |                                                               |
+| Hausarzt            | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)             |
+| Laborbefund         | lab report             | the document                                                  |
+| Laborwerte          | lab values             | not "lab results" (implies finalization)                      |
+| Muster              | pattern                |                                                               |
+| Offene Punkte       | open points            | keep literal - Phylax-specific, not "tasks" or "action items" |
+| Offener Punkt       | open point             | singular form                                                 |
+| Profil              | profile                |                                                               |
+| Selbstregulation    | self-regulation        | established English term                                      |
+| Supplement          | supplement             |                                                               |
+| Verlauf (nav label) | timeline               |                                                               |
+| Verlaufsnotiz       | timeline entry         |                                                               |
+| Warnhinweis         | warning                | generic warning                                               |
+| Warnsignal          | warning sign           | medical red-flag sense                                        |
+
+## Profile and base data
+
+| DE                   | EN              | Notes                 |
+| -------------------- | --------------- | --------------------- |
+| Alter                | age             |                       |
+| Basisdaten           | base data       |                       |
+| Diagnosen            | diagnoses       |                       |
+| Eigenes Profil       | own profile     |                       |
+| Einschraenkungen     | limitations     |                       |
+| Geburtsdatum         | date of birth   |                       |
+| Gewicht              | weight          |                       |
+| Groesse              | height          |                       |
+| Medikamente          | medications     |                       |
+| Mein Profil          | My profile      | fallback display name |
+| Stellvertretend fuer | proxy for       |                       |
+| Stellvertreterprofil | proxy profile   |                       |
+| Ziel (Gewicht)       | target (weight) | weight target         |
+
+## AI and commit flow
+
+| DE                                   | EN              | Notes                                                            |
+| ------------------------------------ | --------------- | ---------------------------------------------------------------- |
+| Aenderung                            | change          |                                                                  |
+| KI                                   | AI              | abbreviation                                                     |
+| KI-Assistent                         | AI assistant    |                                                                  |
+| Master-Passwort                      | master password |                                                                  |
+| Profil teilen                        | share profile   |                                                                  |
+| Roh-Markdown                         | raw Markdown    |                                                                  |
+| Uebernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak               |
+| Versionseintrag                      | version note    | "note" reads more naturally than "entry" for a description field |
+| Versionsgeschichte                   | version history |                                                                  |
+| Vorschau                             | preview         |                                                                  |
+
+## Common actions and chrome
+
+| DE                   | EN                     | Notes                     |
+| -------------------- | ---------------------- | ------------------------- |
+| Abbrechen            | Cancel                 |                           |
+| Auswaehlen           | Select                 |                           |
+| Datenschutz          | privacy                |                           |
+| Einstellungen        | settings               |                           |
+| Entsperren           | Unlock                 |                           |
+| Erledigt             | Done                   |                           |
+| Laden...             | Loading...             |                           |
+| Leeren               | Clear                  |                           |
+| Schliessen           | Close                  |                           |
+| Speichern            | Save                   |                           |
+| Sperren              | Lock                   |                           |
+| Sprache              | language               | for the language switcher |
+| Systemsprache folgen | Follow system language | auto option               |
+| Weiter               | Next                   |                           |
+| Zurueck              | Back                   |                           |
+
+## Table headers and field labels
+
+| DE          | EN         | Notes        |
+| ----------- | ---------- | ------------ |
+| Bericht-Nr. | Report no. | abbreviation |
+| Bewertung   | Assessment |              |
+| Einheit     | Unit       |              |
+| Ergebnis    | Result     |              |
+| Labor       | Lab        |              |
+| Parameter   | Parameter  |              |
+| Referenz    | Reference  |              |
+
+## Error and status messages
+
+| DE                                                 | EN                                         | Notes |
+| -------------------------------------------------- | ------------------------------------------ | ----- |
+| API-Schluessel ungueltig.                          | Invalid API key.                           |       |
+| App ist gesperrt.                                  | The app is locked.                         |       |
+| Der KI-Dienst ist voruebergehend nicht erreichbar. | The AI service is temporarily unavailable. |       |
+| Fehler beim KI-Dienst.                             | AI service error.                          |       |
+| Fehler beim Speichern.                             | Error saving.                              |       |
+| Kein Profil gefunden.                              | No profile found.                          |       |
+| Keine Internetverbindung.                          | No internet connection.                    |       |
+| Zu viele Anfragen.                                 | Too many requests.                         |       |
+
+## Support and donation
+
+| DE                      | EN                  | Notes                                                                                        |
+| ----------------------- | ------------------- | -------------------------------------------------------------------------------------------- |
+| Projekt unterstuetzen   | Support the project |                                                                                              |
+| Spenden / Unterstuetzen | support             | "support" over "donate" - broader scope (stars, issues, code, word-of-mouth, plus Liberapay) |
+| Unterstuetzen           | Support             |                                                                                              |
+
+## Badges and statuses
+
+| DE                          | EN                    | Notes                |
+| --------------------------- | --------------------- | -------------------- |
+| aktualisiert                | updated               | commit-preview badge |
+| neu                         | new                   | commit-preview badge |
+| Pausiert / pausiert         | Paused / paused       | supplement category  |
+| Regelmaessig / regelmaessig | Regular / regular     | supplement category  |
+| Taeglich / taeglich         | Daily / daily         | supplement category  |
+| unveraendert                | unchanged             | commit-preview badge |
+| Bei Bedarf / bei Bedarf     | As needed / as needed | supplement category  |
+
+## Theme
+
+| DE          | EN         | Notes                    |
+| ----------- | ---------- | ------------------------ |
+| Automatisch | Auto       | theme toggle label       |
+| Darstellung | Appearance | settings section heading |
+| Dunkel      | Dark       |                          |
+| Hell        | Light      |                          |
+
+## Conventions
+
+- Translation targets natural English suitable for a general-audience
+  health-profile app.
+- No regional variant: "color" not "colour", "authorize" not "authorise".
+  American spelling as the default, consistent with most cross-border
+  SaaS conventions.
+- Sentences retain punctuation from the DE source (periods, ellipses,
+  question marks).
+- Umlauts are never used. Source DE uses ASCII substitution
+  (ae/oe/ue/ss) per I18N-01l-a. EN has no umlauts anyway.
+- Interpolation placeholders (`{{name}}`, `{{count}}`, `{{min}}`, etc.)
+  stay byte-identical across languages.
+- Plural forms use i18next `_one` / `_other` suffixes when the source
+  code passes a `count` parameter.
+- Capitalization follows context: button labels Title Case ("Cancel",
+  "Apply"), section headings Title Case ("Appearance"), sentence text
+  in sentences.
