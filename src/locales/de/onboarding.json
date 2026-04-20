@@ -1,1 +1,33 @@
-{}
+{
+  "title": "Phylax einrichten",
+  "state": {
+    "setup": "Waehle ein Master-Passwort",
+    "confirm": "Passwort bestaetigen",
+    "deriving": "Einrichtung laeuft...",
+    "done": "Einrichtung abgeschlossen"
+  },
+  "done-alert": "Einrichtung abgeschlossen.",
+  "deriving-spinner": "Schluessel wird abgeleitet...",
+  "password": {
+    "label": "Master-Passwort",
+    "confirm-label": "Passwort wiederholen"
+  },
+  "strength": {
+    "weak": "Schwach",
+    "fair": "Mittel",
+    "strong": "Stark",
+    "aria-label": "Passwortstaerke: {{label}}"
+  },
+  "warning": {
+    "body": "Wenn du dein Passwort vergisst, sind deine Daten verloren. Es gibt keinen Wiederherstellungsweg. Schreibe es an einen sicheren Ort, bevor du fortfaehrst.",
+    "acknowledge": "Ich habe verstanden"
+  },
+  "submit": {
+    "label": "Phylax einrichten"
+  },
+  "validation": {
+    "empty": "Bitte ein Passwort eingeben.",
+    "too-short": "Mindestens {{min}} Zeichen erforderlich (aktuell: {{length}}).",
+    "mismatch": "Passworter stimmen nicht uberein."
+  }
+}

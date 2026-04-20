@@ -1,15 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { useOnboarding, type OnboardingState } from './useOnboarding';
-import type { PasswordStrength } from './passwordValidation';
+import type { PasswordStrength, ValidationError } from './passwordValidation';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
 }
-
-const STRENGTH_LABELS: Record<PasswordStrength, string> = {
-  weak: 'Schwach',
-  fair: 'Mittel',
-  strong: 'Stark',
-};
 
 const STRENGTH_COLORS: Record<PasswordStrength, string> = {
   weak: 'bg-red-500',
@@ -30,6 +25,8 @@ const STRENGTH_WIDTHS: Record<PasswordStrength, string> = {
 };
 
 function StrengthIndicator({ strength }: { strength: PasswordStrength }) {
+  const { t } = useTranslation('onboarding');
+  const label = t(`strength.${strength}`);
   return (
     <div className="mt-1">
       <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
@@ -39,17 +36,16 @@ function StrengthIndicator({ strength }: { strength: PasswordStrength }) {
           aria-valuenow={strength === 'weak' ? 33 : strength === 'fair' ? 66 : 100}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`Passwortstaerke: ${STRENGTH_LABELS[strength]}`}
+          aria-label={t('strength.aria-label', { label })}
         />
       </div>
-      <p className={`mt-1 text-sm ${STRENGTH_TEXT_COLORS[strength]}`}>
-        {STRENGTH_LABELS[strength]}
-      </p>
+      <p className={`mt-1 text-sm ${STRENGTH_TEXT_COLORS[strength]}`}>{label}</p>
     </div>
   );
 }
 
 function LoadingSpinner() {
+  const { t } = useTranslation('onboarding');
   return (
     <div className="flex items-center justify-center gap-2" role="status">
       <svg
@@ -71,40 +67,50 @@ function LoadingSpinner() {
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         />
       </svg>
-      <span>Schluessel wird abgeleitet...</span>
+      <span>{t('deriving-spinner')}</span>
     </div>
   );
 }
 
-function renderState(state: OnboardingState): string {
+function stateLabelKey(state: OnboardingState): string {
   switch (state) {
     case 'setup':
-      return 'Waehle ein Master-Passwort';
+      return 'state.setup';
     case 'confirm':
-      return 'Passwort bestaetigen';
+      return 'state.confirm';
     case 'deriving':
-      return 'Einrichtung laeuft...';
+      return 'state.deriving';
     case 'done':
-      return 'Einrichtung abgeschlossen';
+      return 'state.done';
   }
 }
 
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+  const { t } = useTranslation('onboarding');
   const hook = useOnboarding(onComplete);
+
+  function renderPasswordError(error: ValidationError): string {
+    switch (error.kind) {
+      case 'empty':
+        return t('validation.empty');
+      case 'too-short':
+        return t('validation.too-short', { min: error.min, length: error.length });
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-950">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-900 dark:shadow-black/40">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Phylax einrichten
-        </h1>
-        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">{renderState(hook.state)}</p>
+        <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h1>
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+          {t(stateLabelKey(hook.state))}
+        </p>
 
         {hook.state === 'deriving' && <LoadingSpinner />}
 
         {hook.state === 'done' && (
           <p className="text-center text-green-700 dark:text-green-400" role="alert">
-            Einrichtung abgeschlossen.
+            {t('done-alert')}
           </p>
         )}
 
@@ -121,7 +127,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 htmlFor="password"
                 className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
               >
-                Master-Passwort
+                {t('password.label')}
               </label>
               <input
                 id="password"
@@ -139,7 +145,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                   className="mt-1 text-sm text-red-600 dark:text-red-400"
                   role="alert"
                 >
-                  {hook.passwordError}
+                  {renderPasswordError(hook.passwordError)}
                 </p>
               )}
             </div>
@@ -151,7 +157,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                     htmlFor="confirm-password"
                     className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
                   >
-                    Passwort wiederholen
+                    {t('password.confirm-label')}
                   </label>
                   <input
                     id="confirm-password"
@@ -162,21 +168,20 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                     autoComplete="new-password"
                     aria-describedby={hook.confirmError ? 'confirm-error' : undefined}
                   />
-                  {hook.confirmError && (
+                  {hook.confirmError === 'mismatch' && (
                     <p
                       id="confirm-error"
                       className="mt-1 text-sm text-red-600 dark:text-red-400"
                       role="alert"
                     >
-                      {hook.confirmError}
+                      {t('validation.mismatch')}
                     </p>
                   )}
                 </div>
 
                 <div className="mb-4 rounded border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-950/40">
                   <p className="mb-2 text-sm text-yellow-800 dark:text-yellow-200">
-                    Wenn du dein Passwort vergisst, sind deine Daten verloren. Es gibt keinen
-                    Wiederherstellungsweg. Schreibe es an einen sicheren Ort, bevor du fortfaehrst.
+                    {t('warning.body')}
                   </p>
                   <label className="flex items-start gap-2 text-sm text-yellow-800 dark:text-yellow-200">
                     <input
@@ -185,7 +190,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                       onChange={(e) => hook.setAcknowledged(e.target.checked)}
                       className="mt-0.5"
                     />
-                    Ich habe verstanden
+                    {t('warning.acknowledge')}
                   </label>
                 </div>
 
@@ -194,7 +199,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                   disabled={!hook.submitEnabled}
                   className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
                 >
-                  Phylax einrichten
+                  {t('submit.label')}
                 </button>
               </>
             )}

@@ -9,17 +9,30 @@ import {
 import { db } from '../../db/schema';
 import { writeMeta, VERIFICATION_TOKEN } from '../../db/meta';
 import { encodeMetaPayload, DEFAULT_SETTINGS } from '../../db/settings';
-import { validatePassword, estimateStrength, type PasswordStrength } from './passwordValidation';
+import {
+  validatePassword,
+  estimateStrength,
+  type PasswordStrength,
+  type ValidationError,
+} from './passwordValidation';
 
 export type OnboardingState = 'setup' | 'confirm' | 'deriving' | 'done';
+
+/**
+ * Confirmation-error flag. Today the only confirmation failure is a
+ * password mismatch, so a string literal flag is simpler than a
+ * single-variant union. If another confirmation error ever lands, this
+ * promotes to a discriminated union without breaking the callsite.
+ */
+export type ConfirmError = 'mismatch';
 
 export interface OnboardingHook {
   state: OnboardingState;
   password: string;
   confirmPassword: string;
   strength: PasswordStrength;
-  passwordError: string | undefined;
-  confirmError: string | undefined;
+  passwordError: ValidationError | undefined;
+  confirmError: ConfirmError | undefined;
   acknowledged: boolean;
   submitEnabled: boolean;
   setPassword: (value: string) => void;
@@ -47,11 +60,12 @@ export function useOnboarding(onComplete: () => void): OnboardingHook {
   const [password, setPasswordRaw] = useState('');
   const [confirmPassword, setConfirmPasswordRaw] = useState('');
   const [acknowledged, setAcknowledged] = useState(false);
-  const [confirmError, setConfirmError] = useState<string | undefined>(undefined);
+  const [confirmError, setConfirmError] = useState<ConfirmError | undefined>(undefined);
 
   const validation = validatePassword(password);
   const strength = estimateStrength(password);
-  const passwordError = password.length > 0 ? validation.error : undefined;
+  const passwordError: ValidationError | undefined =
+    password.length > 0 && !validation.valid ? validation.error : undefined;
 
   const isInConfirmState = validation.valid;
   const currentState: OnboardingState =
@@ -82,7 +96,7 @@ export function useOnboarding(onComplete: () => void): OnboardingHook {
     if (!validation.valid) return;
 
     if (password !== confirmPassword) {
-      setConfirmError('Passworter stimmen nicht uberein.');
+      setConfirmError('mismatch');
       setConfirmPasswordRaw('');
       return;
     }

@@ -2,10 +2,16 @@ export const MIN_PASSWORD_LENGTH = 12;
 
 export type PasswordStrength = 'weak' | 'fair' | 'strong';
 
-export interface ValidationResult {
-  valid: boolean;
-  error?: string;
-}
+/**
+ * Discriminated validation error. The UI layer resolves these to user-facing
+ * strings via i18next so this module stays pure TypeScript without a
+ * framework dependency.
+ */
+export type ValidationError =
+  | { kind: 'empty' }
+  | { kind: 'too-short'; min: number; length: number };
+
+export type ValidationResult = { valid: true } | { valid: false; error: ValidationError };
 
 const COMMON_PATTERNS = ['password', '123456', 'qwerty', 'letmein', 'welcome'];
 
@@ -14,7 +20,7 @@ const COMMON_PATTERNS = ['password', '123456', 'qwerty', 'letmein', 'welcome'];
  * Only hard gate is minimum length. No character class requirements.
  *
  * @param password - the password to validate
- * @returns valid + optional error message
+ * @returns valid true, or valid false with a typed ValidationError
  */
 export function validatePassword(password: string): ValidationResult {
   // Use code point length for accurate Unicode handling.
@@ -22,13 +28,13 @@ export function validatePassword(password: string): ValidationResult {
   const length = [...password].length;
 
   if (length === 0) {
-    return { valid: false, error: 'Bitte ein Passwort eingeben.' };
+    return { valid: false, error: { kind: 'empty' } };
   }
 
   if (length < MIN_PASSWORD_LENGTH) {
     return {
       valid: false,
-      error: `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen erforderlich (aktuell: ${length}).`,
+      error: { kind: 'too-short', min: MIN_PASSWORD_LENGTH, length },
     };
   }
 

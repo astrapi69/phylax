@@ -5,19 +5,26 @@ describe('validatePassword', () => {
   it('rejects empty string', () => {
     const result = validatePassword('');
     expect(result.valid).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.valid) {
+      expect(result.error).toEqual({ kind: 'empty' });
+    }
   });
 
   it('rejects password shorter than minimum', () => {
     const result = validatePassword('short');
     expect(result.valid).toBe(false);
-    expect(result.error).toContain(String(MIN_PASSWORD_LENGTH));
+    if (!result.valid) {
+      expect(result.error).toMatchObject({
+        kind: 'too-short',
+        min: MIN_PASSWORD_LENGTH,
+        length: 5,
+      });
+    }
   });
 
   it('accepts password at exactly minimum length', () => {
     const result = validatePassword('a'.repeat(MIN_PASSWORD_LENGTH));
     expect(result.valid).toBe(true);
-    expect(result.error).toBeUndefined();
   });
 
   it('accepts long password with no max limit', () => {
