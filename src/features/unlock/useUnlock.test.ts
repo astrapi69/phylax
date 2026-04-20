@@ -52,7 +52,7 @@ describe('useUnlock', () => {
     });
 
     expect(result.current.state).toBe('error');
-    expect(result.current.error).toBe('Falsches Passwort.');
+    expect(result.current.error).toBe('wrong-password');
     expect(onUnlocked).not.toHaveBeenCalled();
   });
 

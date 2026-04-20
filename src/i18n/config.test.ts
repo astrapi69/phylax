@@ -16,11 +16,11 @@ describe('i18n config', () => {
     }
   });
 
-  it('NAMESPACES length matches the declared count (15 feature-aligned namespaces)', () => {
-    // 14 feature folders + `errors` catch-all; spec §4 listed 14 but counted
-    // inclusive of `errors`, so the actual count is 15. Update this assertion
-    // if the namespace list changes.
-    expect(NAMESPACES).toHaveLength(15);
+  it('NAMESPACES length matches the declared count (16 feature-aligned namespaces)', () => {
+    // 15 feature folders + `errors` catch-all. I18N-01f added `unlock`
+    // as a dedicated namespace (see plan Option A: no shared auth namespace).
+    // Update this assertion if the namespace list changes.
+    expect(NAMESPACES).toHaveLength(16);
   });
 
   it('defaultNS is common', () => {

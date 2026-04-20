@@ -5,10 +5,18 @@ import { decodeMetaPayload } from '../../db/settings';
 
 export type UnlockState = 'idle' | 'entering' | 'deriving' | 'done' | 'error';
 
+/**
+ * Discriminated unlock failure. One variant today; promotes to a union
+ * if rate-limiting, account-lock, or integrity-check errors ever land.
+ * The UI layer resolves this to a user-facing string via i18next so the
+ * hook stays free of translation concerns.
+ */
+export type UnlockError = 'wrong-password';
+
 export interface UnlockHook {
   state: UnlockState;
   password: string;
-  error: string | undefined;
+  error: UnlockError | undefined;
   failedAttempts: number;
   submitEnabled: boolean;
   setPassword: (value: string) => void;
@@ -33,7 +41,7 @@ export interface UnlockHook {
 export function useUnlock(onUnlocked: () => void): UnlockHook {
   const [state, setState] = useState<UnlockState>('idle');
   const [password, setPasswordRaw] = useState('');
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<UnlockError | undefined>(undefined);
   const [failedAttempts, setFailedAttempts] = useState(0);
 
   const submitEnabled = password.length > 0 && state !== 'deriving' && state !== 'done';
@@ -72,14 +80,14 @@ export function useUnlock(onUnlocked: () => void): UnlockHook {
       if (metaPayload.verificationToken !== VERIFICATION_TOKEN) {
         lock();
         setFailedAttempts((prev) => prev + 1);
-        setError('Falsches Passwort.');
+        setError('wrong-password');
         setState('error');
         return;
       }
     } catch {
       lock();
       setFailedAttempts((prev) => prev + 1);
-      setError('Falsches Passwort.');
+      setError('wrong-password');
       setState('error');
       return;
     }

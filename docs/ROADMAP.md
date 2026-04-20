@@ -299,16 +299,17 @@ distinct.
 - [x] **I18N-01c** Extract settings strings: screen heading, theme radio group (Darstellung, Hell, Dunkel, System folgen), language-switcher label, settings-embedded export block (commit `19be817`)
 - [x] **I18N-01d** Extract ai-config strings: AI-02 disclaimer (with I-04 BYOK + 30-day retention language), AISettingsSection (shell + UnconfiguredForm + ConfiguredForm + ProviderSelect), PrivacyInfoContent (3 sections, 12 bullets), PrivacyInfoPopover chrome (commit `8de7b25`)
 - [x] **I18N-01e** Extract onboarding strings: 20 keys + typed ValidationError union (validatePassword returns `{kind:'empty'}` or `{kind:'too-short',min,length}`), ConfirmError flag for mismatch, UI resolves to i18n in view layer (commit `b32bb84`)
-- [ ] **I18N-01f** Extract profile-view strings
-- [ ] **I18N-01g** Extract observations view strings
-- [ ] **I18N-01h** Extract lab-values view strings
-- [ ] **I18N-01i** Extract supplements view strings
-- [ ] **I18N-01j** Extract open-points view strings
-- [ ] **I18N-01k** Extract timeline view strings
-- [ ] **I18N-01l** Extract import strings (incl. ai-fallback cleanup screen)
-- [ ] **I18N-01m** Extract ai-chat strings (chat + guided session + commit preview)
-- [ ] **I18N-01n** Extract remaining common + errors strings
-- [ ] **I18N-01o** Reveal language switcher with second language wiring
+- [x] **I18N-01f** Extract unlock strings: 9 keys, typed UnlockError flag (`'wrong-password'`), dedicated `unlock` namespace (Option A duplication, one shared `password.label`) (commit pending)
+- [ ] **I18N-01g** Extract profile-view strings
+- [ ] **I18N-01h** Extract observations view strings
+- [ ] **I18N-01i** Extract lab-values view strings
+- [ ] **I18N-01j** Extract supplements view strings
+- [ ] **I18N-01k** Extract open-points view strings
+- [ ] **I18N-01l** Extract timeline view strings
+- [ ] **I18N-01m** Extract import strings (incl. ai-fallback cleanup screen)
+- [ ] **I18N-01n** Extract ai-chat strings (chat + guided session + commit preview)
+- [ ] **I18N-01o** Extract remaining common + errors strings
+- [ ] **I18N-01p** Reveal language switcher with second language wiring
 - [ ] **I18N-02** Add English translations
 
 ---

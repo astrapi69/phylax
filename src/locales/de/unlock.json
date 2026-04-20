@@ -1,0 +1,18 @@
+{
+  "title": "Phylax entsperren",
+  "subtitle": "Gib dein Master-Passwort ein, um fortzufahren.",
+  "deriving-spinner": "Entsperren...",
+  "done-alert": "Entsperrt.",
+  "password": {
+    "label": "Master-Passwort"
+  },
+  "submit": {
+    "label": "Entsperren"
+  },
+  "hint": {
+    "after-failures": "Stelle sicher, dass dein Master-Passwort korrekt eingegeben wurde. Es gibt keinen Wiederherstellungsweg."
+  },
+  "error": {
+    "wrong-password": "Falsches Passwort."
+  }
+}
