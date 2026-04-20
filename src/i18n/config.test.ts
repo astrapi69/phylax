@@ -32,12 +32,55 @@ describe('i18n config', () => {
     expect(react?.useSuspense).toBe(false);
   });
 
-  it('hardcodes German as the initial language while SUPPORTED_LANGUAGES has one entry', () => {
-    // I18N-01 ships German only. When I18N-02 adds English, the
-    // browser-languagedetector plugin is added back and this test flips
-    // to asserting the detection chain. Keeping `lng: "de"` skips the
-    // ~5 KB detector until it is useful.
+  it('hardcodes German as the initial language until I18N-02-e activates detection', () => {
+    // I18N-02-a through 02-d ship EN translations under the existing
+    // DE-active config. Detector + LanguageSwitcher land in 02-e; this
+    // test flips to asserting detection at that point.
     expect(i18n.options.lng).toBe('de');
     expect(i18n.language).toBe('de');
+  });
+
+  it('registers foundation EN namespaces after I18N-02-a', () => {
+    // 02-a populates these 9. Remaining 10 namespaces fall back to DE
+    // via i18next until later sub-commits fill them in.
+    const foundation = [
+      'common',
+      'app-shell',
+      'theme',
+      'pwa-update',
+      'not-found',
+      'documents',
+      'onboarding',
+      'unlock',
+      'settings',
+    ];
+    for (const ns of foundation) {
+      expect(i18n.hasResourceBundle('en', ns)).toBe(true);
+    }
+  });
+});
+
+describe('common counts plural forms', () => {
+  const tDe = i18n.getFixedT('de', 'common');
+  const tEn = i18n.getFixedT('en', 'common');
+
+  it('observations: count=1 renders singular in both languages', () => {
+    expect(tDe('counts.observations', { count: 1 })).toBe('1 Beobachtung');
+    expect(tEn('counts.observations', { count: 1 })).toBe('1 observation');
+  });
+
+  it('observations: count=5 renders plural in both languages', () => {
+    expect(tDe('counts.observations', { count: 5 })).toBe('5 Beobachtungen');
+    expect(tEn('counts.observations', { count: 5 })).toBe('5 observations');
+  });
+
+  it('supplements: count=1 renders singular in both languages', () => {
+    expect(tDe('counts.supplements', { count: 1 })).toBe('1 Supplement');
+    expect(tEn('counts.supplements', { count: 1 })).toBe('1 supplement');
+  });
+
+  it('supplements: count=5 renders plural in both languages', () => {
+    expect(tDe('counts.supplements', { count: 5 })).toBe('5 Supplemente');
+    expect(tEn('counts.supplements', { count: 5 })).toBe('5 supplements');
   });
 });

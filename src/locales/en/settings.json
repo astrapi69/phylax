@@ -1,0 +1,23 @@
+{
+  "screen": {
+    "heading": "Settings"
+  },
+  "theme": {
+    "heading": "Appearance",
+    "legend": "Select theme",
+    "options": {
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Follow system",
+      "auto-description": "Follows your device's settings."
+    }
+  },
+  "language": {
+    "label": "Language"
+  },
+  "export": {
+    "heading": "Export",
+    "description": "Download your profile as a Markdown file. Bring it printed or as a file to your next doctor's visit.",
+    "button": "Export profile"
+  }
+}

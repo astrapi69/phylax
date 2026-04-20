@@ -1,0 +1,17 @@
+{
+  "header": {
+    "lock-aria-label": "Lock Phylax",
+    "lock": "Lock"
+  },
+  "nav": {
+    "aria-label": "Main navigation",
+    "profile": "Profile",
+    "observations": "Observations",
+    "lab-values": "Lab values",
+    "supplements": "Supplements",
+    "timeline": "Timeline",
+    "documents": "Documents",
+    "import": "Import",
+    "settings": "Settings"
+  }
+}

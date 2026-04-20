@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LANGUAGES } from '../../i18n';
+import { LANGUAGE_SWITCHER_ENABLED, SUPPORTED_LANGUAGES } from '../../i18n';
 
 const LANGUAGE_LABEL: Record<string, string> = {
   de: 'Deutsch',
@@ -10,15 +10,16 @@ const LANGUAGE_LABEL: Record<string, string> = {
 };
 
 /**
- * Settings control for switching UI language. Renders nothing while only
- * one language is supported; the moment a second language lands (I18N-02
- * English, P-11 others), this component starts rendering the select
- * automatically without any callsite change.
+ * Settings control for switching UI language. Gated on
+ * `LANGUAGE_SWITCHER_ENABLED` (false through I18N-02-d, flipped true in
+ * I18N-02-e alongside the detector + LanguageSection). Staged rollout
+ * keeps the app DE-only from the user's perspective while EN resources
+ * land namespace-by-namespace.
  */
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation('settings');
 
-  if (SUPPORTED_LANGUAGES.length < 2) {
+  if (!LANGUAGE_SWITCHER_ENABLED) {
     return null;
   }
 

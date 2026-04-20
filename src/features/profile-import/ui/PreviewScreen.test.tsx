@@ -47,8 +47,8 @@ describe('PreviewScreen', () => {
     );
     expect(screen.getByText('profil.md')).toBeInTheDocument();
     expect(screen.getByText('Mein Profil')).toBeInTheDocument();
-    expect(screen.getByText(/1 Beobachtungen/)).toBeInTheDocument();
-    expect(screen.getByText(/1 Supplemente/)).toBeInTheDocument();
+    expect(screen.getByText(/1 Beobachtung/)).toBeInTheDocument();
+    expect(screen.getByText(/1 Supplement/)).toBeInTheDocument();
   });
 
   it('shows clean-parse indicator when no warnings or unrecognized blocks', () => {

@@ -10,8 +10,10 @@
     "loading": "Laden..."
   },
   "counts": {
-    "observations": "{{count}} Beobachtungen",
-    "supplements": "{{count}} Supplemente"
+    "observations_one": "{{count}} Beobachtung",
+    "observations_other": "{{count}} Beobachtungen",
+    "supplements_one": "{{count}} Supplement",
+    "supplements_other": "{{count}} Supplemente"
   },
   "entity": {
     "open-points": "Offene Punkte",

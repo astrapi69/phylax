@@ -25,6 +25,16 @@ import pwaUpdateDE from '../locales/de/pwa-update.json';
 import documentsDE from '../locales/de/documents.json';
 import notFoundDE from '../locales/de/not-found.json';
 
+import commonEN from '../locales/en/common.json';
+import onboardingEN from '../locales/en/onboarding.json';
+import unlockEN from '../locales/en/unlock.json';
+import settingsEN from '../locales/en/settings.json';
+import appShellEN from '../locales/en/app-shell.json';
+import themeEN from '../locales/en/theme.json';
+import pwaUpdateEN from '../locales/en/pwa-update.json';
+import documentsEN from '../locales/en/documents.json';
+import notFoundEN from '../locales/en/not-found.json';
+
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
  * above. The `as const` preserves the literal union for typed `t()` calls
@@ -59,11 +69,19 @@ export const NAMESPACES = [
 export type Namespace = (typeof NAMESPACES)[number];
 
 /**
- * Supported UI languages. German is the only active language for I18N-01.
- * Additional languages (I18N-02 English, P-11 Spanish/French/Greek) extend
- * this list and add resources below.
+ * Languages i18next can render. EN joined the list in I18N-02-a so EN
+ * resources can load and `getFixedT('en', ...)` works for tests. The
+ * user-facing switcher stays hidden via `LANGUAGE_SWITCHER_ENABLED`
+ * until I18N-02-e flips it and introduces LanguageSection.
  */
-export const SUPPORTED_LANGUAGES = ['de'] as const;
+export const SUPPORTED_LANGUAGES = ['de', 'en'] as const;
+
+/**
+ * User-facing language-switcher gate. False through I18N-02-a..02-d
+ * while EN resources are being populated; I18N-02-e flips this to true
+ * alongside the detector activation and LanguageSection component.
+ */
+export const LANGUAGE_SWITCHER_ENABLED = false;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
@@ -104,6 +122,17 @@ void i18n.use(initReactI18next).init({
       'pwa-update': pwaUpdateDE,
       documents: documentsDE,
       'not-found': notFoundDE,
+    },
+    en: {
+      common: commonEN,
+      onboarding: onboardingEN,
+      unlock: unlockEN,
+      settings: settingsEN,
+      'app-shell': appShellEN,
+      theme: themeEN,
+      'pwa-update': pwaUpdateEN,
+      documents: documentsEN,
+      'not-found': notFoundEN,
     },
   },
   lng: 'de',

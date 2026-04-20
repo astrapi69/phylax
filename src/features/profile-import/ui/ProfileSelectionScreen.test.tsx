@@ -81,7 +81,7 @@ describe('ProfileSelectionScreen', () => {
     });
 
     renderScreen();
-    await screen.findByText(/1 Beobachtungen/);
+    await screen.findByText(/1 Beobachtung/);
   });
 
   it('clicking a profile calls onSelect with the id', async () => {

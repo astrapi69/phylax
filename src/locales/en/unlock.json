@@ -1,0 +1,18 @@
+{
+  "title": "Unlock Phylax",
+  "subtitle": "Enter your master password to continue.",
+  "deriving-spinner": "Unlocking...",
+  "done-alert": "Unlocked.",
+  "password": {
+    "label": "Master password"
+  },
+  "submit": {
+    "label": "Unlock"
+  },
+  "hint": {
+    "after-failures": "Make sure your master password is entered correctly. There is no recovery path."
+  },
+  "error": {
+    "wrong-password": "Wrong password."
+  }
+}

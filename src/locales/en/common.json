@@ -1,0 +1,25 @@
+{
+  "error": {
+    "no-profile": "No profile found."
+  },
+  "action": {
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "status": {
+    "loading": "Loading..."
+  },
+  "counts": {
+    "observations_one": "{{count}} observation",
+    "observations_other": "{{count}} observations",
+    "supplements_one": "{{count}} supplement",
+    "supplements_other": "{{count}} supplements"
+  },
+  "entity": {
+    "open-points": "Open points",
+    "ai-assistant": "AI assistant",
+    "fallback-self": "My profile",
+    "fallback-proxy": "Proxy profile",
+    "fallback-proxy-for": "Profile for {{name}}"
+  }
+}

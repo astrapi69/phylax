@@ -1,0 +1,33 @@
+{
+  "title": "Set up Phylax",
+  "state": {
+    "setup": "Choose a master password",
+    "confirm": "Confirm password",
+    "deriving": "Setting up...",
+    "done": "Setup complete"
+  },
+  "done-alert": "Setup complete.",
+  "deriving-spinner": "Deriving key...",
+  "password": {
+    "label": "Master password",
+    "confirm-label": "Repeat password"
+  },
+  "strength": {
+    "weak": "Weak",
+    "fair": "Fair",
+    "strong": "Strong",
+    "aria-label": "Password strength: {{label}}"
+  },
+  "warning": {
+    "body": "If you forget your password, your data is lost. There is no recovery path. Write it down in a safe place before you continue.",
+    "acknowledge": "I understand"
+  },
+  "submit": {
+    "label": "Set up Phylax"
+  },
+  "validation": {
+    "empty": "Please enter a password.",
+    "too-short": "At least {{min}} characters required (currently: {{length}}).",
+    "mismatch": "Passwords do not match."
+  }
+}
