@@ -4,7 +4,7 @@ import { ProfileRepository } from '../../db/repositories/profileRepository';
 export interface ProfileCreateState {
   kind: 'idle' | 'submitting' | 'done' | 'error';
   profileId?: string;
-  message?: string;
+  detail?: string;
 }
 
 export interface ProfileCreateHook {
@@ -65,8 +65,8 @@ export function useProfileCreate(onComplete: (profileId: string) => void): Profi
       setState({ kind: 'done', profileId: profile.id });
       onComplete(profile.id);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Profil konnte nicht erstellt werden.';
-      setState({ kind: 'error', message });
+      const detail = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setState({ kind: 'error', detail });
     }
   }, [isValid, state.kind, name, profileType, managedBy, version, onComplete]);
 

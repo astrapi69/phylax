@@ -302,10 +302,11 @@ distinct.
 - [x] **I18N-01f** Extract unlock strings: 9 keys, typed UnlockError flag (`'wrong-password'`), dedicated `unlock` namespace (Option A duplication, one shared `password.label`) (commit `81e461f`)
 - [x] **I18N-01g** Extract profile-view strings: 24 keys + typed ProfileViewError union (`not-found` / `generic{detail}`), basedata label/value split for i18n plural/unit agreement, detail preserved internally for logs, rendered UI unchanged (commit `9c23ad6`)
 - [x] **I18N-01h** Extract views-bundle strings (observations, lab-values, supplements, open-points, timeline) into 5 dedicated namespaces; 5 hooks refactored to typed discriminated-union errors (`no-profile` / `generic{detail}`), views log raw detail and render translated fallback (matches I18N-01g pattern); SourceBadge moved to t-based lookup, SupplementsView drives category label via `t(\`category.${group.category}\`)` with hook returning domain-only data
-- [ ] **I18N-01i** Extract import strings (incl. ai-fallback cleanup screen)
-- [ ] **I18N-01j** Extract ai-chat strings (chat + guided session + commit preview)
-- [ ] **I18N-01k** Extract remaining common + errors strings
-- [ ] **I18N-01l** Reveal language switcher with second language wiring
+- [x] **I18N-01i** Extract profile management namespaces (profile-list, profile-create): 14 + 17 keys; useProfileCreate refactored to flat `state.detail` (single failure mode, no discriminated union); ProfileList `formatCounts`/`profileTypeBadge` take `t` as parameter; only `counts.lab-report` uses i18next `_one/_other` plurals (matches existing manual plural), other count strings stay static to preserve byte-identical rendering; 3 profile-type keys byte-identical to profile-view (duplication accepted, hoist deferred)
+- [ ] **I18N-01j** Extract import strings (incl. ai-fallback cleanup screen)
+- [ ] **I18N-01k** Extract ai-chat strings (chat + guided session + commit preview)
+- [ ] **I18N-01l** Extract remaining common + errors strings (also: audit fuer/für umlaut-vs-ASCII inconsistency across all namespaces and decide normalization strategy)
+- [ ] **I18N-01m** Reveal language switcher with second language wiring
 - [ ] **I18N-02** Add English translations
 
 ---

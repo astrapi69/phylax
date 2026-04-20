@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProfileCreate } from './useProfileCreate';
 
 interface ProfileCreateFormProps {
@@ -11,6 +12,7 @@ interface ProfileCreateFormProps {
  * "add another profile" flows in settings.
  */
 export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
+  const { t } = useTranslation('profile-create');
   const hook = useProfileCreate(onComplete);
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -19,15 +21,14 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
   }, []);
 
   const isSubmitting = hook.state.kind === 'submitting';
+  if (hook.state.kind === 'error' && hook.state.detail) {
+    console.error('[ProfileCreateForm]', hook.state.detail);
+  }
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">
-        Neues Profil erstellen
-      </h1>
-      <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
-        Erstelle dein erstes Gesundheitsprofil. Du kannst alle Details spaeter ergaenzen.
-      </p>
+      <h1 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
+      <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">{t('intro')}</p>
 
       <form
         onSubmit={(e) => {
@@ -41,7 +42,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             htmlFor="profileName"
             className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
           >
-            Profilname
+            {t('form.name-label')}
           </label>
           <input
             ref={nameRef}
@@ -50,7 +51,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             type="text"
             value={hook.name}
             onChange={(e) => hook.setName(e.target.value)}
-            placeholder="Mein Profil"
+            placeholder={t('form.name-placeholder')}
             maxLength={60}
             disabled={isSubmitting}
             className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
@@ -59,7 +60,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
 
         <fieldset className="mb-4">
           <legend className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
-            Profiltyp
+            {t('form.type-label')}
           </legend>
           <div className="flex flex-col gap-2">
             <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
@@ -71,7 +72,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
                 onChange={() => hook.setProfileType('self')}
                 disabled={isSubmitting}
               />
-              Fuer mich selbst
+              {t('form.type-self')}
             </label>
             <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
               <input
@@ -82,7 +83,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
                 onChange={() => hook.setProfileType('proxy')}
                 disabled={isSubmitting}
               />
-              Stellvertretend fuer jemand anderen
+              {t('form.type-proxy')}
             </label>
           </div>
         </fieldset>
@@ -93,7 +94,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
               htmlFor="managedBy"
               className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
             >
-              Dein Name (als Betreuer)
+              {t('form.managed-by-label')}
             </label>
             <input
               id="managedBy"
@@ -101,12 +102,12 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
               type="text"
               value={hook.managedBy}
               onChange={(e) => hook.setManagedBy(e.target.value)}
-              placeholder="Asterios"
+              placeholder={t('form.managed-by-placeholder')}
               disabled={isSubmitting}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Wird gespeichert, um zu kennzeichnen, wer dieses Profil verwaltet.
+              {t('form.managed-by-hint')}
             </p>
           </div>
         )}
@@ -116,7 +117,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             htmlFor="version"
             className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
           >
-            Initiale Version
+            {t('form.version-label')}
           </label>
           <input
             id="version"
@@ -124,18 +125,16 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             type="text"
             value={hook.version}
             onChange={(e) => hook.setVersion(e.target.value)}
-            placeholder="1.0"
+            placeholder={t('form.version-placeholder')}
             disabled={isSubmitting}
             className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Semver-Format empfohlen. Wird bei kuenftigen Aenderungen fortgeschrieben.
-          </p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('form.version-hint')}</p>
         </div>
 
         {hook.state.kind === 'error' && (
           <p className="mb-4 text-sm text-red-600 dark:text-red-400" role="alert">
-            {hook.state.message}
+            {t('error.create-failed')}
           </p>
         )}
 
@@ -144,7 +143,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
           disabled={!hook.isValid || isSubmitting}
           className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
-          {isSubmitting ? 'Erstellen...' : 'Profil erstellen'}
+          {isSubmitting ? t('submit.pending') : t('submit.label')}
         </button>
       </form>
     </div>
