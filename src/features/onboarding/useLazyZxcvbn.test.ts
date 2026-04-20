@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useLazyZxcvbn } from './useLazyZxcvbn';
+import { useLazyZxcvbn, ZXCVBN_LOAD_TIMEOUT_MS, ZxcvbnLoadTimeoutError } from './useLazyZxcvbn';
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
 
 describe('useLazyZxcvbn', () => {
   it('starts not ready with no scorer', () => {
@@ -30,5 +35,42 @@ describe('useLazyZxcvbn', () => {
     await waitFor(() => expect(result.current.ready).toBe(true), { timeout: 5000 });
     const score = result.current.score?.('password');
     expect(score).toBeLessThanOrEqual(1);
+  });
+
+  it('exports a 5-second timeout constant', () => {
+    expect(ZXCVBN_LOAD_TIMEOUT_MS).toBe(5000);
+  });
+
+  it('ZxcvbnLoadTimeoutError carries the expected message and name', () => {
+    const err = new ZxcvbnLoadTimeoutError();
+    expect(err).toBeInstanceOf(Error);
+    expect(err.name).toBe('ZxcvbnLoadTimeoutError');
+    expect(err.message).toBe('zxcvbn-load-timeout');
+  });
+
+  it('logs a diagnostic warning and keeps ready=false on timeout', async () => {
+    vi.resetModules();
+    vi.doMock('@zxcvbn-ts/core', () => new Promise(() => {}));
+    vi.doMock('@zxcvbn-ts/language-common', () => new Promise(() => {}));
+
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    vi.useFakeTimers();
+    const { useLazyZxcvbn: useLazyZxcvbnMocked } = await import('./useLazyZxcvbn');
+    const { result } = renderHook(() => useLazyZxcvbnMocked());
+
+    expect(result.current.ready).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(5001);
+    vi.useRealTimers();
+
+    await waitFor(() => expect(result.current.error).toBeInstanceOf(Error));
+    expect(result.current.ready).toBe(false);
+    expect(result.current.score).toBeUndefined();
+    expect(warnSpy).toHaveBeenCalled();
+    expect(warnSpy.mock.calls[0]?.[0]).toMatch(/timed out/);
+
+    vi.doUnmock('@zxcvbn-ts/core');
+    vi.doUnmock('@zxcvbn-ts/language-common');
   });
 });

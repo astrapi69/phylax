@@ -3,6 +3,23 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 type ZxcvbnScorer = (password: string) => number;
 
 /**
+ * Lazy-load timeout. A stalled dynamic import (not rejected) would
+ * otherwise leave `ready === false` indefinitely. Fallback still
+ * works pre-resolution, but persisting that state is confusing for
+ * users who expect the strength indicator to upgrade. After this
+ * window, surface an explicit error and keep the sync heuristic
+ * active. See ADR-0014 "Load failure and timeout behavior".
+ */
+export const ZXCVBN_LOAD_TIMEOUT_MS = 5000;
+
+export class ZxcvbnLoadTimeoutError extends Error {
+  constructor() {
+    super('zxcvbn-load-timeout');
+    this.name = 'ZxcvbnLoadTimeoutError';
+  }
+}
+
+/**
  * Lazy-loads @zxcvbn-ts on mount. Keeps the main bundle free of the
  * library + dictionaries while giving the setup flow realistic
  * strength scoring.
@@ -33,12 +50,19 @@ export function useLazyZxcvbn(): LazyZxcvbnHook {
   useEffect(() => {
     let cancelled = false;
 
+    const loadPromise = Promise.all([
+      import('@zxcvbn-ts/core'),
+      import('@zxcvbn-ts/language-common'),
+    ]);
+
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => reject(new ZxcvbnLoadTimeoutError()), ZXCVBN_LOAD_TIMEOUT_MS);
+    });
+
     void (async () => {
       try {
-        const [core, common] = await Promise.all([
-          import('@zxcvbn-ts/core'),
-          import('@zxcvbn-ts/language-common'),
-        ]);
+        const [core, common] = await Promise.race([loadPromise, timeoutPromise]);
 
         if (cancelled) return;
 
@@ -51,13 +75,20 @@ export function useLazyZxcvbn(): LazyZxcvbnHook {
         setReady(true);
       } catch (err) {
         if (cancelled) return;
-        console.error('[useLazyZxcvbn] failed to load zxcvbn-ts', err);
+        if (err instanceof ZxcvbnLoadTimeoutError) {
+          console.warn('[useLazyZxcvbn] load timed out after 5s, using sync fallback');
+        } else {
+          console.error('[useLazyZxcvbn] failed to load zxcvbn-ts', err);
+        }
         setError(err);
+      } finally {
+        if (timeoutId !== undefined) clearTimeout(timeoutId);
       }
     })();
 
     return () => {
       cancelled = true;
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
     };
   }, []);
 
