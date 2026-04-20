@@ -5,13 +5,16 @@ import {
   recordFailedAttempt,
   recordSuccessfulAttempt,
   delayForAttempt,
+  createRateLimiter,
   BASE_DELAY_MS,
   MAX_DELAY_MS,
   STORAGE_KEY,
+  BACKUP_IMPORT_STORAGE_KEY,
 } from './rateLimit';
 
 beforeEach(() => {
   sessionStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(BACKUP_IMPORT_STORAGE_KEY);
 });
 
 describe('rateLimit', () => {
@@ -92,6 +95,25 @@ describe('rateLimit', () => {
 
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ wrong: 'shape' }));
     expect(getRateLimitState()).toEqual({ failedAttempts: 0, lockedUntil: null });
+  });
+
+  it('createRateLimiter isolates counters across storage keys', () => {
+    const a = createRateLimiter('test-limiter-a');
+    const b = createRateLimiter('test-limiter-b');
+
+    a.recordFailedAttempt();
+    a.recordFailedAttempt();
+    b.recordFailedAttempt();
+
+    expect(a.getRateLimitState().failedAttempts).toBe(2);
+    expect(b.getRateLimitState().failedAttempts).toBe(1);
+
+    a.recordSuccessfulAttempt();
+    expect(a.getRateLimitState().failedAttempts).toBe(0);
+    expect(b.getRateLimitState().failedAttempts).toBe(1);
+
+    sessionStorage.removeItem('test-limiter-a');
+    sessionStorage.removeItem('test-limiter-b');
   });
 
   it('delayForAttempt returns documented values', () => {

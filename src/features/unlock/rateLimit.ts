@@ -11,15 +11,23 @@
  * (`Date.now()`); a user who manipulates their own clock can shortcut
  * the lockout, which is outside the threat model.
  *
- * Scope: single global counter per tab. Multi-profile (Phase 8) may
- * want per-vault scoping. TODO [M-xx]: revisit storage key + state
- * shape when multi-profile lands.
+ * Scope: separate counters per logical operation. Default export binds
+ * the unlock-flow counter. Backup-import creates its own limiter via
+ * `createRateLimiter(BACKUP_IMPORT_STORAGE_KEY)` so that typos on one
+ * flow do not affect the other. Multi-profile (Phase 8) may want
+ * per-vault scoping. TODO [M-xx]: revisit storage-key shape when
+ * multi-profile lands.
  */
 
 export const FREE_ATTEMPTS = 3;
 export const BASE_DELAY_MS = 2000;
 export const MAX_DELAY_MS = 60_000;
+
+/** Default storage key used by the unlock flow. */
 export const STORAGE_KEY = 'phylax-unlock-rate-limit';
+
+/** Storage key used by the backup-import flow. */
+export const BACKUP_IMPORT_STORAGE_KEY = 'phylax-backup-import-rate-limit';
 
 export interface RateLimitState {
   failedAttempts: number;
@@ -27,50 +35,14 @@ export interface RateLimitState {
   lockedUntil: number | null;
 }
 
+export interface RateLimiter {
+  getRateLimitState: () => RateLimitState;
+  recordFailedAttempt: (now?: number) => RateLimitState;
+  recordSuccessfulAttempt: () => void;
+  getRemainingLockoutMs: (now?: number) => number;
+}
+
 const DEFAULT_STATE: RateLimitState = { failedAttempts: 0, lockedUntil: null };
-
-function readStorage(): RateLimitState {
-  if (typeof sessionStorage === 'undefined') return { ...DEFAULT_STATE };
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw === null) return { ...DEFAULT_STATE };
-    const parsed = JSON.parse(raw) as unknown;
-    if (
-      typeof parsed === 'object' &&
-      parsed !== null &&
-      'failedAttempts' in parsed &&
-      typeof (parsed as RateLimitState).failedAttempts === 'number'
-    ) {
-      const p = parsed as RateLimitState;
-      return {
-        failedAttempts: p.failedAttempts,
-        lockedUntil: typeof p.lockedUntil === 'number' ? p.lockedUntil : null,
-      };
-    }
-    return { ...DEFAULT_STATE };
-  } catch {
-    return { ...DEFAULT_STATE };
-  }
-}
-
-function writeStorage(state: RateLimitState): void {
-  if (typeof sessionStorage === 'undefined') return;
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // Quota exceeded or private mode restrictions; silently skip.
-    // Rate-limiting is a convenience, not a security guarantee.
-  }
-}
-
-function clearStorage(): void {
-  if (typeof sessionStorage === 'undefined') return;
-  try {
-    sessionStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Ignore.
-  }
-}
 
 /**
  * Compute the lockout delay for a given failed-attempt count.
@@ -83,50 +55,86 @@ export function delayForAttempt(attempt: number): number {
   return Math.min(BASE_DELAY_MS * 2 ** (exponent - 1), MAX_DELAY_MS);
 }
 
-/** Read the current rate-limit state from sessionStorage. */
-export function getRateLimitState(): RateLimitState {
-  return readStorage();
-}
-
 /**
- * Record a failed unlock attempt. Increments the counter and, if the
- * attempt crosses the free-attempt threshold, sets `lockedUntil`
- * relative to the time of this failing attempt.
+ * Factory for rate-limiter instances scoped to a sessionStorage key.
+ * Each logical flow (unlock, backup-import) constructs its own limiter
+ * so that typos on one flow do not lock out the other.
  *
- * The `now` parameter is intended for deterministic testing.
- * Production code should omit it.
+ * The `now` parameter on `recordFailedAttempt` and `getRemainingLockoutMs`
+ * is intended for deterministic testing. Production code should omit it.
  */
-export function recordFailedAttempt(now: number = Date.now()): RateLimitState {
-  const current = readStorage();
-  const failedAttempts = current.failedAttempts + 1;
-  const delay = delayForAttempt(failedAttempts);
-  const lockedUntil = delay > 0 ? now + delay : null;
-  const next: RateLimitState = { failedAttempts, lockedUntil };
-  writeStorage(next);
-  return next;
+export function createRateLimiter(storageKey: string): RateLimiter {
+  function readStorage(): RateLimitState {
+    if (typeof sessionStorage === 'undefined') return { ...DEFAULT_STATE };
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw === null) return { ...DEFAULT_STATE };
+      const parsed = JSON.parse(raw) as unknown;
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        'failedAttempts' in parsed &&
+        typeof (parsed as RateLimitState).failedAttempts === 'number'
+      ) {
+        const p = parsed as RateLimitState;
+        return {
+          failedAttempts: p.failedAttempts,
+          lockedUntil: typeof p.lockedUntil === 'number' ? p.lockedUntil : null,
+        };
+      }
+      return { ...DEFAULT_STATE };
+    } catch {
+      return { ...DEFAULT_STATE };
+    }
+  }
+
+  function writeStorage(state: RateLimitState): void {
+    if (typeof sessionStorage === 'undefined') return;
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(state));
+    } catch {
+      // Quota exceeded or private mode restrictions; silently skip.
+      // Rate-limiting is a convenience, not a security guarantee.
+    }
+  }
+
+  function clearStorage(): void {
+    if (typeof sessionStorage === 'undefined') return;
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch {
+      // Ignore.
+    }
+  }
+
+  return {
+    getRateLimitState: () => readStorage(),
+    recordFailedAttempt(now: number = Date.now()): RateLimitState {
+      const current = readStorage();
+      const failedAttempts = current.failedAttempts + 1;
+      const delay = delayForAttempt(failedAttempts);
+      const lockedUntil = delay > 0 ? now + delay : null;
+      const next: RateLimitState = { failedAttempts, lockedUntil };
+      writeStorage(next);
+      return next;
+    },
+    recordSuccessfulAttempt: () => clearStorage(),
+    getRemainingLockoutMs(now: number = Date.now()): number {
+      const { lockedUntil } = readStorage();
+      if (lockedUntil === null) return 0;
+      const remaining = lockedUntil - now;
+      return remaining > 0 ? remaining : 0;
+    },
+  };
 }
 
 /**
- * Clear all rate-limit state. Called on successful unlock and on
- * successful setup (defensive - fresh vault should never inherit a
- * stale lockout from a prior tab session).
+ * Default unlock-flow limiter. Existing callers (useUnlock,
+ * useSetupVault) import these module-level functions directly.
  */
-export function recordSuccessfulAttempt(): void {
-  clearStorage();
-}
+const unlockLimiter = createRateLimiter(STORAGE_KEY);
 
-/**
- * Remaining lockout in ms, or 0 if not currently locked. Returns 0
- * for expired lockouts without clearing them; the counter itself
- * stays until the next recordFailedAttempt or recordSuccessfulAttempt
- * call rewrites it.
- *
- * The `now` parameter is intended for deterministic testing.
- * Production code should omit it.
- */
-export function getRemainingLockoutMs(now: number = Date.now()): number {
-  const { lockedUntil } = readStorage();
-  if (lockedUntil === null) return 0;
-  const remaining = lockedUntil - now;
-  return remaining > 0 ? remaining : 0;
-}
+export const getRateLimitState = unlockLimiter.getRateLimitState;
+export const recordFailedAttempt = unlockLimiter.recordFailedAttempt;
+export const recordSuccessfulAttempt = unlockLimiter.recordSuccessfulAttempt;
+export const getRemainingLockoutMs = unlockLimiter.getRemainingLockoutMs;

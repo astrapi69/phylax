@@ -1,0 +1,47 @@
+{
+  "select": {
+    "heading": "Import backup",
+    "description": "Select the Phylax backup file you created earlier. The backup is decrypted with the password it was created with.",
+    "file-picker-label": "Choose file",
+    "no-file-selected": "No file selected.",
+    "metadata": {
+      "filename": "File",
+      "size": "Size",
+      "created": "Created on",
+      "source": "Source"
+    },
+    "continue": "Continue",
+    "back-to-welcome": "Back to welcome",
+    "overwrite-warning": {
+      "title": "Warning: import replaces existing data",
+      "body": "Your current Phylax profile will be fully replaced by the import. This action cannot be undone.",
+      "acknowledge": "I understand that the data will be overwritten."
+    }
+  },
+  "unlock": {
+    "heading": "Unlock backup",
+    "description": "Enter the password this backup was created with. After import, this password becomes your master password.",
+    "filename-readout": "File: {{name}}",
+    "password": {
+      "label": "Backup password"
+    },
+    "submit": {
+      "label": "Import",
+      "deriving": "Deriving key...",
+      "populating": "Importing data..."
+    }
+  },
+  "error": {
+    "invalid-json": "The selected file is not valid JSON.",
+    "missing-field": "File incomplete. Missing: {{field}}",
+    "unsupported-version": "File version {{version}} is not supported.",
+    "wrong-type": "This is not a Phylax backup file.",
+    "too-large": "File too large ({{size}} MB). Maximum 50 MB allowed.",
+    "corrupted": "Backup is damaged or incomplete.",
+    "wrong-password": "Wrong password. Backup could not be decrypted.",
+    "crypto-failed": "Decryption failed. Please try again.",
+    "populate-failed": "Data could not be saved: {{detail}}",
+    "rate-limited_one": "Locked. Try again in {{count}} second.",
+    "rate-limited_other": "Locked. Try again in {{count}} seconds."
+  }
+}

@@ -24,6 +24,7 @@ import themeDE from '../locales/de/theme.json';
 import pwaUpdateDE from '../locales/de/pwa-update.json';
 import documentsDE from '../locales/de/documents.json';
 import notFoundDE from '../locales/de/not-found.json';
+import backupImportDE from '../locales/de/backup-import.json';
 
 import commonEN from '../locales/en/common.json';
 import onboardingEN from '../locales/en/onboarding.json';
@@ -34,6 +35,7 @@ import themeEN from '../locales/en/theme.json';
 import pwaUpdateEN from '../locales/en/pwa-update.json';
 import documentsEN from '../locales/en/documents.json';
 import notFoundEN from '../locales/en/not-found.json';
+import backupImportEN from '../locales/en/backup-import.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -64,6 +66,7 @@ export const NAMESPACES = [
   'pwa-update',
   'documents',
   'not-found',
+  'backup-import',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -122,6 +125,7 @@ void i18n.use(initReactI18next).init({
       'pwa-update': pwaUpdateDE,
       documents: documentsDE,
       'not-found': notFoundDE,
+      'backup-import': backupImportDE,
     },
     en: {
       common: commonEN,
@@ -133,6 +137,7 @@ void i18n.use(initReactI18next).init({
       'pwa-update': pwaUpdateEN,
       documents: documentsEN,
       'not-found': notFoundEN,
+      'backup-import': backupImportEN,
     },
   },
   lng: 'de',

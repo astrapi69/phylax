@@ -16,11 +16,11 @@ describe('i18n config', () => {
     }
   });
 
-  it('NAMESPACES length matches the declared count (23 feature-aligned namespaces)', () => {
-    // 22 feature folders + `errors` catch-all. I18N-01l-b added `app-shell`,
-    // `theme`, `pwa-update`, `documents`, `not-found`.
-    // Update this assertion if the namespace list changes.
-    expect(NAMESPACES).toHaveLength(23);
+  it('NAMESPACES length matches the declared count (24 feature-aligned namespaces)', () => {
+    // 23 feature folders + `errors` catch-all. I18N-01l-b added `app-shell`,
+    // `theme`, `pwa-update`, `documents`, `not-found`. ONB-01e added
+    // `backup-import`. Update this assertion if the namespace list changes.
+    expect(NAMESPACES).toHaveLength(24);
   });
 
   it('defaultNS is common', () => {

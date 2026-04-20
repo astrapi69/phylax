@@ -1,0 +1,47 @@
+{
+  "select": {
+    "heading": "Backup importieren",
+    "description": "Waehle die zuvor erstellte Phylax-Backup-Datei. Das Backup wird mit dem Passwort entschluesselt, mit dem es erstellt wurde.",
+    "file-picker-label": "Datei auswaehlen",
+    "no-file-selected": "Keine Datei ausgewaehlt.",
+    "metadata": {
+      "filename": "Datei",
+      "size": "Groesse",
+      "created": "Erstellt am",
+      "source": "Quelle"
+    },
+    "continue": "Weiter",
+    "back-to-welcome": "Zurueck zur Startseite",
+    "overwrite-warning": {
+      "title": "Achtung: Import ueberschreibt bestehende Daten",
+      "body": "Dein aktuelles Phylax-Profil wird durch den Import vollstaendig ersetzt. Diese Aktion kann nicht rueckgaengig gemacht werden.",
+      "acknowledge": "Ich verstehe, dass die Daten ueberschrieben werden."
+    }
+  },
+  "unlock": {
+    "heading": "Backup entsperren",
+    "description": "Gib das Passwort ein, mit dem dieses Backup erstellt wurde. Nach dem Import wird dieses Passwort dein Master-Passwort.",
+    "filename-readout": "Datei: {{name}}",
+    "password": {
+      "label": "Backup-Passwort"
+    },
+    "submit": {
+      "label": "Importieren",
+      "deriving": "Schluessel wird abgeleitet...",
+      "populating": "Daten werden importiert..."
+    }
+  },
+  "error": {
+    "invalid-json": "Die ausgewaehlte Datei ist kein gueltiges JSON.",
+    "missing-field": "Datei unvollstaendig. Fehlt: {{field}}",
+    "unsupported-version": "Datei-Version {{version}} wird nicht unterstuetzt.",
+    "wrong-type": "Das ist keine Phylax-Backup-Datei.",
+    "too-large": "Datei zu gross ({{size}} MB). Maximal 50 MB erlaubt.",
+    "corrupted": "Backup ist beschaedigt oder unvollstaendig.",
+    "wrong-password": "Falsches Passwort. Backup konnte nicht entschluesselt werden.",
+    "crypto-failed": "Entschluesselung fehlgeschlagen. Bitte versuche es erneut.",
+    "populate-failed": "Daten konnten nicht gespeichert werden: {{detail}}",
+    "rate-limited_one": "Gesperrt. Versuch es in {{count}} Sekunde erneut.",
+    "rate-limited_other": "Gesperrt. Versuch es in {{count}} Sekunden erneut."
+  }
+}
