@@ -2,10 +2,19 @@ import { useEffect, useState } from 'react';
 import type { Profile } from '../../domain';
 import { ProfileRepository } from '../../db/repositories';
 
+/**
+ * Discriminated error for the profile-view loader. The UI resolves each
+ * kind to a translated message via i18next; the `detail` on `generic` is
+ * preserved for logs and test assertions but is not rendered to the
+ * user (deliberate: raw repository error messages are often unhelpful
+ * and may leak implementation detail).
+ */
+export type ProfileViewError = { kind: 'not-found' } | { kind: 'generic'; detail: string };
+
 export type ProfileViewState =
   | { kind: 'loading' }
   | { kind: 'loaded'; profile: Profile }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: ProfileViewError };
 
 export interface UseProfileViewResult {
   state: ProfileViewState;
@@ -30,7 +39,7 @@ export function useProfileView(): UseProfileViewResult {
         const profile = await repo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'not-found' } });
           return;
         }
         setState({ kind: 'loaded', profile });
@@ -38,7 +47,10 @@ export function useProfileView(): UseProfileViewResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message: err instanceof Error ? err.message : 'Profil konnte nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }

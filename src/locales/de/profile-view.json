@@ -1,0 +1,38 @@
+{
+  "loading": "Profil wird geladen...",
+  "error": {
+    "not-found": "Kein Profil gefunden.",
+    "load-failed": "Profil konnte nicht geladen werden."
+  },
+  "header": {
+    "version-label": "Version",
+    "last-change": "Letzte Änderung: {{reason}}"
+  },
+  "profile-type": {
+    "own": "Eigenes Profil",
+    "proxy": "Stellvertreterprofil",
+    "proxy-for": "Stellvertretend für {{name}}"
+  },
+  "basedata": {
+    "heading": "Basisdaten",
+    "field-birth-date": "Geburtsdatum",
+    "field-age": "Alter",
+    "age-value": "{{age}} Jahre",
+    "field-height": "Grösse",
+    "height-value": "{{height}} cm",
+    "field-weight": "Gewicht",
+    "weight-value": "{{weight}} kg",
+    "weight-target": " (Ziel: {{target}} kg)",
+    "context-notes-heading": "Kontextnotizen"
+  },
+  "section": {
+    "doctor": "Hausarzt",
+    "diagnoses": "Bekannte Diagnosen",
+    "medications": "Aktuelle Medikamente",
+    "limitations": "Relevante Einschränkungen",
+    "references": "Externe Referenzen"
+  },
+  "warning-signs": {
+    "heading": "Warnsignale"
+  }
+}

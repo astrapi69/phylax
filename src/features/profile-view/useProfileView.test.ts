@@ -54,7 +54,7 @@ describe('useProfileView', () => {
     const { result } = renderHook(() => useProfileView());
     await waitFor(() => expect(result.current.state.kind).toBe('error'));
     if (result.current.state.kind === 'error') {
-      expect(result.current.state.message).toMatch(/Kein Profil/);
+      expect(result.current.state.error).toEqual({ kind: 'not-found' });
     }
   });
 
@@ -65,7 +65,7 @@ describe('useProfileView', () => {
     const { result } = renderHook(() => useProfileView());
     await waitFor(() => expect(result.current.state.kind).toBe('error'));
     if (result.current.state.kind === 'error') {
-      expect(result.current.state.message).toBe('boom');
+      expect(result.current.state.error).toMatchObject({ kind: 'generic', detail: 'boom' });
     }
     spy.mockRestore();
   });

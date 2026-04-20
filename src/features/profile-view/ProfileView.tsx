@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getDisplayName } from '../../domain';
 import type { Profile } from '../../domain';
 import { DonationOnboardingCard, DonationReminderBanner, readDonationState } from '../donation';
@@ -15,23 +16,30 @@ import { useProfileView } from './useProfileView';
  * profile with no diagnoses simply has no "Bekannte Diagnosen" heading.
  */
 export function ProfileView() {
+  const { t } = useTranslation('profile-view');
   const { state } = useProfileView();
 
   if (state.kind === 'loading') {
     return (
       <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
-        Profil wird geladen...
+        {t('loading')}
       </div>
     );
   }
 
   if (state.kind === 'error') {
+    if (state.error.kind === 'generic') {
+      // Repository detail stays in logs; users see the translated fallback.
+      console.error('[ProfileView]', state.error.detail);
+    }
+    const message =
+      state.error.kind === 'not-found' ? t('error.not-found') : t('error.load-failed');
     return (
       <div
         role="alert"
         className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
       >
-        {state.message}
+        {message}
       </div>
     );
   }
@@ -40,6 +48,7 @@ export function ProfileView() {
 }
 
 function ProfileViewContent({ profile }: { profile: Profile }) {
+  const { t } = useTranslation('profile-view');
   const { baseData, warningSigns, externalReferences, version, lastUpdateReason } = profile;
   const name = getDisplayName(profile);
 
@@ -66,12 +75,12 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
           <ExportButton />
           <div>
             <p>
-              Version{' '}
+              {t('header.version-label')}{' '}
               <span className="font-medium text-gray-900 dark:text-gray-100">v{version}</span>
             </p>
             {lastUpdateReason && (
               <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400 md:ml-auto">
-                Letzte Änderung: {lastUpdateReason}
+                {t('header.last-change', { reason: lastUpdateReason })}
               </p>
             )}
           </div>
@@ -86,20 +95,24 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
             id="hausarzt-heading"
             className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
           >
-            Hausarzt
+            {t('section.doctor')}
           </h2>
           <DoctorCard doctor={baseData.primaryDoctor} />
         </section>
       )}
 
       {baseData.knownDiagnoses.length > 0 && (
-        <BulletSection id="diagnoses" title="Bekannte Diagnosen" items={baseData.knownDiagnoses} />
+        <BulletSection
+          id="diagnoses"
+          title={t('section.diagnoses')}
+          items={baseData.knownDiagnoses}
+        />
       )}
 
       {baseData.currentMedications.length > 0 && (
         <BulletSection
           id="medications"
-          title="Aktuelle Medikamente"
+          title={t('section.medications')}
           items={baseData.currentMedications}
         />
       )}
@@ -107,7 +120,7 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
       {baseData.relevantLimitations.length > 0 && (
         <BulletSection
           id="limitations"
-          title="Relevante Einschränkungen"
+          title={t('section.limitations')}
           items={baseData.relevantLimitations}
         />
       )}
@@ -120,7 +133,7 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
             id="refs-heading"
             className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
           >
-            Externe Referenzen
+            {t('section.references')}
           </h2>
           <ul className="list-disc space-y-1 pl-5 text-sm text-gray-800 dark:text-gray-200">
             {externalReferences.map((ref, i) => (

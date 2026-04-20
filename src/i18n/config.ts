@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import commonDE from '../locales/de/common.json';
 import onboardingDE from '../locales/de/onboarding.json';
 import unlockDE from '../locales/de/unlock.json';
-import profileDE from '../locales/de/profile.json';
+import profileViewDE from '../locales/de/profile-view.json';
 import observationsDE from '../locales/de/observations.json';
 import labValuesDE from '../locales/de/lab-values.json';
 import supplementsDE from '../locales/de/supplements.json';
@@ -27,7 +27,7 @@ export const NAMESPACES = [
   'common',
   'onboarding',
   'unlock',
-  'profile',
+  'profile-view',
   'observations',
   'lab-values',
   'supplements',
@@ -70,7 +70,7 @@ void i18n.use(initReactI18next).init({
       common: commonDE,
       onboarding: onboardingDE,
       unlock: unlockDE,
-      profile: profileDE,
+      'profile-view': profileViewDE,
       observations: observationsDE,
       'lab-values': labValuesDE,
       supplements: supplementsDE,

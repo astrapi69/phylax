@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface WarningSignsSectionProps {
   signs: string[];
 }
@@ -11,6 +13,7 @@ interface WarningSignsSectionProps {
  * red-flag markers). It is not a general pattern for every H2.
  */
 export function WarningSignsSection({ signs }: WarningSignsSectionProps) {
+  const { t } = useTranslation('profile-view');
   if (signs.length === 0) return null;
   return (
     <section
@@ -21,7 +24,7 @@ export function WarningSignsSection({ signs }: WarningSignsSectionProps) {
         id="warning-signs-heading"
         className="mb-2 flex items-center gap-2 text-lg font-semibold text-amber-900 dark:text-amber-200"
       >
-        <span aria-hidden>⚠</span> Warnsignale
+        <span aria-hidden>⚠</span> {t('warning-signs.heading')}
       </h2>
       <ul className="list-disc space-y-1 pl-5 text-sm text-amber-900 dark:text-amber-200">
         {signs.map((s, i) => (
