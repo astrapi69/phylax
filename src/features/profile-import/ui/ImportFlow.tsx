@@ -16,7 +16,7 @@ import { ResultScreen } from './ResultScreen';
  * Orchestrator for the import flow. Renders one screen per state kind.
  *
  * Local state held outside the hook:
- * - sourceLabel: "filename" vs "Eingefügter Text" for preview display.
+ * - sourceLabel: "filename" vs "Eingefuegter Text" for preview display.
  *   The hook does not need to know the source.
  * - profilesById: cached for display-name lookups in preview/confirm/done.
  */

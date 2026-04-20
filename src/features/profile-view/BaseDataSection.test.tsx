@@ -49,9 +49,9 @@ describe('ProfileTypeBadge', () => {
     expect(screen.getByText('Eigenes Profil')).toBeInTheDocument();
   });
 
-  it('renders "Stellvertretend für {name}" for proxy with managedBy', () => {
+  it('renders "Stellvertretend fuer {name}" for proxy with managedBy', () => {
     render(<ProfileTypeBadge profileType="proxy" managedBy="Asterios" />);
-    expect(screen.getByText('Stellvertretend für Asterios')).toBeInTheDocument();
+    expect(screen.getByText('Stellvertretend fuer Asterios')).toBeInTheDocument();
   });
 
   it('renders "Stellvertreterprofil" for proxy without managedBy', () => {

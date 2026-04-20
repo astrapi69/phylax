@@ -2,10 +2,10 @@
   "profile-type": {
     "own": "Eigenes Profil",
     "proxy": "Stellvertreterprofil",
-    "proxy-for": "Stellvertretend für {{name}}"
+    "proxy-for": "Stellvertretend fuer {{name}}"
   },
   "action": {
-    "select": "Auswählen",
+    "select": "Auswaehlen",
     "create-new": "+ Neues Profil erstellen"
   },
   "counts": {

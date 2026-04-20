@@ -17,7 +17,7 @@ export interface ProfileListProps {
   showCreateButton?: boolean;
   onCreateNew?: () => void;
   /**
-   * Label for the select button. Defaults to the localized "Auswählen".
+   * Label for the select button. Defaults to the localized "Auswaehlen".
    * Import flow passes "Diesem Profil zuordnen".
    */
   selectLabel?: string;

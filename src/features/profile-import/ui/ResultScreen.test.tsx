@@ -28,7 +28,7 @@ describe('ResultScreen', () => {
     expect(screen.getByText(/18 Beobachtungen/)).toBeInTheDocument();
   });
 
-  it('success "Zur Übersicht" calls onNavigateHome', async () => {
+  it('success "Zur Uebersicht" calls onNavigateHome', async () => {
     const user = userEvent.setup();
     const onNavigateHome = vi.fn();
     render(
@@ -38,7 +38,7 @@ describe('ResultScreen', () => {
         onRestart={vi.fn()}
       />,
     );
-    await user.click(screen.getByRole('button', { name: 'Zur Übersicht' }));
+    await user.click(screen.getByRole('button', { name: 'Zur Uebersicht' }));
     expect(onNavigateHome).toHaveBeenCalledOnce();
   });
 
@@ -67,7 +67,7 @@ describe('ResultScreen', () => {
     );
     expect(screen.getByRole('heading', { name: /Import fehlgeschlagen/i })).toBeInTheDocument();
     expect(screen.getByRole('alert').textContent).toMatch(/Der Import konnte nicht/);
-    expect(screen.getByText(/nicht geändert/i)).toBeInTheDocument();
+    expect(screen.getByText(/nicht geaendert/i)).toBeInTheDocument();
     expect(consoleSpy).toHaveBeenCalledWith('[ResultScreen]', 'Testfehler');
     consoleSpy.mockRestore();
   });

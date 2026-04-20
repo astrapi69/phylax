@@ -107,7 +107,7 @@ describe('PreviewScreen', () => {
         onBack={vi.fn()}
       />,
     );
-    expect(screen.getByRole('button', { name: /1 nicht erkannte Blöcke/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /1 nicht erkannte Bloecke/ })).toBeInTheDocument();
   });
 
   it('observations accordion is collapsed by default and reveals content on click', async () => {
@@ -140,7 +140,7 @@ describe('PreviewScreen', () => {
     expect(screen.getByText(/Schmerz bei Druck/)).toBeInTheDocument();
   });
 
-  it('Zurück calls onBack', async () => {
+  it('Zurueck calls onBack', async () => {
     const user = userEvent.setup();
     const onBack = vi.fn();
     render(
@@ -152,7 +152,7 @@ describe('PreviewScreen', () => {
         onBack={onBack}
       />,
     );
-    await user.click(screen.getByRole('button', { name: 'Zurück' }));
+    await user.click(screen.getByRole('button', { name: 'Zurueck' }));
     expect(onBack).toHaveBeenCalledOnce();
   });
 

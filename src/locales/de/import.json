@@ -9,18 +9,18 @@
     "heading": "Import aus Markdown",
     "intro": "Importiere ein bestehendes Lebende-Gesundheit Profil als Markdown-Datei oder Text.",
     "file": {
-      "heading": "Datei auswählen",
-      "cta": "Markdown-Datei wählen (.md)",
+      "heading": "Datei auswaehlen",
+      "cta": "Markdown-Datei waehlen (.md)",
       "loaded": "Geladen: {{name}} ({{size}})",
       "too-large": "Datei ist zu gross ({{size}}). Maximum: {{max}}.",
       "read-failed": "Datei konnte nicht gelesen werden."
     },
     "paste": {
-      "heading": "Oder Text einfügen",
-      "sr-label": "Markdown-Text einfügen",
+      "heading": "Oder Text einfuegen",
+      "sr-label": "Markdown-Text einfuegen",
       "placeholder": "# Medizinisches Profil...",
       "char-count": "{{chars}} Zeichen (mindestens {{min}})",
-      "source-label": "Eingefügter Text"
+      "source-label": "Eingefuegter Text"
     }
   },
   "selection": {
@@ -31,7 +31,7 @@
     },
     "intro-zero": "Erstelle zuerst ein Profil, um den Import zu starten.",
     "select-label": "Diesem Profil zuordnen",
-    "back-to-list": "Zurück zur Profilauswahl",
+    "back-to-list": "Zurueck zur Profilauswahl",
     "error": {
       "load-failed": "Profile konnten nicht geladen werden."
     }
@@ -42,7 +42,7 @@
     "target-label": "Ziel:",
     "content-heading": "Inhalt",
     "warnings-summary": "{{count}} Warnungen beim Parsen",
-    "unrecognized-summary": "{{count}} nicht erkannte Blöcke",
+    "unrecognized-summary": "{{count}} nicht erkannte Bloecke",
     "clean": "✓ Keine Probleme beim Parsen festgestellt.",
     "view": {
       "observations": "Beobachtungen anzeigen ({{count}})",
@@ -55,8 +55,8 @@
   },
   "confirm": {
     "heading": "Bestehende Daten ersetzen?",
-    "body": "\"{{name}}\" enthält bereits:",
-    "warning": "Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.",
+    "body": "\"{{name}}\" enthaelt bereits:",
+    "warning": "Diese Daten werden beim Import unwiderruflich geloescht und durch die neuen ersetzt.",
     "lab-report-line": "{{count}} Laborbefunde ({{values}} Werte)",
     "replace": "Ja, ersetzen"
   },
@@ -64,14 +64,14 @@
     "success": {
       "heading": "Import erfolgreich",
       "body": "In \"{{name}}\" importiert:",
-      "home": "Zur Übersicht",
+      "home": "Zur Uebersicht",
       "restart": "Weiteren Import"
     },
     "failure": {
       "heading": "Import fehlgeschlagen",
       "body": "Der Import konnte nicht abgeschlossen werden.",
       "label-error": "Fehler:",
-      "unchanged": "Deine Daten wurden nicht geändert.",
+      "unchanged": "Deine Daten wurden nicht geaendert.",
       "retry": "Erneut versuchen"
     }
   },
@@ -117,7 +117,7 @@
   },
   "action": {
     "cancel": "Abbrechen",
-    "back": "Zurück",
+    "back": "Zurueck",
     "next": "Weiter"
   }
 }

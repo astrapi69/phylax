@@ -43,7 +43,7 @@ describe('ProfileList', () => {
     render(<ProfileList profiles={profiles} onSelect={vi.fn()} />);
     expect(screen.getByText('Asterios')).toBeInTheDocument();
     expect(screen.getByText('Mutter')).toBeInTheDocument();
-    expect(screen.getByText('Stellvertretend für Asterios')).toBeInTheDocument();
+    expect(screen.getByText('Stellvertretend fuer Asterios')).toBeInTheDocument();
     expect(screen.getByText('Eigenes Profil')).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('ProfileList', () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
     render(<ProfileList profiles={[mkProfile({ id: 'target' })]} onSelect={onSelect} />);
-    await user.click(screen.getByRole('button', { name: /auswählen/i }));
+    await user.click(screen.getByRole('button', { name: /auswaehlen/i }));
     expect(onSelect).toHaveBeenCalledWith('target');
   });
 

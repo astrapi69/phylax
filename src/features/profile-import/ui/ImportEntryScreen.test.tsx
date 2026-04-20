@@ -6,29 +6,29 @@ import { ImportEntryScreen } from './ImportEntryScreen';
 describe('ImportEntryScreen', () => {
   it('renders both file and paste inputs', () => {
     render(<ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText('Datei auswählen')).toBeInTheDocument();
-    expect(screen.getByText('Oder Text einfügen')).toBeInTheDocument();
+    expect(screen.getByText('Datei auswaehlen')).toBeInTheDocument();
+    expect(screen.getByText('Oder Text einfuegen')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
   });
 
   it('enables Weiter once paste reaches minimum length', async () => {
     const user = userEvent.setup();
     render(<ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} />);
-    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
     await user.type(textarea, 'x'.repeat(100));
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeEnabled();
   });
 
-  it('submits paste content with source label "Eingefügter Text"', async () => {
+  it('submits paste content with source label "Eingefuegter Text"', async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<ImportEntryScreen onSubmit={onSubmit} onCancel={vi.fn()} />);
     const paste = 'y'.repeat(120);
-    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
     await user.click(textarea);
     await user.paste(paste);
     await user.click(screen.getByRole('button', { name: 'Weiter' }));
-    expect(onSubmit).toHaveBeenCalledWith(paste, 'Eingefügter Text');
+    expect(onSubmit).toHaveBeenCalledWith(paste, 'Eingefuegter Text');
   });
 
   it('submits file content with the file name as source label', async () => {
@@ -67,7 +67,7 @@ describe('ImportEntryScreen', () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<ImportEntryScreen onSubmit={onSubmit} onCancel={vi.fn()} />);
-    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
     await user.type(textarea, 'kurz');
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
     expect(onSubmit).not.toHaveBeenCalled();

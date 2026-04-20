@@ -6,19 +6,19 @@
   },
   "header": {
     "version-label": "Version",
-    "last-change": "Letzte Änderung: {{reason}}"
+    "last-change": "Letzte Aenderung: {{reason}}"
   },
   "profile-type": {
     "own": "Eigenes Profil",
     "proxy": "Stellvertreterprofil",
-    "proxy-for": "Stellvertretend für {{name}}"
+    "proxy-for": "Stellvertretend fuer {{name}}"
   },
   "basedata": {
     "heading": "Basisdaten",
     "field-birth-date": "Geburtsdatum",
     "field-age": "Alter",
     "age-value": "{{age}} Jahre",
-    "field-height": "Grösse",
+    "field-height": "Groesse",
     "height-value": "{{height}} cm",
     "field-weight": "Gewicht",
     "weight-value": "{{weight}} kg",
@@ -29,7 +29,7 @@
     "doctor": "Hausarzt",
     "diagnoses": "Bekannte Diagnosen",
     "medications": "Aktuelle Medikamente",
-    "limitations": "Relevante Einschränkungen",
+    "limitations": "Relevante Einschraenkungen",
     "references": "Externe Referenzen"
   },
   "warning-signs": {
