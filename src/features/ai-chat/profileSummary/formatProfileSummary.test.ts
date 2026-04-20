@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import i18n from '../../../i18n/config';
 import type {
   Profile,
   Observation,
@@ -14,6 +15,8 @@ import {
   formatWeightTrend,
   type ProfileShareInputs,
 } from './formatProfileSummary';
+
+const t = i18n.getFixedT('de', 'ai-chat');
 
 function makeProfile(overrides: Partial<Profile> = {}): Profile {
   const now = Date.UTC(2026, 2, 15);
@@ -165,7 +168,7 @@ describe('summarizeField', () => {
 describe('formatWeightTrend', () => {
   it('renders first -> last when history has 2+ entries', () => {
     expect(
-      formatWeightTrend([
+      formatWeightTrend(t, [
         { date: '2026-01-15', weightKg: 84 },
         { date: '2026-03-10', weightKg: 92 },
       ]),
@@ -173,13 +176,13 @@ describe('formatWeightTrend', () => {
   });
 
   it('returns null when history has fewer than 2 entries', () => {
-    expect(formatWeightTrend([])).toBeNull();
-    expect(formatWeightTrend([{ date: '2026-01-15', weightKg: 84 }])).toBeNull();
+    expect(formatWeightTrend(t, [])).toBeNull();
+    expect(formatWeightTrend(t, [{ date: '2026-01-15', weightKg: 84 }])).toBeNull();
   });
 
   it('falls back to the ISO date when the format is unexpected', () => {
     expect(
-      formatWeightTrend([
+      formatWeightTrend(t, [
         { date: 'not-a-date', weightKg: 84 },
         { date: '2026-03-10', weightKg: 92 },
       ]),
@@ -189,12 +192,12 @@ describe('formatWeightTrend', () => {
 
 describe('formatProfileShareSummary', () => {
   it('renders the heading with the profile name', () => {
-    const { markdown } = formatProfileShareSummary(baseInputs());
+    const { markdown } = formatProfileShareSummary(t, baseInputs());
     expect(markdown).toMatch(/^# Profil: Max Mustermann/);
   });
 
   it('includes Basisdaten with weight, trend, diagnoses, medications, limitations, doctor', () => {
-    const { markdown } = formatProfileShareSummary(baseInputs());
+    const { markdown } = formatProfileShareSummary(t, baseInputs());
     expect(markdown).toContain('## Basisdaten');
     expect(markdown).toContain('- Alter: 56 Jahre');
     expect(markdown).toContain('- Groesse: 183 cm');
@@ -215,7 +218,7 @@ describe('formatProfileShareSummary', () => {
         makeObservation('Oedem'),
       ],
     });
-    const { markdown } = formatProfileShareSummary(inputs);
+    const { markdown } = formatProfileShareSummary(t, inputs);
     const posE = markdown.indexOf('### Ernaehrung');
     const posO = markdown.indexOf('### Oedem');
     const posS = markdown.indexOf('### Schulter');
@@ -242,6 +245,7 @@ describe('formatProfileShareSummary', () => {
       }),
     ];
     const allNormal = formatProfileShareSummary(
+      t,
       baseInputs({ latestReport: makeLabReport(), latestReportValues: normalOnly }),
     );
     expect(allNormal.markdown).not.toContain('## Laborwerte');
@@ -258,6 +262,7 @@ describe('formatProfileShareSummary', () => {
       }),
     ];
     const withAbnormal = formatProfileShareSummary(
+      t,
       baseInputs({ latestReport: makeLabReport(), latestReportValues: mixed }),
     );
     expect(withAbnormal.markdown).toContain('## Laborwerte');
@@ -268,6 +273,7 @@ describe('formatProfileShareSummary', () => {
 
   it('renders supplement categories in German and includes all categories', () => {
     const { markdown } = formatProfileShareSummary(
+      t,
       baseInputs({
         supplements: [
           makeSupplement('Vitamin D3 2000 IE', 'daily'),
@@ -288,17 +294,17 @@ describe('formatProfileShareSummary', () => {
       makeOpenPoint('Wiederholungs-Blutabnahme', { priority: 'Hoch' }),
       makeOpenPoint('Knie-MRT besprechen'),
     ];
-    const withPoints = formatProfileShareSummary(baseInputs({ unresolvedOpenPoints: points }));
+    const withPoints = formatProfileShareSummary(t, baseInputs({ unresolvedOpenPoints: points }));
     expect(withPoints.markdown).toContain('## Offene Punkte (ungeloest)');
     expect(withPoints.markdown).toContain('- [Hoch] Wiederholungs-Blutabnahme');
     expect(withPoints.markdown).toContain('- Knie-MRT besprechen');
 
-    const empty = formatProfileShareSummary(baseInputs({ unresolvedOpenPoints: [] }));
+    const empty = formatProfileShareSummary(t, baseInputs({ unresolvedOpenPoints: [] }));
     expect(empty.markdown).not.toContain('Offene Punkte');
   });
 
   it('includes warning signs when present', () => {
-    const { markdown } = formatProfileShareSummary(baseInputs());
+    const { markdown } = formatProfileShareSummary(t, baseInputs());
     expect(markdown).toContain('## Warnsignale');
     expect(markdown).toContain('- Brustschmerzen bei Belastung');
     expect(markdown).toContain('- Ploetzliche Atemnot');
@@ -323,7 +329,7 @@ describe('formatProfileShareSummary', () => {
       externalReferences: [],
       version: '1.0',
     };
-    const { markdown, counts } = formatProfileShareSummary({
+    const { markdown, counts } = formatProfileShareSummary(t, {
       profile: bare,
       observations: [],
       latestReport: null,
@@ -356,6 +362,7 @@ describe('formatProfileShareSummary', () => {
     });
     const populated = makeObservation('Schulter', { fact: 'Schmerzen links' });
     const { markdown } = formatProfileShareSummary(
+      t,
       baseInputs({ observations: [empty, populated] }),
     );
     expect(markdown).not.toContain('### Ausgangslage');
@@ -371,7 +378,7 @@ describe('formatProfileShareSummary', () => {
         name: 'Mutter',
       },
     });
-    const { markdown } = formatProfileShareSummary(baseInputs({ profile: proxy }));
+    const { markdown } = formatProfileShareSummary(t, baseInputs({ profile: proxy }));
     expect(markdown).toContain('# Profil: Mutter');
     expect(markdown).toContain('Gefuehrt von: Anna Mueller');
   });

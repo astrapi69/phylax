@@ -60,13 +60,15 @@
       "supplements": "Supplemente",
       "open-points": "Offene Punkte"
     },
-    "end-message": "Gefuehrte Sitzung beendet."
+    "end-message": "Gefuehrte Sitzung beendet.",
+    "opening-message": "Willkommen zur gefuehrten Sitzung. Ich fuehre dich durch drei Bereiche deines Profils:\n\n1. Beobachtungen\n2. Supplemente\n3. Offene Punkte\n\nBasisdaten erfasst du ueber das Profil-Formular, Laborwerte importierst du separat, Verlaufsnotizen ebenfalls.\n\nDu kannst die Sitzung jederzeit beenden. Lass uns mit den Beobachtungen anfangen: gibt es etwas, das dir gesundheitlich gerade auffaellt oder dich beschaeftigt?"
   },
   "system": {
     "config-loading": "Einstellungen werden geladen, bitte kurz warten.",
     "not-configured": "KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schluessel unter Einstellungen.",
     "locked": "App ist gesperrt. Bitte entsperre sie erneut.",
-    "no-profile": "Kein Profil gefunden."
+    "no-profile": "Kein Profil gefunden.",
+    "context-framing": "[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext fuer die folgende Konversation verwenden]"
   },
   "error": {
     "chat-error": {
@@ -168,5 +170,71 @@
     "error": {
       "profile-not-found": "Profil nicht gefunden."
     }
+  },
+  "profile-summary": {
+    "heading": {
+      "profile": "# Profil: {{name}}",
+      "base-data": "## Basisdaten",
+      "observations": "## Beobachtungen",
+      "lab-values": "## Laborwerte",
+      "supplements": "## Supplemente",
+      "open-points": "## Offene Punkte (ungeloest)",
+      "warning-signs": "## Warnsignale"
+    },
+    "managed-by": "Gefuehrt von: {{name}}",
+    "unspecified": "(nicht angegeben)",
+    "base-data": {
+      "age": "- Alter: {{age}} Jahre",
+      "height": "- Groesse: {{cm}} cm",
+      "weight": "- Gewicht: {{kg}} kg{{target}}",
+      "weight-target": " (Ziel: {{kg}} kg)",
+      "weight-trend": "- Gewichtsverlauf: {{trend}}",
+      "weight-trend-format": "{{first}} kg ({{firstDate}}) -> {{last}} kg ({{lastDate}})",
+      "diagnoses": "- Bekannte Diagnosen: {{list}}",
+      "medications": "- Aktuelle Medikamente: {{list}}",
+      "limitations": "- Einschraenkungen: {{list}}",
+      "doctor": "- Hausarzt/Aerztin: {{name}}{{specialty}}"
+    },
+    "observation": {
+      "theme-heading": "### {{theme}}",
+      "status": "- Status: {{value}}",
+      "fact": "- Beobachtung: {{value}}",
+      "pattern": "- Muster: {{value}}",
+      "self-regulation": "- Selbstregulation: {{value}}"
+    },
+    "lab": {
+      "latest-with-lab": "Letzter Befund: {{date}} ({{lab}})",
+      "latest": "Letzter Befund: {{date}}",
+      "reference": "(Referenz: {{range}})",
+      "value-line": "- {{parameter}}: {{result}}{{unit}}{{range}}{{assessment}}"
+    },
+    "supplement": {
+      "line": "- {{name}} ({{category}})",
+      "category": {
+        "daily": "taeglich",
+        "regular": "regelmaessig",
+        "on-demand": "bei Bedarf",
+        "paused": "pausiert"
+      }
+    },
+    "open-point": {
+      "with-priority": "- [{{priority}}] {{text}}",
+      "plain": "- {{text}}"
+    },
+    "warning-sign": "- {{value}}",
+    "months": [
+      "Jan",
+      "Feb",
+      "Maerz",
+      "Apr",
+      "Mai",
+      "Juni",
+      "Juli",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dez"
+    ]
   }
 }

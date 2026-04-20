@@ -70,14 +70,6 @@ This file collects lessons that come from real development. It starts small and 
 - Never concatenate translated strings. Use placeholders: `t('greeting', { name })`.
 - Date and number formatting goes through `Intl`, not through hardcoded formats.
 
-### Prompt-engineering content stays outside i18n (I18N-01k)
-
-Strings that serve a dual purpose, both visible in the UI and sent to the LLM as part of the conversation history or system prompt, are deliberately excluded from i18next namespaces. Examples: `GUIDED_SESSION_OPENING_MESSAGE`, `CONTEXT_FRAMING`, and the Markdown section headings produced by `formatProfileShareSummary`. These stay as hardcoded German string constants.
-
-Why: localizing them would send language-switched text to the model mid-conversation, changing model behavior in ways the UI cannot predict. A German-configured user switching the UI to English mid-session should not cause the assistant to suddenly see "I am going to guide you through three areas" where it was previously seeing German. The model's pacing, framing, and topical recall are all tied to the specific phrasing.
-
-If a future task needs multilingual prompts, it is an architectural decision tied to model selection and session continuity, not a UI i18n concern. Do not "fix" the untranslated strings inside an I18N-series task.
-
 ## Documentation
 
 - Decisions that affect the threat model go into `docs/decisions/` as ADRs. The format is short: Context, Decision, Consequences.

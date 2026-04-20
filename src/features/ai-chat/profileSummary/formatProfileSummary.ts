@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type {
   Profile,
   Observation,
@@ -48,13 +49,9 @@ export interface ProfileShareResult {
 
 const FIELD_TRUNCATION_CHARS = 200;
 
-const CATEGORY_LABEL: Record<Supplement['category'], string> = {
-  daily: 'taeglich',
-  regular: 'regelmaessig',
-  'on-demand': 'bei Bedarf',
-  paused: 'pausiert',
-};
-
+// These strings are compared against incoming lab-value `assessment` data
+// (German free text typed by the user). They are matching patterns, not
+// display output - keeping them as a code constant. Do not localize.
 const NORMAL_ASSESSMENTS = new Set([
   'normal',
   'unauffaellig',
@@ -64,20 +61,7 @@ const NORMAL_ASSESSMENTS = new Set([
   'im normbereich',
 ]);
 
-const GERMAN_MONTHS = [
-  'Jan',
-  'Feb',
-  'Maerz',
-  'Apr',
-  'Mai',
-  'Juni',
-  'Juli',
-  'Aug',
-  'Sep',
-  'Okt',
-  'Nov',
-  'Dez',
-];
+type AIChatT = TFunction<'ai-chat'>;
 
 /**
  * Compact Markdown digest of a user's health profile, tuned for AI
@@ -88,7 +72,10 @@ const GERMAN_MONTHS = [
  * chat as a context message) and a counts object (used by the UI card
  * to render a collapsed summary without parsing the output).
  */
-export function formatProfileShareSummary(inputs: ProfileShareInputs): ProfileShareResult {
+export function formatProfileShareSummary(
+  t: AIChatT,
+  inputs: ProfileShareInputs,
+): ProfileShareResult {
   const { profile, observations, latestReport, latestReportValues } = inputs;
   const { supplements, unresolvedOpenPoints } = inputs;
 
@@ -96,18 +83,22 @@ export function formatProfileShareSummary(inputs: ProfileShareInputs): ProfileSh
 
   const lines: string[] = [];
 
-  lines.push(`# Profil: ${getDisplayName(profile)}`);
+  lines.push(t('profile-summary.heading.profile', { name: getDisplayName(profile) }));
   if (profile.baseData.profileType === 'proxy') {
     const caregiver = profile.baseData.managedBy?.trim();
-    lines.push(`Gefuehrt von: ${caregiver ? caregiver : '(nicht angegeben)'}`);
+    lines.push(
+      t('profile-summary.managed-by', {
+        name: caregiver ? caregiver : t('profile-summary.unspecified'),
+      }),
+    );
   }
 
-  appendBaseData(lines, profile);
-  appendObservations(lines, observations);
-  appendLabValues(lines, latestReport, abnormalValues);
-  appendSupplements(lines, supplements);
-  appendOpenPoints(lines, unresolvedOpenPoints);
-  appendWarningSigns(lines, profile.warningSigns);
+  appendBaseData(t, lines, profile);
+  appendObservations(t, lines, observations);
+  appendLabValues(t, lines, latestReport, abnormalValues);
+  appendSupplements(t, lines, supplements);
+  appendOpenPoints(t, lines, unresolvedOpenPoints);
+  appendWarningSigns(t, lines, profile.warningSigns);
 
   const markdown = lines.join('\n');
 
@@ -123,40 +114,48 @@ export function formatProfileShareSummary(inputs: ProfileShareInputs): ProfileSh
   };
 }
 
-function appendBaseData(lines: string[], profile: Profile): void {
+function appendBaseData(t: AIChatT, lines: string[], profile: Profile): void {
   const bd = profile.baseData;
   const items: string[] = [];
 
-  if (typeof bd.age === 'number') items.push(`- Alter: ${bd.age} Jahre`);
-  if (typeof bd.heightCm === 'number') items.push(`- Groesse: ${bd.heightCm} cm`);
+  if (typeof bd.age === 'number') items.push(t('profile-summary.base-data.age', { age: bd.age }));
+  if (typeof bd.heightCm === 'number')
+    items.push(t('profile-summary.base-data.height', { cm: bd.heightCm }));
 
   if (typeof bd.weightKg === 'number') {
-    const target = typeof bd.targetWeightKg === 'number' ? ` (Ziel: ${bd.targetWeightKg} kg)` : '';
-    items.push(`- Gewicht: ${bd.weightKg} kg${target}`);
+    const target =
+      typeof bd.targetWeightKg === 'number'
+        ? t('profile-summary.base-data.weight-target', { kg: bd.targetWeightKg })
+        : '';
+    items.push(t('profile-summary.base-data.weight', { kg: bd.weightKg, target }));
   }
 
-  const weightTrend = formatWeightTrend(bd.weightHistory);
-  if (weightTrend) items.push(`- Gewichtsverlauf: ${weightTrend}`);
+  const weightTrend = formatWeightTrend(t, bd.weightHistory);
+  if (weightTrend) items.push(t('profile-summary.base-data.weight-trend', { trend: weightTrend }));
 
   if (bd.knownDiagnoses.length > 0) {
-    items.push(`- Bekannte Diagnosen: ${bd.knownDiagnoses.join(', ')}`);
+    items.push(t('profile-summary.base-data.diagnoses', { list: bd.knownDiagnoses.join(', ') }));
   }
   if (bd.currentMedications.length > 0) {
-    items.push(`- Aktuelle Medikamente: ${bd.currentMedications.join(', ')}`);
+    items.push(
+      t('profile-summary.base-data.medications', { list: bd.currentMedications.join(', ') }),
+    );
   }
   if (bd.relevantLimitations.length > 0) {
-    items.push(`- Einschraenkungen: ${bd.relevantLimitations.join(', ')}`);
+    items.push(
+      t('profile-summary.base-data.limitations', { list: bd.relevantLimitations.join(', ') }),
+    );
   }
   if (bd.primaryDoctor) {
     const specialty = bd.primaryDoctor.specialty ? ` (${bd.primaryDoctor.specialty})` : '';
-    items.push(`- Hausarzt/Aerztin: ${bd.primaryDoctor.name}${specialty}`);
+    items.push(t('profile-summary.base-data.doctor', { name: bd.primaryDoctor.name, specialty }));
   }
 
   if (items.length === 0) return;
-  lines.push('', '## Basisdaten', ...items);
+  lines.push('', t('profile-summary.heading.base-data'), ...items);
 }
 
-function appendObservations(lines: string[], observations: Observation[]): void {
+function appendObservations(t: AIChatT, lines: string[], observations: Observation[]): void {
   // Skip observations whose four core fields are all empty - the theme
   // name alone is no signal and a bare `### Theme` header would be noise.
   const nonEmpty = observations.filter(hasObservationContent);
@@ -172,20 +171,27 @@ function appendObservations(lines: string[], observations: Observation[]): void 
 
   const sortedThemes = Array.from(byTheme.keys()).sort((a, b) => collator.compare(a, b));
 
-  lines.push('', '## Beobachtungen');
+  lines.push('', t('profile-summary.heading.observations'));
   for (const theme of sortedThemes) {
     const themeObs = byTheme.get(theme) ?? [];
     for (const obs of themeObs) {
-      lines.push('', `### ${theme}`);
-      if (obs.status.trim().length > 0) lines.push(`- Status: ${obs.status}`);
+      lines.push('', t('profile-summary.observation.theme-heading', { theme }));
+      if (obs.status.trim().length > 0)
+        lines.push(t('profile-summary.observation.status', { value: obs.status }));
       if (obs.fact.trim().length > 0) {
-        lines.push(`- Beobachtung: ${summarizeField(obs.fact)}`);
+        lines.push(t('profile-summary.observation.fact', { value: summarizeField(obs.fact) }));
       }
       if (obs.pattern.trim().length > 0) {
-        lines.push(`- Muster: ${summarizeField(obs.pattern)}`);
+        lines.push(
+          t('profile-summary.observation.pattern', { value: summarizeField(obs.pattern) }),
+        );
       }
       if (obs.selfRegulation.trim().length > 0) {
-        lines.push(`- Selbstregulation: ${summarizeField(obs.selfRegulation)}`);
+        lines.push(
+          t('profile-summary.observation.self-regulation', {
+            value: summarizeField(obs.selfRegulation),
+          }),
+        );
       }
     }
   }
@@ -201,6 +207,7 @@ function hasObservationContent(obs: Observation): boolean {
 }
 
 function appendLabValues(
+  t: AIChatT,
   lines: string[],
   report: LabReport | null,
   abnormalValues: LabValue[],
@@ -208,40 +215,55 @@ function appendLabValues(
   if (!report || abnormalValues.length === 0) return;
 
   const dateHeader = report.labName
-    ? `Letzter Befund: ${report.reportDate} (${report.labName})`
-    : `Letzter Befund: ${report.reportDate}`;
+    ? t('profile-summary.lab.latest-with-lab', { date: report.reportDate, lab: report.labName })
+    : t('profile-summary.lab.latest', { date: report.reportDate });
 
-  lines.push('', '## Laborwerte', dateHeader);
+  lines.push('', t('profile-summary.heading.lab-values'), dateHeader);
   for (const v of abnormalValues) {
     const unit = v.unit ? ` ${v.unit}` : '';
-    const range = v.referenceRange ? ` (Referenz: ${v.referenceRange})` : '';
+    const range = v.referenceRange
+      ? ` ${t('profile-summary.lab.reference', { range: v.referenceRange })}`
+      : '';
     const assessment = v.assessment ? ` - ${v.assessment}` : '';
-    lines.push(`- ${v.parameter}: ${v.result}${unit}${range}${assessment}`);
+    lines.push(
+      t('profile-summary.lab.value-line', {
+        parameter: v.parameter,
+        result: v.result,
+        unit,
+        range,
+        assessment,
+      }),
+    );
   }
 }
 
-function appendSupplements(lines: string[], supplements: Supplement[]): void {
+function appendSupplements(t: AIChatT, lines: string[], supplements: Supplement[]): void {
   if (supplements.length === 0) return;
-  lines.push('', '## Supplemente');
+  lines.push('', t('profile-summary.heading.supplements'));
   for (const s of supplements) {
-    lines.push(`- ${s.name} (${CATEGORY_LABEL[s.category]})`);
+    const category = t(`profile-summary.supplement.category.${s.category}`);
+    lines.push(t('profile-summary.supplement.line', { name: s.name, category }));
   }
 }
 
-function appendOpenPoints(lines: string[], openPoints: OpenPoint[]): void {
+function appendOpenPoints(t: AIChatT, lines: string[], openPoints: OpenPoint[]): void {
   if (openPoints.length === 0) return;
-  lines.push('', '## Offene Punkte (ungeloest)');
+  lines.push('', t('profile-summary.heading.open-points'));
   for (const p of openPoints) {
-    const prefix = p.priority?.trim() ? `[${p.priority.trim()}] ` : '';
-    lines.push(`- ${prefix}${p.text}`);
+    const priority = p.priority?.trim();
+    if (priority) {
+      lines.push(t('profile-summary.open-point.with-priority', { priority, text: p.text }));
+    } else {
+      lines.push(t('profile-summary.open-point.plain', { text: p.text }));
+    }
   }
 }
 
-function appendWarningSigns(lines: string[], warningSigns: string[]): void {
+function appendWarningSigns(t: AIChatT, lines: string[], warningSigns: string[]): void {
   if (warningSigns.length === 0) return;
-  lines.push('', '## Warnsignale');
+  lines.push('', t('profile-summary.heading.warning-signs'));
   for (const w of warningSigns) {
-    lines.push(`- ${w}`);
+    lines.push(t('profile-summary.warning-sign', { value: w }));
   }
 }
 
@@ -284,20 +306,26 @@ export function truncateAtWordBoundary(text: string, maxChars: number): string {
  * weightHistory. Returns null when fewer than two entries exist, so the
  * caller can omit the line entirely.
  */
-export function formatWeightTrend(history: WeightEntry[]): string | null {
+export function formatWeightTrend(t: AIChatT, history: WeightEntry[]): string | null {
   if (history.length < 2) return null;
   const first = history[0];
   const last = history[history.length - 1];
   if (!first || !last) return null;
-  return `${first.weightKg} kg (${formatMonthYear(first.date)}) -> ${last.weightKg} kg (${formatMonthYear(last.date)})`;
+  return t('profile-summary.base-data.weight-trend-format', {
+    first: first.weightKg,
+    firstDate: formatMonthYear(t, first.date),
+    last: last.weightKg,
+    lastDate: formatMonthYear(t, last.date),
+  });
 }
 
-function formatMonthYear(isoDate: string): string {
+function formatMonthYear(t: AIChatT, isoDate: string): string {
   const match = /^(\d{4})-(\d{2})-\d{2}$/.exec(isoDate);
   if (!match) return isoDate;
   const year = match[1];
   const monthIdx = Number(match[2]) - 1;
-  const month = GERMAN_MONTHS[monthIdx];
+  const months = t('profile-summary.months', { returnObjects: true }) as string[];
+  const month = months[monthIdx];
   if (!month || !year) return isoDate;
   return `${month} ${year}`;
 }

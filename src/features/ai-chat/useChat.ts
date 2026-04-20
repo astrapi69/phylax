@@ -17,7 +17,6 @@ import type { AnthropicMessage, ChatError } from './api/types';
 import { formatProfileShareSummary, type ProfileShareCounts } from './profileSummary';
 import type { ProfileDiff } from './commit';
 import {
-  GUIDED_SESSION_OPENING_MESSAGE,
   type GuidedSessionState,
   endGuidedSession as endGuidedSessionState,
   initGuidedSession,
@@ -87,14 +86,6 @@ export interface UseChatResult {
    */
   markGuidedSessionCommit: (diff: ProfileDiff) => void;
 }
-
-/**
- * Framing line prepended to every projected context message when it is
- * sent to the API. Tells the model "this is context, not a question" so
- * it does not treat a 3000-token profile dump as a list of user queries.
- */
-const CONTEXT_FRAMING =
-  '[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext fuer die folgende Konversation verwenden]';
 
 /**
  * Chat state machine for the Anthropic-backed AI assistant.
@@ -176,7 +167,7 @@ export function useChat(): UseChatResult {
       const controller = new AbortController();
       abortRef.current = controller;
 
-      const apiMessages = toApiMessages([...messages, userMsg]);
+      const apiMessages = toApiMessages([...messages, userMsg], t('system.context-framing'));
 
       await streamCompletion({
         apiKey: config.apiKey,
@@ -263,7 +254,7 @@ export function useChat(): UseChatResult {
         ? await labValueRepo.listByReport(latestReport.id)
         : [];
 
-      const { markdown, counts } = formatProfileShareSummary({
+      const { markdown, counts } = formatProfileShareSummary(t, {
         profile,
         observations,
         latestReport,
@@ -305,11 +296,11 @@ export function useChat(): UseChatResult {
     const openingMsg: ChatMessage = {
       id: generateId(),
       role: 'assistant',
-      content: GUIDED_SESSION_OPENING_MESSAGE,
+      content: t('guided.opening-message'),
       timestamp: Date.now(),
     };
     setMessages((prev) => [...prev, openingMsg]);
-  }, []);
+  }, [t]);
 
   const endGuidedSession = useCallback(() => {
     guidedActiveRef.current = false;
@@ -390,20 +381,20 @@ function makeSystemMessage(content: string): ChatMessage {
  * - System messages (local-only errors/warnings) are stripped.
  * - The currently streaming assistant placeholder is stripped.
  * - Context messages (shared profile summaries) are projected to the user
- *   role with the CONTEXT_FRAMING prefix so the model understands it is
+ *   role with the supplied framing prefix so the model understands it is
  *   receiving context, not a question.
  * - Consecutive same-role messages are merged because Anthropic rejects
  *   repeated roles in a single request; this merge naturally combines a
  *   context message with the next user message.
  */
-function toApiMessages(chatMessages: ChatMessage[]): AnthropicMessage[] {
+function toApiMessages(chatMessages: ChatMessage[], framing: string): AnthropicMessage[] {
   const projected: AnthropicMessage[] = [];
   for (const m of chatMessages) {
     if (m.streaming) continue;
     if (m.content.length === 0) continue;
     if (m.role === 'system') continue;
     if (m.role === 'context') {
-      projected.push({ role: 'user', content: `${CONTEXT_FRAMING}\n\n${m.content}` });
+      projected.push({ role: 'user', content: `${framing}\n\n${m.content}` });
     } else {
       projected.push({ role: m.role, content: m.content });
     }

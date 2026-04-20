@@ -11,7 +11,6 @@ import type { AnthropicStreamOptions, ChatError } from './api/types';
 import i18n from '../../i18n/config';
 import { useChat, errorMessageFor } from './useChat';
 import type { ProfileDiff } from './commit';
-import { GUIDED_SESSION_OPENING_MESSAGE } from './guided';
 
 const t = i18n.getFixedT('de', 'ai-chat');
 
@@ -483,7 +482,7 @@ describe('useChat guided session (AI-06)', () => {
     expect(result.current.guidedSession.active).toBe(true);
     const last = result.current.messages[result.current.messages.length - 1];
     expect(last?.role).toBe('assistant');
-    expect(last?.content).toBe(GUIDED_SESSION_OPENING_MESSAGE);
+    expect(last?.content).toBe(t('guided.opening-message'));
   });
 
   it('endGuidedSession deactivates and appends a system message', async () => {
