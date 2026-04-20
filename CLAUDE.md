@@ -69,7 +69,7 @@ phylax/
 - Ein einziges Modul `src/crypto/` ist für alle Verschlüsselung zuständig
 - Kein Aufruf von `crypto.subtle` ausserhalb dieses Moduls
 - Tests prüfen Round-Trip (encrypt dann decrypt ergibt Original) und dass falsche Keys fehlschlagen
-- PBKDF2-Iterationen als Konstante definiert, Default 600.000
+- PBKDF2-Iterationen als Konstante definiert, Default 1.200.000 (siehe ADR-0001)
 
 ### Datenbank-Layer
 

@@ -195,7 +195,7 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 
 - **Frontend**: React 18, TypeScript, Vite
 - **Storage**: IndexedDB via Dexie.js
-- **Verschlüsselung**: Web Crypto API (AES-256-GCM), PBKDF2 für Key-Derivation (mindestens 600.000 Iterationen)
+- **Verschlüsselung**: Web Crypto API (AES-256-GCM), PBKDF2 für Key-Derivation (1.200.000 Iterationen, siehe ADR-0001)
 - **Styling**: Tailwind CSS
 - **PDF-Export**: jsPDF
 - **PWA**: vite-plugin-pwa (Workbox)
@@ -209,7 +209,7 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 
 1. Nutzer setzt Master-Passwort beim ersten Start
 2. Zufälliges Salt (32 Bytes) wird in IndexedDB gespeichert
-3. PBKDF2 mit 600.000 Iterationen leitet 256-Bit-Key ab
+3. PBKDF2 mit 1.200.000 Iterationen leitet 256-Bit-Key ab (ADR-0001)
 4. Key lebt nur im Session-Memory, nie auf Disk
 5. Auto-Lock nach konfigurierbarer Inaktivität (Default 5 Minuten)
 

@@ -7,7 +7,7 @@ export const AUTH_TAG_LENGTH = 16;
 /** Algorithm identifier for Web Crypto API calls. */
 export const ALGORITHM = 'AES-GCM' as const;
 
-/** Number of PBKDF2 iterations. 600k is the chosen security-UX tradeoff. */
+/** Number of PBKDF2 iterations. 1.2M is the chosen security-UX tradeoff (see ADR-0001). */
 export const PBKDF2_ITERATIONS = 1_200_000;
 
 /** Hash algorithm used by PBKDF2. */

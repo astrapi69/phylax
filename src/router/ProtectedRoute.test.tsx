@@ -12,7 +12,7 @@ function renderWithRouter(initialEntries: string[]) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <Routes>
-        <Route path="/onboarding" element={<p>Onboarding</p>} />
+        <Route path="/welcome" element={<p>Welcome</p>} />
         <Route path="/unlock" element={<p>Unlock</p>} />
         <Route
           path="/profile"
@@ -41,13 +41,13 @@ describe('ProtectedRoute', () => {
     await resetDatabase();
   });
 
-  it('redirects to /onboarding when no meta exists', async () => {
+  it('redirects to /welcome when no meta exists', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     renderWithRouter(['/profile']);
 
     await waitFor(() => {
-      expect(screen.getByText('Onboarding')).toBeInTheDocument();
+      expect(screen.getByText('Welcome')).toBeInTheDocument();
     });
 
     expect(warnSpy).not.toHaveBeenCalled();

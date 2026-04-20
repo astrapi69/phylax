@@ -80,7 +80,7 @@ src/
 ## Crypto layer
 
 - AES-256-GCM, 12-byte IV per record, 16-byte auth tag.
-- PBKDF2-SHA256 key derivation, 600,000 iterations minimum, 32-byte salt.
+- PBKDF2-SHA256 key derivation, 1,200,000 iterations (per ADR-0001), 32-byte salt.
 - Master key lives only in a module-level variable inside `crypto/`, never written to storage.
 - Auto-lock clears the in-memory key after configurable inactivity (default 5 minutes).
 

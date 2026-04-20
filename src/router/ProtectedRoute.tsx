@@ -13,7 +13,7 @@ type AuthState = 'loading' | 'onboarding' | 'locked' | 'ready';
 /**
  * Auth guard that wraps authenticated routes.
  *
- * - No meta row -> redirect to /onboarding
+ * - No meta row -> redirect to /welcome (first-run entry, ONB-01a)
  * - Meta exists but keyStore locked -> redirect to /unlock with returnTo
  * - KeyStore unlocked -> render children
  *
@@ -57,7 +57,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (authState === 'onboarding') {
-    return <Navigate to="/onboarding" replace />;
+    return <Navigate to="/welcome" replace />;
   }
 
   if (authState === 'locked') {

@@ -17,7 +17,7 @@ This file collects lessons that come from real development. It starts small and 
 
 ### PBKDF2 iterations and UX
 
-- 600,000 iterations on a mid-range phone takes around 800ms. That is acceptable for unlock but feels slow.
+- 1,200,000 iterations (ADR-0001) on a mid-range phone takes roughly 1600ms. Acceptable for unlock but feels slow; the spinner is what makes it bearable.
 - Show a spinner during unlock. Do not let the UI freeze.
 - Do NOT lower the iteration count for performance. Lower the perceived latency with UX.
 

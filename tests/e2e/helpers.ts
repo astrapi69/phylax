@@ -30,14 +30,13 @@ export async function setupAuthenticatedSession(
       req.onerror = () => reject(req.error);
     });
   });
-  // Explicit /onboarding to reach the legacy setup form that E2E helpers
-  // rely on. Root (`/`) routes through EntryRouter post-ONB-01a which
-  // redirects first-run users to /welcome; /onboarding stays as the
-  // fallback until ONB-01c ships SetupView. Helpers are updated to the
-  // new first-run flow alongside ONB-01c.
-  await page.goto('/onboarding');
+  // Post-ONB-01f: /setup is reached directly. /welcome + /privacy are
+  // informational screens and are exercised by the canonical first-run
+  // e2e scenario in onboarding.spec.ts; this helper skips them to keep
+  // setup cost low for tests that only need an authenticated session.
+  await page.goto('/setup');
 
-  // Onboarding
+  // Setup form
   await page.getByLabel('Master-Passwort').first().fill(password);
   await page.getByLabel('Passwort wiederholen').fill(password);
   await page.getByLabel('Ich habe verstanden').check();

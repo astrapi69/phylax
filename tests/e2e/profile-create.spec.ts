@@ -13,12 +13,11 @@ test.describe('Profile creation', () => {
         req.onerror = () => reject(req.error);
       });
     });
-    // Navigate explicitly to the legacy /onboarding route; `/` now
-    // redirects fresh installs to /welcome (ONB-01a). /onboarding stays
-    // as fallback until ONB-01c lands SetupView.
-    await page.goto('/onboarding');
+    // Navigate directly to /setup. Post-ONB-01f the /onboarding route
+    // is gone; /setup is the canonical password-entry screen.
+    await page.goto('/setup');
 
-    // Complete onboarding
+    // Complete setup
     await page.getByLabel('Master-Passwort').first().fill(VALID_PASSWORD);
     await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();

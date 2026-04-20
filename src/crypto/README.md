@@ -15,6 +15,6 @@ This is the ONLY module in the project allowed to import `crypto.subtle`. ESLint
 
 - `constants.ts` (F-08): PBKDF2 iterations, IV length, key length
 - `aesGcm.ts` (F-07): encrypt and decrypt with AES-256-GCM, round-trip tested
-- `keyDerivation.ts` (F-08): PBKDF2 with salt, 600k iterations
+- `keyDerivation.ts` (F-08): PBKDF2 with salt, 1.2M iterations (per ADR-0001)
 - `keyStore.ts` (F-09): in-memory key holder, lock/unlock API, auto-clear on lock
 - `index.ts`: public API re-exports
