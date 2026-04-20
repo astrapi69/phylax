@@ -1,1 +1,1 @@
-export { UnlockScreen } from './UnlockScreen';
+export { UnlockView } from './UnlockView';

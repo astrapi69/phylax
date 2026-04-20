@@ -12,7 +12,16 @@
   "hint": {
     "after-failures": "Stelle sicher, dass dein Master-Passwort korrekt eingegeben wurde. Es gibt keinen Wiederherstellungsweg."
   },
+  "rate-limit": {
+    "countdown_one": "Gesperrt. Versuch es in {{count}} Sekunde erneut.",
+    "countdown_other": "Gesperrt. Versuch es in {{count}} Sekunden erneut.",
+    "hint": "Nach mehreren Fehlversuchen ist die Eingabe kurzzeitig gesperrt."
+  },
+  "backup-link": {
+    "label": "Daten von Backup importieren"
+  },
   "error": {
-    "wrong-password": "Falsches Passwort."
+    "wrong-password": "Falsches Passwort.",
+    "no-meta": "Einrichtung nicht abgeschlossen. Bitte richte Phylax neu ein."
   }
 }

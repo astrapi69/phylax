@@ -12,7 +12,16 @@
   "hint": {
     "after-failures": "Make sure your master password is entered correctly. There is no recovery path."
   },
+  "rate-limit": {
+    "countdown_one": "Locked. Try again in {{count}} second.",
+    "countdown_other": "Locked. Try again in {{count}} seconds.",
+    "hint": "After multiple failed attempts, input is temporarily blocked."
+  },
+  "backup-link": {
+    "label": "Import data from backup"
+  },
   "error": {
-    "wrong-password": "Wrong password."
+    "wrong-password": "Wrong password.",
+    "no-meta": "Setup was not completed. Please set up Phylax again."
   }
 }

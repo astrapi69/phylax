@@ -1,10 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getSafeReturnTo } from '../../router/returnTo';
 import { useUnlock } from './useUnlock';
 
-interface UnlockScreenProps {
+interface UnlockViewProps {
   onUnlocked?: () => void;
 }
 
@@ -36,7 +36,7 @@ function LoadingSpinner() {
   );
 }
 
-export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
+export function UnlockView({ onUnlocked }: UnlockViewProps) {
   const { t } = useTranslation('unlock');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -55,6 +55,9 @@ export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  const isLocked = hook.remainingLockoutMs > 0;
+  const lockoutSeconds = Math.ceil(hook.remainingLockoutMs / 1000);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-950">
@@ -91,7 +94,8 @@ export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
                 type="password"
                 value={hook.password}
                 onChange={(e) => hook.setPassword(e.target.value)}
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                disabled={isLocked}
+                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
                 autoComplete="current-password"
                 aria-describedby={hook.error ? 'unlock-error' : undefined}
               />
@@ -107,7 +111,17 @@ export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
               </p>
             )}
 
-            {hook.failedAttempts >= 3 && (
+            {isLocked && (
+              <p
+                role="status"
+                aria-live="polite"
+                className="mb-3 text-sm text-yellow-700 dark:text-yellow-300"
+              >
+                {t('rate-limit.countdown', { count: lockoutSeconds })}
+              </p>
+            )}
+
+            {hook.failedAttempts >= 3 && !isLocked && (
               <p className="mb-4 rounded border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-200">
                 {t('hint.after-failures')}
               </p>
@@ -122,6 +136,13 @@ export function UnlockScreen({ onUnlocked }: UnlockScreenProps) {
             </button>
           </form>
         )}
+
+        <Link
+          to="/backup/import/select"
+          className="mt-4 block text-center text-sm text-gray-600 underline hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+        >
+          {t('backup-link.label')}
+        </Link>
       </div>
     </div>
   );

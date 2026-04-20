@@ -5,7 +5,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { RequireProfile } from './RequireProfile';
 import { AppShell } from '../features/app-shell';
 import { WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
-import { UnlockScreen } from '../features/unlock';
+import { UnlockView } from '../features/unlock';
 import { BackupImportSelectView, BackupImportUnlockView } from '../features/backup-import';
 import { ProfileCreateForm } from '../features/profile-create';
 import { ProfileView } from '../features/profile-view';
@@ -56,7 +56,7 @@ export function AppRoutes() {
       <Route path="/setup" element={<SetupView />} />
       <Route path="/backup/import/select" element={<BackupImportSelectView />} />
       <Route path="/backup/import/unlock" element={<BackupImportUnlockView />} />
-      <Route path="/unlock" element={<UnlockScreen />} />
+      <Route path="/unlock" element={<UnlockView />} />
 
       {/* Protected route: profile creation (no RequireProfile) */}
       <Route

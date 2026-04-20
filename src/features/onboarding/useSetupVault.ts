@@ -9,6 +9,7 @@ import {
 import { db } from '../../db/schema';
 import { writeMeta, VERIFICATION_TOKEN } from '../../db/meta';
 import { encodeMetaPayload, DEFAULT_SETTINGS } from '../../db/settings';
+import { recordSuccessfulAttempt } from '../unlock/rateLimit';
 
 export type SetupStatus = 'idle' | 'deriving' | 'done' | 'error';
 
@@ -63,6 +64,11 @@ export function useSetupVault(): SetupVaultHook {
       console.error('[useSetupVault] meta write failed', err);
       return;
     }
+
+    // Defensive: clear any stale unlock rate-limit state a prior tab
+    // session may have left behind. Fresh vault should never inherit a
+    // lockout.
+    recordSuccessfulAttempt();
 
     setStatus('done');
   }, []);
