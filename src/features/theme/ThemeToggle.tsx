@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useTheme } from './useTheme';
 import type { Theme } from './themeStorage';
 
@@ -7,27 +8,23 @@ const NEXT: Record<Theme, Theme> = {
   auto: 'light',
 };
 
-const LABEL: Record<Theme, { current: string; next: string }> = {
-  light: { current: 'Hell', next: 'Dunkel' },
-  dark: { current: 'Dunkel', next: 'Automatisch' },
-  auto: { current: 'Automatisch', next: 'Hell' },
-};
-
 /**
  * Header-level theme cycle button. Single click advances light -> dark -> auto.
  * Icon reflects the current user choice (not the resolved theme), because users
  * cycling through states need to see what they just picked.
  */
 export function ThemeToggle() {
+  const { t } = useTranslation('theme');
   const { theme, setTheme } = useTheme();
   const next = NEXT[theme];
-  const label = LABEL[theme];
+  const current = t(`label.${theme}`);
+  const nextLabel = t(`label.${next}`);
 
   return (
     <button
       type="button"
       onClick={() => setTheme(next)}
-      aria-label={`Aktuelles Theme: ${label.current}. Klicken für ${label.next}.`}
+      aria-label={t('aria-label', { current, next: nextLabel })}
       className="flex items-center gap-1.5 rounded px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
     >
       {theme === 'light' && <SunIcon />}

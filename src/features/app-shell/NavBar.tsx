@@ -1,17 +1,18 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const NAV_ITEMS = [
-  { to: '/profile', label: 'Profil' },
-  { to: '/observations', label: 'Beobachtungen' },
-  { to: '/lab-values', label: 'Laborwerte' },
-  { to: '/supplements', label: 'Supplemente' },
-  { to: '/open-points', label: 'Offene Punkte' },
-  { to: '/timeline', label: 'Verlauf' },
-  { to: '/documents', label: 'Dokumente' },
-  { to: '/chat', label: 'KI-Assistent' },
-  { to: '/import', label: 'Import' },
-  { to: '/settings', label: 'Einstellungen' },
-];
+  { to: '/profile', key: 'profile' },
+  { to: '/observations', key: 'observations' },
+  { to: '/lab-values', key: 'lab-values' },
+  { to: '/supplements', key: 'supplements' },
+  { to: '/open-points', key: 'open-points' },
+  { to: '/timeline', key: 'timeline' },
+  { to: '/documents', key: 'documents' },
+  { to: '/chat', key: 'ai-assistant' },
+  { to: '/import', key: 'import' },
+  { to: '/settings', key: 'settings' },
+] as const;
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   const base = 'block rounded px-3 py-2 text-sm transition-colors no-underline';
@@ -25,13 +26,14 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
  * Uses NavLink for active-route highlighting.
  */
 export function NavBar() {
+  const { t } = useTranslation('app-shell');
   return (
-    <nav aria-label="Hauptnavigation">
+    <nav aria-label={t('nav.aria-label')}>
       {/* Mobile: bottom fixed bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:hidden">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            <span className="text-xs">{item.label}</span>
+            <span className="text-xs">{t(`nav.${item.key}`)}</span>
           </NavLink>
         ))}
       </div>
@@ -40,7 +42,7 @@ export function NavBar() {
       <div className="hidden md:fixed md:bottom-0 md:left-0 md:top-14 md:flex md:w-48 md:flex-col md:gap-1 md:border-r md:border-gray-200 md:bg-white md:p-3 md:dark:border-gray-700 md:dark:bg-gray-900">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            {item.label}
+            {t(`nav.${item.key}`)}
           </NavLink>
         ))}
       </div>

@@ -1,0 +1,8 @@
+{
+  "label": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "auto": "Automatisch"
+  },
+  "aria-label": "Aktuelles Theme: {{current}}. Klicken fuer {{next}}."
+}

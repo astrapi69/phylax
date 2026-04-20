@@ -19,6 +19,11 @@ import donationDE from '../locales/de/donation.json';
 import settingsDE from '../locales/de/settings.json';
 import exportDE from '../locales/de/export.json';
 import errorsDE from '../locales/de/errors.json';
+import appShellDE from '../locales/de/app-shell.json';
+import themeDE from '../locales/de/theme.json';
+import pwaUpdateDE from '../locales/de/pwa-update.json';
+import documentsDE from '../locales/de/documents.json';
+import notFoundDE from '../locales/de/not-found.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -44,6 +49,11 @@ export const NAMESPACES = [
   'settings',
   'export',
   'errors',
+  'app-shell',
+  'theme',
+  'pwa-update',
+  'documents',
+  'not-found',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -89,6 +99,11 @@ void i18n.use(initReactI18next).init({
       settings: settingsDE,
       export: exportDE,
       errors: errorsDE,
+      'app-shell': appShellDE,
+      theme: themeDE,
+      'pwa-update': pwaUpdateDE,
+      documents: documentsDE,
+      'not-found': notFoundDE,
     },
   },
   lng: 'de',

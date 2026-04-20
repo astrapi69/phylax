@@ -1,0 +1,19 @@
+{
+  "header": {
+    "lock-aria-label": "Phylax sperren",
+    "lock": "Sperren"
+  },
+  "nav": {
+    "aria-label": "Hauptnavigation",
+    "profile": "Profil",
+    "observations": "Beobachtungen",
+    "lab-values": "Laborwerte",
+    "supplements": "Supplemente",
+    "open-points": "Offene Punkte",
+    "timeline": "Verlauf",
+    "documents": "Dokumente",
+    "ai-assistant": "KI-Assistent",
+    "import": "Import",
+    "settings": "Einstellungen"
+  }
+}

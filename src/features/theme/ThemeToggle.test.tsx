@@ -38,7 +38,7 @@ describe('ThemeToggle', () => {
   it('aria-label describes current and next state', () => {
     renderToggle('light');
     const btn = screen.getByRole('button');
-    expect(btn).toHaveAttribute('aria-label', expect.stringMatching(/Hell.*Klicken für Dunkel/));
+    expect(btn).toHaveAttribute('aria-label', expect.stringMatching(/Hell.*Klicken fuer Dunkel/));
   });
 
   it('cycles light -> dark -> auto -> light on clicks', async () => {
