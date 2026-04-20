@@ -29,5 +29,47 @@
     "empty": "Please enter a password.",
     "too-short": "At least {{min}} characters required (currently: {{length}}).",
     "mismatch": "Passwords do not match."
+  },
+  "welcome": {
+    "tagline": "Your health data. Local. Encrypted. Yours.",
+    "trust": {
+      "local": {
+        "title": "Local",
+        "body": "All data stays on this device."
+      },
+      "encrypted": {
+        "title": "Encrypted",
+        "body": "AES-256 with your password."
+      },
+      "open": {
+        "title": "Open",
+        "body": "No account, no server, no tracking."
+      }
+    },
+    "cta": {
+      "primary": "Start setup",
+      "import": "I already have a backup"
+    }
+  },
+  "privacy": {
+    "headline": "You hold the only key.",
+    "section": {
+      "does": {
+        "title": "What Phylax does",
+        "body": "Stores your entries encrypted in this browser. Nobody but you can read them."
+      },
+      "does-not": {
+        "title": "What Phylax does not do",
+        "body": "No server communication. No password recovery. No support that \"resets your password\"."
+      },
+      "means": {
+        "title": "What this means for you",
+        "body": "If you lose your password, your data is lost. We recommend a password manager."
+      }
+    },
+    "cta": {
+      "primary": "Got it, continue",
+      "back": "Back"
+    }
   }
 }

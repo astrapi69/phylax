@@ -29,5 +29,47 @@
     "empty": "Bitte ein Passwort eingeben.",
     "too-short": "Mindestens {{min}} Zeichen erforderlich (aktuell: {{length}}).",
     "mismatch": "Passworter stimmen nicht uberein."
+  },
+  "welcome": {
+    "tagline": "Deine Gesundheitsdaten. Lokal. Verschluesselt. Deins.",
+    "trust": {
+      "local": {
+        "title": "Lokal",
+        "body": "Alle Daten bleiben auf diesem Geraet."
+      },
+      "encrypted": {
+        "title": "Verschluesselt",
+        "body": "AES-256 mit deinem Passwort."
+      },
+      "open": {
+        "title": "Offen",
+        "body": "Kein Konto, kein Server, kein Tracking."
+      }
+    },
+    "cta": {
+      "primary": "Einrichten starten",
+      "import": "Ich habe bereits ein Backup"
+    }
+  },
+  "privacy": {
+    "headline": "Du haeltst den einzigen Schluessel.",
+    "section": {
+      "does": {
+        "title": "Was Phylax tut",
+        "body": "Speichert deine Eintraege verschluesselt in diesem Browser. Niemand ausser dir kann sie lesen."
+      },
+      "does-not": {
+        "title": "Was Phylax nicht tut",
+        "body": "Keine Server-Kommunikation. Keine Passwort-Wiederherstellung. Kein Support, der \"das Passwort zuruecksetzt\"."
+      },
+      "means": {
+        "title": "Was das fuer dich bedeutet",
+        "body": "Wenn du dein Passwort verlierst, sind deine Daten verloren. Wir empfehlen einen Passwort-Manager."
+      }
+    },
+    "cta": {
+      "primary": "Verstanden, weiter",
+      "back": "Zurueck"
+    }
   }
 }
