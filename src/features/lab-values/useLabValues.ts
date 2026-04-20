@@ -7,10 +7,12 @@ export interface LabReportWithValues {
   valuesByCategory: Map<string, LabValue[]>;
 }
 
+export type LabValuesError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
+
 export type LabValuesState =
   | { kind: 'loading' }
   | { kind: 'loaded'; reports: LabReportWithValues[] }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: LabValuesError };
 
 export interface UseLabValuesResult {
   state: LabValuesState;
@@ -32,7 +34,7 @@ export function useLabValues(): UseLabValuesResult {
         const profile = await profileRepo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'no-profile' } });
           return;
         }
 
@@ -54,8 +56,10 @@ export function useLabValues(): UseLabValuesResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message:
-              err instanceof Error ? err.message : 'Laborwerte konnten nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }

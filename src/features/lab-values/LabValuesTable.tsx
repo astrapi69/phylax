@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { LabValue } from '../../domain';
 
 interface LabValuesTableProps {
@@ -10,6 +11,7 @@ interface LabValuesTableProps {
  * Responsive via overflow-x-auto wrapper for mobile.
  */
 export function LabValuesTable({ category, values }: LabValuesTableProps) {
+  const { t } = useTranslation('lab-values');
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -17,19 +19,19 @@ export function LabValuesTable({ category, values }: LabValuesTableProps) {
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-gray-700 dark:text-gray-400">
             <th scope="col" className="py-2 pr-4">
-              Parameter
+              {t('table.parameter')}
             </th>
             <th scope="col" className="py-2 pr-4">
-              Ergebnis
+              {t('table.result')}
             </th>
             <th scope="col" className="py-2 pr-4">
-              Einheit
+              {t('table.unit')}
             </th>
             <th scope="col" className="py-2 pr-4">
-              Referenz
+              {t('table.reference')}
             </th>
             <th scope="col" className="py-2">
-              Bewertung
+              {t('table.assessment')}
             </th>
           </tr>
         </thead>

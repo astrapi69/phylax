@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Supplement } from '../../domain';
 
 interface SupplementCardProps {
@@ -11,6 +12,7 @@ interface SupplementCardProps {
  * screen readers.
  */
 export function SupplementCard({ supplement, muted = false }: SupplementCardProps) {
+  const { t } = useTranslation('supplements');
   const { name, brand, recommendation, rationale } = supplement;
   // Muted variant uses a subtle gray background tint and shows a
   // "Pausiert" badge. We deliberately do NOT reduce opacity, because
@@ -27,12 +29,14 @@ export function SupplementCard({ supplement, muted = false }: SupplementCardProp
         {brand && <span className="text-xs text-gray-500 dark:text-gray-400">{brand}</span>}
         {muted && (
           <span className="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-            Pausiert
+            {t('card.paused-badge')}
           </span>
         )}
       </div>
-      {recommendation && <FieldLine label="Empfehlung" value={recommendation} />}
-      {rationale && <FieldLine label="Begruendung" value={rationale} />}
+      {recommendation && (
+        <FieldLine label={t('card.field.recommendation')} value={recommendation} />
+      )}
+      {rationale && <FieldLine label={t('card.field.rationale')} value={rationale} />}
     </div>
   );
 }

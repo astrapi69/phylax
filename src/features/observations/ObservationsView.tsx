@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
 import { ObservationsSortToggle } from './ObservationsSortToggle';
@@ -11,11 +12,6 @@ const HIGHLIGHT_WINDOW_MS = 5000;
 
 /** How long the highlight stays visible before it fades back to normal. */
 const HIGHLIGHT_FADE_MS = 2000;
-
-const SECTION_HEADINGS: Record<'recent' | 'all', string> = {
-  recent: 'Kuerzlich aktualisiert',
-  all: 'Alle Themen',
-};
 
 /**
  * Read-only observations page at /observations.
@@ -32,6 +28,7 @@ const SECTION_HEADINGS: Record<'recent' | 'all', string> = {
  * the eye can follow.
  */
 export function ObservationsView() {
+  const { t } = useTranslation('observations');
   const { state } = useObservations();
   const [mode, setMode] = useSortPreference('observations');
 
@@ -62,18 +59,23 @@ export function ObservationsView() {
   if (state.kind === 'loading') {
     return (
       <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
-        Beobachtungen werden geladen...
+        {t('loading')}
       </div>
     );
   }
 
   if (state.kind === 'error') {
+    if (state.error.kind === 'generic') {
+      console.error('[ObservationsView]', state.error.detail);
+    }
+    const message =
+      state.error.kind === 'no-profile' ? t('error.no-profile') : t('error.load-failed');
     return (
       <div
         role="alert"
         className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
       >
-        {state.message}
+        {message}
       </div>
     );
   }
@@ -83,7 +85,7 @@ export function ObservationsView() {
   return (
     <article className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-700">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Beobachtungen</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
         {state.groups.length > 0 && <ObservationsSortToggle mode={mode} onChange={setMode} />}
       </header>
 
@@ -111,8 +113,9 @@ function Section({
   section: ObservationSection;
   highlightedIds: ReadonlySet<string>;
 }) {
+  const { t } = useTranslation('observations');
   const hasLabel = section.label !== null;
-  const headingText = section.label ? SECTION_HEADINGS[section.label] : '';
+  const headingText = section.label ? t(`section.${section.label}`) : '';
   // Rendered as a styled <p>, not a heading, so the theme <h2>s stay
   // the top-level content headings inside each section.
   return (
@@ -138,17 +141,18 @@ function Section({
 }
 
 function EmptyState() {
+  const { t } = useTranslation('observations');
   return (
     <div className="rounded border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
-      <p>Noch keine Beobachtungen erfasst.</p>
+      <p>{t('empty.body')}</p>
       <p className="mt-2">
         <Link
           to="/import"
           className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          Importiere ein Profil
+          {t('empty.cta')}
         </Link>
-        , um Beobachtungen zu erfassen.
+        {t('empty.suffix')}
       </p>
     </div>
   );

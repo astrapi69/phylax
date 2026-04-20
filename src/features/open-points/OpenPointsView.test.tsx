@@ -95,9 +95,12 @@ describe('OpenPointsView', () => {
   });
 
   it('shows an error alert when loading fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockRejectedValue(new Error('boom'));
     renderView();
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
-    expect(screen.getByRole('alert').textContent).toMatch(/boom/);
+    expect(screen.getByRole('alert').textContent).toMatch(/Offene Punkte konnten nicht geladen/);
+    expect(consoleSpy).toHaveBeenCalledWith('[OpenPointsView]', 'boom');
+    consoleSpy.mockRestore();
   });
 });

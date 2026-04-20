@@ -1,13 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import type { Source } from '../../domain';
 
 interface SourceBadgeProps {
   source: Source;
 }
-
-const LABELS: Record<Exclude<Source, 'user'>, string> = {
-  medical: 'Arzt',
-  ai: 'KI',
-};
 
 const STYLES: Record<Exclude<Source, 'user'>, string> = {
   medical:
@@ -21,12 +17,13 @@ const STYLES: Record<Exclude<Source, 'user'>, string> = {
  * self-managed profile and a badge would add visual noise.
  */
 export function SourceBadge({ source }: SourceBadgeProps) {
+  const { t } = useTranslation('observations');
   if (source === 'user') return null;
   return (
     <span
       className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium ${STYLES[source]}`}
     >
-      {LABELS[source]}
+      {t(`source.${source}`)}
     </span>
   );
 }

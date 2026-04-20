@@ -1,1 +1,41 @@
-{}
+{
+  "loading": "Beobachtungen werden geladen...",
+  "heading": "Beobachtungen",
+  "section": {
+    "recent": "Kuerzlich aktualisiert",
+    "all": "Alle Themen"
+  },
+  "empty": {
+    "body": "Noch keine Beobachtungen erfasst.",
+    "cta": "Importiere ein Profil",
+    "suffix": ", um Beobachtungen zu erfassen."
+  },
+  "card": {
+    "field": {
+      "fact": "Beobachtung",
+      "pattern": "Muster",
+      "self-regulation": "Selbstregulation",
+      "medical-finding": "Medizinischer Befund",
+      "relevance": "Relevanz"
+    },
+    "aria": {
+      "expand": "Beobachtung anzeigen",
+      "summary": "Beobachtung: {{parts}}"
+    }
+  },
+  "source": {
+    "medical": "Arzt",
+    "ai": "KI"
+  },
+  "sort": {
+    "label": "Sortierung",
+    "option": {
+      "recent": "Kuerzlich zuerst",
+      "alphabetical": "Alphabetisch"
+    }
+  },
+  "error": {
+    "no-profile": "Kein Profil gefunden.",
+    "load-failed": "Beobachtungen konnten nicht geladen werden."
+  }
+}

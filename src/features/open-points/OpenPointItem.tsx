@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { OpenPoint } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 
@@ -14,6 +15,7 @@ interface OpenPointItemProps {
  * muted visual signal without opacity (see V-04 a11y finding).
  */
 export function OpenPointItem({ point }: OpenPointItemProps) {
+  const { t } = useTranslation('open-points');
   const { id, text, resolved, priority, timeHorizon, details } = point;
   const containerClass = resolved
     ? 'rounded border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
@@ -46,7 +48,7 @@ export function OpenPointItem({ point }: OpenPointItemProps) {
             {timeHorizon && <Badge>{timeHorizon}</Badge>}
             {resolved && (
               <span className="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                Erledigt
+                {t('item.resolved-badge')}
               </span>
             )}
           </div>

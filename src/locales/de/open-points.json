@@ -1,1 +1,16 @@
-{}
+{
+  "loading": "Offene Punkte werden geladen...",
+  "heading": "Offene Punkte",
+  "empty": {
+    "body": "Keine offenen Punkte erfasst.",
+    "cta": "Importiere ein Profil mit offenen Punkten",
+    "suffix": ", um sie hier zu sehen."
+  },
+  "item": {
+    "resolved-badge": "Erledigt"
+  },
+  "error": {
+    "no-profile": "Kein Profil gefunden.",
+    "load-failed": "Offene Punkte konnten nicht geladen werden."
+  }
+}

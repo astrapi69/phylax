@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import type { TimelineEntry } from '../../domain';
 import { ProfileRepository, TimelineEntryRepository } from '../../db/repositories';
 
+export type TimelineError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
+
 export type TimelineState =
   | { kind: 'loading' }
   | { kind: 'loaded'; entries: TimelineEntry[] }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: TimelineError };
 
 export interface UseTimelineResult {
   state: TimelineState;
@@ -31,7 +33,7 @@ export function useTimeline(): UseTimelineResult {
         const profile = await profileRepo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'no-profile' } });
           return;
         }
 
@@ -44,10 +46,10 @@ export function useTimeline(): UseTimelineResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message:
-              err instanceof Error
-                ? err.message
-                : 'Verlaufseintraege konnten nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }

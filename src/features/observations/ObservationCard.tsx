@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Observation } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 import { SourceBadge } from './SourceBadge';
@@ -32,6 +33,7 @@ export function ObservationCard({
   defaultOpen = false,
   highlighted = false,
 }: ObservationCardProps) {
+  const { t } = useTranslation('observations');
   const {
     fact,
     pattern,
@@ -43,7 +45,7 @@ export function ObservationCard({
     extraSections,
   } = observation;
   const excerpt = oneLineExcerpt(fact);
-  const accessibleLabel = buildAccessibleLabel(status, excerpt);
+  const accessibleLabel = buildAccessibleLabel(t, status, excerpt);
 
   return (
     <details
@@ -77,11 +79,13 @@ export function ObservationCard({
       </summary>
 
       <div className="space-y-4 border-t border-gray-200 px-3 pb-4 pt-3 dark:border-gray-700">
-        <Field label="Beobachtung" content={fact} />
-        <Field label="Muster" content={pattern} />
-        <Field label="Selbstregulation" content={selfRegulation} />
-        {medicalFinding && <Field label="Medizinischer Befund" content={medicalFinding} />}
-        {relevanceNotes && <Field label="Relevanz" content={relevanceNotes} />}
+        <Field label={t('card.field.fact')} content={fact} />
+        <Field label={t('card.field.pattern')} content={pattern} />
+        <Field label={t('card.field.self-regulation')} content={selfRegulation} />
+        {medicalFinding && (
+          <Field label={t('card.field.medical-finding')} content={medicalFinding} />
+        )}
+        {relevanceNotes && <Field label={t('card.field.relevance')} content={relevanceNotes} />}
         {Object.entries(extraSections).map(([key, value]) => (
           <Field key={key} label={key} content={value} />
         ))}
@@ -102,10 +106,14 @@ function Field({ label, content }: { label: string; content: string }) {
   );
 }
 
-function buildAccessibleLabel(status: string, excerpt: string): string {
+function buildAccessibleLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  status: string,
+  excerpt: string,
+): string {
   const parts = [status.trim(), excerpt.trim()].filter((p) => p.length > 0);
-  if (parts.length === 0) return 'Beobachtung anzeigen';
-  return `Beobachtung: ${parts.join(' - ')}`;
+  if (parts.length === 0) return t('card.aria.expand');
+  return t('card.aria.summary', { parts: parts.join(' - ') });
 }
 
 function oneLineExcerpt(text: string): string {

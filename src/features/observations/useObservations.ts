@@ -7,10 +7,12 @@ export interface ThemeGroup {
   observations: Observation[];
 }
 
+export type ObservationsError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
+
 export type ObservationsState =
   | { kind: 'loading' }
   | { kind: 'loaded'; groups: ThemeGroup[] }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: ObservationsError };
 
 export interface UseObservationsResult {
   state: ObservationsState;
@@ -33,7 +35,7 @@ export function useObservations(): UseObservationsResult {
         const profile = await profileRepo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'no-profile' } });
           return;
         }
 
@@ -47,8 +49,10 @@ export function useObservations(): UseObservationsResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message:
-              err instanceof Error ? err.message : 'Beobachtungen konnten nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }

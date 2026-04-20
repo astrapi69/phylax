@@ -301,15 +301,11 @@ distinct.
 - [x] **I18N-01e** Extract onboarding strings: 20 keys + typed ValidationError union (validatePassword returns `{kind:'empty'}` or `{kind:'too-short',min,length}`), ConfirmError flag for mismatch, UI resolves to i18n in view layer (commit `b32bb84`)
 - [x] **I18N-01f** Extract unlock strings: 9 keys, typed UnlockError flag (`'wrong-password'`), dedicated `unlock` namespace (Option A duplication, one shared `password.label`) (commit `81e461f`)
 - [x] **I18N-01g** Extract profile-view strings: 24 keys + typed ProfileViewError union (`not-found` / `generic{detail}`), basedata label/value split for i18n plural/unit agreement, detail preserved internally for logs, rendered UI unchanged (commit `9c23ad6`)
-- [ ] **I18N-01h** Extract observations view strings
-- [ ] **I18N-01i** Extract lab-values view strings
-- [ ] **I18N-01j** Extract supplements view strings
-- [ ] **I18N-01k** Extract open-points view strings
-- [ ] **I18N-01l** Extract timeline view strings
-- [ ] **I18N-01m** Extract import strings (incl. ai-fallback cleanup screen)
-- [ ] **I18N-01n** Extract ai-chat strings (chat + guided session + commit preview)
-- [ ] **I18N-01o** Extract remaining common + errors strings
-- [ ] **I18N-01p** Reveal language switcher with second language wiring
+- [x] **I18N-01h** Extract views-bundle strings (observations, lab-values, supplements, open-points, timeline) into 5 dedicated namespaces; 5 hooks refactored to typed discriminated-union errors (`no-profile` / `generic{detail}`), views log raw detail and render translated fallback (matches I18N-01g pattern); SourceBadge moved to t-based lookup, SupplementsView drives category label via `t(\`category.${group.category}\`)` with hook returning domain-only data
+- [ ] **I18N-01i** Extract import strings (incl. ai-fallback cleanup screen)
+- [ ] **I18N-01j** Extract ai-chat strings (chat + guided session + commit preview)
+- [ ] **I18N-01k** Extract remaining common + errors strings
+- [ ] **I18N-01l** Reveal language switcher with second language wiring
 - [ ] **I18N-02** Add English translations
 
 ---

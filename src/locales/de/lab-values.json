@@ -1,1 +1,33 @@
-{}
+{
+  "loading": "Laborwerte werden geladen...",
+  "heading": "Laborwerte",
+  "empty": {
+    "body": "Noch keine Laborwerte erfasst.",
+    "cta": "Importiere ein Profil mit Blutwerten",
+    "suffix": ", um sie hier zu sehen."
+  },
+  "report": {
+    "heading": "Befund vom {{date}}",
+    "meta": {
+      "lab": "Labor",
+      "doctor": "Arzt",
+      "report-number": "Bericht-Nr."
+    },
+    "section": {
+      "overall": "Gesamteinschaetzung",
+      "relevance": "Relevanz"
+    },
+    "category-assessment": "Einschaetzung {{category}}"
+  },
+  "table": {
+    "parameter": "Parameter",
+    "result": "Ergebnis",
+    "unit": "Einheit",
+    "reference": "Referenz",
+    "assessment": "Bewertung"
+  },
+  "error": {
+    "no-profile": "Kein Profil gefunden.",
+    "load-failed": "Laborwerte konnten nicht geladen werden."
+  }
+}

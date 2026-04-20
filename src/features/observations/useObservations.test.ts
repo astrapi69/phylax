@@ -136,7 +136,7 @@ describe('useObservations', () => {
     const { result } = renderHook(() => useObservations());
     await waitFor(() => expect(result.current.state.kind).toBe('error'));
     if (result.current.state.kind === 'error') {
-      expect(result.current.state.message).toMatch(/Kein Profil/);
+      expect(result.current.state.error.kind).toBe('no-profile');
     }
   });
 
@@ -147,8 +147,10 @@ describe('useObservations', () => {
       .mockRejectedValueOnce(new Error('boom'));
     const { result } = renderHook(() => useObservations());
     await waitFor(() => expect(result.current.state.kind).toBe('error'));
-    if (result.current.state.kind === 'error') {
-      expect(result.current.state.message).toBe('boom');
+    if (result.current.state.kind === 'error' && result.current.state.error.kind === 'generic') {
+      expect(result.current.state.error.detail).toBe('boom');
+    } else {
+      throw new Error('expected generic error');
     }
     spy.mockRestore();
   });

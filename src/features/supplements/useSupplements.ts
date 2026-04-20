@@ -4,14 +4,15 @@ import { ProfileRepository, SupplementRepository } from '../../db/repositories';
 
 export interface SupplementGroup {
   category: SupplementCategory;
-  label: string;
   supplements: Supplement[];
 }
+
+export type SupplementsError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
 
 export type SupplementsState =
   | { kind: 'loading' }
   | { kind: 'loaded'; groups: SupplementGroup[] }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: SupplementsError };
 
 export interface UseSupplementsResult {
   state: SupplementsState;
@@ -23,13 +24,6 @@ const CATEGORY_ORDER: readonly SupplementCategory[] = [
   'on-demand',
   'paused',
 ] as const;
-
-const CATEGORY_LABELS: Record<SupplementCategory, string> = {
-  daily: 'Taeglich',
-  regular: 'Regelmaessig',
-  'on-demand': 'Bei Bedarf',
-  paused: 'Pausiert',
-};
 
 /**
  * Load all supplements for the current profile and group by category.
@@ -48,7 +42,7 @@ export function useSupplements(): UseSupplementsResult {
         const profile = await profileRepo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'no-profile' } });
           return;
         }
 
@@ -62,8 +56,10 @@ export function useSupplements(): UseSupplementsResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message:
-              err instanceof Error ? err.message : 'Supplemente konnten nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }
@@ -93,7 +89,6 @@ function buildGroups(supplements: Supplement[]): SupplementGroup[] {
     if (!list || list.length === 0) continue;
     groups.push({
       category,
-      label: CATEGORY_LABELS[category],
       supplements: [...list].sort((a, b) => a.createdAt - b.createdAt),
     });
   }

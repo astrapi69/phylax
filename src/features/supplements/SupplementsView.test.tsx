@@ -100,10 +100,13 @@ describe('SupplementsView', () => {
   });
 
   it('shows an error alert when loading fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockRejectedValue(new Error('boom'));
     renderView();
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
-    expect(screen.getByRole('alert').textContent).toMatch(/boom/);
+    expect(screen.getByRole('alert').textContent).toMatch(/Supplemente konnten nicht geladen/);
+    expect(consoleSpy).toHaveBeenCalledWith('[SupplementsView]', 'boom');
+    consoleSpy.mockRestore();
   });
 
   it('renders paused group after active groups', async () => {

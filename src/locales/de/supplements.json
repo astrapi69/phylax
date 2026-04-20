@@ -1,1 +1,26 @@
-{}
+{
+  "loading": "Supplemente werden geladen...",
+  "heading": "Supplemente",
+  "empty": {
+    "body": "Noch keine Supplemente erfasst.",
+    "cta": "Importiere ein Profil mit Ergaenzungsplan",
+    "suffix": ", um sie hier zu sehen."
+  },
+  "category": {
+    "daily": "Taeglich",
+    "regular": "Regelmaessig",
+    "on-demand": "Bei Bedarf",
+    "paused": "Pausiert"
+  },
+  "card": {
+    "paused-badge": "Pausiert",
+    "field": {
+      "recommendation": "Empfehlung",
+      "rationale": "Begruendung"
+    }
+  },
+  "error": {
+    "no-profile": "Kein Profil gefunden.",
+    "load-failed": "Supplemente konnten nicht geladen werden."
+  }
+}

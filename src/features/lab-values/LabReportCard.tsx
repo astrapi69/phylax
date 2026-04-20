@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { LabReport, LabValue } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 import { CategoryAssessment } from './CategoryAssessment';
@@ -13,6 +14,7 @@ interface LabReportCardProps {
  * tables with assessments, overall assessment, and relevance notes.
  */
 export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) {
+  const { t } = useTranslation('lab-values');
   const {
     reportDate,
     labName,
@@ -37,12 +39,12 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
           id={`report-${report.id}-heading`}
           className="text-lg font-semibold text-gray-900 dark:text-gray-100"
         >
-          Befund vom {formattedDate}
+          {t('report.heading', { date: formattedDate })}
         </h2>
         <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-          {labName && <MetaItem label="Labor" value={labName} />}
-          {doctorName && <MetaItem label="Arzt" value={doctorName} />}
-          {reportNumber && <MetaItem label="Bericht-Nr." value={reportNumber} />}
+          {labName && <MetaItem label={t('report.meta.lab')} value={labName} />}
+          {doctorName && <MetaItem label={t('report.meta.doctor')} value={doctorName} />}
+          {reportNumber && <MetaItem label={t('report.meta.report-number')} value={reportNumber} />}
         </dl>
       </header>
 
@@ -66,7 +68,7 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
         {overallAssessment && overallAssessment.trim() !== '' && (
           <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-              Gesamteinschaetzung
+              {t('report.section.overall')}
             </h3>
             <MarkdownContent>{overallAssessment}</MarkdownContent>
           </div>
@@ -75,7 +77,7 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
         {relevanceNotes && relevanceNotes.trim() !== '' && (
           <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-              Relevanz
+              {t('report.section.relevance')}
             </h3>
             <MarkdownContent>{relevanceNotes}</MarkdownContent>
           </div>

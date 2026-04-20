@@ -93,10 +93,13 @@ describe('LabValuesView', () => {
   });
 
   it('shows an error alert when loading fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockRejectedValue(new Error('boom'));
     renderView();
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
-    expect(screen.getByRole('alert').textContent).toMatch(/boom/);
+    expect(screen.getByRole('alert').textContent).toMatch(/Laborwerte konnten nicht geladen/);
+    expect(consoleSpy).toHaveBeenCalledWith('[LabValuesView]', 'boom');
+    consoleSpy.mockRestore();
   });
 
   it('renders multiple reports in order', async () => {

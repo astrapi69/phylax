@@ -7,10 +7,12 @@ export interface ContextGroup {
   items: OpenPoint[];
 }
 
+export type OpenPointsError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
+
 export type OpenPointsState =
   | { kind: 'loading' }
   | { kind: 'loaded'; groups: ContextGroup[] }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; error: OpenPointsError };
 
 export interface UseOpenPointsResult {
   state: OpenPointsState;
@@ -32,7 +34,7 @@ export function useOpenPoints(): UseOpenPointsResult {
         const profile = await profileRepo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
-          setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          setState({ kind: 'error', error: { kind: 'no-profile' } });
           return;
         }
 
@@ -46,8 +48,10 @@ export function useOpenPoints(): UseOpenPointsResult {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message:
-              err instanceof Error ? err.message : 'Offene Punkte konnten nicht geladen werden.',
+            error: {
+              kind: 'generic',
+              detail: err instanceof Error ? err.message : 'Unbekannter Fehler',
+            },
           });
         }
       }
