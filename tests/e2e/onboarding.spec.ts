@@ -12,7 +12,11 @@ test.describe('Onboarding flow', () => {
         req.onerror = () => reject(req.error);
       });
     });
-    await page.reload();
+    // Post-ONB-01a, `/` redirects fresh-install users to /welcome (stub).
+    // These tests exercise the legacy /onboarding route which remains as
+    // fallback until ONB-01c replaces the old OnboardingFlow. ONB-01c
+    // rewrites these tests to target the new first-run flow.
+    await page.goto('/onboarding');
   });
 
   test('fresh app shows onboarding screen', async ({ page }) => {

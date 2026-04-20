@@ -1,10 +1,12 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
+import { EntryRouter } from './EntryRouter';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequireProfile } from './RequireProfile';
 import { AppShell } from '../features/app-shell';
-import { OnboardingFlow } from '../features/onboarding';
+import { OnboardingFlow, WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
 import { UnlockScreen } from '../features/unlock';
+import { BackupImportSelectView, BackupImportUnlockView } from '../features/backup-import';
 import { ProfileCreateForm } from '../features/profile-create';
 import { ProfileView } from '../features/profile-view';
 import { ObservationsView } from '../features/observations';
@@ -37,16 +39,32 @@ function ProfileCreatePage() {
 /**
  * Application route tree.
  *
- * - /onboarding and /unlock are full-screen (no app shell)
- * - /profile/create is protected but does NOT require an existing profile
- * - Feature routes are protected AND require a profile
- * - / redirects to /profile
- * - Unknown routes show 404 (protected, inside shell)
+ * - `/` mounts EntryRouter: picks /welcome, /unlock, or /profile based
+ *   on vault + keystore state (ONB-01a).
+ * - /welcome, /privacy, /setup: first-run onboarding flow screens (stubs
+ *   in ONB-01a; filled in ONB-01b and ONB-01c).
+ * - /backup/import/select, /backup/import/unlock: encrypted backup
+ *   import flow (stubs in ONB-01a; filled in ONB-01e). Distinct from
+ *   /import which handles Markdown profile import.
+ * - /onboarding retained as safety net until ONB-01c replaces the old
+ *   OnboardingFlow with SetupView.
+ * - All full-screen routes (above) render without the app shell.
+ * - /profile/create is protected but does NOT require an existing profile.
+ * - Feature routes are protected AND require a profile.
+ * - Unknown routes show 404 (protected, inside shell).
  */
 export function AppRoutes() {
   return (
     <Routes>
+      {/* Entry decision: picks destination based on vault + lock state */}
+      <Route path="/" element={<EntryRouter />} />
+
       {/* Full-screen routes (no shell) */}
+      <Route path="/welcome" element={<WelcomeView />} />
+      <Route path="/privacy" element={<PrivacyView />} />
+      <Route path="/setup" element={<SetupView />} />
+      <Route path="/backup/import/select" element={<BackupImportSelectView />} />
+      <Route path="/backup/import/unlock" element={<BackupImportUnlockView />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/unlock" element={<UnlockScreen />} />
 
@@ -73,7 +91,6 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<ProfileView />} />
         <Route path="/observations" element={<ObservationsView />} />
         <Route path="/lab-values" element={<LabValuesView />} />

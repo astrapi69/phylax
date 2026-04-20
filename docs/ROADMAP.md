@@ -137,6 +137,19 @@ Cross-cutting infrastructure maintenance that is not tied to a product phase.
 
 ---
 
+## Phase ONB: Onboarding UX restructure
+
+Goal: replace the single-screen context-less password prompt with a guided three-screen first-run flow, a slim unlock for returning users, and a parallel import-from-backup path. Introduces `/welcome`, `/privacy`, `/setup`, `/backup/import/select`, `/backup/import/unlock` routes plus an entry router at `/` that picks the correct starting point based on vault state.
+
+- [x] **ONB-01a** Entry router + 5 stub views (WelcomeView, PrivacyView, SetupView, BackupImportSelectView, BackupImportUnlockView). `/` mounts EntryRouter which decides /welcome (no vault), /unlock (locked), or /profile (unlocked). Old `/onboarding` retained as fallback until ONB-01c. New `src/features/backup-import/` folder. 9 new unit tests (4 EntryRouter + 5 stub). Existing Playwright e2e suite updated to navigate via `/onboarding` directly (smoke test + helpers + onboarding/profile-create specs). Future cleanup: extract shared auth-destination resolver between EntryRouter and ProtectedRoute
+- [ ] **ONB-01b** Real WelcomeView + PrivacyView implementations + DE/EN i18n copy (logo, tagline, three trust signals, three privacy paragraphs, CTAs)
+- [ ] **ONB-01c** SetupView + useSetupVault hook + zxcvbn-ts lazy-load + ADR-0014. Replaces old OnboardingFlow. Reusable `<WarningCallout>` component in `src/ui/`
+- [ ] **ONB-01d** UnlockView refactor + rate-limiter (exponential backoff from 2s, cap 60s, sessionStorage) + small "Daten von Backup importieren" link
+- [ ] **ONB-01e** ImportSelectView + ImportUnlockView + `backup-import` i18n namespace (DE + EN) + `.phylax` backup format spec in `docs/backup-format.md`
+- [ ] **ONB-01f** Playwright e2e suite + delete orphan `OnboardingFlow` + `useOnboarding` + ROADMAP checkoff
+
+---
+
 ## Phase 3: AI-Guided Input
 
 Goal: AI as primary input method for profile creation and updates. User provides fragments, AI structures them into the profile format.

@@ -30,7 +30,12 @@ export async function setupAuthenticatedSession(
       req.onerror = () => reject(req.error);
     });
   });
-  await page.reload();
+  // Explicit /onboarding to reach the legacy setup form that E2E helpers
+  // rely on. Root (`/`) routes through EntryRouter post-ONB-01a which
+  // redirects first-run users to /welcome; /onboarding stays as the
+  // fallback until ONB-01c ships SetupView. Helpers are updated to the
+  // new first-run flow alongside ONB-01c.
+  await page.goto('/onboarding');
 
   // Onboarding
   await page.getByLabel('Master-Passwort').first().fill(password);

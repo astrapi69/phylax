@@ -13,7 +13,10 @@ test.describe('Profile creation', () => {
         req.onerror = () => reject(req.error);
       });
     });
-    await page.reload();
+    // Navigate explicitly to the legacy /onboarding route; `/` now
+    // redirects fresh installs to /welcome (ONB-01a). /onboarding stays
+    // as fallback until ONB-01c lands SetupView.
+    await page.goto('/onboarding');
 
     // Complete onboarding
     await page.getByLabel('Master-Passwort').first().fill(VALID_PASSWORD);
