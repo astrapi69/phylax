@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ChatInputProps {
   onSend: (value: string) => void;
@@ -19,6 +20,7 @@ interface ChatInputProps {
  * without reaching for the mouse.
  */
 export function ChatInput({ onSend, disabled, resetFocusKey }: ChatInputProps) {
+  const { t } = useTranslation('ai-chat');
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -45,7 +47,7 @@ export function ChatInput({ onSend, disabled, resetFocusKey }: ChatInputProps) {
   return (
     <div className="flex items-end gap-2 border-t border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
       <label htmlFor="chat-input" className="sr-only">
-        Nachricht an den KI-Assistenten
+        {t('input.label')}
       </label>
       <textarea
         id="chat-input"
@@ -55,7 +57,7 @@ export function ChatInput({ onSend, disabled, resetFocusKey }: ChatInputProps) {
         onKeyDown={handleKeyDown}
         disabled={disabled}
         rows={1}
-        placeholder="Beschreibe deine Beobachtung..."
+        placeholder={t('input.placeholder')}
         className="flex-1 resize-none rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-900"
         style={{ maxHeight: '8rem' }}
       />
@@ -65,7 +67,7 @@ export function ChatInput({ onSend, disabled, resetFocusKey }: ChatInputProps) {
         disabled={!canSend}
         className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
       >
-        Senden
+        {t('input.send')}
       </button>
     </div>
   );

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import 'fake-indexeddb/auto';
+import i18n from '../../../i18n/config';
 import { lock, unlock } from '../../../crypto';
 import { setupCompletedOnboarding } from '../../../db/test-helpers';
 import { readMeta } from '../../../db/meta';
@@ -18,6 +19,8 @@ import type {
 } from '../../profile-import/parser/types';
 import { computeDiff } from './computeDiff';
 import { commitFragment, commitSummaryText, bumpVersion } from './commitFragment';
+
+const t = i18n.getFixedT('de', 'ai-chat');
 
 const TEST_PASSWORD = 'test-password-12';
 
@@ -380,7 +383,7 @@ describe('commitFragment', () => {
 describe('commitSummaryText', () => {
   it('names only non-empty categories with German pluralization', () => {
     expect(
-      commitSummaryText({
+      commitSummaryText(t, {
         observationsCreated: 1,
         observationsUpdated: 1,
         supplementsCreated: 0,
@@ -395,7 +398,7 @@ describe('commitSummaryText', () => {
 
   it('singular wording for lone items', () => {
     expect(
-      commitSummaryText({
+      commitSummaryText(t, {
         observationsCreated: 1,
         observationsUpdated: 0,
         supplementsCreated: 1,
@@ -410,7 +413,7 @@ describe('commitSummaryText', () => {
 
   it('degenerate commit produces a minimal sentence', () => {
     expect(
-      commitSummaryText({
+      commitSummaryText(t, {
         observationsCreated: 0,
         observationsUpdated: 0,
         supplementsCreated: 0,

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import type { ChatMessage } from '../useChat';
 import type { ProfileShareCounts } from '../profileSummary';
 import { detectProfileFragment, type DetectedFragment } from '../detection';
@@ -38,6 +40,7 @@ interface MessageBubbleProps {
  * the bubble and the content may be empty on first paint.
  */
 export function MessageBubble({ message, onCommitPreview, committed }: MessageBubbleProps) {
+  const { t } = useTranslation('ai-chat');
   // Detect a commit-ready fragment only for completed assistant messages.
   // Cheap regex scan; useMemo keeps it stable across renders.
   const fragment = useMemo<DetectedFragment | null>(() => {
@@ -81,10 +84,10 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
         className="my-1 max-w-[85%] rounded-2xl rounded-bl-sm bg-gray-100 px-4 py-2 text-sm text-gray-900 dark:bg-gray-800 dark:text-gray-100"
       >
         <span
-          aria-label="KI-Assistent"
+          aria-label={t('message.ai-label')}
           className="mb-1 inline-block rounded bg-gray-300 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200"
         >
-          KI
+          {t('message.ai-badge')}
         </span>
         {message.content.length > 0 && <MarkdownContent>{message.content}</MarkdownContent>}
         {message.streaming && (
@@ -98,7 +101,7 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
           data-testid="commit-preview-committed-badge"
           className="mb-2 ml-2 text-xs font-medium text-green-700 dark:text-green-400"
         >
-          In Profil uebernommen
+          {t('message.committed-badge')}
         </span>
       )}
       {fragment && !committed && onCommitPreview && (
@@ -108,7 +111,7 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
           data-testid="commit-preview-button"
           className="mb-2 ml-2 text-xs font-medium text-blue-700 underline-offset-2 hover:underline dark:text-blue-300"
         >
-          In Profil uebernehmen
+          {t('message.commit-cta')}
         </button>
       )}
     </div>
@@ -126,6 +129,7 @@ interface ContextCardProps {
  * a ~3000-token profile dump would make the chat unreadable.
  */
 function ContextCard({ content, counts }: ContextCardProps) {
+  const { t } = useTranslation('ai-chat');
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -136,10 +140,10 @@ function ContextCard({ content, counts }: ContextCardProps) {
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1">
           <span className="mr-2 inline-block rounded bg-blue-200 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-            Profil geteilt
+            {t('message.context.badge')}
           </span>
           <span className="text-xs text-blue-900/80 dark:text-blue-100/80">
-            {formatCountsLine(counts)}
+            {formatCountsLine(t, counts)}
           </span>
         </div>
         <button
@@ -148,7 +152,7 @@ function ContextCard({ content, counts }: ContextCardProps) {
           aria-expanded={expanded}
           className="rounded border border-blue-300 px-2 py-0.5 text-xs font-medium text-blue-800 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:text-blue-200 dark:hover:bg-blue-900"
         >
-          {expanded ? 'Ausblenden' : 'Details anzeigen'}
+          {expanded ? t('message.context.collapse') : t('message.context.expand')}
         </button>
       </div>
       {expanded && (
@@ -163,15 +167,18 @@ function ContextCard({ content, counts }: ContextCardProps) {
   );
 }
 
-function formatCountsLine(counts?: ProfileShareCounts): string {
+function formatCountsLine(t: TFunction<'ai-chat'>, counts?: ProfileShareCounts): string {
   if (!counts) return '';
   const parts: string[] = [];
-  if (counts.observationCount > 0) parts.push(`${counts.observationCount} Beobachtungen`);
-  if (counts.abnormalLabCount > 0) {
-    parts.push(`${counts.abnormalLabCount} abweichende Laborwerte`);
-  }
-  if (counts.supplementCount > 0) parts.push(`${counts.supplementCount} Supplemente`);
-  if (counts.openPointCount > 0) parts.push(`${counts.openPointCount} offene Punkte`);
-  if (counts.warningSignCount > 0) parts.push(`${counts.warningSignCount} Warnsignale`);
-  return parts.length > 0 ? parts.join(', ') : 'keine Inhalte';
+  if (counts.observationCount > 0)
+    parts.push(t('message.context.counts.observations', { count: counts.observationCount }));
+  if (counts.abnormalLabCount > 0)
+    parts.push(t('message.context.counts.abnormal-labs', { count: counts.abnormalLabCount }));
+  if (counts.supplementCount > 0)
+    parts.push(t('message.context.counts.supplements', { count: counts.supplementCount }));
+  if (counts.openPointCount > 0)
+    parts.push(t('message.context.counts.open-points', { count: counts.openPointCount }));
+  if (counts.warningSignCount > 0)
+    parts.push(t('message.context.counts.warning-signs', { count: counts.warningSignCount }));
+  return parts.length > 0 ? parts.join(', ') : t('message.context.empty');
 }

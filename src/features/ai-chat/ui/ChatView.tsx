@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useChat } from '../useChat';
 import type { DetectedFragment } from '../detection';
 import { GuidedSessionIndicator } from '../guided';
@@ -16,6 +17,7 @@ import { CommitPreviewModal } from './CommitPreviewModal';
  * announce new content without interrupting what the user is doing.
  */
 export function ChatView() {
+  const { t } = useTranslation('ai-chat');
   const {
     messages,
     isStreaming,
@@ -66,7 +68,7 @@ export function ChatView() {
       <header className="flex flex-col gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {guidedSession.active ? 'KI-Assistent - Gefuehrte Sitzung' : 'KI-Assistent'}
+            {guidedSession.active ? t('heading.guided') : t('heading.default')}
           </h1>
           <div className="flex flex-wrap items-center gap-2">
             {!guidedSession.active && (
@@ -77,7 +79,7 @@ export function ChatView() {
                   disabled={isStreaming || isSharingProfile}
                   className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
+                  {isSharingProfile ? t('header.share-profile-loading') : t('header.share-profile')}
                 </button>
                 <button
                   type="button"
@@ -85,7 +87,7 @@ export function ChatView() {
                   disabled={isStreaming || isSharingProfile}
                   className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  Gefuehrte Sitzung starten
+                  {t('header.start-guided')}
                 </button>
                 {messages.length > 0 && (
                   <button
@@ -94,7 +96,7 @@ export function ChatView() {
                     disabled={isStreaming || isSharingProfile}
                     className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                   >
-                    Leeren
+                    {t('header.clear')}
                   </button>
                 )}
               </>
@@ -106,7 +108,7 @@ export function ChatView() {
                 disabled={isStreaming || isSharingProfile}
                 className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                Sitzung beenden
+                {t('header.end-session')}
               </button>
             )}
             {guidedSession.active && confirmEnd && (
@@ -114,7 +116,7 @@ export function ChatView() {
                 data-testid="guided-session-end-confirm"
                 className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
               >
-                <span>Sitzung wirklich beenden?</span>
+                <span>{t('header.confirm-end')}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -123,14 +125,14 @@ export function ChatView() {
                   }}
                   className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  Ja, beenden
+                  {t('header.confirm-end-yes')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmEnd(false)}
                   className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  Weiter
+                  {t('header.confirm-end-no')}
                 </button>
               </div>
             )}
@@ -147,7 +149,7 @@ export function ChatView() {
                 disabled={isStreaming || isSharingProfile}
                 className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
-                {isSharingProfile ? 'Lade Profil...' : 'Profil teilen'}
+                {isSharingProfile ? t('header.share-profile-loading') : t('header.share-profile')}
               </button>
               {messages.length > 0 && (
                 <button
@@ -156,7 +158,7 @@ export function ChatView() {
                   disabled={isStreaming || isSharingProfile}
                   className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
-                  Leeren
+                  {t('header.clear')}
                 </button>
               )}
             </div>
@@ -169,7 +171,7 @@ export function ChatView() {
         role="log"
         aria-live="polite"
         aria-atomic="false"
-        aria-label="Chat-Verlauf"
+        aria-label={t('header.log-aria-label')}
         className="flex-1 overflow-y-auto px-1 py-3"
       >
         {messages.length === 0 ? <WelcomeMessage /> : null}
@@ -190,7 +192,7 @@ export function ChatView() {
             onClick={cancelStream}
             className="rounded border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Abbrechen
+            {t('streaming.cancel')}
           </button>
         </div>
       )}
@@ -215,11 +217,12 @@ export function ChatView() {
 }
 
 function PrivacyInfoButton({ onOpen }: { onOpen: () => void }) {
+  const { t } = useTranslation('ai-chat');
   return (
     <button
       type="button"
       onClick={onOpen}
-      aria-label="Datenschutz-Informationen anzeigen"
+      aria-label={t('header.privacy-info-label')}
       data-testid="chat-privacy-info-button"
       className="inline-flex h-9 w-9 items-center justify-center rounded border border-gray-300 text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
     >
@@ -243,22 +246,20 @@ function PrivacyInfoButton({ onOpen }: { onOpen: () => void }) {
 }
 
 function WelcomeMessage() {
+  const { t } = useTranslation('ai-chat');
   return (
     <div className="mx-auto my-6 max-w-lg text-center text-sm text-gray-600 dark:text-gray-400">
       <p className="mb-3 text-base font-medium text-gray-900 dark:text-gray-100">
-        Willkommen beim KI-Assistenten.
+        {t('welcome.title')}
       </p>
-      <p className="mb-4">
-        Beschreibe deine Gesundheitsbeobachtungen in eigenen Worten. Ich helfe dir, sie zu
-        strukturieren.
-      </p>
+      <p className="mb-4">{t('welcome.intro')}</p>
       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-600 dark:text-gray-400">
-        Beispiele
+        {t('welcome.examples-title')}
       </p>
       <ul className="space-y-1 text-left">
-        <li>&bull; &quot;Ich habe seit drei Wochen Schulterschmerzen links.&quot;</li>
-        <li>&bull; &quot;Mein Blutdruck war letzte Woche mehrfach ueber 140/90.&quot;</li>
-        <li>&bull; &quot;Ich nehme seit Januar Vitamin D.&quot;</li>
+        <li>&bull; {t('welcome.example-1')}</li>
+        <li>&bull; {t('welcome.example-2')}</li>
+        <li>&bull; {t('welcome.example-3')}</li>
       </ul>
     </div>
   );

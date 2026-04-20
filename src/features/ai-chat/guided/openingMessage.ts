@@ -13,5 +13,3 @@ export const GUIDED_SESSION_OPENING_MESSAGE = `Willkommen zur gefuehrten Sitzung
 Basisdaten erfasst du ueber das Profil-Formular, Laborwerte importierst du separat, Verlaufsnotizen ebenfalls.
 
 Du kannst die Sitzung jederzeit beenden. Lass uns mit den Beobachtungen anfangen: gibt es etwas, das dir gesundheitlich gerade auffaellt oder dich beschaeftigt?`;
-
-export const GUIDED_SESSION_END_MESSAGE = 'Gefuehrte Sitzung beendet.';

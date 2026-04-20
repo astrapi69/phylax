@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import type { DetectedFragment } from '../detection';
 import { wrapFragmentForParser } from '../detection';
 import { parseProfile } from '../../profile-import/parser';
@@ -42,29 +44,27 @@ type ModalState =
 
 type CommitState = { kind: 'idle' } | { kind: 'committing' } | { kind: 'error'; message: string };
 
-const SUPPLEMENT_CATEGORY_LABEL: Record<Supplement['category'], string> = {
-  daily: 'taeglich',
-  regular: 'regelmaessig',
-  'on-demand': 'bei Bedarf',
-  paused: 'pausiert',
+function supplementCategoryLabel(
+  t: TFunction<'ai-chat'>,
+  category: Supplement['category'],
+): string {
+  return t(`commit-preview.supp-category.${category}`);
+}
+
+const OBSERVATION_FIELD_KEYS: Record<'status' | 'fact' | 'pattern' | 'selfRegulation', string> = {
+  status: 'status',
+  fact: 'fact',
+  pattern: 'pattern',
+  selfRegulation: 'self-regulation',
 };
 
-const OBSERVATION_FIELD_LABEL: Record<'status' | 'fact' | 'pattern' | 'selfRegulation', string> = {
-  status: 'Status',
-  fact: 'Beobachtung',
-  pattern: 'Muster',
-  selfRegulation: 'Selbstregulation',
-};
-
-const SUPPLEMENT_FIELD_LABEL: Record<
-  'category' | 'brand' | 'recommendation' | 'rationale',
-  string
-> = {
-  category: 'Kategorie',
-  brand: 'Marke',
-  recommendation: 'Empfehlung',
-  rationale: 'Begruendung',
-};
+const SUPPLEMENT_FIELD_KEYS: Record<'category' | 'brand' | 'recommendation' | 'rationale', string> =
+  {
+    category: 'category',
+    brand: 'brand',
+    recommendation: 'recommendation',
+    rationale: 'rationale',
+  };
 
 /**
  * Diff-aware preview of an AI-produced profile fragment.
@@ -83,6 +83,7 @@ export function CommitPreviewModal({
   onCommitSuccess,
   onCommitted,
 }: CommitPreviewModalProps) {
+  const { t } = useTranslation('ai-chat');
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -98,7 +99,8 @@ export function CommitPreviewModal({
       try {
         const profile = await new ProfileRepository().getCurrentProfile();
         if (!profile) {
-          if (!cancelled) setState({ kind: 'error', message: 'Kein Profil gefunden.' });
+          if (!cancelled)
+            setState({ kind: 'error', message: t('commit-preview.error.no-profile') });
           return;
         }
         const [observations, supplements] = await Promise.all([
@@ -110,12 +112,12 @@ export function CommitPreviewModal({
         const diff = computeDiff(parseResult, { observations, supplements });
         if (cancelled) return;
         setState({ kind: 'ready', diff, wrapped, profileId: profile.id });
-        setVersionDescription(buildVersionDescription(diff));
+        setVersionDescription(buildVersionDescription(t, diff));
       } catch {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message: 'App ist gesperrt. Bitte entsperre sie und versuche erneut.',
+            message: t('commit-preview.error.locked'),
           });
         }
       }
@@ -125,7 +127,7 @@ export function CommitPreviewModal({
     return () => {
       cancelled = true;
     };
-  }, [fragment]);
+  }, [fragment, t]);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -168,11 +170,12 @@ export function CommitPreviewModal({
   const commitDisabledReason = useMemo(() => {
     if (state.kind !== 'ready') return '';
     if (diffItemCount(state.diff) === 0) {
-      return 'Keine Aenderungen - die KI-Vorschlaege entsprechen dem aktuellen Profil.';
+      return t('commit-preview.disabled-reason.no-changes');
     }
-    if (versionDescription.trim().length === 0) return 'Beschreibung erforderlich.';
+    if (versionDescription.trim().length === 0)
+      return t('commit-preview.disabled-reason.need-description');
     return '';
-  }, [state, versionDescription]);
+  }, [state, versionDescription, t]);
 
   async function handleCommit(): Promise<void> {
     if (state.kind !== 'ready' || !canCommit) return;
@@ -183,14 +186,14 @@ export function CommitPreviewModal({
         versionDescription: versionDescription.trim(),
         profileId: state.profileId,
       });
-      const summary = commitSummaryText(result);
+      const summary = commitSummaryText(t, result);
       onCommitted?.(state.diff);
       onCommitSuccess?.(summary);
       onClose();
     } catch (err) {
       setCommitState({
         kind: 'error',
-        message: commitErrorMessage(err),
+        message: commitErrorMessage(t, err),
       });
     }
   }
@@ -212,10 +215,10 @@ export function CommitPreviewModal({
             id="commit-preview-title"
             className="text-lg font-bold text-gray-900 dark:text-gray-100"
           >
-            Profil-Aenderungen Vorschau
+            {t('commit-preview.heading')}
           </h2>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Die KI hat folgende Aenderungen strukturiert. Nichts davon ist bisher gespeichert.
+            {t('commit-preview.intro')}
           </p>
         </header>
 
@@ -225,7 +228,7 @@ export function CommitPreviewModal({
               data-testid="commit-preview-loading"
               className="text-sm text-gray-600 dark:text-gray-400"
             >
-              Profil wird geladen...
+              {t('commit-preview.loading')}
             </p>
           )}
 
@@ -269,17 +272,19 @@ export function CommitPreviewModal({
             disabled={commitState.kind === 'committing'}
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            Schliessen
+            {t('commit-preview.footer.close')}
           </button>
           <button
             type="button"
             onClick={() => void handleCommit()}
             disabled={!canCommit}
             aria-disabled={!canCommit}
-            title={canCommit ? undefined : commitDisabledReason || 'Profil wird geladen...'}
+            title={canCommit ? undefined : commitDisabledReason || t('commit-preview.loading')}
             className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
           >
-            {commitState.kind === 'committing' ? 'Wird uebernommen...' : 'Uebernehmen'}
+            {commitState.kind === 'committing'
+              ? t('commit-preview.footer.committing')
+              : t('commit-preview.footer.commit')}
           </button>
         </footer>
       </div>
@@ -306,6 +311,7 @@ function ReadyBody({
   onShowUnchangedChange,
   emptyHint,
 }: ReadyBodyProps) {
+  const { t } = useTranslation('ai-chat');
   const isEmpty = diffItemCount(diff) === 0;
 
   return (
@@ -315,7 +321,7 @@ function ReadyBody({
           data-testid="commit-preview-warnings"
           className="mb-5 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
         >
-          <p className="mb-1 font-semibold">Hinweise</p>
+          <p className="mb-1 font-semibold">{t('commit-preview.warnings-heading')}</p>
           <ul className="list-disc pl-5">
             {diff.warnings.map((w, idx) => (
               <li key={idx}>{w.message}</li>
@@ -329,7 +335,7 @@ function ReadyBody({
           data-testid="commit-preview-empty"
           className="mb-5 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
         >
-          {emptyHint || 'Keine Aenderungen vorhanden.'}
+          {emptyHint || t('commit-preview.empty-diff')}
         </p>
       )}
 
@@ -340,7 +346,7 @@ function ReadyBody({
           onChange={(e) => onShowUnchangedChange(e.target.checked)}
           data-testid="commit-preview-unchanged-toggle"
         />
-        Unveraenderte Felder und Eintraege anzeigen
+        {t('commit-preview.show-unchanged')}
       </label>
 
       <ObservationsSection diff={diff} showUnchanged={showUnchanged} />
@@ -349,10 +355,10 @@ function ReadyBody({
 
       <section className="mb-5" data-testid="commit-preview-version">
         <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-          Versionseintrag
+          {t('commit-preview.section.version')}
         </h3>
         <label htmlFor="commit-preview-version-input" className="sr-only">
-          Beschreibung der Aenderung
+          {t('commit-preview.version.sr-label')}
         </label>
         <input
           id="commit-preview-version-input"
@@ -362,7 +368,7 @@ function ReadyBody({
           className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         />
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          Erscheint in der Versionsgeschichte. Kann vor dem Uebernehmen angepasst werden.
+          {t('commit-preview.version.hint')}
         </p>
       </section>
 
@@ -371,7 +377,7 @@ function ReadyBody({
           data-testid="commit-preview-raw-toggle"
           className="cursor-pointer text-gray-700 dark:text-gray-300"
         >
-          Roh-Markdown anzeigen
+          {t('commit-preview.raw-toggle')}
         </summary>
         <pre className="mt-2 overflow-x-auto rounded bg-gray-50 p-3 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200">
           {wrapped}
@@ -388,6 +394,7 @@ function ObservationsSection({
   diff: ProfileDiff;
   showUnchanged: boolean;
 }) {
+  const { t } = useTranslation('ai-chat');
   const { new: newOnes, changed, unchanged } = diff.observations;
   if (newOnes.length === 0 && changed.length === 0 && (!showUnchanged || unchanged.length === 0)) {
     return null;
@@ -395,7 +402,7 @@ function ObservationsSection({
   return (
     <section className="mb-5" data-testid="commit-preview-observations">
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-        Beobachtungen
+        {t('commit-preview.section.observations')}
       </h3>
       <ul className="space-y-3">
         {newOnes.map((o, idx) => (
@@ -404,13 +411,22 @@ function ObservationsSection({
             data-testid="observation-new"
             className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
           >
-            <Header badge="neu" badgeClass={NEW_BADGE} title={o.theme} />
+            <Header badge={t('commit-preview.badge.new')} badgeClass={NEW_BADGE} title={o.theme} />
             <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs text-gray-800 dark:text-gray-200">
-              {o.status.trim().length > 0 && <Field label="Status" value={o.status} />}
-              {o.fact.trim().length > 0 && <Field label="Beobachtung" value={o.fact} />}
-              {o.pattern.trim().length > 0 && <Field label="Muster" value={o.pattern} />}
+              {o.status.trim().length > 0 && (
+                <Field label={t('commit-preview.field.obs.status')} value={o.status} />
+              )}
+              {o.fact.trim().length > 0 && (
+                <Field label={t('commit-preview.field.obs.fact')} value={o.fact} />
+              )}
+              {o.pattern.trim().length > 0 && (
+                <Field label={t('commit-preview.field.obs.pattern')} value={o.pattern} />
+              )}
               {o.selfRegulation.trim().length > 0 && (
-                <Field label="Selbstregulation" value={o.selfRegulation} />
+                <Field
+                  label={t('commit-preview.field.obs.self-regulation')}
+                  value={o.selfRegulation}
+                />
               )}
             </dl>
           </li>
@@ -425,7 +441,11 @@ function ObservationsSection({
               data-testid="observation-unchanged"
               className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
             >
-              <Header badge="unveraendert" badgeClass={UNCHANGED_BADGE} title={o.theme} />
+              <Header
+                badge={t('commit-preview.badge.unchanged')}
+                badgeClass={UNCHANGED_BADGE}
+                title={o.theme}
+              />
             </li>
           ))}
       </ul>
@@ -440,6 +460,7 @@ function ObservationChangeRow({
   change: ObservationChange;
   showUnchanged: boolean;
 }) {
+  const { t } = useTranslation('ai-chat');
   const fields: Array<'status' | 'fact' | 'pattern' | 'selfRegulation'> = [
     'status',
     'fact',
@@ -451,19 +472,23 @@ function ObservationChangeRow({
       data-testid="observation-changed"
       className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
     >
-      <Header badge="aktualisiert" badgeClass={CHANGED_BADGE} title={change.existing.theme} />
+      <Header
+        badge={t('commit-preview.badge.changed')}
+        badgeClass={CHANGED_BADGE}
+        title={change.existing.theme}
+      />
       <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs">
         {fields.map((field) => {
           const isChanged = change.fieldsChanged.includes(field);
           if (!isChanged && !showUnchanged) return null;
-          const label = OBSERVATION_FIELD_LABEL[field];
+          const label = t(`commit-preview.field.obs.${OBSERVATION_FIELD_KEYS[field]}`);
           if (isChanged) {
             return (
               <div key={field} className="contents">
                 <dt className="font-medium text-gray-700 dark:text-gray-300">{label}:</dt>
                 <dd className="text-gray-800 dark:text-gray-200">
                   <span className="text-gray-500 line-through dark:text-gray-500">
-                    {change.existing[field] || '(leer)'}
+                    {change.existing[field] || t('commit-preview.placeholder.empty')}
                   </span>{' '}
                   <span aria-hidden className="mx-1 text-gray-500">
                     →
@@ -476,7 +501,9 @@ function ObservationChangeRow({
           return (
             <div key={field} className="contents">
               <dt className="font-medium text-gray-500 dark:text-gray-500">{label}:</dt>
-              <dd className="italic text-gray-500 dark:text-gray-500">(unveraendert)</dd>
+              <dd className="italic text-gray-500 dark:text-gray-500">
+                {t('commit-preview.placeholder.unchanged')}
+              </dd>
             </div>
           );
         })}
@@ -492,6 +519,7 @@ function SupplementsSection({
   diff: ProfileDiff;
   showUnchanged: boolean;
 }) {
+  const { t } = useTranslation('ai-chat');
   const { new: newOnes, changed, unchanged } = diff.supplements;
   if (newOnes.length === 0 && changed.length === 0 && (!showUnchanged || unchanged.length === 0)) {
     return null;
@@ -499,7 +527,7 @@ function SupplementsSection({
   return (
     <section className="mb-5" data-testid="commit-preview-supplements">
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-        Supplemente
+        {t('commit-preview.section.supplements')}
       </h3>
       <ul className="space-y-2">
         {newOnes.map((s, idx) => (
@@ -509,9 +537,9 @@ function SupplementsSection({
             className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm text-gray-800 dark:border-green-800 dark:bg-green-950/30 dark:text-gray-200"
           >
             <Header
-              badge="neu"
+              badge={t('commit-preview.badge.new')}
               badgeClass={NEW_BADGE}
-              title={`${s.name} (${SUPPLEMENT_CATEGORY_LABEL[s.category]})`}
+              title={`${s.name} (${supplementCategoryLabel(t, s.category)})`}
             />
           </li>
         ))}
@@ -526,9 +554,9 @@ function SupplementsSection({
               className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
             >
               <Header
-                badge="unveraendert"
+                badge={t('commit-preview.badge.unchanged')}
                 badgeClass={UNCHANGED_BADGE}
-                title={`${s.name} (${SUPPLEMENT_CATEGORY_LABEL[s.category]})`}
+                title={`${s.name} (${supplementCategoryLabel(t, s.category)})`}
               />
             </li>
           ))}
@@ -544,6 +572,7 @@ function SupplementChangeRow({
   change: SupplementChange;
   showUnchanged: boolean;
 }) {
+  const { t } = useTranslation('ai-chat');
   const fields: Array<'category' | 'brand' | 'recommendation' | 'rationale'> = [
     'category',
     'brand',
@@ -555,21 +584,25 @@ function SupplementChangeRow({
       data-testid="supplement-changed"
       className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
     >
-      <Header badge="aktualisiert" badgeClass={CHANGED_BADGE} title={change.existing.name} />
+      <Header
+        badge={t('commit-preview.badge.changed')}
+        badgeClass={CHANGED_BADGE}
+        title={change.existing.name}
+      />
       <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs">
         {fields.map((field) => {
           const isChanged = change.fieldsChanged.includes(field);
           if (!isChanged && !showUnchanged) return null;
-          const label = SUPPLEMENT_FIELD_LABEL[field];
+          const label = t(`commit-preview.field.supp.${SUPPLEMENT_FIELD_KEYS[field]}`);
           if (isChanged) {
             const existingValue =
               field === 'category'
-                ? SUPPLEMENT_CATEGORY_LABEL[change.existing.category]
-                : change.existing[field] || '(leer)';
+                ? supplementCategoryLabel(t, change.existing.category)
+                : change.existing[field] || t('commit-preview.placeholder.empty');
             const mergedValue =
               field === 'category'
-                ? SUPPLEMENT_CATEGORY_LABEL[change.merged.category]
-                : change.merged[field] || '(leer)';
+                ? supplementCategoryLabel(t, change.merged.category)
+                : change.merged[field] || t('commit-preview.placeholder.empty');
             return (
               <div key={field} className="contents">
                 <dt className="font-medium text-gray-700 dark:text-gray-300">{label}:</dt>
@@ -588,7 +621,9 @@ function SupplementChangeRow({
           return (
             <div key={field} className="contents">
               <dt className="font-medium text-gray-500 dark:text-gray-500">{label}:</dt>
-              <dd className="italic text-gray-500 dark:text-gray-500">(unveraendert)</dd>
+              <dd className="italic text-gray-500 dark:text-gray-500">
+                {t('commit-preview.placeholder.unchanged')}
+              </dd>
             </div>
           );
         })}
@@ -598,6 +633,7 @@ function SupplementChangeRow({
 }
 
 function OpenPointsSection({ diff }: { diff: ProfileDiff }) {
+  const { t } = useTranslation('ai-chat');
   if (diff.openPoints.new.length === 0) return null;
   const byContext = new Map<string, typeof diff.openPoints.new>();
   for (const p of diff.openPoints.new) {
@@ -608,7 +644,7 @@ function OpenPointsSection({ diff }: { diff: ProfileDiff }) {
   return (
     <section className="mb-5" data-testid="commit-preview-open-points">
       <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
-        Offene Punkte
+        {t('commit-preview.section.open-points')}
       </h3>
       <div className="space-y-2">
         {Array.from(byContext.entries()).map(([context, list]) => (
@@ -616,7 +652,7 @@ function OpenPointsSection({ diff }: { diff: ProfileDiff }) {
             key={context}
             className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
           >
-            <Header badge="neu" badgeClass={NEW_BADGE} title={context} />
+            <Header badge={t('commit-preview.badge.new')} badgeClass={NEW_BADGE} title={context} />
             <ul className="mt-1 list-disc pl-5 text-gray-800 dark:text-gray-200">
               {list.map((p, idx) => (
                 <li key={idx}>
@@ -671,13 +707,13 @@ function Field({ label, value }: { label: string; value: string }) {
  * Crypto errors (key store locked) surface as a lock hint; anything else
  * falls back to the original message prefixed with "Fehler:".
  */
-function commitErrorMessage(err: unknown): string {
+function commitErrorMessage(t: TFunction<'ai-chat'>, err: unknown): string {
   if (err instanceof Error) {
     const msg = err.message.toLowerCase();
     if (msg.includes('no key') || msg.includes('locked') || msg.includes('unlock')) {
-      return 'App wurde gesperrt. Bitte entsperre sie und versuche erneut.';
+      return t('commit-preview.commit-error.locked');
     }
-    if (err.message) return `Fehler beim Speichern: ${err.message}`;
+    if (err.message) return t('commit-preview.commit-error.with-detail', { detail: err.message });
   }
-  return 'Fehler beim Speichern: Unbekannter Fehler.';
+  return t('commit-preview.commit-error.unknown');
 }

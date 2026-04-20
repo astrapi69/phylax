@@ -1,1 +1,172 @@
-{}
+{
+  "heading": {
+    "default": "KI-Assistent",
+    "guided": "KI-Assistent - Gefuehrte Sitzung"
+  },
+  "welcome": {
+    "title": "Willkommen beim KI-Assistenten.",
+    "intro": "Beschreibe deine Gesundheitsbeobachtungen in eigenen Worten. Ich helfe dir, sie zu strukturieren.",
+    "examples-title": "Beispiele",
+    "example-1": "\"Ich habe seit drei Wochen Schulterschmerzen links.\"",
+    "example-2": "\"Mein Blutdruck war letzte Woche mehrfach ueber 140/90.\"",
+    "example-3": "\"Ich nehme seit Januar Vitamin D.\""
+  },
+  "header": {
+    "share-profile": "Profil teilen",
+    "share-profile-loading": "Lade Profil...",
+    "start-guided": "Gefuehrte Sitzung starten",
+    "clear": "Leeren",
+    "end-session": "Sitzung beenden",
+    "confirm-end": "Sitzung wirklich beenden?",
+    "confirm-end-yes": "Ja, beenden",
+    "confirm-end-no": "Weiter",
+    "privacy-info-label": "Datenschutz-Informationen anzeigen",
+    "log-aria-label": "Chat-Verlauf"
+  },
+  "input": {
+    "label": "Nachricht an den KI-Assistenten",
+    "placeholder": "Beschreibe deine Beobachtung...",
+    "send": "Senden"
+  },
+  "streaming": {
+    "aria-label": "KI-Assistent schreibt",
+    "cancel": "Abbrechen"
+  },
+  "message": {
+    "ai-label": "KI-Assistent",
+    "ai-badge": "KI",
+    "committed-badge": "In Profil uebernommen",
+    "commit-cta": "In Profil uebernehmen",
+    "context": {
+      "badge": "Profil geteilt",
+      "collapse": "Ausblenden",
+      "expand": "Details anzeigen",
+      "empty": "keine Inhalte",
+      "counts": {
+        "observations": "{{count}} Beobachtungen",
+        "abnormal-labs": "{{count}} abweichende Laborwerte",
+        "supplements": "{{count}} Supplemente",
+        "open-points": "{{count}} offene Punkte",
+        "warning-signs": "{{count}} Warnsignale"
+      }
+    }
+  },
+  "guided": {
+    "indicator-aria-label": "Fortschritt der gefuehrten Sitzung",
+    "pill-aria-completed": "{{label}}: erfasst",
+    "pill-aria-pending": "{{label}}: ausstehend",
+    "section": {
+      "observations": "Beobachtungen",
+      "supplements": "Supplemente",
+      "open-points": "Offene Punkte"
+    },
+    "end-message": "Gefuehrte Sitzung beendet."
+  },
+  "system": {
+    "config-loading": "Einstellungen werden geladen, bitte kurz warten.",
+    "not-configured": "KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schluessel unter Einstellungen.",
+    "locked": "App ist gesperrt. Bitte entsperre sie erneut.",
+    "no-profile": "Kein Profil gefunden."
+  },
+  "error": {
+    "chat-error": {
+      "auth": "API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.",
+      "rate-limit": "Zu viele Anfragen. Bitte warte einen Moment.",
+      "server": "Der KI-Dienst ist voruebergehend nicht erreichbar.",
+      "network": "Keine Internetverbindung.",
+      "unknown": "Fehler beim KI-Dienst.",
+      "unknown-with-detail": "Fehler beim KI-Dienst: {{detail}}"
+    }
+  },
+  "commit-preview": {
+    "heading": "Profil-Aenderungen Vorschau",
+    "intro": "Die KI hat folgende Aenderungen strukturiert. Nichts davon ist bisher gespeichert.",
+    "loading": "Profil wird geladen...",
+    "error": {
+      "no-profile": "Kein Profil gefunden.",
+      "locked": "App ist gesperrt. Bitte entsperre sie und versuche erneut."
+    },
+    "disabled-reason": {
+      "no-changes": "Keine Aenderungen - die KI-Vorschlaege entsprechen dem aktuellen Profil.",
+      "need-description": "Beschreibung erforderlich."
+    },
+    "warnings-heading": "Hinweise",
+    "empty-diff": "Keine Aenderungen vorhanden.",
+    "show-unchanged": "Unveraenderte Felder und Eintraege anzeigen",
+    "section": {
+      "observations": "Beobachtungen",
+      "supplements": "Supplemente",
+      "open-points": "Offene Punkte",
+      "version": "Versionseintrag"
+    },
+    "badge": {
+      "new": "neu",
+      "changed": "aktualisiert",
+      "unchanged": "unveraendert"
+    },
+    "field": {
+      "obs": {
+        "status": "Status",
+        "fact": "Beobachtung",
+        "pattern": "Muster",
+        "self-regulation": "Selbstregulation"
+      },
+      "supp": {
+        "category": "Kategorie",
+        "brand": "Marke",
+        "recommendation": "Empfehlung",
+        "rationale": "Begruendung"
+      }
+    },
+    "supp-category": {
+      "daily": "taeglich",
+      "regular": "regelmaessig",
+      "on-demand": "bei Bedarf",
+      "paused": "pausiert"
+    },
+    "placeholder": {
+      "empty": "(leer)",
+      "unchanged": "(unveraendert)"
+    },
+    "version": {
+      "sr-label": "Beschreibung der Aenderung",
+      "hint": "Erscheint in der Versionsgeschichte. Kann vor dem Uebernehmen angepasst werden."
+    },
+    "raw-toggle": "Roh-Markdown anzeigen",
+    "footer": {
+      "close": "Schliessen",
+      "commit": "Uebernehmen",
+      "committing": "Wird uebernommen..."
+    },
+    "commit-error": {
+      "locked": "App wurde gesperrt. Bitte entsperre sie und versuche erneut.",
+      "with-detail": "Fehler beim Speichern: {{detail}}",
+      "unknown": "Fehler beim Speichern: Unbekannter Fehler."
+    }
+  },
+  "commit-summary": {
+    "no-changes": "Profil-Update gespeichert (Version {{version}}).",
+    "with-parts": "Profil-Update gespeichert: {{parts}} uebernommen (Version {{version}}).",
+    "obs_one": "{{count}} Beobachtung",
+    "obs_other": "{{count}} Beobachtungen",
+    "supp_one": "{{count}} Supplement",
+    "supp_other": "{{count}} Supplemente",
+    "open-points_one": "{{count}} offener Punkt",
+    "open-points_other": "{{count}} offene Punkte"
+  },
+  "version-description": {
+    "empty": "KI-Update: keine Aenderungen",
+    "prefix": "KI-Update: {{parts}}",
+    "theme-new": "{{theme}} neu",
+    "theme-updated": "{{theme}} aktualisiert",
+    "supp_one": "{{count}} Supplement",
+    "supp_other": "{{count}} Supplemente",
+    "pt_one": "{{count}} Punkt",
+    "pt_other": "{{count}} Punkte"
+  },
+  "commit-fragment": {
+    "error": {
+      "profile-not-found": "Profil nicht gefunden."
+    }
+  }
+}

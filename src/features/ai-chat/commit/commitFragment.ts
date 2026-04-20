@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+import i18n from '../../../i18n/config';
 import { db } from '../../../db/schema';
 import {
   ObservationRepository,
@@ -59,7 +61,7 @@ export async function commitFragment(options: CommitOptions): Promise<CommitResu
 
   const existingProfile = await profileRepo.getById(profileId);
   if (!existingProfile) {
-    throw new Error('Profil nicht gefunden.');
+    throw new Error(i18n.t('commit-fragment.error.profile-not-found', { ns: 'ai-chat' }));
   }
 
   const now = Date.now();
@@ -178,25 +180,23 @@ export async function commitFragment(options: CommitOptions): Promise<CommitResu
  * Empty counts are omitted so a "supplements-only" commit does not
  * announce "0 Beobachtungen".
  */
-export function commitSummaryText(result: CommitResult): string {
+export function commitSummaryText(t: TFunction<'ai-chat'>, result: CommitResult): string {
   const parts: string[] = [];
   const obsTotal = result.observationsCreated + result.observationsUpdated;
   if (obsTotal > 0) {
-    parts.push(`${obsTotal} ${obsTotal === 1 ? 'Beobachtung' : 'Beobachtungen'}`);
+    parts.push(t('commit-summary.obs', { count: obsTotal }));
   }
   const suppTotal = result.supplementsCreated + result.supplementsUpdated;
   if (suppTotal > 0) {
-    parts.push(`${suppTotal} ${suppTotal === 1 ? 'Supplement' : 'Supplemente'}`);
+    parts.push(t('commit-summary.supp', { count: suppTotal }));
   }
   if (result.openPointsCreated > 0) {
-    parts.push(
-      `${result.openPointsCreated} ${result.openPointsCreated === 1 ? 'offener Punkt' : 'offene Punkte'}`,
-    );
+    parts.push(t('commit-summary.open-points', { count: result.openPointsCreated }));
   }
   if (parts.length === 0) {
-    return `Profil-Update gespeichert (Version ${result.newVersion}).`;
+    return t('commit-summary.no-changes', { version: result.newVersion });
   }
-  return `Profil-Update gespeichert: ${parts.join(', ')} uebernommen (Version ${result.newVersion}).`;
+  return t('commit-summary.with-parts', { parts: parts.join(', '), version: result.newVersion });
 }
 
 /**

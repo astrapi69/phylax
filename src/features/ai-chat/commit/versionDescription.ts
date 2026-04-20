@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type { ProfileDiff } from './computeDiff';
 
 /**
@@ -10,30 +11,30 @@ import type { ProfileDiff } from './computeDiff';
  * Parts with zero count are omitted. Empty diff produces "KI-Update: keine
  * Aenderungen".
  */
-export function buildVersionDescription(diff: ProfileDiff): string {
+export function buildVersionDescription(t: TFunction<'ai-chat'>, diff: ProfileDiff): string {
   const parts: string[] = [];
 
   for (const obs of diff.observations.new) {
-    parts.push(`${obs.theme.trim()} neu`);
+    parts.push(t('version-description.theme-new', { theme: obs.theme.trim() }));
   }
   for (const change of diff.observations.changed) {
-    parts.push(`${change.existing.theme.trim()} aktualisiert`);
+    parts.push(t('version-description.theme-updated', { theme: change.existing.theme.trim() }));
   }
 
   const newSupp = diff.supplements.new.length;
   const changedSupp = diff.supplements.changed.length;
   const totalSupp = newSupp + changedSupp;
   if (totalSupp > 0) {
-    parts.push(`${totalSupp} ${totalSupp === 1 ? 'Supplement' : 'Supplemente'}`);
+    parts.push(t('version-description.supp', { count: totalSupp }));
   }
 
   const pts = diff.openPoints.new.length;
   if (pts > 0) {
-    parts.push(`${pts} ${pts === 1 ? 'Punkt' : 'Punkte'}`);
+    parts.push(t('version-description.pt', { count: pts }));
   }
 
   if (parts.length === 0) {
-    return 'KI-Update: keine Aenderungen';
+    return t('version-description.empty');
   }
-  return `KI-Update: ${parts.join(', ')}`;
+  return t('version-description.prefix', { parts: parts.join(', ') });
 }

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 /**
  * Three pulsing dots shown while an assistant message is mid-stream.
  * Presentational only; the parent decides when to render it.
@@ -6,11 +8,12 @@
  * status is announced separately via the chat's live-region container.
  */
 export function StreamingIndicator() {
+  const { t } = useTranslation('ai-chat');
   return (
     <span
       className="inline-flex items-center gap-1"
       role="status"
-      aria-label="KI-Assistent schreibt"
+      aria-label={t('streaming.aria-label')}
       data-testid="streaming-indicator"
     >
       <span

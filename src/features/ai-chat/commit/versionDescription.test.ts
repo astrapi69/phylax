@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import i18n from '../../../i18n/config';
 import type { ProfileDiff } from './computeDiff';
 import { buildVersionDescription } from './versionDescription';
+
+const t = i18n.getFixedT('de', 'ai-chat');
 
 function emptyDiff(): ProfileDiff {
   return {
@@ -19,7 +22,7 @@ describe('buildVersionDescription', () => {
       { theme: 'Knie rechts' } as ProfileDiff['observations']['new'][number],
       { theme: 'Schulter links' } as ProfileDiff['observations']['new'][number],
     );
-    expect(buildVersionDescription(diff)).toBe('KI-Update: Knie rechts neu, Schulter links neu');
+    expect(buildVersionDescription(t, diff)).toBe('KI-Update: Knie rechts neu, Schulter links neu');
   });
 
   it('generates from a changed-only diff with theme names from the existing record', () => {
@@ -36,7 +39,7 @@ describe('buildVersionDescription', () => {
       } as ProfileDiff['observations']['changed'][number]['merged'],
       fieldsChanged: ['status'],
     });
-    expect(buildVersionDescription(diff)).toBe('KI-Update: Linke Schulter aktualisiert');
+    expect(buildVersionDescription(t, diff)).toBe('KI-Update: Linke Schulter aktualisiert');
   });
 
   it('combines new + changed + supplements + open points', () => {
@@ -63,13 +66,13 @@ describe('buildVersionDescription', () => {
       { text: 'TSH-Wert nachmessen' } as ProfileDiff['openPoints']['new'][number],
       { text: 'MRT Knie' } as ProfileDiff['openPoints']['new'][number],
     );
-    expect(buildVersionDescription(diff)).toBe(
+    expect(buildVersionDescription(t, diff)).toBe(
       'KI-Update: Knie rechts neu, Linke Schulter aktualisiert, 1 Supplement, 2 Punkte',
     );
   });
 
   it('returns "keine Aenderungen" for an empty diff', () => {
-    expect(buildVersionDescription(emptyDiff())).toBe('KI-Update: keine Aenderungen');
+    expect(buildVersionDescription(t, emptyDiff())).toBe('KI-Update: keine Aenderungen');
   });
 
   it('pluralizes supplements and open points correctly', () => {
@@ -78,7 +81,7 @@ describe('buildVersionDescription', () => {
       name: 'Vitamin D3',
     } as ProfileDiff['supplements']['new'][number]);
     single.openPoints.new.push({ text: 'X' } as ProfileDiff['openPoints']['new'][number]);
-    expect(buildVersionDescription(single)).toBe('KI-Update: 1 Supplement, 1 Punkt');
+    expect(buildVersionDescription(t, single)).toBe('KI-Update: 1 Supplement, 1 Punkt');
 
     const plural = emptyDiff();
     plural.supplements.new.push(
@@ -90,7 +93,7 @@ describe('buildVersionDescription', () => {
       { text: 'Y' } as ProfileDiff['openPoints']['new'][number],
       { text: 'Z' } as ProfileDiff['openPoints']['new'][number],
     );
-    expect(buildVersionDescription(plural)).toBe('KI-Update: 2 Supplemente, 3 Punkte');
+    expect(buildVersionDescription(t, plural)).toBe('KI-Update: 2 Supplemente, 3 Punkte');
   });
 
   it('counts new + changed supplements together', () => {
@@ -102,6 +105,6 @@ describe('buildVersionDescription', () => {
       merged: { name: 'B' } as ProfileDiff['supplements']['changed'][number]['merged'],
       fieldsChanged: ['category'],
     });
-    expect(buildVersionDescription(diff)).toBe('KI-Update: 2 Supplemente');
+    expect(buildVersionDescription(t, diff)).toBe('KI-Update: 2 Supplemente');
   });
 });

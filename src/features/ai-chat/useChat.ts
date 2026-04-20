@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { generateId } from '../../crypto';
 import { DEFAULT_ANTHROPIC_MODEL } from '../../db/aiConfig';
 import {
@@ -15,7 +17,6 @@ import type { AnthropicMessage, ChatError } from './api/types';
 import { formatProfileShareSummary, type ProfileShareCounts } from './profileSummary';
 import type { ProfileDiff } from './commit';
 import {
-  GUIDED_SESSION_END_MESSAGE,
   GUIDED_SESSION_OPENING_MESSAGE,
   type GuidedSessionState,
   endGuidedSession as endGuidedSessionState,
@@ -110,6 +111,7 @@ const CONTEXT_FRAMING =
  * only from sendMessage; no polling, prefetch, or keepalive.
  */
 export function useChat(): UseChatResult {
+  const { t } = useTranslation('ai-chat');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isSharingProfile, setIsSharingProfile] = useState(false);
@@ -133,29 +135,15 @@ export function useChat(): UseChatResult {
       const userMsg = makeMessage('user', trimmed);
 
       if (configState.status === 'loading') {
-        setMessages((prev) => [
-          ...prev,
-          userMsg,
-          makeSystemMessage('Einstellungen werden geladen, bitte kurz warten.'),
-        ]);
+        setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.config-loading'))]);
         return;
       }
       if (configState.status === 'unconfigured') {
-        setMessages((prev) => [
-          ...prev,
-          userMsg,
-          makeSystemMessage(
-            'KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schluessel unter Einstellungen.',
-          ),
-        ]);
+        setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.not-configured'))]);
         return;
       }
       if (configState.status === 'error' || !configState.config) {
-        setMessages((prev) => [
-          ...prev,
-          userMsg,
-          makeSystemMessage('App ist gesperrt. Bitte entsperre sie erneut.'),
-        ]);
+        setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.locked'))]);
         return;
       }
       const config = configState.config;
@@ -165,7 +153,7 @@ export function useChat(): UseChatResult {
         try {
           const profile = await new ProfileRepository().getCurrentProfile();
           if (!profile) {
-            setMessages((prev) => [...prev, userMsg, makeSystemMessage('Kein Profil gefunden.')]);
+            setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.no-profile'))]);
             return;
           }
           const observations = await new ObservationRepository().listByProfile(profile.id);
@@ -175,11 +163,7 @@ export function useChat(): UseChatResult {
             guided: guidedActiveRef.current,
           });
         } catch {
-          setMessages((prev) => [
-            ...prev,
-            userMsg,
-            makeSystemMessage('App ist gesperrt. Bitte entsperre sie erneut.'),
-          ]);
+          setMessages((prev) => [...prev, userMsg, makeSystemMessage(t('system.locked'))]);
           return;
         }
       }
@@ -222,7 +206,7 @@ export function useChat(): UseChatResult {
               {
                 id: generateId(),
                 role: 'system' as const,
-                content: errorMessageFor(error),
+                content: errorMessageFor(t, error),
                 timestamp: Date.now(),
                 errorKind: error.kind,
               },
@@ -233,7 +217,7 @@ export function useChat(): UseChatResult {
         },
       });
     },
-    [configState, isStreaming, messages],
+    [configState, isStreaming, messages, t],
   );
 
   const cancelStream = useCallback(() => {
@@ -263,7 +247,7 @@ export function useChat(): UseChatResult {
     try {
       const profile = await new ProfileRepository().getCurrentProfile();
       if (!profile) {
-        setMessages((prev) => [...prev, makeSystemMessage('Kein Profil gefunden.')]);
+        setMessages((prev) => [...prev, makeSystemMessage(t('system.no-profile'))]);
         return;
       }
       const profileId = profile.id;
@@ -297,14 +281,11 @@ export function useChat(): UseChatResult {
       };
       setMessages((prev) => [...prev, contextMsg]);
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        makeSystemMessage('App ist gesperrt. Bitte entsperre sie erneut.'),
-      ]);
+      setMessages((prev) => [...prev, makeSystemMessage(t('system.locked'))]);
     } finally {
       setIsSharingProfile(false);
     }
-  }, [isSharingProfile, isStreaming]);
+  }, [isSharingProfile, isStreaming, t]);
 
   const markMessageCommitted = useCallback((id: string) => {
     setCommittedMessageIds((prev) => {
@@ -339,11 +320,11 @@ export function useChat(): UseChatResult {
       {
         id: generateId(),
         role: 'system',
-        content: GUIDED_SESSION_END_MESSAGE,
+        content: t('guided.end-message'),
         timestamp: Date.now(),
       },
     ]);
-  }, []);
+  }, [t]);
 
   const markGuidedSessionCommit = useCallback((diff: ProfileDiff) => {
     setGuidedSession((prev) => (prev.active ? markGuidedSectionsFromDiff(prev, diff) : prev));
@@ -441,17 +422,9 @@ function toApiMessages(chatMessages: ChatMessage[]): AnthropicMessage[] {
 }
 
 /** Map a structured ChatError into the German UI string. */
-export function errorMessageFor(error: ChatError): string {
-  switch (error.kind) {
-    case 'auth':
-      return 'API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.';
-    case 'rate-limit':
-      return 'Zu viele Anfragen. Bitte warte einen Moment.';
-    case 'server':
-      return 'Der KI-Dienst ist voruebergehend nicht erreichbar.';
-    case 'network':
-      return 'Keine Internetverbindung.';
-    case 'unknown':
-      return `Fehler beim KI-Dienst: ${error.message}`;
+export function errorMessageFor(t: TFunction<'ai-chat'>, error: ChatError): string {
+  if (error.kind === 'unknown') {
+    return t('error.chat-error.unknown-with-detail', { detail: error.message });
   }
+  return t(`error.chat-error.${error.kind}`);
 }

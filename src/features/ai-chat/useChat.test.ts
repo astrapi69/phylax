@@ -8,9 +8,12 @@ import { saveAIConfig } from '../../db/aiConfig';
 import { ProfileRepository } from '../../db/repositories';
 import * as anthropicClient from './api/anthropicClient';
 import type { AnthropicStreamOptions, ChatError } from './api/types';
+import i18n from '../../i18n/config';
 import { useChat, errorMessageFor } from './useChat';
 import type { ProfileDiff } from './commit';
 import { GUIDED_SESSION_OPENING_MESSAGE } from './guided';
+
+const t = i18n.getFixedT('de', 'ai-chat');
 
 const TEST_PASSWORD = 'test-password-12';
 
@@ -578,11 +581,11 @@ describe('useChat guided session (AI-06)', () => {
 
 describe('errorMessageFor', () => {
   it('maps every ChatError kind to a distinct German string', () => {
-    expect(errorMessageFor({ kind: 'auth' })).toMatch(/API-Schluessel ungueltig/);
-    expect(errorMessageFor({ kind: 'rate-limit' })).toMatch(/Zu viele Anfragen/);
-    expect(errorMessageFor({ kind: 'server' })).toMatch(/voruebergehend nicht erreichbar/);
-    expect(errorMessageFor({ kind: 'network' })).toMatch(/Keine Internetverbindung/);
-    expect(errorMessageFor({ kind: 'unknown', message: 'model not found' })).toMatch(
+    expect(errorMessageFor(t, { kind: 'auth' })).toMatch(/API-Schluessel ungueltig/);
+    expect(errorMessageFor(t, { kind: 'rate-limit' })).toMatch(/Zu viele Anfragen/);
+    expect(errorMessageFor(t, { kind: 'server' })).toMatch(/voruebergehend nicht erreichbar/);
+    expect(errorMessageFor(t, { kind: 'network' })).toMatch(/Keine Internetverbindung/);
+    expect(errorMessageFor(t, { kind: 'unknown', message: 'model not found' })).toMatch(
       /model not found/,
     );
   });

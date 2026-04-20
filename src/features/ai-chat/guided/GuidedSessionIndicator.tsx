@@ -1,14 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import type { GuidedSection, GuidedSessionState } from './GuidedSessionState';
 
 interface GuidedSessionIndicatorProps {
   state: GuidedSessionState;
 }
-
-const SECTION_LABELS: Record<GuidedSection, string> = {
-  observations: 'Beobachtungen',
-  supplements: 'Supplemente',
-  'open-points': 'Offene Punkte',
-};
 
 const SECTION_ORDER: GuidedSection[] = ['observations', 'supplements', 'open-points'];
 
@@ -21,18 +16,21 @@ const SECTION_ORDER: GuidedSection[] = ['observations', 'supplements', 'open-poi
  * currently asking about.
  */
 export function GuidedSessionIndicator({ state }: GuidedSessionIndicatorProps) {
+  const { t } = useTranslation('ai-chat');
   if (!state.active) return null;
 
   return (
     <ul
       data-testid="guided-session-indicator"
       className="flex flex-wrap items-center gap-1.5"
-      aria-label="Fortschritt der gefuehrten Sitzung"
+      aria-label={t('guided.indicator-aria-label')}
     >
       {SECTION_ORDER.map((section) => {
         const completed = state.sectionsCompleted.includes(section);
-        const label = SECTION_LABELS[section];
-        const ariaLabel = completed ? `${label}: erfasst` : `${label}: ausstehend`;
+        const label = t(`guided.section.${section}`);
+        const ariaLabel = completed
+          ? t('guided.pill-aria-completed', { label })
+          : t('guided.pill-aria-pending', { label });
         const classes = completed
           ? 'border-green-500 bg-green-100 text-green-900 dark:border-green-700 dark:bg-green-950/50 dark:text-green-200'
           : 'border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400';
