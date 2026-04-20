@@ -300,7 +300,7 @@ distinct.
 - [x] **I18N-01d** Extract ai-config strings: AI-02 disclaimer (with I-04 BYOK + 30-day retention language), AISettingsSection (shell + UnconfiguredForm + ConfiguredForm + ProviderSelect), PrivacyInfoContent (3 sections, 12 bullets), PrivacyInfoPopover chrome (commit `8de7b25`)
 - [x] **I18N-01e** Extract onboarding strings: 20 keys + typed ValidationError union (validatePassword returns `{kind:'empty'}` or `{kind:'too-short',min,length}`), ConfirmError flag for mismatch, UI resolves to i18n in view layer (commit `b32bb84`)
 - [x] **I18N-01f** Extract unlock strings: 9 keys, typed UnlockError flag (`'wrong-password'`), dedicated `unlock` namespace (Option A duplication, one shared `password.label`) (commit `81e461f`)
-- [x] **I18N-01g** Extract profile-view strings: 24 keys + typed ProfileViewError union (`not-found` / `generic{detail}`), basedata label/value split for i18n plural/unit agreement, detail preserved internally for logs, rendered UI unchanged (commit pending)
+- [x] **I18N-01g** Extract profile-view strings: 24 keys + typed ProfileViewError union (`not-found` / `generic{detail}`), basedata label/value split for i18n plural/unit agreement, detail preserved internally for logs, rendered UI unchanged (commit `9c23ad6`)
 - [ ] **I18N-01h** Extract observations view strings
 - [ ] **I18N-01i** Extract lab-values view strings
 - [ ] **I18N-01j** Extract supplements view strings
