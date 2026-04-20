@@ -67,14 +67,14 @@ Specific points:
    reaches `/setup`. It does not affect the welcome/privacy screens,
    the unlock screen, or any post-setup view.
 2. **Heuristic fallback**: the existing `estimateStrengthSync`
-   function stays as a synchronous fallback. While the lazy import
-   resolves, and if it ever fails (offline, cache miss, CSP quirk),
-   the strength indicator still works at heuristic fidelity. The
-   submit gate never depends on the async scorer.
+   function stays as a synchronous fallback. The fallback is **always
+   active pre-resolution**: while `useLazyZxcvbn` has not yet resolved,
+   SetupView displays the heuristic result. The async scorer overrides
+   this once the dynamic import resolves. The submit gate never
+   depends on the async scorer. See "Load failure and timeout
+   behavior" below.
 3. **No language packs**: skip name + wikipedia dictionaries for now.
-   Revisit if real-world feedback shows users picking common names as
-   passwords and getting "strong" ratings. Revisit is cheap because it
-   only requires changing `useLazyZxcvbn.ts` plus the allowed-list.
+   See "When to revisit" for the rollback path.
 4. **Score threshold**: the UI maps the 0-4 zxcvbn score to
    weak/fair/strong (same tiers as the heuristic: 0-1 = weak, 2 = fair,
    3-4 = strong). Length gate (12 chars minimum) remains the hard
@@ -106,6 +106,61 @@ Specific points:
 - The heuristic `estimateStrengthSync` stays in the codebase as a
   fallback. Future ADR may remove it once we are confident the lazy
   import is reliable in all supported browsers + PWA offline modes.
+
+### Does not catch
+
+Without the `language-en` and `language-de` packs, zxcvbn-core +
+common does not flag:
+
+- **Random dictionary words**: `sunshinepuppy`, `thunderbird`. No
+  wordlist match.
+- **German compound words**: `fussballverein`, `sommerurlaub`. No
+  dictionary.
+- **Names as base passwords**: `thomasmueller`, `anna1985`. No name
+  list.
+
+A user who picks a memorable-but-weak password of this shape gets a
+"strong" rating. The length gate (12 chars) remains the hard floor.
+Accept this gap deliberately: the 931 KB gzipped cost of the language
+packs is disproportionate to the residual risk.
+
+### Version pinning
+
+`@zxcvbn-ts/core` and `@zxcvbn-ts/language-common` are pinned to exact
+versions (both `3.0.4`) in `package.json`. No caret ranges.
+
+Rationale: the combined chunk currently sits at 240.96 KB gzipped
+against a 250 KB budget (9 KB headroom). A minor bump of either
+package that adds 10 KB breaks CI. Pinning forces conscious upgrade
+decisions with bundle-impact verification. The 250 KB budget is "what
+the current version needs," not an intentional engineering target.
+
+### Load failure and timeout behavior
+
+The fallback is **always active pre-resolution**: while `ready ===
+false`, SetupView displays the `estimateStrengthSync` heuristic
+result. The async zxcvbn scorer overrides this once resolved.
+
+If the dynamic import rejects (network failure, chunk corruption, CSP
+block), `useLazyZxcvbn` catches the error and `ready` stays false
+permanently. Fallback continues; setup completes normally.
+
+**Explicit 5s timeout** is added in the ONB-01c follow-up commit:
+without it, a stalled (not rejected) dynamic import leaves `ready ===
+false` indefinitely. Fallback still works, but the pre-resolution
+state persists, which is confusing if the user notices the strength
+indicator is not "upgrading" from heuristic to zxcvbn. The 5s timeout
+converts stall into explicit error, logs a diagnostic via
+`console.warn`, and leaves the sync fallback active.
+
+### When to revisit
+
+Language-pack inclusion is an open question, not a scheduled task.
+Rollback is cheap: changing `useLazyZxcvbn.ts` and the allowed-list
+suffices. Phylax has no telemetry by principle, so there is no
+automatic signal that will trigger revisit. Consider adding language
+packs if a separate evaluation (usability study, community feedback,
+security review) surfaces a clear need.
 
 ## Security note
 

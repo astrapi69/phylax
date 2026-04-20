@@ -31,8 +31,8 @@
     ]
   },
   "dependencies": {
-    "@zxcvbn-ts/core": "^3.0.4",
-    "@zxcvbn-ts/language-common": "^3.0.4",
+    "@zxcvbn-ts/core": "3.0.4",
+    "@zxcvbn-ts/language-common": "3.0.4",
     "dexie": "^4.4.2",
     "i18next": "^26.0.5",
     "react": "^18.3.1",
