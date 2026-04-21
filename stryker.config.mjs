@@ -29,6 +29,9 @@ export const STRYKER_EXCLUDES = [
   '!src/**/*.test.tsx',
   '!src/**/test-setup.ts',
   '!src/**/test-helpers.ts',
+  // Test-only mock factories (vi.mock helpers) live under testHelpers/.
+  // Exercised via vi.mock in other test files, never in production.
+  '!src/**/testHelpers/**',
   '!src/**/index.ts',
 ];
 
@@ -45,6 +48,12 @@ export const strykerBase = {
   },
 
   timeoutMS: 60000,
+  // Initial dry-run timeout. Default is 5 minutes; the full Vitest
+  // suite on a 4-vCPU runner with perTest coverage instrumentation
+  // approaches that ceiling, causing intermittent dry-run failures
+  // (mutation-nightly red 2026-04-18 to 2026-04-21). 15 minutes
+  // gives 3x headroom for future suite growth.
+  dryRunTimeoutMinutes: 15,
   concurrency: 4,
 };
 

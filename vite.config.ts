@@ -93,6 +93,10 @@ export default defineConfig(({ mode }) => {
           'src/test/**',
           'src/crypto/test-setup.ts',
           'src/**/*.test.{ts,tsx}',
+          // Test-only mock factories live under testHelpers/ next to
+          // the module they shadow. Exercised by vi.mock in other
+          // test files, not by direct unit tests.
+          'src/**/testHelpers/**',
           'src/vite-env.d.ts',
           'src/main.tsx',
           'src/pwa/**',

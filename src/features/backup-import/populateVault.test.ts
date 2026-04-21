@@ -1,5 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
+
+vi.mock('../../crypto', async (importOriginal) => {
+  const { buildCryptoMockModule } = await import('../../crypto/testHelpers/mockDeriveKey');
+  return buildCryptoMockModule(importOriginal);
+});
+
 import {
   generateSalt,
   deriveKeyFromPassword,

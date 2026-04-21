@@ -1,4 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('../../crypto', async (importOriginal) => {
+  const { buildCryptoMockModule } = await import('../../crypto/testHelpers/mockDeriveKey');
+  return buildCryptoMockModule(importOriginal);
+});
+
 import { encrypt, generateSalt, deriveKeyFromPassword } from '../../crypto';
 import { PBKDF2_ITERATIONS } from '../../crypto/constants';
 import { decryptBackup, SUPPORTED_INNER_SCHEMA_VERSION } from './decryptBackup';

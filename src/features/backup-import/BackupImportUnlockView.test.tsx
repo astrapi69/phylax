@@ -1,8 +1,14 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import 'fake-indexeddb/auto';
+
+vi.mock('../../crypto', async (importOriginal) => {
+  const { buildCryptoMockModule } = await import('../../crypto/testHelpers/mockDeriveKey');
+  return buildCryptoMockModule(importOriginal);
+});
+
 import i18n from '../../i18n/config';
 import { encrypt, generateSalt, deriveKeyFromPassword, lock } from '../../crypto';
 import { PBKDF2_ITERATIONS } from '../../crypto/constants';

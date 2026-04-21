@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import 'fake-indexeddb/auto';
+
+vi.mock('../../crypto', async (importOriginal) => {
+  const { buildCryptoMockModule } = await import('../../crypto/testHelpers/mockDeriveKey');
+  return buildCryptoMockModule(importOriginal);
+});
+
 import { useSetupVault } from './useSetupVault';
 import { getLockState, lock } from '../../crypto';
 import { db } from '../../db/schema';
