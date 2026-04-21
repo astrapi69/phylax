@@ -1,0 +1,17 @@
+{
+  "button": "Export profile",
+  "dialog": {
+    "title": "Export profile",
+    "description": "Choose a format. The file downloads directly into your downloads folder.",
+    "working": "Preparing export...",
+    "markdown": {
+      "title": "Markdown (.md)",
+      "description": "Full profile in Living Health format; importable back into Phylax."
+    }
+  },
+  "error": {
+    "no-profile": "No profile to export found.",
+    "locked": "The app is locked. Please unlock it and try again.",
+    "load-failed": "Error loading: {{detail}}"
+  }
+}

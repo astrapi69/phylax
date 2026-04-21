@@ -12,8 +12,11 @@
     "empty": "Noch leer",
     "lab-report_one": "{{count}} Laborbefund",
     "lab-report_other": "{{count}} Laborbefunde",
-    "open-points": "{{count}} offene Punkte",
-    "versions": "{{count}} Versionen",
-    "timeline-entries": "{{count}} Verlaufsnotizen"
+    "open-points_one": "{{count}} offener Punkt",
+    "open-points_other": "{{count}} offene Punkte",
+    "versions_one": "{{count}} Version",
+    "versions_other": "{{count}} Versionen",
+    "timeline-entries_one": "{{count}} Verlaufsnotiz",
+    "timeline-entries_other": "{{count}} Verlaufsnotizen"
   }
 }

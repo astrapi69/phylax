@@ -1,0 +1,37 @@
+{
+  "loading": "Loading profile...",
+  "error": {
+    "load-failed": "Profile could not be loaded."
+  },
+  "header": {
+    "version-label": "Version",
+    "last-change": "Last change: {{reason}}"
+  },
+  "profile-type": {
+    "own": "Own profile",
+    "proxy": "Proxy profile",
+    "proxy-for": "Proxy for {{name}}"
+  },
+  "basedata": {
+    "heading": "Base data",
+    "field-birth-date": "Date of birth",
+    "field-age": "Age",
+    "age-value": "{{age}} years",
+    "field-height": "Height",
+    "height-value": "{{height}} cm",
+    "field-weight": "Weight",
+    "weight-value": "{{weight}} kg",
+    "weight-target": " (target: {{target}} kg)",
+    "context-notes-heading": "Context notes"
+  },
+  "section": {
+    "doctor": "Primary care physician",
+    "diagnoses": "Known diagnoses",
+    "medications": "Current medications",
+    "limitations": "Relevant limitations",
+    "references": "External references"
+  },
+  "warning-signs": {
+    "heading": "Warning signs"
+  }
+}

@@ -58,6 +58,23 @@ describe('i18n config', () => {
       expect(i18n.hasResourceBundle('en', ns)).toBe(true);
     }
   });
+
+  it('registers content EN namespaces after I18N-02-b', () => {
+    const content = [
+      'observations',
+      'lab-values',
+      'supplements',
+      'open-points',
+      'timeline',
+      'profile-view',
+      'profile-list',
+      'profile-create',
+      'export',
+    ];
+    for (const ns of content) {
+      expect(i18n.hasResourceBundle('en', ns)).toBe(true);
+    }
+  });
 });
 
 describe('common counts plural forms', () => {
@@ -82,5 +99,40 @@ describe('common counts plural forms', () => {
   it('supplements: count=5 renders plural in both languages', () => {
     expect(tDe('counts.supplements', { count: 5 })).toBe('5 Supplemente');
     expect(tEn('counts.supplements', { count: 5 })).toBe('5 supplements');
+  });
+});
+
+describe('profile-list counts plural forms (I18N-02-b)', () => {
+  const tDe = i18n.getFixedT('de', 'profile-list');
+  const tEn = i18n.getFixedT('en', 'profile-list');
+
+  it('open-points: count=1 renders singular in both languages', () => {
+    expect(tDe('counts.open-points', { count: 1 })).toBe('1 offener Punkt');
+    expect(tEn('counts.open-points', { count: 1 })).toBe('1 open point');
+  });
+
+  it('open-points: count=5 renders plural in both languages', () => {
+    expect(tDe('counts.open-points', { count: 5 })).toBe('5 offene Punkte');
+    expect(tEn('counts.open-points', { count: 5 })).toBe('5 open points');
+  });
+
+  it('versions: count=1 renders singular in both languages', () => {
+    expect(tDe('counts.versions', { count: 1 })).toBe('1 Version');
+    expect(tEn('counts.versions', { count: 1 })).toBe('1 version');
+  });
+
+  it('versions: count=5 renders plural in both languages', () => {
+    expect(tDe('counts.versions', { count: 5 })).toBe('5 Versionen');
+    expect(tEn('counts.versions', { count: 5 })).toBe('5 versions');
+  });
+
+  it('timeline-entries: count=1 renders singular in both languages', () => {
+    expect(tDe('counts.timeline-entries', { count: 1 })).toBe('1 Verlaufsnotiz');
+    expect(tEn('counts.timeline-entries', { count: 1 })).toBe('1 timeline entry');
+  });
+
+  it('timeline-entries: count=5 renders plural in both languages', () => {
+    expect(tDe('counts.timeline-entries', { count: 5 })).toBe('5 Verlaufsnotizen');
+    expect(tEn('counts.timeline-entries', { count: 5 })).toBe('5 timeline entries');
   });
 });

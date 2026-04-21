@@ -1,0 +1,32 @@
+{
+  "loading": "Loading lab values...",
+  "heading": "Lab values",
+  "empty": {
+    "body": "No lab values recorded yet.",
+    "cta": "Import a profile with lab values",
+    "suffix": " to see them here."
+  },
+  "report": {
+    "heading": "Report from {{date}}",
+    "meta": {
+      "lab": "Lab",
+      "doctor": "Doctor",
+      "report-number": "Report no."
+    },
+    "section": {
+      "overall": "Overall assessment",
+      "relevance": "Relevance"
+    },
+    "category-assessment": "Assessment {{category}}"
+  },
+  "table": {
+    "parameter": "Parameter",
+    "result": "Result",
+    "unit": "Unit",
+    "reference": "Reference",
+    "assessment": "Assessment"
+  },
+  "error": {
+    "load-failed": "Lab values could not be loaded."
+  }
+}

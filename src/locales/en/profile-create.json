@@ -1,0 +1,24 @@
+{
+  "heading": "Create new profile",
+  "intro": "Create your first health profile. You can add all details later.",
+  "form": {
+    "name-label": "Profile name",
+    "name-placeholder": "My profile",
+    "type-label": "Profile type",
+    "type-self": "For myself",
+    "type-proxy": "Proxy for someone else",
+    "managed-by-label": "Your name (as caregiver)",
+    "managed-by-placeholder": "Asterios",
+    "managed-by-hint": "Stored to indicate who manages this profile.",
+    "version-label": "Initial version",
+    "version-placeholder": "1.0",
+    "version-hint": "Semver format recommended. Incremented on future changes."
+  },
+  "submit": {
+    "label": "Create profile",
+    "pending": "Creating..."
+  },
+  "error": {
+    "create-failed": "Profile could not be created."
+  }
+}

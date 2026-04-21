@@ -1,0 +1,40 @@
+{
+  "loading": "Loading observations...",
+  "heading": "Observations",
+  "section": {
+    "recent": "Recently updated",
+    "all": "All themes"
+  },
+  "empty": {
+    "body": "No observations recorded yet.",
+    "cta": "Import a profile",
+    "suffix": " to record observations."
+  },
+  "card": {
+    "field": {
+      "fact": "Observation",
+      "pattern": "Pattern",
+      "self-regulation": "Self-regulation",
+      "medical-finding": "Medical finding",
+      "relevance": "Relevance"
+    },
+    "aria": {
+      "expand": "Show observation",
+      "summary": "Observation: {{parts}}"
+    }
+  },
+  "source": {
+    "medical": "Doctor",
+    "ai": "AI"
+  },
+  "sort": {
+    "label": "Sort",
+    "option": {
+      "recent": "Recent first",
+      "alphabetical": "Alphabetical"
+    }
+  },
+  "error": {
+    "load-failed": "Observations could not be loaded."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "profile-type": {
+    "own": "Own profile",
+    "proxy": "Proxy profile",
+    "proxy-for": "Proxy for {{name}}"
+  },
+  "action": {
+    "select": "Select",
+    "create-new": "+ Create new profile"
+  },
+  "counts": {
+    "empty": "Still empty",
+    "lab-report_one": "{{count}} lab report",
+    "lab-report_other": "{{count}} lab reports",
+    "open-points_one": "{{count}} open point",
+    "open-points_other": "{{count}} open points",
+    "versions_one": "{{count}} version",
+    "versions_other": "{{count}} versions",
+    "timeline-entries_one": "{{count}} timeline entry",
+    "timeline-entries_other": "{{count}} timeline entries"
+  }
+}

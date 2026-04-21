@@ -1,0 +1,14 @@
+{
+  "loading": "Loading open points...",
+  "empty": {
+    "body": "No open points recorded.",
+    "cta": "Import a profile with open points",
+    "suffix": " to see them here."
+  },
+  "item": {
+    "resolved-badge": "Done"
+  },
+  "error": {
+    "load-failed": "Open points could not be loaded."
+  }
+}

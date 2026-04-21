@@ -11,43 +11,52 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## Core domain
 
-| DE                  | EN                     | Notes                                                         |
-| ------------------- | ---------------------- | ------------------------------------------------------------- |
-| Arzt / Aerztin      | doctor                 | generic                                                       |
-| Beobachtung         | observation            | fits "living health" concept                                  |
-| Betreuer            | caregiver              | proxy-profile context                                         |
-| Gefuehrte Sitzung   | guided session         |                                                               |
-| Hausarzt            | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)             |
-| Laborbefund         | lab report             | the document                                                  |
-| Laborwerte          | lab values             | not "lab results" (implies finalization)                      |
-| Muster              | pattern                |                                                               |
-| Offene Punkte       | open points            | keep literal - Phylax-specific, not "tasks" or "action items" |
-| Offener Punkt       | open point             | singular form                                                 |
-| Profil              | profile                |                                                               |
-| Selbstregulation    | self-regulation        | established English term                                      |
-| Supplement          | supplement             |                                                               |
-| Verlauf (nav label) | timeline               |                                                               |
-| Verlaufsnotiz       | timeline entry         |                                                               |
-| Warnhinweis         | warning                | generic warning                                               |
-| Warnsignal          | warning sign           | medical red-flag sense                                        |
+| DE                   | EN                     | Notes                                                         |
+| -------------------- | ---------------------- | ------------------------------------------------------------- |
+| Arzt / Aerztin       | doctor                 | generic                                                       |
+| Bekannte Diagnosen   | Known diagnoses        | profile-view section heading                                  |
+| Beobachtung          | observation            | fits "living health" concept                                  |
+| Betreuer             | caregiver              | proxy-profile context                                         |
+| Gefuehrte Sitzung    | guided session         |                                                               |
+| Gesamteinschaetzung  | overall assessment     | lab-report summary heading                                    |
+| Hausarzt             | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)             |
+| Laborbefund          | lab report             | the document                                                  |
+| Laborwerte           | lab values             | not "lab results" (implies finalization)                      |
+| Medizinischer Befund | medical finding        | observation card field                                        |
+| Muster               | pattern                |                                                               |
+| Offene Punkte        | open points            | keep literal - Phylax-specific, not "tasks" or "action items" |
+| Offener Punkt        | open point             | singular form                                                 |
+| Profil               | profile                |                                                               |
+| Selbstregulation     | self-regulation        | established English term                                      |
+| Supplement           | supplement             |                                                               |
+| Verlauf (nav label)  | timeline               |                                                               |
+| Verlaufseintrag      | timeline entry         | singular; plural "Verlaufseintraege" -> "timeline entries"    |
+| Verlaufsnotiz        | timeline entry         | synonym used in import + profile-list UIs                     |
+| Warnhinweis          | warning                | generic warning                                               |
+| Warnsignal           | warning sign           | medical red-flag sense                                        |
 
 ## Profile and base data
 
-| DE                   | EN              | Notes                 |
-| -------------------- | --------------- | --------------------- |
-| Alter                | age             |                       |
-| Basisdaten           | base data       |                       |
-| Diagnosen            | diagnoses       |                       |
-| Eigenes Profil       | own profile     |                       |
-| Einschraenkungen     | limitations     |                       |
-| Geburtsdatum         | date of birth   |                       |
-| Gewicht              | weight          |                       |
-| Groesse              | height          |                       |
-| Medikamente          | medications     |                       |
-| Mein Profil          | My profile      | fallback display name |
-| Stellvertretend fuer | proxy for       |                       |
-| Stellvertreterprofil | proxy profile   |                       |
-| Ziel (Gewicht)       | target (weight) | weight target         |
+| DE                         | EN                   | Notes                        |
+| -------------------------- | -------------------- | ---------------------------- |
+| Aktuelle Medikamente       | Current medications  | profile-view section heading |
+| Alter                      | age                  |                              |
+| Basisdaten                 | base data            |                              |
+| Diagnosen                  | diagnoses            |                              |
+| Eigenes Profil             | own profile          |                              |
+| Einschraenkungen           | limitations          |                              |
+| Externe Referenzen         | External references  | profile-view section heading |
+| Geburtsdatum               | date of birth        |                              |
+| Gewicht                    | weight               |                              |
+| Groesse                    | height               |                              |
+| Kontextnotizen             | Context notes        | profile-view base-data       |
+| Letzte Aenderung           | Last change          | profile-view header field    |
+| Medikamente                | medications          |                              |
+| Mein Profil                | My profile           | fallback display name        |
+| Relevante Einschraenkungen | Relevant limitations | profile-view section heading |
+| Stellvertretend fuer       | proxy for            |                              |
+| Stellvertreterprofil       | proxy profile        |                              |
+| Ziel (Gewicht)             | target (weight)      | weight target                |
 
 ## AI and commit flow
 
@@ -74,27 +83,35 @@ reasoning note. Keep entries alphabetical within each section.
 | Einstellungen        | settings               |                           |
 | Entsperren           | Unlock                 |                           |
 | Erledigt             | Done                   |                           |
+| Erstellen...         | Creating...            | form submit pending state |
+| Exportieren          | Export                 | action label              |
 | Laden...             | Loading...             |                           |
 | Leeren               | Clear                  |                           |
 | Schliessen           | Close                  |                           |
+| Sortierung           | Sort                   | observations sort label   |
 | Speichern            | Save                   |                           |
 | Sperren              | Lock                   |                           |
 | Sprache              | language               | for the language switcher |
 | Systemsprache folgen | Follow system language | auto option               |
+| Version              | Version                | profile header (semver)   |
 | Weiter               | Next                   |                           |
 | Zurueck              | Back                   |                           |
 
 ## Table headers and field labels
 
-| DE          | EN         | Notes        |
-| ----------- | ---------- | ------------ |
-| Bericht-Nr. | Report no. | abbreviation |
-| Bewertung   | Assessment |              |
-| Einheit     | Unit       |              |
-| Ergebnis    | Result     |              |
-| Labor       | Lab        |              |
-| Parameter   | Parameter  |              |
-| Referenz    | Reference  |              |
+| DE            | EN             | Notes                                                                       |
+| ------------- | -------------- | --------------------------------------------------------------------------- |
+| Begruendung   | Rationale      | supplement card field                                                       |
+| Bericht-Nr.   | Report no.     | abbreviation                                                                |
+| Bewertung     | Assessment     | lab-values table row header                                                 |
+| Einheit       | Unit           |                                                                             |
+| Einschaetzung | Assessment     | lab-values category heading; same EN as "Bewertung" (context disambiguates) |
+| Empfehlung    | Recommendation | supplement card field                                                       |
+| Ergebnis      | Result         |                                                                             |
+| Labor         | Lab            |                                                                             |
+| Parameter     | Parameter      |                                                                             |
+| Referenz      | Reference      |                                                                             |
+| Relevanz      | Relevance      | observation card + lab-report section                                       |
 
 ## Error and status messages
 

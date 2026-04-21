@@ -36,6 +36,15 @@ import pwaUpdateEN from '../locales/en/pwa-update.json';
 import documentsEN from '../locales/en/documents.json';
 import notFoundEN from '../locales/en/not-found.json';
 import backupImportEN from '../locales/en/backup-import.json';
+import observationsEN from '../locales/en/observations.json';
+import labValuesEN from '../locales/en/lab-values.json';
+import supplementsEN from '../locales/en/supplements.json';
+import openPointsEN from '../locales/en/open-points.json';
+import timelineEN from '../locales/en/timeline.json';
+import profileViewEN from '../locales/en/profile-view.json';
+import profileListEN from '../locales/en/profile-list.json';
+import profileCreateEN from '../locales/en/profile-create.json';
+import exportEN from '../locales/en/export.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -138,6 +147,15 @@ void i18n.use(initReactI18next).init({
       documents: documentsEN,
       'not-found': notFoundEN,
       'backup-import': backupImportEN,
+      observations: observationsEN,
+      'lab-values': labValuesEN,
+      supplements: supplementsEN,
+      'open-points': openPointsEN,
+      timeline: timelineEN,
+      'profile-view': profileViewEN,
+      'profile-list': profileListEN,
+      'profile-create': profileCreateEN,
+      export: exportEN,
     },
   },
   lng: 'de',

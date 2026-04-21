@@ -1,0 +1,25 @@
+{
+  "loading": "Loading supplements...",
+  "heading": "Supplements",
+  "empty": {
+    "body": "No supplements recorded yet.",
+    "cta": "Import a profile with a supplement plan",
+    "suffix": " to see them here."
+  },
+  "category": {
+    "daily": "Daily",
+    "regular": "Regular",
+    "on-demand": "As needed",
+    "paused": "Paused"
+  },
+  "card": {
+    "paused-badge": "Paused",
+    "field": {
+      "recommendation": "Recommendation",
+      "rationale": "Rationale"
+    }
+  },
+  "error": {
+    "load-failed": "Supplements could not be loaded."
+  }
+}

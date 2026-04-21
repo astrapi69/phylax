@@ -1,0 +1,12 @@
+{
+  "loading": "Loading timeline...",
+  "heading": "Timeline",
+  "empty": {
+    "body": "No timeline entries recorded yet.",
+    "cta": "Import a profile with timeline entries",
+    "suffix": " to see them here."
+  },
+  "error": {
+    "load-failed": "Timeline entries could not be loaded."
+  }
+}
