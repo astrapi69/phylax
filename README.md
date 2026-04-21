@@ -183,7 +183,7 @@ complete:
 - **Phase 2d - Theming**: dark mode with system-preference detection
 - **Phase 3 - AI-Guided Input**: Anthropic Claude integration, chat UI,
   guided session, commit preview, parser fallback
-- **Infrastructure (I-series)**: Node 20 LTS, CI coverage policy, privacy
+- **Infrastructure (I-series)**: Node 24, CI coverage policy, privacy
   disclosure precision
 - **Phase S**: donation integration (settings link, onboarding hint,
   90-day reminder)
@@ -207,7 +207,7 @@ entirely in the browser and works offline after the first visit.
 
 ### Run from source
 
-Requires Node.js 20 LTS or later. If you use nvm, `nvm use` picks up the
+Requires Node.js 24 or later. If you use nvm, `nvm use` picks up the
 pinned version from `.nvmrc`.
 
 ```bash
