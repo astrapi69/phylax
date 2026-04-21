@@ -48,6 +48,7 @@ import exportEN from '../locales/en/export.json';
 import aiConfigEN from '../locales/en/ai-config.json';
 import donationEN from '../locales/en/donation.json';
 import importEN from '../locales/en/import.json';
+import aiChatEN from '../locales/en/ai-chat.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -162,6 +163,7 @@ void i18n.use(initReactI18next).init({
       'ai-config': aiConfigEN,
       donation: donationEN,
       import: importEN,
+      'ai-chat': aiChatEN,
     },
   },
   lng: 'de',

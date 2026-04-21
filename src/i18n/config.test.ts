@@ -82,6 +82,10 @@ describe('i18n config', () => {
       expect(i18n.hasResourceBundle('en', ns)).toBe(true);
     }
   });
+
+  it('registers ai-chat EN namespace after I18N-02-d', () => {
+    expect(i18n.hasResourceBundle('en', 'ai-chat')).toBe(true);
+  });
 });
 
 describe('common counts plural forms', () => {
@@ -230,5 +234,44 @@ describe('import plural forms (I18N-02-c)', () => {
   it('counts.external-references: count=5 renders plural', () => {
     expect(tDe('counts.external-references', { count: 5 })).toBe('5 externe Referenzen');
     expect(tEn('counts.external-references', { count: 5 })).toBe('5 external references');
+  });
+});
+
+describe('ai-chat plural forms (I18N-02-d)', () => {
+  const tDe = i18n.getFixedT('de', 'ai-chat');
+  const tEn = i18n.getFixedT('en', 'ai-chat');
+
+  it('message.context.counts.abnormal-labs: count=1 renders singular', () => {
+    expect(tDe('message.context.counts.abnormal-labs', { count: 1 })).toBe(
+      '1 abweichender Laborwert',
+    );
+    expect(tEn('message.context.counts.abnormal-labs', { count: 1 })).toBe('1 abnormal lab value');
+  });
+
+  it('message.context.counts.abnormal-labs: count=5 renders plural', () => {
+    expect(tDe('message.context.counts.abnormal-labs', { count: 5 })).toBe(
+      '5 abweichende Laborwerte',
+    );
+    expect(tEn('message.context.counts.abnormal-labs', { count: 5 })).toBe('5 abnormal lab values');
+  });
+
+  it('message.context.counts.open-points: count=1 renders singular', () => {
+    expect(tDe('message.context.counts.open-points', { count: 1 })).toBe('1 offener Punkt');
+    expect(tEn('message.context.counts.open-points', { count: 1 })).toBe('1 open point');
+  });
+
+  it('message.context.counts.open-points: count=5 renders plural', () => {
+    expect(tDe('message.context.counts.open-points', { count: 5 })).toBe('5 offene Punkte');
+    expect(tEn('message.context.counts.open-points', { count: 5 })).toBe('5 open points');
+  });
+
+  it('message.context.counts.warning-signs: count=1 renders singular', () => {
+    expect(tDe('message.context.counts.warning-signs', { count: 1 })).toBe('1 Warnsignal');
+    expect(tEn('message.context.counts.warning-signs', { count: 1 })).toBe('1 warning sign');
+  });
+
+  it('message.context.counts.warning-signs: count=5 renders plural', () => {
+    expect(tDe('message.context.counts.warning-signs', { count: 5 })).toBe('5 Warnsignale');
+    expect(tEn('message.context.counts.warning-signs', { count: 5 })).toBe('5 warning signs');
   });
 });

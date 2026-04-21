@@ -11,32 +11,35 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## Core domain
 
-| DE                   | EN                     | Notes                                                         |
-| -------------------- | ---------------------- | ------------------------------------------------------------- |
-| Arzt / Aerztin       | doctor                 | generic                                                       |
-| Bekannte Diagnosen   | Known diagnoses        | profile-view section heading                                  |
-| Beobachtung          | observation            | fits "living health" concept                                  |
-| Betreuer             | caregiver              | proxy-profile context                                         |
-| Gefuehrte Sitzung    | guided session         |                                                               |
-| Gesamteinschaetzung  | overall assessment     | lab-report summary heading                                    |
-| Hausarzt             | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)             |
-| Laborbefund          | lab report             | the document                                                  |
-| Laborwerte           | lab values             | not "lab results" (implies finalization)                      |
-| Medizinischer Befund | medical finding        | observation card field                                        |
-| Muster               | pattern                |                                                               |
-| Offene Punkte        | open points            | keep literal - Phylax-specific, not "tasks" or "action items" |
-| Offener Punkt        | open point             | singular form                                                 |
-| Profil               | profile                |                                                               |
-| Roh-Ausgabe          | raw output             | import cleanup flow (AI result)                               |
-| Selbstregulation     | self-regulation        | established English term                                      |
-| Supplement           | supplement             |                                                               |
-| Unbekannt            | Unknown                | import source fallback                                        |
-| Verlauf (nav label)  | timeline               |                                                               |
-| Verlaufseintrag      | timeline entry         | singular; plural "Verlaufseintraege" -> "timeline entries"    |
-| Verlaufsnotiz        | timeline entry         | synonym used in import + profile-list UIs                     |
-| Warnhinweis          | warning                | generic warning (import parse warnings, etc.)                 |
-| Warnsignal           | warning sign           | medical red-flag sense                                        |
-| Zielprofil           | target profile         | import destination fallback                                   |
+| DE                     | EN                     | Notes                                                          |
+| ---------------------- | ---------------------- | -------------------------------------------------------------- |
+| Abweichender Laborwert | abnormal lab value     | ai-chat context counts; "abnormal" matches medical-EN register |
+| Arzt / Aerztin         | doctor                 | generic                                                        |
+| Bekannte Diagnosen     | Known diagnoses        | profile-view section heading                                   |
+| Beobachtung            | observation            | fits "living health" concept                                   |
+| Betreuer               | caregiver              | proxy-profile context                                          |
+| Gefuehrte Sitzung      | guided session         |                                                                |
+| Gesamteinschaetzung    | overall assessment     | lab-report summary heading                                     |
+| Gewichtsverlauf        | weight trend           | profile-summary base-data line                                 |
+| Hausarzt               | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)              |
+| Laborbefund            | lab report             | the document                                                   |
+| Laborwerte             | lab values             | not "lab results" (implies finalization)                       |
+| Medizinischer Befund   | medical finding        | observation card field                                         |
+| Muster                 | pattern                |                                                                |
+| Offene Punkte          | open points            | keep literal - Phylax-specific, not "tasks" or "action items"  |
+| Offener Punkt          | open point             | singular form                                                  |
+| Profil                 | profile                |                                                                |
+| Roh-Ausgabe            | raw output             | import cleanup flow (AI result)                                |
+| Selbstregulation       | self-regulation        | established English term                                       |
+| Supplement             | supplement             |                                                                |
+| Unbekannt              | Unknown                | import source fallback                                         |
+| Ungeloest              | unresolved             | open-points heading qualifier in profile-summary               |
+| Verlauf (nav label)    | timeline               |                                                                |
+| Verlaufseintrag        | timeline entry         | singular; plural "Verlaufseintraege" -> "timeline entries"     |
+| Verlaufsnotiz          | timeline entry         | synonym used in import + profile-list UIs                      |
+| Warnhinweis            | warning                | generic warning (import parse warnings, etc.)                  |
+| Warnsignal             | warning sign           | medical red-flag sense                                         |
+| Zielprofil             | target profile         | import destination fallback                                    |
 
 ## Profile and base data
 
@@ -64,22 +67,27 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## AI and commit flow
 
-| DE                                   | EN              | Notes                                                            |
-| ------------------------------------ | --------------- | ---------------------------------------------------------------- |
-| Aenderung                            | change          |                                                                  |
-| Anbieter                             | Provider        | AI provider dropdown label                                       |
-| API-Schluessel                       | API key         | AI config field                                                  |
-| benutzerdefiniert                    | custom          | model suffix                                                     |
-| KI                                   | AI              | abbreviation                                                     |
-| KI-Assistent                         | AI assistant    |                                                                  |
-| Master-Passwort                      | master password |                                                                  |
-| Modell                               | Model           | AI config field                                                  |
-| Profil teilen                        | share profile   |                                                                  |
-| Roh-Markdown                         | raw Markdown    |                                                                  |
-| Uebernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak               |
-| Versionseintrag                      | version note    | "note" reads more naturally than "entry" for a description field |
-| Versionsgeschichte                   | version history |                                                                  |
-| Vorschau                             | preview         |                                                                  |
+| DE                                   | EN              | Notes                                                                |
+| ------------------------------------ | --------------- | -------------------------------------------------------------------- |
+| Aenderung                            | change          |                                                                      |
+| Anbieter                             | Provider        | AI provider dropdown label                                           |
+| API-Schluessel                       | API key         | AI config field                                                      |
+| benutzerdefiniert                    | custom          | model suffix                                                         |
+| Chat-Verlauf                         | Chat log        | ARIA label (role="log" precedent); use "Chat history" for visible UI |
+| Fortschritt                          | Progress        | guided-session indicator                                             |
+| KI                                   | AI              | abbreviation                                                         |
+| KI-Assistent                         | AI assistant    |                                                                      |
+| Konversation                         | conversation    | system framing context                                               |
+| Master-Passwort                      | master password |                                                                      |
+| Modell                               | Model           | AI config field                                                      |
+| Nachricht                            | message         | chat entry, input label                                              |
+| Profil teilen                        | share profile   |                                                                      |
+| Roh-Markdown                         | raw Markdown    |                                                                      |
+| Sitzung                              | session         | guided session                                                       |
+| Uebernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak                   |
+| Versionseintrag                      | version note    | "note" reads more naturally than "entry" for a description field     |
+| Versionsgeschichte                   | version history |                                                                      |
+| Vorschau                             | preview         |                                                                      |
 
 ## Common actions and chrome
 
@@ -99,6 +107,7 @@ reasoning note. Keep entries alphabetical within each section.
 | Laden...             | Loading...             |                              |
 | Leeren               | Clear                  |                              |
 | Schliessen           | Close                  |                              |
+| Senden               | Send                   | chat submit button           |
 | Sortierung           | Sort                   | observations sort label      |
 | Speichern            | Save                   |                              |
 | Sperren              | Lock                   |                              |

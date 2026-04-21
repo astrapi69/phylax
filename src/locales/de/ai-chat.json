@@ -40,9 +40,12 @@
       "expand": "Details anzeigen",
       "empty": "keine Inhalte",
       "counts": {
-        "abnormal-labs": "{{count}} abweichende Laborwerte",
-        "open-points": "{{count}} offene Punkte",
-        "warning-signs": "{{count}} Warnsignale"
+        "abnormal-labs_one": "{{count}} abweichender Laborwert",
+        "abnormal-labs_other": "{{count}} abweichende Laborwerte",
+        "open-points_one": "{{count}} offener Punkt",
+        "open-points_other": "{{count}} offene Punkte",
+        "warning-signs_one": "{{count}} Warnsignal",
+        "warning-signs_other": "{{count}} Warnsignale"
       }
     }
   },

@@ -1,0 +1,220 @@
+{
+  "heading": {
+    "guided": "AI assistant - Guided session"
+  },
+  "welcome": {
+    "title": "Welcome to the AI assistant.",
+    "intro": "Describe your health observations in your own words. I will help you structure them.",
+    "examples-title": "Examples",
+    "example-1": "\"I have had left shoulder pain for three weeks.\"",
+    "example-2": "\"My blood pressure was above 140/90 several times last week.\"",
+    "example-3": "\"I have been taking vitamin D since January.\""
+  },
+  "header": {
+    "share-profile": "Share profile",
+    "share-profile-loading": "Loading profile...",
+    "start-guided": "Start guided session",
+    "clear": "Clear",
+    "end-session": "End session",
+    "confirm-end": "End the session?",
+    "confirm-end-yes": "Yes, end",
+    "confirm-end-no": "Continue",
+    "privacy-info-label": "Show privacy information",
+    "log-aria-label": "Chat log"
+  },
+  "input": {
+    "label": "Message to the AI assistant",
+    "placeholder": "Describe your observation...",
+    "send": "Send"
+  },
+  "streaming": {
+    "aria-label": "AI assistant is typing"
+  },
+  "message": {
+    "ai-badge": "AI",
+    "committed-badge": "Applied to profile",
+    "commit-cta": "Apply to profile",
+    "context": {
+      "badge": "Profile shared",
+      "collapse": "Hide",
+      "expand": "Show details",
+      "empty": "no content",
+      "counts": {
+        "abnormal-labs_one": "{{count}} abnormal lab value",
+        "abnormal-labs_other": "{{count}} abnormal lab values",
+        "open-points_one": "{{count}} open point",
+        "open-points_other": "{{count}} open points",
+        "warning-signs_one": "{{count}} warning sign",
+        "warning-signs_other": "{{count}} warning signs"
+      }
+    }
+  },
+  "guided": {
+    "indicator-aria-label": "Guided session progress",
+    "pill-aria-completed": "{{label}}: recorded",
+    "pill-aria-pending": "{{label}}: pending",
+    "section": {
+      "observations": "Observations",
+      "supplements": "Supplements"
+    },
+    "end-message": "Guided session ended.",
+    "opening-message": "Welcome to the guided session. I will walk you through three areas of your profile:\n\n1. Observations\n2. Supplements\n3. Open points\n\nYou enter base data via the profile form, import lab values separately, and timeline entries the same way.\n\nYou can end the session at any time. Let us start with observations: is there anything about your health that you notice or that is on your mind right now?"
+  },
+  "system": {
+    "config-loading": "Settings are loading, please wait a moment.",
+    "not-configured": "The AI assistant is not configured. Please add an API key in Settings.",
+    "locked": "The app is locked. Please unlock it again.",
+    "context-framing": "[Current health profile of the user - please use as context for the following conversation]"
+  },
+  "error": {
+    "chat-error": {
+      "auth": "Invalid API key. Please check in Settings.",
+      "rate-limit": "Too many requests. Please wait a moment.",
+      "server": "The AI service is temporarily unavailable.",
+      "network": "No internet connection.",
+      "unknown": "AI service error.",
+      "unknown-with-detail": "AI service error: {{detail}}"
+    }
+  },
+  "commit-preview": {
+    "heading": "Profile changes preview",
+    "intro": "The AI has structured the following changes. Nothing has been saved yet.",
+    "loading": "Loading profile...",
+    "error": {
+      "locked": "The app is locked. Please unlock it and try again."
+    },
+    "disabled-reason": {
+      "no-changes": "No changes - the AI's suggestions match the current profile.",
+      "need-description": "Description required."
+    },
+    "warnings-heading": "Notes",
+    "empty-diff": "No changes present.",
+    "show-unchanged": "Show unchanged fields and entries",
+    "section": {
+      "observations": "Observations",
+      "supplements": "Supplements",
+      "version": "Version note"
+    },
+    "badge": {
+      "new": "new",
+      "changed": "updated",
+      "unchanged": "unchanged"
+    },
+    "field": {
+      "obs": {
+        "status": "Status",
+        "fact": "Observation",
+        "pattern": "Pattern",
+        "self-regulation": "Self-regulation"
+      },
+      "supp": {
+        "category": "Category",
+        "brand": "Brand",
+        "recommendation": "Recommendation",
+        "rationale": "Rationale"
+      }
+    },
+    "supp-category": {
+      "daily": "daily",
+      "regular": "regular",
+      "on-demand": "as needed",
+      "paused": "paused"
+    },
+    "placeholder": {
+      "empty": "(empty)",
+      "unchanged": "(unchanged)"
+    },
+    "version": {
+      "sr-label": "Description of the change",
+      "hint": "Appears in version history. Can be adjusted before applying."
+    },
+    "raw-toggle": "Show raw Markdown",
+    "footer": {
+      "commit": "Apply",
+      "committing": "Applying..."
+    },
+    "commit-error": {
+      "locked": "The app was locked. Please unlock it and try again.",
+      "with-detail": "Error saving: {{detail}}",
+      "unknown": "Error saving: unknown error."
+    }
+  },
+  "commit-summary": {
+    "no-changes": "Profile update saved (version {{version}}).",
+    "with-parts": "Profile update saved: {{parts}} applied (version {{version}}).",
+    "obs_one": "{{count}} observation",
+    "obs_other": "{{count}} observations",
+    "supp_one": "{{count}} supplement",
+    "supp_other": "{{count}} supplements",
+    "open-points_one": "{{count}} open point",
+    "open-points_other": "{{count}} open points"
+  },
+  "version-description": {
+    "empty": "AI update: no changes",
+    "prefix": "AI update: {{parts}}",
+    "theme-new": "{{theme}} new",
+    "theme-updated": "{{theme}} updated",
+    "supp_one": "{{count}} supplement",
+    "supp_other": "{{count}} supplements",
+    "pt_one": "{{count}} point",
+    "pt_other": "{{count}} points"
+  },
+  "commit-fragment": {
+    "error": {
+      "profile-not-found": "Profile not found."
+    }
+  },
+  "profile-summary": {
+    "heading": {
+      "profile": "# Profile: {{name}}",
+      "base-data": "## Base data",
+      "observations": "## Observations",
+      "lab-values": "## Lab values",
+      "supplements": "## Supplements",
+      "open-points": "## Open points (unresolved)",
+      "warning-signs": "## Warning signs"
+    },
+    "managed-by": "Managed by: {{name}}",
+    "unspecified": "(unspecified)",
+    "base-data": {
+      "age": "- Age: {{age}} years",
+      "height": "- Height: {{cm}} cm",
+      "weight": "- Weight: {{kg}} kg{{target}}",
+      "weight-target": " (target: {{kg}} kg)",
+      "weight-trend": "- Weight trend: {{trend}}",
+      "weight-trend-format": "{{first}} kg ({{firstDate}}) -> {{last}} kg ({{lastDate}})",
+      "diagnoses": "- Known diagnoses: {{list}}",
+      "medications": "- Current medications: {{list}}",
+      "limitations": "- Limitations: {{list}}",
+      "doctor": "- Primary care physician: {{name}}{{specialty}}"
+    },
+    "observation": {
+      "theme-heading": "### {{theme}}",
+      "status": "- Status: {{value}}",
+      "fact": "- Observation: {{value}}",
+      "pattern": "- Pattern: {{value}}",
+      "self-regulation": "- Self-regulation: {{value}}"
+    },
+    "lab": {
+      "latest-with-lab": "Latest report: {{date}} ({{lab}})",
+      "latest": "Latest report: {{date}}",
+      "reference": "(reference: {{range}})",
+      "value-line": "- {{parameter}}: {{result}}{{unit}}{{range}}{{assessment}}"
+    },
+    "supplement": {
+      "line": "- {{name}} ({{category}})",
+      "category": {
+        "daily": "daily",
+        "regular": "regular",
+        "on-demand": "as needed",
+        "paused": "paused"
+      }
+    },
+    "open-point": {
+      "with-priority": "- [{{priority}}] {{text}}",
+      "plain": "- {{text}}"
+    },
+    "warning-sign": "- {{value}}",
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  }
+}
