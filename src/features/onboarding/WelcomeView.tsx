@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -7,7 +8,7 @@ type TrustKey = 'local' | 'encrypted' | 'open';
 
 const TRUST_ORDER: readonly TrustKey[] = ['local', 'encrypted', 'open'] as const;
 
-const ICON_FOR: Record<TrustKey, () => JSX.Element> = {
+const ICON_FOR: Record<TrustKey, () => ReactElement> = {
   local: LaptopIcon,
   encrypted: LockIcon,
   open: ShieldCheckIcon,
