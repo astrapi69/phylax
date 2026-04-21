@@ -32,9 +32,21 @@ export function ImportFlow() {
     let cancelled = false;
     async function load() {
       const repo = new ProfileRepository();
-      const list = await repo.list();
-      if (cancelled) return;
-      setProfilesById(Object.fromEntries(list.map((p) => [p.id, p])));
+      try {
+        const list = await repo.list();
+        if (cancelled) return;
+        setProfilesById(Object.fromEntries(list.map((p) => [p.id, p])));
+      } catch (err) {
+        // Bootstrap read: the repo can fail mid-await when the keystore
+        // is locked during test teardown or an auto-lock race. Swallow
+        // unconditionally - a failed read leaves `profilesById` empty,
+        // which the ProfileSelectionScreen already handles. Explicit
+        // reloads via reloadProfilesRef use the same load() and so are
+        // equally defensive. Never throw here; `void load()` at mount
+        // would otherwise become an unhandled rejection.
+        if (cancelled) return;
+        console.warn('[ImportFlow] profile list load failed', err);
+      }
     }
     reloadProfilesRef.current = async () => {
       await load();
