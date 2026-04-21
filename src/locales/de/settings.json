@@ -13,7 +13,12 @@
     }
   },
   "language": {
-    "label": "Sprache"
+    "heading": "Sprache",
+    "auto": "Systemsprache folgen",
+    "option": {
+      "de": "Deutsch",
+      "en": "English"
+    }
   },
   "export": {
     "heading": "Export",

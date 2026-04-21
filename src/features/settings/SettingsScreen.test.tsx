@@ -22,7 +22,7 @@ beforeEach(async () => {
 });
 
 describe('SettingsScreen', () => {
-  it('renders the Einstellungen heading plus Theme, AI-Config, and Donation sections', () => {
+  it('renders the Einstellungen heading plus Theme, Language, AI-Config, and Donation sections', () => {
     render(
       <ThemeProvider>
         <SettingsScreen />
@@ -30,14 +30,15 @@ describe('SettingsScreen', () => {
     );
     expect(screen.getByRole('heading', { level: 1, name: 'Einstellungen' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Darstellung' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Sprache' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'KI-Assistent' })).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Export' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profil exportieren' })).toBeInTheDocument();
-    // All three theme options are present.
-    expect(screen.getAllByRole('radio')).toHaveLength(3);
+    // 3 theme radios + 3 language radios = 6.
+    expect(screen.getAllByRole('radio')).toHaveLength(6);
   });
 
   it('exposes the current theme as the checked radio', () => {

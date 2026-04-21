@@ -83,7 +83,11 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: false,
       environment: 'jsdom',
-      setupFiles: ['./src/crypto/test-setup.ts', './src/test/setup.ts'],
+      setupFiles: [
+        './src/test/pin-language.ts',
+        './src/crypto/test-setup.ts',
+        './src/test/setup.ts',
+      ],
       include: ['src/**/*.test.{ts,tsx}'],
       coverage: {
         provider: 'v8',

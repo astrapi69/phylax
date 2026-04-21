@@ -1,6 +1,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+import { detectInitialLanguage } from './detector';
+
 import commonDE from '../locales/de/common.json';
 import onboardingDE from '../locales/de/onboarding.json';
 import unlockDE from '../locales/de/unlock.json';
@@ -84,33 +86,35 @@ export const NAMESPACES = [
 
 export type Namespace = (typeof NAMESPACES)[number];
 
-/**
- * Languages i18next can render. EN joined the list in I18N-02-a so EN
- * resources can load and `getFixedT('en', ...)` works for tests. The
- * user-facing switcher stays hidden via `LANGUAGE_SWITCHER_ENABLED`
- * until I18N-02-e flips it and introduces LanguageSection.
- */
+/** Languages i18next can render. */
 export const SUPPORTED_LANGUAGES = ['de', 'en'] as const;
 
 /**
- * User-facing language-switcher gate. False through I18N-02-a..02-d
- * while EN resources are being populated; I18N-02-e flips this to true
- * alongside the detector activation and LanguageSection component.
+ * User-facing language-switcher gate. Flipped true in I18N-02-e
+ * alongside the detector activation and `LanguageSection` component.
+ * Retained as an exported constant so future tooling (e.g., feature
+ * flag toggles) can still reference it.
  */
-export const LANGUAGE_SWITCHER_ENABLED = false;
+export const LANGUAGE_SWITCHER_ENABLED = true;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 /**
  * Synchronous i18next initialization.
  *
- * Resources are imported statically so every namespace is available on the
- * first render; no async loading, no Suspense fallback. I18N-01 ships
- * German only; the app hardcodes `lng: 'de'` to keep bundle size down.
- * When I18N-02 adds English, this config will add
- * `i18next-browser-languagedetector` back so the stored preference
- * (localStorage key `phylax-language`) and the browser-language header
- * drive initial language selection.
+ * Resources are imported statically so every namespace is available on
+ * the first render; no async loading, no Suspense fallback.
+ *
+ * Initial language comes from `detectInitialLanguage()`:
+ *   1. localStorage `phylax-language` (user preference)
+ *   2. `navigator.languages[0]` or `navigator.language` prefix
+ *   3. `'en'` fallback
+ *
+ * `fallbackLng: false` by design. Missing keys surface as raw keys
+ * instead of cross-language fallback. Cross-language fallback would
+ * render DE text to EN users (or vice versa), which reads as broken.
+ * All populated namespaces have full DE+EN parity after I18N-02-d;
+ * any missing key is a bug to fix, not an expected state.
  */
 void i18n.use(initReactI18next).init({
   resources: {
@@ -166,9 +170,9 @@ void i18n.use(initReactI18next).init({
       'ai-chat': aiChatEN,
     },
   },
-  lng: 'de',
+  lng: detectInitialLanguage(),
   supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
-  fallbackLng: 'de',
+  fallbackLng: false,
   defaultNS: 'common',
   ns: NAMESPACES as unknown as string[],
   interpolation: {

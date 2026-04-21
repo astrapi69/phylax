@@ -2,12 +2,14 @@ import { describe, it, expect } from 'vitest';
 import i18n, { NAMESPACES, SUPPORTED_LANGUAGES } from './config';
 
 describe('i18n config', () => {
-  it('initializes with German as the active language', () => {
+  it('initializes with a supported language selected', () => {
     expect(i18n.isInitialized).toBe(true);
     expect(SUPPORTED_LANGUAGES).toContain('de');
-    // Fallback guarantees German even when the browser reports a language
-    // that is not in SUPPORTED_LANGUAGES.
-    expect(i18n.options.fallbackLng).toEqual(['de']);
+    expect(SUPPORTED_LANGUAGES).toContain('en');
+    // After I18N-02-e, fallback is disabled. Missing keys surface as
+    // raw keys rather than render the other language (which would read
+    // as broken UX).
+    expect(i18n.options.fallbackLng).toBe(false);
   });
 
   it('registers every namespace declared in NAMESPACES', () => {
@@ -32,12 +34,13 @@ describe('i18n config', () => {
     expect(react?.useSuspense).toBe(false);
   });
 
-  it('hardcodes German as the initial language until I18N-02-e activates detection', () => {
-    // I18N-02-a through 02-d ship EN translations under the existing
-    // DE-active config. Detector + LanguageSwitcher land in 02-e; this
-    // test flips to asserting detection at that point.
-    expect(i18n.options.lng).toBe('de');
-    expect(i18n.language).toBe('de');
+  it('initial language resolves to a supported language via detector', () => {
+    // I18N-02-e replaced the DE hardcode with detectInitialLanguage().
+    // The resolved value depends on stored preference + navigator state;
+    // assert it is one of the supported languages rather than a literal.
+    expect(i18n.options.lng).toBeDefined();
+    expect(SUPPORTED_LANGUAGES).toContain(i18n.options.lng as string);
+    expect(SUPPORTED_LANGUAGES).toContain(i18n.language);
   });
 
   it('registers foundation EN namespaces after I18N-02-a', () => {

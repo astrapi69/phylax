@@ -1,22 +1,23 @@
 import { useTranslation } from 'react-i18next';
 import { ThemeSection } from './ThemeSection';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageSection } from './LanguageSection';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
 import { ExportButton } from '../export';
 
 /**
- * Settings screen. Hosts the theme picker, the AI configuration, the
- * export entry point, and the donation link. Future settings (auto-lock
- * timeout, language, etc.) attach as more sections here.
+ * Settings screen. Hosts the theme picker, the language switcher, the
+ * AI configuration, the export entry point, and the donation link.
+ * Chrome-level settings (theme + language) come first; feature-level
+ * settings follow.
  */
 export function SettingsScreen() {
   const { t } = useTranslation('settings');
   return (
     <div className="space-y-8">
       <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('screen.heading')}</h1>
-      <LanguageSwitcher />
       <ThemeSection />
+      <LanguageSection />
       <AISettingsSection />
       <section aria-labelledby="export-settings-heading">
         <h2
