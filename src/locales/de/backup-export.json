@@ -1,0 +1,27 @@
+{
+  "section": {
+    "heading": "Verschluesseltes Backup",
+    "description": "Erstelle eine .phylax-Datei mit allen Profildaten. Zum Wiederherstellen benoetigst du genau dieses Passwort."
+  },
+  "form": {
+    "password-label": "Passwort",
+    "password-help": "Dein Master-Passwort oder ein anderes Passwort deiner Wahl. Mindestens {{min}} Zeichen.",
+    "submit-label": "Backup erstellen",
+    "submit-working": "Backup wird erstellt..."
+  },
+  "status": {
+    "deriving": "Schluessel wird abgeleitet...",
+    "encrypting": "Daten werden verschluesselt...",
+    "ready": "Backup bereit.",
+    "downloaded": "Backup mit dem eingegebenen Passwort verschluesselt. Du benoetigst genau dieses Passwort fuer einen spaeteren Import.",
+    "new-backup": "Weiteres Backup erstellen"
+  },
+  "error": {
+    "password-too-short": "Passwort muss mindestens {{min}} Zeichen haben.",
+    "no-profile": "Kein Profil zum Sichern vorhanden.",
+    "locked": "App ist gesperrt. Bitte entsperren und erneut versuchen.",
+    "crypto-unavailable": "Browser unterstuetzt Web Crypto nicht.",
+    "encryption-failed": "Verschluesselung fehlgeschlagen.",
+    "download-failed": "Download fehlgeschlagen. Versuch es erneut."
+  }
+}

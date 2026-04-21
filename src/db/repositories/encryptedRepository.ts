@@ -117,6 +117,19 @@ export abstract class EncryptedRepository<T extends DomainEntity> {
   }
 
   /**
+   * List every entity across all profiles. Order is not guaranteed.
+   * Throws if the key store is locked.
+   *
+   * Intended for full-vault operations such as backup export where the
+   * consumer needs every row regardless of profile membership. For
+   * per-profile UI reads prefer `listByProfile`.
+   */
+  async listAll(): Promise<T[]> {
+    const rows = await this.table.toArray();
+    return Promise.all(rows.map((row) => this.deserialize(row)));
+  }
+
+  /**
    * List all entities for a given profile, sorted by createdAt ascending.
    * Uses the [profileId+createdAt] compound index if available on the table.
    * Throws if the key store is locked.

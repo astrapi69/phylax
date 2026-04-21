@@ -22,7 +22,7 @@ beforeEach(async () => {
 });
 
 describe('SettingsScreen', () => {
-  it('renders the Einstellungen heading plus Theme, Language, AI-Config, and Donation sections', () => {
+  it('renders the Einstellungen heading plus Theme, Language, AI-Config, Data-management, and Donation sections', () => {
     render(
       <ThemeProvider>
         <SettingsScreen />
@@ -35,7 +35,13 @@ describe('SettingsScreen', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: 'Export' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Datenverwaltung' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Profil exportieren' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Verschluesseltes Backup' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profil exportieren' })).toBeInTheDocument();
     // 3 theme radios + 3 language radios = 6.
     expect(screen.getAllByRole('radio')).toHaveLength(6);

@@ -8,3 +8,4 @@ export { SupplementRepository } from './supplementRepository';
 export { OpenPointRepository } from './openPointRepository';
 export { ProfileVersionRepository } from './profileVersionRepository';
 export { TimelineEntryRepository } from './timelineEntryRepository';
+export { DocumentRepository } from './documentRepository';

@@ -27,6 +27,7 @@ import pwaUpdateDE from '../locales/de/pwa-update.json';
 import documentsDE from '../locales/de/documents.json';
 import notFoundDE from '../locales/de/not-found.json';
 import backupImportDE from '../locales/de/backup-import.json';
+import backupExportDE from '../locales/de/backup-export.json';
 
 import commonEN from '../locales/en/common.json';
 import onboardingEN from '../locales/en/onboarding.json';
@@ -51,6 +52,7 @@ import aiConfigEN from '../locales/en/ai-config.json';
 import donationEN from '../locales/en/donation.json';
 import importEN from '../locales/en/import.json';
 import aiChatEN from '../locales/en/ai-chat.json';
+import backupExportEN from '../locales/en/backup-export.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -82,6 +84,7 @@ export const NAMESPACES = [
   'documents',
   'not-found',
   'backup-import',
+  'backup-export',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -143,6 +146,7 @@ void i18n.use(initReactI18next).init({
       documents: documentsDE,
       'not-found': notFoundDE,
       'backup-import': backupImportDE,
+      'backup-export': backupExportDE,
     },
     en: {
       common: commonEN,
@@ -168,6 +172,7 @@ void i18n.use(initReactI18next).init({
       donation: donationEN,
       import: importEN,
       'ai-chat': aiChatEN,
+      'backup-export': backupExportEN,
     },
   },
   lng: detectInitialLanguage(),

@@ -4,12 +4,14 @@ import { LanguageSection } from './LanguageSection';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
 import { ExportButton } from '../export';
+import { BackupExportSection } from '../backup-export';
 
 /**
  * Settings screen. Hosts the theme picker, the language switcher, the
- * AI configuration, the export entry point, and the donation link.
- * Chrome-level settings (theme + language) come first; feature-level
- * settings follow.
+ * AI configuration, data-management actions (profile export, backup
+ * export), and the donation link. Chrome-level settings (theme +
+ * language) come first; feature-level settings follow; data-lifecycle
+ * actions grouped under a dedicated heading.
  */
 export function SettingsScreen() {
   const { t } = useTranslation('settings');
@@ -19,17 +21,26 @@ export function SettingsScreen() {
       <ThemeSection />
       <LanguageSection />
       <AISettingsSection />
-      <section aria-labelledby="export-settings-heading">
+      <section aria-labelledby="data-management-heading" className="space-y-6">
         <h2
-          id="export-settings-heading"
-          className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
+          id="data-management-heading"
+          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
         >
-          {t('export.heading')}
+          {t('data-management.heading')}
         </h2>
-        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t('export.description')}</p>
-        <ExportButton className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
-          {t('export.button')}
-        </ExportButton>
+        <section aria-labelledby="export-settings-heading">
+          <h3
+            id="export-settings-heading"
+            className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {t('export.heading')}
+          </h3>
+          <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t('export.description')}</p>
+          <ExportButton className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+            {t('export.button')}
+          </ExportButton>
+        </section>
+        <BackupExportSection />
       </section>
       <DonationSettingsSection />
     </div>

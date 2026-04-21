@@ -20,8 +20,11 @@
       "en": "English"
     }
   },
+  "data-management": {
+    "heading": "Datenverwaltung"
+  },
   "export": {
-    "heading": "Export",
+    "heading": "Profil exportieren",
     "description": "Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum naechsten Arztbesuch mit.",
     "button": "Profil exportieren"
   }

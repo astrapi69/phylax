@@ -152,6 +152,23 @@ describe('EncryptedRepository', () => {
       }
     });
 
+    it('listAll returns every row regardless of profileId', async () => {
+      await repo.create(makeTestData({ profileId: 'A', name: 'a1' }));
+      await repo.create(makeTestData({ profileId: 'A', name: 'a2' }));
+      await repo.create(makeTestData({ profileId: 'B', name: 'b1' }));
+
+      const results = await repo.listAll();
+      expect(results).toHaveLength(3);
+      const profileIds = results.map((r) => r.profileId).sort();
+      expect(profileIds).toEqual(['A', 'A', 'B']);
+    });
+
+    it('listAll throws when the key store is locked', async () => {
+      await repo.create(makeTestData());
+      lock();
+      await expect(repo.listAll()).rejects.toThrow('Key store is locked');
+    });
+
     it('listByProfileChronological sorts by createdAt ascending', async () => {
       // Create with explicit small delays to ensure different timestamps
       const first = await repo.create(makeTestData({ name: 'first' }));

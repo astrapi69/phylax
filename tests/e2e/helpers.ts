@@ -5,6 +5,29 @@ const DEFAULT_PASSWORD = 'test-password-12';
 const DEFAULT_PROFILE_NAME = 'Test-Profil';
 
 /**
+ * Pin the app language to German before the first React render.
+ *
+ * Post-I18N-02-e, `src/i18n/detector.ts` picks the initial language
+ * from `localStorage.phylax-language` then falls back to
+ * `navigator.language`. Playwright's default Chromium reports
+ * `en-US`, which would flip the DE-label-based e2e assertions to
+ * English. Writing the storage key before any navigation pins the
+ * app to German for the whole test run.
+ *
+ * Tests that exercise EN or auto-detection override this in their
+ * own `beforeEach` by clearing or setting the key explicitly.
+ */
+export async function pinLanguageToGerman(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('phylax-language', 'de');
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
+/**
  * Complete the full onboarding + profile-create flow in the browser.
  * Leaves the user on /profile (the profile placeholder screen).
  *
@@ -20,6 +43,8 @@ export async function setupAuthenticatedSession(
 ): Promise<void> {
   const password = options?.password ?? DEFAULT_PASSWORD;
   const profileName = options?.profileName ?? DEFAULT_PROFILE_NAME;
+
+  await pinLanguageToGerman(page);
 
   // Clear IndexedDB
   await page.goto('/');

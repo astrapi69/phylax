@@ -217,13 +217,13 @@ Goal: export the profile as PDF for doctor visits, as markdown for archiving, as
 
 Goal: user can export an encrypted backup file and restore it on the same or another device.
 
-- [ ] **B-01** Backup file format spec: header (version, salt, kdf params), encrypted payload, checksum
-- [ ] **B-02** Backup export: serialize all profile data and documents, encrypt with master password (separate key derivation), download
-- [ ] **B-03** Backup import: file picker, read header, prompt for password, decrypt, verify checksum
-- [ ] **B-04** Restore flow: warn about overwrite, confirm, replace local DB
+- [x] **B-01** Backup file format spec: `.phylax` envelope (version, salt, KDF params) with AES-256-GCM encrypted inner payload. Spec'd in `docs/backup-format.md`. Delivered in ONB-01e alongside the import path.
+- [x] **B-02** Backup export: `src/features/backup-export/` with `buildVaultDump` (per-repository `listAll()` reads), `createBackup` (fresh salt + PBKDF2-derived key + AES-GCM encrypt), `downloadBackup`, and a settings-panel section under "Datenverwaltung". Password prompt is explicit (no silent reuse of the in-memory master key; zero-knowledge model preserved).
+- [x] **B-03** Backup import: file picker, envelope parsing, password-driven decryption. Delivered in ONB-01e (`parseBackupFile`, `decryptBackup`).
+- [x] **B-04** Restore flow: overwrite warning via `WarningCallout`, single Dexie transaction replaces all tables. Delivered in ONB-01e (`populateVault`).
 - [ ] **B-05** Merge mode (optional): import without overwriting existing data by ID
-- [ ] **B-06** Backup encryption uses its own salt, independent from the live key
-- [ ] **B-07** End-to-end test: create profile with observations, export, wipe, import, verify identical state
+- [x] **B-06** Backup encryption uses its own salt, independent from the live key. Enforced by the format spec and verified per-export in `createBackup`.
+- [x] **B-07** End-to-end test: create profile with observations, export, wipe, import, verify identical state. Programmatic round-trip in `src/features/backup-export/roundTrip.test.ts` (Vitest integration) plus a Playwright spec `tests/e2e/backup-export.spec.ts` that verifies the download gesture produces a spec-compliant envelope.
 
 ---
 

@@ -1,0 +1,27 @@
+{
+  "section": {
+    "heading": "Encrypted backup",
+    "description": "Create a .phylax file with all profile data. You will need this exact password to restore."
+  },
+  "form": {
+    "password-label": "Password",
+    "password-help": "Your master password or any password you choose. Minimum {{min}} characters.",
+    "submit-label": "Create backup",
+    "submit-working": "Creating backup..."
+  },
+  "status": {
+    "deriving": "Deriving key...",
+    "encrypting": "Encrypting data...",
+    "ready": "Backup ready.",
+    "downloaded": "Backup encrypted with the password you entered. You will need this exact password to import the backup later.",
+    "new-backup": "Create another backup"
+  },
+  "error": {
+    "password-too-short": "Password must be at least {{min}} characters.",
+    "no-profile": "No profile available to back up.",
+    "locked": "App is locked. Please unlock and try again.",
+    "crypto-unavailable": "Browser does not support Web Crypto.",
+    "encryption-failed": "Encryption failed.",
+    "download-failed": "Download failed. Please try again."
+  }
+}
