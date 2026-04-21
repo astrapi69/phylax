@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import 'fake-indexeddb/auto';
@@ -107,5 +107,58 @@ describe('SetupView', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Set up Phylax' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
+  });
+
+  it('renders the meta-write-failed banner when useSetupVault reports that error', async () => {
+    vi.resetModules();
+    vi.doMock('./useSetupVault', () => ({
+      useSetupVault: () => ({
+        status: 'error' as const,
+        error: { kind: 'meta-write-failed' as const },
+        runSetup: async () => {},
+      }),
+    }));
+    vi.doMock('./useLazyZxcvbn', () => ({
+      useLazyZxcvbn: () => ({ ready: false, error: null, score: undefined }),
+    }));
+
+    const { SetupView: MockedSetupView } = await import('./SetupView');
+    render(
+      <MemoryRouter initialEntries={['/setup']}>
+        <Routes>
+          <Route path="/setup" element={<MockedSetupView />} />
+          <Route
+            path="/profile/create"
+            element={<div data-testid="destination-profile-create" />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/Einrichtung fehlgeschlagen/i)).toBeInTheDocument();
+
+    vi.doUnmock('./useSetupVault');
+    vi.doUnmock('./useLazyZxcvbn');
+  });
+
+  it('shows the not-acknowledged error when the form is submitted without checkbox', async () => {
+    const user = userEvent.setup();
+    renderInRouter();
+
+    await user.type(screen.getByLabelText('Master-Passwort'), VALID_PASSWORD);
+    await user.type(screen.getByLabelText('Passwort wiederholen'), VALID_PASSWORD);
+
+    // Submit is still disabled until acknowledged, but we fire a raw
+    // submit event on the form to exercise handleSubmit's showError
+    // path (SetupView lines 210-213).
+    const form = screen.getByRole('button', { name: 'Phylax einrichten' }).closest('form');
+    if (!form) throw new Error('form not found');
+    fireEvent.submit(form);
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Bitte bestaetige den Hinweis zum Passwortverlust/i),
+      ).toBeInTheDocument(),
+    );
   });
 });

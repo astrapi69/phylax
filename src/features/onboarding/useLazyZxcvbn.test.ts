@@ -48,6 +48,26 @@ describe('useLazyZxcvbn', () => {
     expect(err.message).toBe('zxcvbn-load-timeout');
   });
 
+  it('logs console.error on non-timeout dynamic-import rejection', async () => {
+    vi.resetModules();
+    const importError = new Error('module-load-failed');
+    vi.doMock('@zxcvbn-ts/core', () => Promise.reject(importError));
+    vi.doMock('@zxcvbn-ts/language-common', () => Promise.reject(importError));
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { useLazyZxcvbn: useLazyZxcvbnMocked } = await import('./useLazyZxcvbn');
+    const { result } = renderHook(() => useLazyZxcvbnMocked());
+
+    await waitFor(() => expect(result.current.error).toBeInstanceOf(Error));
+    expect(result.current.ready).toBe(false);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0]?.[0]).toMatch(/failed to load zxcvbn-ts/);
+
+    vi.doUnmock('@zxcvbn-ts/core');
+    vi.doUnmock('@zxcvbn-ts/language-common');
+  });
+
   it('logs a diagnostic warning and keeps ready=false on timeout', async () => {
     vi.resetModules();
     vi.doMock('@zxcvbn-ts/core', () => new Promise(() => {}));

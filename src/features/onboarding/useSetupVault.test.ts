@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import 'fake-indexeddb/auto';
 import { useSetupVault } from './useSetupVault';
@@ -9,6 +9,10 @@ import { resetDatabase } from '../../db/test-helpers';
 beforeEach(async () => {
   lock();
   await resetDatabase();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('useSetupVault', () => {
@@ -58,5 +62,27 @@ describe('useSetupVault', () => {
     expect(keys).toEqual(expect.arrayContaining(['status', 'error', 'runSetup']));
     expect(keys).not.toContain('password');
     expect(keys).not.toContain('key');
+  });
+
+  it('locks the keystore and reports meta-write-failed when the transaction throws', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const transactionSpy = vi
+      .spyOn(db, 'transaction')
+      .mockImplementation((() =>
+        Promise.reject(new Error('boom'))) as unknown as typeof db.transaction);
+
+    const { result } = renderHook(() => useSetupVault());
+
+    await act(async () => {
+      await result.current.runSetup('setup-password-12');
+    });
+
+    await waitFor(() => expect(result.current.status).toBe('error'));
+    expect(result.current.error).toEqual({ kind: 'meta-write-failed' });
+    expect(getLockState()).toBe('locked');
+    expect(errorSpy).toHaveBeenCalled();
+
+    transactionSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 });
