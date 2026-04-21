@@ -159,6 +159,7 @@ Tracked items from completed work. Prioritize independent of current phase.
 - [ ] **zxcvbn-ts language packs not shipped** - ADR-0014 Option C omits `language-en` and `language-de` (would have added ~931 KB gzipped). Random dictionary words, compound words, and names-as-passwords pass as "strong". Revisit if usability study, community feedback, or security review surfaces a concrete need.
 - [ ] **CI E2E gate** - `make test-e2e` is not part of the commit or PR gate, only `make test` + typecheck + lint + size-limit. ONB-01f surfaced that e2e tests silently broke across three commits (01c-01e) because the helpers navigated to the removed `/onboarding` route. Add e2e to the PR gate (slow but catches auth-flow regressions) or a smoke-subset to the commit gate.
 - [ ] **`/welcome` with existing vault has no redirect guard** - a user with a vault who direct-links to `/welcome`, `/privacy`, or `/setup` reaches the setup UI and can proceed through password entry, at which point `useSetupVault.runSetup()` overwrites meta + (via re-unlock) operates on the existing vault. Either add a redirect guard (bounce to `/unlock` when `metaExists()`) or make `SetupView` vault-aware (show overwrite warning like `BackupImportSelectView`). Decision depends on whether "reset via welcome" becomes a supported flow.
+- [ ] **Lazy-load non-primary locales** - currently all locale JSONs are statically imported into the main bundle per Vite's default chunking (see I18N-02-e). ADR-0015 accepts this eager strategy and raises the budget to absorb multilingual growth. Optimization path when bundle pressure genuinely binds: restructure `src/i18n/config.ts` to async-import locale bundles on demand, reducing main JS by ~30-50 KB at the cost of a brief loading state for non-DE users and async paths in the detector. Deferred.
 
 ---
 
@@ -237,7 +238,7 @@ Goal: production-quality UX, mobile-ready, accessible, internationalized.
 - [ ] **P-05** Settings screen: auto-lock timeout, language, theme, change master password, API key management
 - [ ] **P-06** Change master password flow: re-encrypt all records with new key
 - [ ] **P-07** Accessibility audit: keyboard navigation, screen reader labels, focus management
-- [ ] **P-08** Performance audit: bundle under 250KB gzipped, TTI under 3s on mid-range phone
+- [ ] **P-08** Performance audit: bundle under 350 KB gzipped (per ADR-0015), TTI under 3s on mid-range phone
 - [ ] **P-09** Error boundary with friendly message and recovery option
 - [ ] **P-10** Toast system for user feedback (success, warning, error)
 - [ ] **P-11** Add ES, FR, EL translations (matching the developer's language background)

@@ -1,5 +1,12 @@
 # ADR-0013: Bundle Size Budget v3
 
+> **Status**: main-JS and total-JS+CSS budgets **superseded by
+> [ADR-0015](ADR-0015-bundle-budget-expansion.md)** (2026-04-21).
+> Workbox chunk and CSS bundle budgets from this ADR **remain in
+> effect**. Setup-chunk budget is governed by ADR-0014. This document
+> is preserved as the historical record of the original
+> tight-budget intent.
+
 ## Context
 
 ADR-0012 raised per-chunk bundle budgets to 200 KB main JS / 220 KB
