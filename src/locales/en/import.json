@@ -1,0 +1,128 @@
+{
+  "flow": {
+    "parsing": "Processing Markdown...",
+    "importing": "Importing data...",
+    "source-unknown": "Unknown",
+    "target-fallback": "Target profile"
+  },
+  "entry": {
+    "heading": "Import from Markdown",
+    "intro": "Import an existing Living Health profile as a Markdown file or text.",
+    "file": {
+      "heading": "Choose file",
+      "cta": "Choose Markdown file (.md)",
+      "loaded": "Loaded: {{name}} ({{size}})",
+      "too-large": "File is too large ({{size}}). Maximum: {{max}}.",
+      "read-failed": "File could not be read."
+    },
+    "paste": {
+      "heading": "Or paste text",
+      "sr-label": "Paste Markdown text",
+      "placeholder": "# Medical profile...",
+      "char-count": "{{chars}} characters (minimum {{min}})",
+      "source-label": "Pasted text"
+    }
+  },
+  "selection": {
+    "loading": "Loading profiles...",
+    "heading": {
+      "zero-profiles": "Create profile",
+      "choose": "Import into which profile?"
+    },
+    "intro-zero": "Create a profile first to start the import.",
+    "select-label": "Assign to this profile",
+    "back-to-list": "Back to profile selection",
+    "error": {
+      "load-failed": "Profiles could not be loaded."
+    }
+  },
+  "preview": {
+    "heading": "Preview",
+    "source-label": "Source:",
+    "target-label": "Target:",
+    "content-heading": "Content",
+    "warnings-summary_one": "{{count}} warning during parsing",
+    "warnings-summary_other": "{{count}} warnings during parsing",
+    "unrecognized-summary_one": "{{count}} unrecognized block",
+    "unrecognized-summary_other": "{{count}} unrecognized blocks",
+    "clean": "✓ No issues detected during parsing.",
+    "view": {
+      "observations": "Show observations ({{count}})",
+      "lab-values": "Show lab values ({{count}})",
+      "supplements": "Show supplements ({{count}})",
+      "open-points": "Show open points ({{count}})",
+      "timeline-entries": "Show timeline entries ({{count}})"
+    },
+    "start": "Start import"
+  },
+  "confirm": {
+    "heading": "Replace existing data?",
+    "body": "\"{{name}}\" already contains:",
+    "warning": "This data will be irreversibly deleted on import and replaced by the new data.",
+    "lab-report-line_one": "{{count}} lab report ({{values}} values)",
+    "lab-report-line_other": "{{count}} lab reports ({{values}} values)",
+    "replace": "Yes, replace"
+  },
+  "result": {
+    "success": {
+      "heading": "Import successful",
+      "body": "Imported into \"{{name}}\":",
+      "home": "To overview",
+      "restart": "Another import"
+    },
+    "failure": {
+      "heading": "Import failed",
+      "body": "The import could not be completed.",
+      "label-error": "Error:",
+      "unchanged": "Your data was not changed.",
+      "retry": "Try again"
+    }
+  },
+  "cleanup": {
+    "heading": "Parser result",
+    "summary": {
+      "empty": "No content could be extracted.",
+      "partial": "Only a few entries recognized ({{total}} total). The format may be unusual for our parser."
+    },
+    "loading": "AI is cleaning up Markdown...",
+    "impossible": "The AI could not extract a usable structure from your input. Please check the content manually.",
+    "parse-failed-after": "The cleaned output also could not be parsed. Here is the raw AI output for manual review:",
+    "not-configured": "Configure the AI assistant in Settings to use automatic cleanup.",
+    "chat-error": {
+      "auth": "Invalid API key. Please check in Settings.",
+      "rate-limit": "Too many requests. Please wait a moment and try again.",
+      "server": "The AI service is temporarily unavailable.",
+      "network": "No internet connection.",
+      "unknown": "AI service error.",
+      "unknown-with-detail": "AI service error. ({{detail}})"
+    },
+    "button": {
+      "request": "Request AI help",
+      "privacy-note": "The AI cleans up your Markdown. This sends your input to Anthropic.",
+      "privacy-link": "Privacy"
+    },
+    "action": {
+      "restart": "Try again",
+      "go-to-settings": "Go to Settings",
+      "proceed-partial": "Continue with partial result"
+    }
+  },
+  "counts": {
+    "lab-report-with-values_one": "{{count}} lab report ({{values}} values)",
+    "lab-report-with-values_other": "{{count}} lab reports ({{values}} values)",
+    "open-points_one": "{{count}} open point",
+    "open-points_other": "{{count}} open points",
+    "timeline-entries_one": "{{count}} timeline entry",
+    "timeline-entries_other": "{{count}} timeline entries",
+    "profile-versions_one": "{{count}} profile version",
+    "profile-versions_other": "{{count}} profile versions",
+    "warnings_one": "{{count}} warning",
+    "warnings_other": "{{count}} warnings",
+    "external-references_one": "{{count}} external reference",
+    "external-references_other": "{{count}} external references"
+  },
+  "action": {
+    "back": "Back",
+    "next": "Next"
+  }
+}

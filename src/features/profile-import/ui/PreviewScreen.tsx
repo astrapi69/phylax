@@ -69,7 +69,7 @@ export function PreviewScreen({
           <li>{t('counts.open-points', { count: counts.openPoints })}</li>
           <li>{t('counts.timeline-entries', { count: counts.timelineEntries })}</li>
           <li>{t('counts.profile-versions', { count: counts.profileVersions })}</li>
-          <li>{t('counts.warning-signs', { count: counts.warningSigns })}</li>
+          <li>{t('counts.warnings', { count: counts.warningSigns })}</li>
           <li>{t('counts.external-references', { count: counts.externalReferences })}</li>
         </ul>
       </section>

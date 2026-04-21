@@ -75,6 +75,13 @@ describe('i18n config', () => {
       expect(i18n.hasResourceBundle('en', ns)).toBe(true);
     }
   });
+
+  it('registers AI + support + import EN namespaces after I18N-02-c', () => {
+    const added = ['ai-config', 'donation', 'import'];
+    for (const ns of added) {
+      expect(i18n.hasResourceBundle('en', ns)).toBe(true);
+    }
+  });
 });
 
 describe('common counts plural forms', () => {
@@ -134,5 +141,94 @@ describe('profile-list counts plural forms (I18N-02-b)', () => {
   it('timeline-entries: count=5 renders plural in both languages', () => {
     expect(tDe('counts.timeline-entries', { count: 5 })).toBe('5 Verlaufsnotizen');
     expect(tEn('counts.timeline-entries', { count: 5 })).toBe('5 timeline entries');
+  });
+});
+
+describe('import plural forms (I18N-02-c)', () => {
+  const tDe = i18n.getFixedT('de', 'import');
+  const tEn = i18n.getFixedT('en', 'import');
+
+  it('preview.warnings-summary: count=1 renders singular', () => {
+    expect(tDe('preview.warnings-summary', { count: 1 })).toBe('1 Warnung beim Parsen');
+    expect(tEn('preview.warnings-summary', { count: 1 })).toBe('1 warning during parsing');
+  });
+
+  it('preview.warnings-summary: count=5 renders plural', () => {
+    expect(tDe('preview.warnings-summary', { count: 5 })).toBe('5 Warnungen beim Parsen');
+    expect(tEn('preview.warnings-summary', { count: 5 })).toBe('5 warnings during parsing');
+  });
+
+  it('preview.unrecognized-summary: count=1 renders singular', () => {
+    expect(tDe('preview.unrecognized-summary', { count: 1 })).toBe('1 nicht erkannter Block');
+    expect(tEn('preview.unrecognized-summary', { count: 1 })).toBe('1 unrecognized block');
+  });
+
+  it('preview.unrecognized-summary: count=5 renders plural', () => {
+    expect(tDe('preview.unrecognized-summary', { count: 5 })).toBe('5 nicht erkannte Bloecke');
+    expect(tEn('preview.unrecognized-summary', { count: 5 })).toBe('5 unrecognized blocks');
+  });
+
+  it('confirm.lab-report-line: count=1 renders singular', () => {
+    expect(tDe('confirm.lab-report-line', { count: 1, values: 3 })).toBe('1 Laborbefund (3 Werte)');
+    expect(tEn('confirm.lab-report-line', { count: 1, values: 3 })).toBe('1 lab report (3 values)');
+  });
+
+  it('confirm.lab-report-line: count=5 renders plural', () => {
+    expect(tDe('confirm.lab-report-line', { count: 5, values: 30 })).toBe(
+      '5 Laborbefunde (30 Werte)',
+    );
+    expect(tEn('confirm.lab-report-line', { count: 5, values: 30 })).toBe(
+      '5 lab reports (30 values)',
+    );
+  });
+
+  it('counts.open-points: count=1 renders singular', () => {
+    expect(tDe('counts.open-points', { count: 1 })).toBe('1 offener Punkt');
+    expect(tEn('counts.open-points', { count: 1 })).toBe('1 open point');
+  });
+
+  it('counts.open-points: count=5 renders plural', () => {
+    expect(tDe('counts.open-points', { count: 5 })).toBe('5 offene Punkte');
+    expect(tEn('counts.open-points', { count: 5 })).toBe('5 open points');
+  });
+
+  it('counts.timeline-entries: count=1 renders singular', () => {
+    expect(tDe('counts.timeline-entries', { count: 1 })).toBe('1 Verlaufsnotiz');
+    expect(tEn('counts.timeline-entries', { count: 1 })).toBe('1 timeline entry');
+  });
+
+  it('counts.timeline-entries: count=5 renders plural', () => {
+    expect(tDe('counts.timeline-entries', { count: 5 })).toBe('5 Verlaufsnotizen');
+    expect(tEn('counts.timeline-entries', { count: 5 })).toBe('5 timeline entries');
+  });
+
+  it('counts.profile-versions: count=1 renders singular', () => {
+    expect(tDe('counts.profile-versions', { count: 1 })).toBe('1 Profilversion');
+    expect(tEn('counts.profile-versions', { count: 1 })).toBe('1 profile version');
+  });
+
+  it('counts.profile-versions: count=5 renders plural', () => {
+    expect(tDe('counts.profile-versions', { count: 5 })).toBe('5 Profilversionen');
+    expect(tEn('counts.profile-versions', { count: 5 })).toBe('5 profile versions');
+  });
+
+  it('counts.warnings: count=1 renders singular (renamed from warning-signs)', () => {
+    expect(tDe('counts.warnings', { count: 1 })).toBe('1 Warnhinweis');
+    expect(tEn('counts.warnings', { count: 1 })).toBe('1 warning');
+  });
+
+  it('counts.warnings: count=5 renders plural', () => {
+    expect(tDe('counts.warnings', { count: 5 })).toBe('5 Warnhinweise');
+    expect(tEn('counts.warnings', { count: 5 })).toBe('5 warnings');
+  });
+
+  it('counts.external-references: count=1 renders singular', () => {
+    expect(tDe('counts.external-references', { count: 1 })).toBe('1 externe Referenz');
+    expect(tEn('counts.external-references', { count: 1 })).toBe('1 external reference');
+  });
+
+  it('counts.external-references: count=5 renders plural', () => {
+    expect(tDe('counts.external-references', { count: 5 })).toBe('5 externe Referenzen');
+    expect(tEn('counts.external-references', { count: 5 })).toBe('5 external references');
   });
 });

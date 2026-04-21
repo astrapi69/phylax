@@ -27,13 +27,16 @@ reasoning note. Keep entries alphabetical within each section.
 | Offene Punkte        | open points            | keep literal - Phylax-specific, not "tasks" or "action items" |
 | Offener Punkt        | open point             | singular form                                                 |
 | Profil               | profile                |                                                               |
+| Roh-Ausgabe          | raw output             | import cleanup flow (AI result)                               |
 | Selbstregulation     | self-regulation        | established English term                                      |
 | Supplement           | supplement             |                                                               |
+| Unbekannt            | Unknown                | import source fallback                                        |
 | Verlauf (nav label)  | timeline               |                                                               |
 | Verlaufseintrag      | timeline entry         | singular; plural "Verlaufseintraege" -> "timeline entries"    |
 | Verlaufsnotiz        | timeline entry         | synonym used in import + profile-list UIs                     |
-| Warnhinweis          | warning                | generic warning                                               |
+| Warnhinweis          | warning                | generic warning (import parse warnings, etc.)                 |
 | Warnsignal           | warning sign           | medical red-flag sense                                        |
+| Zielprofil           | target profile         | import destination fallback                                   |
 
 ## Profile and base data
 
@@ -53,6 +56,7 @@ reasoning note. Keep entries alphabetical within each section.
 | Letzte Aenderung           | Last change          | profile-view header field    |
 | Medikamente                | medications          |                              |
 | Mein Profil                | My profile           | fallback display name        |
+| Profilauswahl              | profile selection    | import flow step             |
 | Relevante Einschraenkungen | Relevant limitations | profile-view section heading |
 | Stellvertretend fuer       | proxy for            |                              |
 | Stellvertreterprofil       | proxy profile        |                              |
@@ -63,9 +67,13 @@ reasoning note. Keep entries alphabetical within each section.
 | DE                                   | EN              | Notes                                                            |
 | ------------------------------------ | --------------- | ---------------------------------------------------------------- |
 | Aenderung                            | change          |                                                                  |
+| Anbieter                             | Provider        | AI provider dropdown label                                       |
+| API-Schluessel                       | API key         | AI config field                                                  |
+| benutzerdefiniert                    | custom          | model suffix                                                     |
 | KI                                   | AI              | abbreviation                                                     |
 | KI-Assistent                         | AI assistant    |                                                                  |
 | Master-Passwort                      | master password |                                                                  |
+| Modell                               | Model           | AI config field                                                  |
 | Profil teilen                        | share profile   |                                                                  |
 | Roh-Markdown                         | raw Markdown    |                                                                  |
 | Uebernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak               |
@@ -75,27 +83,30 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## Common actions and chrome
 
-| DE                   | EN                     | Notes                     |
-| -------------------- | ---------------------- | ------------------------- |
-| Abbrechen            | Cancel                 |                           |
-| Auswaehlen           | Select                 |                           |
-| Datenschutz          | privacy                |                           |
-| Einstellungen        | settings               |                           |
-| Entsperren           | Unlock                 |                           |
-| Erledigt             | Done                   |                           |
-| Erstellen...         | Creating...            | form submit pending state |
-| Exportieren          | Export                 | action label              |
-| Laden...             | Loading...             |                           |
-| Leeren               | Clear                  |                           |
-| Schliessen           | Close                  |                           |
-| Sortierung           | Sort                   | observations sort label   |
-| Speichern            | Save                   |                           |
-| Sperren              | Lock                   |                           |
-| Sprache              | language               | for the language switcher |
-| Systemsprache folgen | Follow system language | auto option               |
-| Version              | Version                | profile header (semver)   |
-| Weiter               | Next                   |                           |
-| Zurueck              | Back                   |                           |
+| DE                   | EN                     | Notes                        |
+| -------------------- | ---------------------- | ---------------------------- |
+| Abbrechen            | Cancel                 |                              |
+| Aendern              | Change                 | change stored value (button) |
+| Auswaehlen           | Select                 |                              |
+| Datei auswaehlen     | Choose file            | file picker label            |
+| Datenschutz          | privacy                |                              |
+| Einstellungen        | settings               |                              |
+| Entsperren           | Unlock                 |                              |
+| Erledigt             | Done                   |                              |
+| Erstellen...         | Creating...            | form submit pending state    |
+| Exportieren          | Export                 | action label                 |
+| Ja, ersetzen         | Yes, replace           | destructive confirm          |
+| Laden...             | Loading...             |                              |
+| Leeren               | Clear                  |                              |
+| Schliessen           | Close                  |                              |
+| Sortierung           | Sort                   | observations sort label      |
+| Speichern            | Save                   |                              |
+| Sperren              | Lock                   |                              |
+| Sprache              | language               | for the language switcher    |
+| Systemsprache folgen | Follow system language | auto option                  |
+| Version              | Version                | profile header (semver)      |
+| Weiter               | Next                   |                              |
+| Zurueck              | Back                   |                              |
 
 ## Table headers and field labels
 

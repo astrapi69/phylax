@@ -1,0 +1,63 @@
+{
+  "disclaimer": {
+    "heading": "Activate AI assistant",
+    "important-notice": "Important notices:",
+    "point-1": {
+      "heading": "Not medical advice:",
+      "body": "The AI assistant structures your input but does not make diagnoses or give medical recommendations."
+    },
+    "point-2": {
+      "heading": "Data leaves your device:",
+      "body-prefix": "When you use the AI assistant, your inputs are sent to Anthropic, via your own Anthropic account and with your own API key. Anthropic treats you as a direct customer, not Phylax. Anthropic stores requests and responses for 30 days for safety review and then deletes them automatically. Requests are not used for AI training. Phylax itself does not store chat histories on your device. Details on data handling by Anthropic: ",
+      "link-label": "privacy.claude.com",
+      "body-suffix": "."
+    },
+    "point-3": {
+      "heading": "You control access:",
+      "body": "Your API key is stored encrypted on your device. You can deactivate the AI function at any time and delete the key."
+    },
+    "confirm-button": "Understood, activate AI"
+  },
+  "settings-section": {
+    "privacy-link": "Privacy in AI chat",
+    "loading": "Loading AI settings...",
+    "error": "AI settings could not be loaded.",
+    "status-inactive": "Status: Not active",
+    "status-configured": "Status: Configured",
+    "api-key-label": "API key",
+    "suspicious-warning": "Key format looks unusual. Please check.",
+    "activate-button": "Activate AI",
+    "save-button": "Save",
+    "change-button": "Change",
+    "model-label": "Model",
+    "model-custom-suffix": "(custom)",
+    "deactivate-button": "Deactivate AI",
+    "provider-label": "Provider"
+  },
+  "privacy-info": {
+    "title": "Privacy in AI chat",
+    "phylax-section": {
+      "heading": "What Phylax does",
+      "bullet-1": "Does not store chat messages locally",
+      "bullet-2": "Messages exist only during the session",
+      "bullet-3": "Reloading the page deletes the chat"
+    },
+    "anthropic-section": {
+      "heading": "What Anthropic does",
+      "bullet-1": "Stores requests and responses for 30 days for safety review",
+      "bullet-2": "Deletes them automatically afterwards",
+      "bullet-3": "Does not use them for AI training",
+      "details-prefix": "Details on data handling: ",
+      "link-label": "privacy.claude.com"
+    },
+    "user-control-section": {
+      "heading": "What you control",
+      "bullet-1": "The Anthropic account and API key are yours, not Phylax's",
+      "bullet-2": "You see your usage directly in your Anthropic account",
+      "bullet-3": "Deactivate the AI function in Settings at any time (deletes the key from Phylax)",
+      "bullet-4": "\"Share profile\" is optional",
+      "bullet-5": "Remove the chat at any time with \"Clear\"",
+      "bullet-6": "Revoke the API key directly at Anthropic (takes effect immediately)"
+    }
+  }
+}

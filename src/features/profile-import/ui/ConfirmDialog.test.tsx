@@ -25,7 +25,7 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('heading', { name: /bestehende Daten ersetzen/i })).toBeInTheDocument();
     expect(screen.getByText(/"Mein Profil"/)).toBeInTheDocument();
     expect(screen.getByText(/3 Beobachtungen/)).toBeInTheDocument();
-    expect(screen.getByText(/1 Laborbefunde \(12 Werte\)/)).toBeInTheDocument();
+    expect(screen.getByText(/1 Laborbefund \(12 Werte\)/)).toBeInTheDocument();
   });
 
   it('cancel button calls onCancel', async () => {

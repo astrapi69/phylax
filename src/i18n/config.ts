@@ -45,6 +45,9 @@ import profileViewEN from '../locales/en/profile-view.json';
 import profileListEN from '../locales/en/profile-list.json';
 import profileCreateEN from '../locales/en/profile-create.json';
 import exportEN from '../locales/en/export.json';
+import aiConfigEN from '../locales/en/ai-config.json';
+import donationEN from '../locales/en/donation.json';
+import importEN from '../locales/en/import.json';
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -156,6 +159,9 @@ void i18n.use(initReactI18next).init({
       'profile-list': profileListEN,
       'profile-create': profileCreateEN,
       export: exportEN,
+      'ai-config': aiConfigEN,
+      donation: donationEN,
+      import: importEN,
     },
   },
   lng: 'de',

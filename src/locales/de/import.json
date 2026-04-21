@@ -41,8 +41,10 @@
     "source-label": "Quelle:",
     "target-label": "Ziel:",
     "content-heading": "Inhalt",
-    "warnings-summary": "{{count}} Warnungen beim Parsen",
-    "unrecognized-summary": "{{count}} nicht erkannte Bloecke",
+    "warnings-summary_one": "{{count}} Warnung beim Parsen",
+    "warnings-summary_other": "{{count}} Warnungen beim Parsen",
+    "unrecognized-summary_one": "{{count}} nicht erkannter Block",
+    "unrecognized-summary_other": "{{count}} nicht erkannte Bloecke",
     "clean": "✓ Keine Probleme beim Parsen festgestellt.",
     "view": {
       "observations": "Beobachtungen anzeigen ({{count}})",
@@ -57,7 +59,8 @@
     "heading": "Bestehende Daten ersetzen?",
     "body": "\"{{name}}\" enthaelt bereits:",
     "warning": "Diese Daten werden beim Import unwiderruflich geloescht und durch die neuen ersetzt.",
-    "lab-report-line": "{{count}} Laborbefunde ({{values}} Werte)",
+    "lab-report-line_one": "{{count}} Laborbefund ({{values}} Werte)",
+    "lab-report-line_other": "{{count}} Laborbefunde ({{values}} Werte)",
     "replace": "Ja, ersetzen"
   },
   "result": {
@@ -107,11 +110,16 @@
   "counts": {
     "lab-report-with-values_one": "{{count}} Laborbefund ({{values}} Werte)",
     "lab-report-with-values_other": "{{count}} Laborbefunde ({{values}} Werte)",
-    "open-points": "{{count}} offene Punkte",
-    "timeline-entries": "{{count}} Verlaufsnotizen",
-    "profile-versions": "{{count}} Profilversionen",
-    "warning-signs": "{{count}} Warnhinweise",
-    "external-references": "{{count}} externe Referenzen"
+    "open-points_one": "{{count}} offener Punkt",
+    "open-points_other": "{{count}} offene Punkte",
+    "timeline-entries_one": "{{count}} Verlaufsnotiz",
+    "timeline-entries_other": "{{count}} Verlaufsnotizen",
+    "profile-versions_one": "{{count}} Profilversion",
+    "profile-versions_other": "{{count}} Profilversionen",
+    "warnings_one": "{{count}} Warnhinweis",
+    "warnings_other": "{{count}} Warnhinweise",
+    "external-references_one": "{{count}} externe Referenz",
+    "external-references_other": "{{count}} externe Referenzen"
   },
   "action": {
     "back": "Zurueck",

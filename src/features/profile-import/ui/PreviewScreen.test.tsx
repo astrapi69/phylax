@@ -84,7 +84,7 @@ describe('PreviewScreen', () => {
       />,
     );
     expect(screen.queryByTestId('parse-clean')).not.toBeInTheDocument();
-    const btn = screen.getByRole('button', { name: /1 Warnungen beim Parsen/ });
+    const btn = screen.getByRole('button', { name: /1 Warnung beim Parsen/ });
     await user.click(btn);
     expect(screen.getByText(/unerwartet/)).toBeInTheDocument();
   });
@@ -107,7 +107,7 @@ describe('PreviewScreen', () => {
         onBack={vi.fn()}
       />,
     );
-    expect(screen.getByRole('button', { name: /1 nicht erkannte Bloecke/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /1 nicht erkannter Block/ })).toBeInTheDocument();
   });
 
   it('observations accordion is collapsed by default and reveals content on click', async () => {
