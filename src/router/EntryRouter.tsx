@@ -38,8 +38,9 @@ export function EntryRouter() {
  * EntryRouter's policy for mapping the shared auth state to a
  * destination. Co-located because the mapping is EntryRouter-specific:
  * unlocked users land on `/profile` _here_; other consumers map the
- * same state to other actions (ProtectedRoute renders children;
- * SetupFlowGuard redirects to /unlock).
+ * same state to other actions (ProtectedRoute renders children on
+ * unlocked; SetupFlowGuard sends locked users to /unlock and unlocked
+ * users to /profile).
  */
 function stateToEntryDestination(state: AuthState): string {
   switch (state) {

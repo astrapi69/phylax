@@ -54,7 +54,9 @@ export function AppRoutes() {
       <Route path="/" element={<EntryRouter />} />
 
       {/* Full-screen routes (no shell) */}
-      {/* Setup flow: SetupFlowGuard redirects to /unlock when a vault exists */}
+      {/* Setup flow: SetupFlowGuard redirects locked users to /unlock and
+          unlocked users to /profile when a vault exists (TD-07); no-vault
+          users render the setup flow. */}
       <Route element={<SetupFlowGuard />}>
         <Route path="/welcome" element={<WelcomeView />} />
         <Route path="/privacy" element={<PrivacyView />} />

@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { resolveAuthState } from './resolveAuthState';
 
-type GuardState = 'checking' | 'allowed' | 'redirect';
+type GuardResult = 'checking' | 'allowed' | 'locked' | 'unlocked';
 
 /**
  * Layout guard for the setup-flow routes (`/welcome`, `/privacy`,
- * `/setup`). Redirects to `/unlock` when a vault already exists so a
- * direct-link visit cannot reach `useSetupVault.runSetup()` and
- * overwrite meta.
+ * `/setup`). Maps the shared auth state to a per-state redirect policy:
+ *
+ * - `no-vault`: renders children (first-run setup flow).
+ * - `locked`:   redirects to `/unlock` (user must re-authenticate
+ *   before reaching anything vault-aware).
+ * - `unlocked`: redirects to `/profile` (authenticated user has no
+ *   reason to see the setup flow; forcing them through `/unlock`
+ *   would be a needless re-authentication).
  *
  * Reads auth state via the shared `resolveAuthState` helper (TD-06).
- * Currently collapses `locked` and `unlocked` into the same redirect
- * target (`/unlock`); a follow-up tech-debt entry covers routing the
- * already-unlocked case to `/profile` instead.
  *
  * Renders null during the single state-read tick (matches EntryRouter's
  * loading style; avoids a brief welcome-screen flash before the
@@ -28,26 +30,27 @@ type GuardState = 'checking' | 'allowed' | 'redirect';
  * vault, so fail-open on the guard does not re-open the data-loss path.
  */
 export function SetupFlowGuard() {
-  const [state, setState] = useState<GuardState>('checking');
+  const [result, setResult] = useState<GuardResult>('checking');
 
   useEffect(() => {
     let cancelled = false;
     resolveAuthState()
       .then((authState) => {
         if (cancelled) return;
-        setState(authState === 'no-vault' ? 'allowed' : 'redirect');
+        setResult(authState === 'no-vault' ? 'allowed' : authState);
       })
       .catch((err) => {
         if (cancelled) return;
         console.error('SetupFlowGuard: resolveAuthState failed, allowing setup flow', err);
-        setState('allowed');
+        setResult('allowed');
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (state === 'checking') return null;
-  if (state === 'redirect') return <Navigate to="/unlock" replace />;
+  if (result === 'checking') return null;
+  if (result === 'locked') return <Navigate to="/unlock" replace />;
+  if (result === 'unlocked') return <Navigate to="/profile" replace />;
   return <Outlet />;
 }
