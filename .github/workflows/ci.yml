@@ -57,6 +57,17 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Harden apt against Ubuntu mirror flakes
+        # TD-10 (a): cb6d691 CI flaked twice on azure.archive.ubuntu.com
+        # InRelease stalls during `playwright install-deps`. Adding apt
+        # retries + a short per-fetch timeout lets transient stalls
+        # recover instead of eating the 15-min job timeout (TD-04).
+        run: |
+          sudo tee /etc/apt/apt.conf.d/99-ci-retry >/dev/null <<'APTCONF'
+          Acquire::Retries "3";
+          Acquire::http::Timeout "30";
+          Acquire::https::Timeout "30";
+          APTCONF
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -65,10 +76,24 @@ jobs:
           key: playwright-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Attempt $i failed; retrying in 20s..." >&2
+            sleep 20
+          done
+          echo "All 3 attempts failed" >&2
+          exit 1
       - name: Install Playwright system deps
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: |
+          for i in 1 2 3; do
+            npx playwright install-deps chromium && exit 0
+            echo "Attempt $i failed; retrying in 20s..." >&2
+            sleep 20
+          done
+          echo "All 3 attempts failed" >&2
+          exit 1
       - run: make test-e2e
       - name: Upload Playwright report on failure
         if: failure()
@@ -123,6 +148,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Harden apt against Ubuntu mirror flakes
+        # TD-10 (a): mirror the e2e-dev hardening so the asymmetry
+        # does not produce different flake profiles between the two
+        # E2E jobs.
+        run: |
+          sudo tee /etc/apt/apt.conf.d/99-ci-retry >/dev/null <<'APTCONF'
+          Acquire::Retries "3";
+          Acquire::http::Timeout "30";
+          Acquire::https::Timeout "30";
+          APTCONF
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -131,10 +166,24 @@ jobs:
           key: playwright-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Attempt $i failed; retrying in 20s..." >&2
+            sleep 20
+          done
+          echo "All 3 attempts failed" >&2
+          exit 1
       - name: Install Playwright system deps
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: |
+          for i in 1 2 3; do
+            npx playwright install-deps chromium && exit 0
+            echo "Attempt $i failed; retrying in 20s..." >&2
+            sleep 20
+          done
+          echo "All 3 attempts failed" >&2
+          exit 1
       - uses: actions/download-artifact@v4
         with:
           name: production-build
