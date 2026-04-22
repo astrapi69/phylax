@@ -52,7 +52,7 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
     return (
       <div
         data-testid="message-bubble-system"
-        className="my-2 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-center text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+        className="my-2 rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-center text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
       >
         {message.content}
       </div>
@@ -85,7 +85,7 @@ export function MessageBubble({ message, onCommitPreview, committed }: MessageBu
       >
         <span
           aria-label={t('common:entity.ai-assistant')}
-          className="mb-1 inline-block rounded bg-gray-300 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+          className="mb-1 inline-block rounded-sm bg-gray-300 px-1.5 py-0.5 text-xs font-semibold tracking-wide text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-200"
         >
           {t('message.ai-badge')}
         </span>
@@ -135,11 +135,11 @@ function ContextCard({ content, counts }: ContextCardProps) {
   return (
     <div
       data-testid="message-bubble-context"
-      className="my-2 rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100"
+      className="my-2 rounded-sm border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-100"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1">
-          <span className="mr-2 inline-block rounded bg-blue-200 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <span className="mr-2 inline-block rounded-sm bg-blue-200 px-1.5 py-0.5 text-xs font-semibold tracking-wide text-blue-800 uppercase dark:bg-blue-900 dark:text-blue-200">
             {t('message.context.badge')}
           </span>
           <span className="text-xs text-blue-900/80 dark:text-blue-100/80">
@@ -150,7 +150,7 @@ function ContextCard({ content, counts }: ContextCardProps) {
           type="button"
           onClick={() => setExpanded((v) => !v)}
           aria-expanded={expanded}
-          className="rounded border border-blue-300 px-2 py-0.5 text-xs font-medium text-blue-800 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:text-blue-200 dark:hover:bg-blue-900"
+          className="rounded-sm border border-blue-300 px-2 py-0.5 text-xs font-medium text-blue-800 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:text-blue-200 dark:hover:bg-blue-900"
         >
           {expanded ? t('message.context.collapse') : t('message.context.expand')}
         </button>

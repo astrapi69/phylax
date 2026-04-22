@@ -19,8 +19,8 @@ export function SupplementCard({ supplement, muted = false }: SupplementCardProp
   // that blends small text below WCAG AA contrast on the tinted
   // background. The badge and background tint are enough signal.
   const containerClass = muted
-    ? 'rounded border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
-    : 'rounded border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
+    ? 'rounded-sm border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
+    : 'rounded-sm border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
 
   return (
     <div className={containerClass}>
@@ -28,7 +28,7 @@ export function SupplementCard({ supplement, muted = false }: SupplementCardProp
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{name}</h3>
         {brand && <span className="text-xs text-gray-500 dark:text-gray-400">{brand}</span>}
         {muted && (
-          <span className="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+          <span className="rounded-sm bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
             {t('card.paused-badge')}
           </span>
         )}

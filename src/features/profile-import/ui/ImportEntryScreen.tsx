@@ -77,7 +77,7 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
           </h2>
           <label
             htmlFor="import-file"
-            className="flex w-full cursor-pointer items-center justify-center rounded border border-dashed border-gray-300 bg-white px-4 py-8 text-sm text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-800"
+            className="flex w-full cursor-pointer items-center justify-center rounded-sm border border-dashed border-gray-300 bg-white px-4 py-8 text-sm text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-800"
           >
             <span>{t('entry.file.cta')}</span>
           </label>
@@ -115,7 +115,7 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
             value={pasted}
             onChange={(e) => setPasted(e.target.value)}
             placeholder={t('entry.paste.placeholder')}
-            className="min-h-48 w-full rounded border border-gray-300 bg-white px-3 py-2 font-mono text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            className="min-h-48 w-full rounded-sm border border-gray-300 bg-white px-3 py-2 font-mono text-xs text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400" aria-live="polite">
             {t('entry.paste.char-count', { chars: pasted.length, min: MIN_PASTE_LENGTH })}
@@ -128,14 +128,14 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
           type="button"
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+          className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
           {t('action.next')}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         >
           {t('common:action.cancel')}
         </button>

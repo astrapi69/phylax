@@ -234,7 +234,7 @@ export function CommitPreviewModal({
           {state.kind === 'error' && (
             <p
               data-testid="commit-preview-error"
-              className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+              className="rounded-sm border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
             >
               {state.message}
             </p>
@@ -269,7 +269,7 @@ export function CommitPreviewModal({
             type="button"
             onClick={onClose}
             disabled={commitState.kind === 'committing'}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             {t('common:action.close')}
           </button>
@@ -279,7 +279,7 @@ export function CommitPreviewModal({
             disabled={!canCommit}
             aria-disabled={!canCommit}
             title={canCommit ? undefined : commitDisabledReason || t('commit-preview.loading')}
-            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
+            className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
           >
             {commitState.kind === 'committing'
               ? t('commit-preview.footer.committing')
@@ -318,7 +318,7 @@ function ReadyBody({
       {diff.warnings.length > 0 && (
         <section
           data-testid="commit-preview-warnings"
-          className="mb-5 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+          className="mb-5 rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
         >
           <p className="mb-1 font-semibold">{t('commit-preview.warnings-heading')}</p>
           <ul className="list-disc pl-5">
@@ -332,7 +332,7 @@ function ReadyBody({
       {isEmpty && (
         <p
           data-testid="commit-preview-empty"
-          className="mb-5 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+          className="mb-5 rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
         >
           {emptyHint || t('commit-preview.empty-diff')}
         </p>
@@ -353,7 +353,7 @@ function ReadyBody({
       <OpenPointsSection diff={diff} />
 
       <section className="mb-5" data-testid="commit-preview-version">
-        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
+        <h3 className="mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase dark:text-gray-300">
           {t('commit-preview.section.version')}
         </h3>
         <label htmlFor="commit-preview-version-input" className="sr-only">
@@ -364,7 +364,7 @@ function ReadyBody({
           type="text"
           value={versionDescription}
           onChange={(e) => onVersionDescriptionChange(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         />
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {t('commit-preview.version.hint')}
@@ -378,7 +378,7 @@ function ReadyBody({
         >
           {t('commit-preview.raw-toggle')}
         </summary>
-        <pre className="mt-2 overflow-x-auto rounded bg-gray-50 p-3 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+        <pre className="mt-2 overflow-x-auto rounded-sm bg-gray-50 p-3 text-xs text-gray-800 dark:bg-gray-800 dark:text-gray-200">
           {wrapped}
         </pre>
       </details>
@@ -400,7 +400,7 @@ function ObservationsSection({
   }
   return (
     <section className="mb-5" data-testid="commit-preview-observations">
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
+      <h3 className="mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase dark:text-gray-300">
         {t('commit-preview.section.observations')}
       </h3>
       <ul className="space-y-3">
@@ -408,10 +408,10 @@ function ObservationsSection({
           <li
             key={`new-${idx}`}
             data-testid="observation-new"
-            className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
+            className="rounded-sm border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
           >
             <Header badge={t('commit-preview.badge.new')} badgeClass={NEW_BADGE} title={o.theme} />
-            <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs text-gray-800 dark:text-gray-200">
+            <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs text-gray-800 dark:text-gray-200">
               {o.status.trim().length > 0 && (
                 <Field label={t('commit-preview.field.obs.status')} value={o.status} />
               )}
@@ -438,7 +438,7 @@ function ObservationsSection({
             <li
               key={`unchanged-${o.id}`}
               data-testid="observation-unchanged"
-              className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+              className="rounded-sm border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
             >
               <Header
                 badge={t('commit-preview.badge.unchanged')}
@@ -469,14 +469,14 @@ function ObservationChangeRow({
   return (
     <li
       data-testid="observation-changed"
-      className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
+      className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
     >
       <Header
         badge={t('commit-preview.badge.changed')}
         badgeClass={CHANGED_BADGE}
         title={change.existing.theme}
       />
-      <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs">
+      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
         {fields.map((field) => {
           const isChanged = change.fieldsChanged.includes(field);
           if (!isChanged && !showUnchanged) return null;
@@ -500,7 +500,7 @@ function ObservationChangeRow({
           return (
             <div key={field} className="contents">
               <dt className="font-medium text-gray-500 dark:text-gray-500">{label}:</dt>
-              <dd className="italic text-gray-500 dark:text-gray-500">
+              <dd className="text-gray-500 italic dark:text-gray-500">
                 {t('commit-preview.placeholder.unchanged')}
               </dd>
             </div>
@@ -525,7 +525,7 @@ function SupplementsSection({
   }
   return (
     <section className="mb-5" data-testid="commit-preview-supplements">
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
+      <h3 className="mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase dark:text-gray-300">
         {t('commit-preview.section.supplements')}
       </h3>
       <ul className="space-y-2">
@@ -533,7 +533,7 @@ function SupplementsSection({
           <li
             key={`new-${idx}`}
             data-testid="supplement-new"
-            className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm text-gray-800 dark:border-green-800 dark:bg-green-950/30 dark:text-gray-200"
+            className="rounded-sm border border-green-300 bg-green-50 px-3 py-2 text-sm text-gray-800 dark:border-green-800 dark:bg-green-950/30 dark:text-gray-200"
           >
             <Header
               badge={t('commit-preview.badge.new')}
@@ -550,7 +550,7 @@ function SupplementsSection({
             <li
               key={`unchanged-${s.id}`}
               data-testid="supplement-unchanged"
-              className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+              className="rounded-sm border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
             >
               <Header
                 badge={t('commit-preview.badge.unchanged')}
@@ -581,14 +581,14 @@ function SupplementChangeRow({
   return (
     <li
       data-testid="supplement-changed"
-      className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
+      className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm dark:border-amber-800 dark:bg-amber-950/30"
     >
       <Header
         badge={t('commit-preview.badge.changed')}
         badgeClass={CHANGED_BADGE}
         title={change.existing.name}
       />
-      <dl className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-xs">
+      <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
         {fields.map((field) => {
           const isChanged = change.fieldsChanged.includes(field);
           if (!isChanged && !showUnchanged) return null;
@@ -620,7 +620,7 @@ function SupplementChangeRow({
           return (
             <div key={field} className="contents">
               <dt className="font-medium text-gray-500 dark:text-gray-500">{label}:</dt>
-              <dd className="italic text-gray-500 dark:text-gray-500">
+              <dd className="text-gray-500 italic dark:text-gray-500">
                 {t('commit-preview.placeholder.unchanged')}
               </dd>
             </div>
@@ -642,14 +642,14 @@ function OpenPointsSection({ diff }: { diff: ProfileDiff }) {
   }
   return (
     <section className="mb-5" data-testid="commit-preview-open-points">
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-700 dark:text-gray-300">
+      <h3 className="mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase dark:text-gray-300">
         {t('common:entity.open-points')}
       </h3>
       <div className="space-y-2">
         {Array.from(byContext.entries()).map(([context, list]) => (
           <div
             key={context}
-            className="rounded border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
+            className="rounded-sm border border-green-300 bg-green-50 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950/30"
           >
             <Header badge={t('commit-preview.badge.new')} badgeClass={NEW_BADGE} title={context} />
             <ul className="mt-1 list-disc pl-5 text-gray-800 dark:text-gray-200">
@@ -683,7 +683,7 @@ function Header({
   return (
     <div className="flex items-baseline gap-2">
       <span
-        className={`inline-block rounded px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${badgeClass}`}
+        className={`inline-block rounded-sm px-1.5 py-0.5 text-xs font-semibold tracking-wide uppercase ${badgeClass}`}
       >
         {badge}
       </span>

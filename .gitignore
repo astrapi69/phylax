@@ -47,3 +47,6 @@ playwright/.cache/
 
 # prompt files
 /docs/journal/
+
+# Claude Code scheduler artifacts
+.claude/scheduled_tasks.lock

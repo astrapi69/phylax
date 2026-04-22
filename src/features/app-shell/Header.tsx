@@ -10,7 +10,7 @@ import { ThemeToggle } from '../theme';
 export function Header() {
   const { t } = useTranslation('app-shell');
   return (
-    <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900">
+    <header className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900">
       <Link
         to="/profile"
         className="text-lg font-bold text-gray-900 no-underline dark:text-gray-100"
@@ -23,7 +23,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => lock()}
-          className="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+          className="flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
           aria-label={t('header.lock-aria-label')}
         >
           <svg

@@ -56,7 +56,7 @@ export function PreviewScreen({
         </div>
       </dl>
 
-      <section className="mb-4 rounded border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <section className="mb-4 rounded-sm border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
         <h2 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
           {t('preview.content-heading')}
         </h2>
@@ -201,14 +201,14 @@ export function PreviewScreen({
         <button
           type="button"
           onClick={onBack}
-          className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         >
           {t('action.back')}
         </button>
         <button
           type="button"
           onClick={onConfirm}
-          className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           {t('preview.start')}
         </button>
@@ -233,7 +233,7 @@ function Collapsible({
   const [open, setOpen] = useState(false);
   return (
     <div
-      className="rounded border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
+      className="rounded-sm border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
       data-testid={testId}
     >
       <button

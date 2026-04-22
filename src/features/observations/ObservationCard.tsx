@@ -51,7 +51,7 @@ export function ObservationCard({
     <details
       open={defaultOpen || undefined}
       data-highlighted={highlighted || undefined}
-      className={`group rounded border bg-white transition-colors duration-[1500ms] open:shadow-sm motion-reduce:transition-none dark:bg-gray-800 ${
+      className={`group rounded border bg-white transition-colors duration-1500 open:shadow-xs motion-reduce:transition-none dark:bg-gray-800 ${
         highlighted
           ? 'border-green-400 bg-green-50 dark:border-green-700 dark:bg-green-950/30'
           : 'border-gray-200 dark:border-gray-700'
@@ -59,7 +59,7 @@ export function ObservationCard({
     >
       <summary
         aria-label={accessibleLabel}
-        className="flex cursor-pointer list-none items-start gap-3 rounded p-3 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:hover:bg-gray-700/40"
+        className="flex cursor-pointer list-none items-start gap-3 rounded-sm p-3 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 focus-visible:outline-solid dark:hover:bg-gray-700/40"
       >
         <span
           aria-hidden
@@ -69,7 +69,7 @@ export function ObservationCard({
         </span>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+            <span className="rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-200">
               {status}
             </span>
             <SourceBadge source={source} />
@@ -78,7 +78,7 @@ export function ObservationCard({
         </div>
       </summary>
 
-      <div className="space-y-4 border-t border-gray-200 px-3 pb-4 pt-3 dark:border-gray-700">
+      <div className="space-y-4 border-t border-gray-200 px-3 pt-3 pb-4 dark:border-gray-700">
         <Field label={t('card.field.fact')} content={fact} />
         <Field label={t('card.field.pattern')} content={pattern} />
         <Field label={t('card.field.self-regulation')} content={selfRegulation} />
@@ -98,7 +98,7 @@ function Field({ label, content }: { label: string; content: string }) {
   if (!content || content.trim() === '') return null;
   return (
     <div>
-      <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+      <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
         {label}
       </h4>
       <MarkdownContent>{content}</MarkdownContent>

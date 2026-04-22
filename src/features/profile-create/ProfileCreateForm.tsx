@@ -54,7 +54,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             placeholder={t('form.name-placeholder')}
             maxLength={60}
             disabled={isSubmitting}
-            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
+            className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
           />
         </div>
 
@@ -104,7 +104,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
               onChange={(e) => hook.setManagedBy(e.target.value)}
               placeholder={t('form.managed-by-placeholder')}
               disabled={isSubmitting}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
+              className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {t('form.managed-by-hint')}
@@ -127,7 +127,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
             onChange={(e) => hook.setVersion(e.target.value)}
             placeholder={t('form.version-placeholder')}
             disabled={isSubmitting}
-            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
+            className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-700"
           />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('form.version-hint')}</p>
         </div>
@@ -141,7 +141,7 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
         <button
           type="submit"
           disabled={!hook.isValid || isSubmitting}
-          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+          className="w-full rounded-sm bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
           {isSubmitting ? t('submit.pending') : t('submit.label')}
         </button>

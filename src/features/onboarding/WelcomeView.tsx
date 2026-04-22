@@ -36,7 +36,7 @@ export function WelcomeView() {
           <h1
             ref={headingRef}
             tabIndex={-1}
-            className="mb-2 text-4xl font-bold text-gray-900 focus:outline-none dark:text-gray-100"
+            className="mb-2 text-4xl font-bold text-gray-900 focus:outline-hidden dark:text-gray-100"
           >
             Phylax
           </h1>
@@ -53,7 +53,7 @@ export function WelcomeView() {
           <button
             type="button"
             onClick={() => navigate('/privacy')}
-            className="w-full rounded bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
+            className="w-full rounded-sm bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
           >
             {t('welcome.cta.primary')}
           </button>
@@ -75,7 +75,7 @@ function TrustSignal({ id, t }: { id: TrustKey; t: TFunction<'onboarding'> }) {
   return (
     <section
       aria-labelledby={titleId}
-      className="rounded border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-900"
+      className="rounded-sm border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-900"
     >
       <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center text-blue-600 dark:text-blue-400">
         <Icon />

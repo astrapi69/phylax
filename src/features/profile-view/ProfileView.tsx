@@ -37,7 +37,7 @@ export function ProfileView() {
     return (
       <div
         role="alert"
-        className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+        className="rounded-sm border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
       >
         {message}
       </div>
@@ -64,14 +64,14 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
       {showOnboarding && <DonationOnboardingCard onDismiss={() => setShowOnboarding(false)} />}
       <DonationReminderBanner profileId={profile.id} />
 
-      <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700 md:flex-row md:items-start md:justify-between">
+      <header className="flex flex-col gap-2 border-b border-gray-200 pb-4 md:flex-row md:items-start md:justify-between dark:border-gray-700">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h1>
           <div className="mt-1">
             <ProfileTypeBadge profileType={baseData.profileType} managedBy={baseData.managedBy} />
           </div>
         </div>
-        <div className="flex flex-col items-start gap-3 text-sm text-gray-600 dark:text-gray-400 md:items-end md:text-right">
+        <div className="flex flex-col items-start gap-3 text-sm text-gray-600 md:items-end md:text-right dark:text-gray-400">
           <ExportButton />
           <div>
             <p>
@@ -79,7 +79,7 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
               <span className="font-medium text-gray-900 dark:text-gray-100">v{version}</span>
             </p>
             {lastUpdateReason && (
-              <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400 md:ml-auto">
+              <p className="mt-1 max-w-xs text-xs text-gray-500 md:ml-auto dark:text-gray-400">
                 {t('header.last-change', { reason: lastUpdateReason })}
               </p>
             )}

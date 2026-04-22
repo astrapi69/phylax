@@ -77,20 +77,47 @@ export async function assertBackgroundRespectsTheme(
   // Walk the DOM from body downward, return the first element that has a
   // non-transparent backgroundColor. Some screens (onboarding, unlock) set
   // their background on an inner full-height div rather than on body, so
-  // checking body alone would see rgba(0,0,0,0).
+  // checking body alone would see rgba(0,0,0,0). Tailwind 4 emits colors
+  // in `oklch()` notation by default; the helper accepts both rgb/rgba
+  // (legacy + older utilities) and oklch (Tailwind 4 default palette).
   const bg = await page.evaluate(() => {
-    function computedBg(el: Element): string {
-      return window.getComputedStyle(el).backgroundColor;
+    type ParsedBg = { r: number; g: number; b: number; alpha: number };
+
+    function parseBg(c: string): ParsedBg | null {
+      const rgba = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(c);
+      if (rgba) {
+        return {
+          r: Number(rgba[1]),
+          g: Number(rgba[2]),
+          b: Number(rgba[3]),
+          alpha: rgba[4] === undefined ? 1 : Number(rgba[4]),
+        };
+      }
+      // `oklch(L C H [/ α])`. L is the perceptual lightness in 0-1 (or
+      // 0%-100%). Browsers may emit either; detect by magnitude. We only
+      // need a grayscale luminance proxy for the dark/light heuristic
+      // downstream, not a full oklch->sRGB conversion.
+      const oklch = /oklch\(\s*([\d.]+)(%?)\s+[\d.]+\s+[\d.]+(?:\s*\/\s*([\d.]+)(%?))?\s*\)/.exec(
+        c,
+      );
+      if (oklch) {
+        const lRaw = Number(oklch[1]);
+        const lHadPct = oklch[2] === '%';
+        const L = lHadPct ? lRaw / 100 : lRaw > 1 ? lRaw / 100 : lRaw;
+        const gray = Math.round(L * 255);
+        const alphaRaw = oklch[3];
+        const alphaHadPct = oklch[4] === '%';
+        const alpha =
+          alphaRaw === undefined ? 1 : alphaHadPct ? Number(alphaRaw) / 100 : Number(alphaRaw);
+        return { r: gray, g: gray, b: gray, alpha };
+      }
+      return null;
     }
-    function isOpaque(c: string): boolean {
-      const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(c);
-      if (!m) return false;
-      const alpha = m[4] === undefined ? 1 : Number(m[4]);
-      return alpha > 0;
-    }
-    function find(el: Element): string | null {
-      const c = computedBg(el);
-      if (isOpaque(c)) return c;
+
+    function find(el: Element): ParsedBg | null {
+      const c = window.getComputedStyle(el).backgroundColor;
+      const parsed = parseBg(c);
+      if (parsed && parsed.alpha > 0) return parsed;
       for (const child of Array.from(el.children)) {
         const hit = find(child);
         if (hit) return hit;
@@ -103,16 +130,12 @@ export async function assertBackgroundRespectsTheme(
   if (!bg) {
     throw new Error('No element with an opaque background found on the page.');
   }
-  const match = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(bg);
-  if (!match) return;
-  const r = Number(match[1]);
-  const g = Number(match[2]);
-  const b = Number(match[3]);
+  const { r, g, b } = bg;
   const avg = (r + g + b) / 3;
   if (expected === 'dark') {
-    expect(avg, `expected dark background, got rgb(${r}, ${g}, ${b})`).toBeLessThan(100);
+    expect(avg, `expected dark background, got ~rgb(${r}, ${g}, ${b})`).toBeLessThan(100);
   } else {
-    expect(avg, `expected light background, got rgb(${r}, ${g}, ${b})`).toBeGreaterThan(200);
+    expect(avg, `expected light background, got ~rgb(${r}, ${g}, ${b})`).toBeGreaterThan(200);
   }
 }
 

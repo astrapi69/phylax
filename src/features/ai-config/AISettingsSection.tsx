@@ -193,7 +193,7 @@ function UnconfiguredForm({
           autoComplete="off"
           spellCheck={false}
           placeholder="sk-ant-..."
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         />
         {suspicious && (
           <p className="mt-1 text-xs text-amber-700 dark:text-amber-400" role="alert">
@@ -206,7 +206,7 @@ function UnconfiguredForm({
         type="button"
         onClick={onActivate}
         disabled={apiKey.length === 0}
-        className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
+        className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
       >
         {t('settings-section.activate-button')}
       </button>
@@ -330,7 +330,7 @@ function ConfiguredForm({
               autoComplete="off"
               spellCheck={false}
               placeholder="sk-ant-..."
-              className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
             />
             {suspicious && (
               <p className="text-xs text-amber-700 dark:text-amber-400" role="alert">
@@ -342,14 +342,14 @@ function ConfiguredForm({
                 type="button"
                 onClick={() => void onSaveNewKey()}
                 disabled={newKey.length === 0}
-                className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
+                className="rounded-sm bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
               >
                 {t('settings-section.save-button')}
               </button>
               <button
                 type="button"
                 onClick={onCancelChangeKey}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
                 {t('common:action.cancel')}
               </button>
@@ -360,14 +360,14 @@ function ConfiguredForm({
             <code
               id="ai-api-key-masked"
               data-testid="ai-api-key-masked"
-              className="flex-1 rounded border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+              className="flex-1 rounded-sm border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
             >
               {maskKey(config.apiKey)}
             </code>
             <button
               type="button"
               onClick={onChangeKey}
-              className="rounded border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+              className="rounded-sm border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
             >
               {t('settings-section.change-button')}
             </button>
@@ -386,7 +386,7 @@ function ConfiguredForm({
           id="ai-model"
           value={ANTHROPIC_MODELS.includes(modelInput) ? modelInput : ''}
           onChange={(e) => void onModelChange(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         >
           {!ANTHROPIC_MODELS.includes(modelInput) && modelInput && (
             <option value="">
@@ -404,7 +404,7 @@ function ConfiguredForm({
       <button
         type="button"
         onClick={() => void onDelete()}
-        className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+        className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
       >
         {t('settings-section.deactivate-button')}
       </button>
@@ -428,7 +428,7 @@ function ProviderSelect() {
         onChange={() => {
           /* Only Anthropic is supported in this task. */
         }}
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+        className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
       >
         <option value="anthropic">Anthropic</option>
       </select>

@@ -32,7 +32,7 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
   return (
     <section
       aria-labelledby={`report-${report.id}-heading`}
-      className="rounded border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+      className="rounded-sm border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
     >
       <header className="border-b border-gray-200 p-4 dark:border-gray-700">
         <h2

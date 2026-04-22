@@ -26,7 +26,7 @@ export function PrivacyView() {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="mb-8 text-center text-3xl font-bold text-gray-900 focus:outline-none dark:text-gray-100"
+          className="mb-8 text-center text-3xl font-bold text-gray-900 focus:outline-hidden dark:text-gray-100"
         >
           {t('privacy.headline')}
         </h1>
@@ -51,14 +51,14 @@ export function PrivacyView() {
           <button
             type="button"
             onClick={() => navigate('/welcome')}
-            className="rounded border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="rounded-sm border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             {t('privacy.cta.back')}
           </button>
           <button
             type="button"
             onClick={() => navigate('/setup')}
-            className="w-full rounded bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
+            className="w-full rounded-sm bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 md:w-auto"
           >
             {t('privacy.cta.primary')}
           </button>

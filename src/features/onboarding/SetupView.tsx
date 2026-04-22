@@ -58,7 +58,7 @@ function VisibilityToggle({
       disabled={disabled}
       aria-label={visible ? labelHide : labelShow}
       aria-pressed={visible}
-      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200 dark:focus:text-gray-200 dark:focus-visible:ring-offset-gray-900"
+      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200 dark:focus:text-gray-200 dark:focus-visible:ring-offset-gray-900"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +154,7 @@ export function SetupView() {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="mb-2 text-2xl font-bold text-gray-900 focus:outline-none dark:text-gray-100"
+          className="mb-2 text-2xl font-bold text-gray-900 focus:outline-hidden dark:text-gray-100"
         >
           {t('setup.headline')}
         </h1>
@@ -177,7 +177,7 @@ export function SetupView() {
                   setPassword(e.target.value);
                   setShowError(false);
                 }}
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                 autoComplete="new-password"
                 aria-describedby={passwordErrorVisible ? 'password-error' : undefined}
                 disabled={status === 'deriving' || status === 'done'}
@@ -236,7 +236,7 @@ export function SetupView() {
                   setConfirmPassword(e.target.value);
                   setShowError(false);
                 }}
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                 autoComplete="new-password"
                 disabled={status === 'deriving' || status === 'done'}
               />
@@ -284,7 +284,7 @@ export function SetupView() {
           <button
             type="submit"
             disabled={!submitEnabled}
-            className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+            className="w-full rounded-sm bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
           >
             {status === 'deriving' ? t('setup.submit.deriving') : t('setup.submit.label')}
           </button>

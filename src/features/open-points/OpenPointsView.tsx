@@ -29,7 +29,7 @@ export function OpenPointsView() {
     return (
       <div
         role="alert"
-        className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+        className="rounded-sm border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
       >
         {message}
       </div>
@@ -60,7 +60,7 @@ export function OpenPointsView() {
 function EmptyState() {
   const { t } = useTranslation('open-points');
   return (
-    <div className="rounded border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
+    <div className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
       <p>{t('empty.body')}</p>
       <p className="mt-2">
         <Link

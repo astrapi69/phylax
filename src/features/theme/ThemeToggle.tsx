@@ -25,7 +25,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(next)}
       aria-label={t('aria-label', { current, next: nextLabel })}
-      className="flex items-center gap-1.5 rounded px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+      className="flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
     >
       {theme === 'light' && <SunIcon />}
       {theme === 'dark' && <MoonIcon />}
