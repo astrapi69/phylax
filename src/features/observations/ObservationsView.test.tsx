@@ -115,7 +115,7 @@ describe('ObservationsView', () => {
     const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
     const SIXTY_DAYS = 60 * 24 * 60 * 60 * 1000;
 
-    it('renders "Kuerzlich aktualisiert" + "Alle Themen" when recent and old coexist', async () => {
+    it('renders "Kürzlich aktualisiert" + "Alle Themen" when recent and old coexist', async () => {
       await mockLoadedState([
         {
           theme: 'Schulter',
@@ -133,7 +133,7 @@ describe('ObservationsView', () => {
       renderView();
       await waitFor(() =>
         expect(screen.getByTestId('section-heading-recent')).toHaveTextContent(
-          'Kuerzlich aktualisiert',
+          'Kürzlich aktualisiert',
         ),
       );
       expect(screen.getByTestId('section-heading-all')).toHaveTextContent('Alle Themen');

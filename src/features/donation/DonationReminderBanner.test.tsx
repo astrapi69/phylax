@@ -87,14 +87,14 @@ describe('DonationReminderBanner', () => {
     expect(screen.getByText(/Du nutzt Phylax jetzt seit \d+ Monaten/)).toBeInTheDocument();
   });
 
-  it('"Unterstuetzen" updates state to donated + today and hides the banner', async () => {
+  it('"Unterstützen" updates state to donated + today and hides the banner', async () => {
     markOnboardingSeen();
     const profileId = await seedSession(100);
     const user = userEvent.setup();
     render(<DonationReminderBanner profileId={profileId} />);
     await waitFor(() => expect(screen.getByTestId('donation-reminder-banner')).toBeInTheDocument());
 
-    await user.click(screen.getByRole('link', { name: /Unterstuetzen/ }));
+    await user.click(screen.getByRole('link', { name: /Unterstützen/ }));
 
     const state = readDonationState();
     expect(state.lastReminderAction).toBe('donated');
@@ -117,14 +117,14 @@ describe('DonationReminderBanner', () => {
     expect(screen.queryByTestId('donation-reminder-banner')).not.toBeInTheDocument();
   });
 
-  it('Close X (aria "Schliessen") behaves identically to "Nicht jetzt"', async () => {
+  it('Close X (aria "Schließen") behaves identically to "Nicht jetzt"', async () => {
     markOnboardingSeen();
     const profileId = await seedSession(100);
     const user = userEvent.setup();
     render(<DonationReminderBanner profileId={profileId} />);
     await waitFor(() => expect(screen.getByTestId('donation-reminder-banner')).toBeInTheDocument());
 
-    await user.click(screen.getByRole('button', { name: 'Schliessen' }));
+    await user.click(screen.getByRole('button', { name: 'Schließen' }));
 
     const state = readDonationState();
     expect(state.lastReminderAction).toBe('dismissed');
@@ -135,7 +135,7 @@ describe('DonationReminderBanner', () => {
     markOnboardingSeen();
     const profileId = await seedSession(100);
     render(<DonationReminderBanner profileId={profileId} />);
-    const link = await screen.findByRole('link', { name: /Unterstuetzen/ });
+    const link = await screen.findByRole('link', { name: /Unterstützen/ });
     expect(link).toHaveAttribute('href', DONATION_URL);
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');

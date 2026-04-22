@@ -58,7 +58,7 @@ describe('BackupExportSection', () => {
   it('renders heading, description, and disabled submit initially', async () => {
     await setupWithProfile();
     render(<BackupExportSection />);
-    expect(screen.getByRole('heading', { name: 'Verschluesseltes Backup' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Verschlüsseltes Backup' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Backup erstellen' })).toBeDisabled();
   });
 

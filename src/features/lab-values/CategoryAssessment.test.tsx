@@ -16,6 +16,6 @@ describe('CategoryAssessment', () => {
 
   it('preserves the German category name in the label', () => {
     render(<CategoryAssessment category="Nierenwerte" assessment="Kreatinin leicht erhoht." />);
-    expect(screen.getByText(/Einschaetzung Nierenwerte/)).toBeInTheDocument();
+    expect(screen.getByText(/Einschätzung Nierenwerte/)).toBeInTheDocument();
   });
 });

@@ -56,16 +56,16 @@ describe('useOpenPoints', () => {
 
   it('loads open points grouped by context', async () => {
     const profile = await createProfile();
-    await seedPoint(profile.id, 'MRT besprechen', 'Beim naechsten Arztbesuch');
+    await seedPoint(profile.id, 'MRT besprechen', 'Beim nächsten Arztbesuch');
     await seedPoint(profile.id, 'Labor wiederholen', 'Wiederholungs-Blutabnahme');
-    await seedPoint(profile.id, 'Termin vereinbaren', 'Beim naechsten Arztbesuch');
+    await seedPoint(profile.id, 'Termin vereinbaren', 'Beim nächsten Arztbesuch');
 
     const { result } = renderHook(() => useOpenPoints());
     await waitFor(() => expect(result.current.state.kind).toBe('loaded'));
     if (result.current.state.kind === 'loaded') {
       expect(result.current.state.groups).toHaveLength(2);
       const arztbesuch = result.current.state.groups.find(
-        (g) => g.context === 'Beim naechsten Arztbesuch',
+        (g) => g.context === 'Beim nächsten Arztbesuch',
       );
       expect(arztbesuch?.items).toHaveLength(2);
     }
@@ -105,7 +105,7 @@ describe('useOpenPoints', () => {
 
   it('orders unresolved items before resolved within a group', async () => {
     const profile = await createProfile();
-    const ctx = 'Beim naechsten Arztbesuch';
+    const ctx = 'Beim nächsten Arztbesuch';
     // Seed a resolved item FIRST, then an unresolved one. Expected
     // display order: unresolved first.
     await seedPoint(profile.id, 'erledigt', ctx, true);

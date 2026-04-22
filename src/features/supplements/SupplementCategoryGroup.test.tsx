@@ -8,18 +8,18 @@ describe('SupplementCategoryGroup', () => {
     render(
       <SupplementCategoryGroup
         category="daily"
-        label="Taeglich"
+        label="Täglich"
         supplements={[makeSupplement({ id: '1' })]}
       />,
     );
-    expect(screen.getByRole('heading', { level: 2, name: /Taeglich/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /Täglich/ })).toBeInTheDocument();
   });
 
   it('renders the count in the heading', () => {
     render(
       <SupplementCategoryGroup
         category="daily"
-        label="Taeglich"
+        label="Täglich"
         supplements={[
           makeSupplement({ id: '1' }),
           makeSupplement({ id: '2' }),
@@ -34,7 +34,7 @@ describe('SupplementCategoryGroup', () => {
     const { container } = render(
       <SupplementCategoryGroup
         category="daily"
-        label="Taeglich"
+        label="Täglich"
         supplements={[
           makeSupplement({ id: '1', name: 'A' }),
           makeSupplement({ id: '2', name: 'B' }),

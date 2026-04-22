@@ -6,29 +6,29 @@ import { ImportEntryScreen } from './ImportEntryScreen';
 describe('ImportEntryScreen', () => {
   it('renders both file and paste inputs', () => {
     render(<ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText('Datei auswaehlen')).toBeInTheDocument();
-    expect(screen.getByText('Oder Text einfuegen')).toBeInTheDocument();
+    expect(screen.getByText('Datei auswählen')).toBeInTheDocument();
+    expect(screen.getByText('Oder Text einfügen')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
   });
 
   it('enables Weiter once paste reaches minimum length', async () => {
     const user = userEvent.setup();
     render(<ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} />);
-    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
     await user.type(textarea, 'x'.repeat(100));
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeEnabled();
   });
 
-  it('submits paste content with source label "Eingefuegter Text"', async () => {
+  it('submits paste content with source label "Eingefügter Text"', async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<ImportEntryScreen onSubmit={onSubmit} onCancel={vi.fn()} />);
     const paste = 'y'.repeat(120);
-    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
     await user.click(textarea);
     await user.paste(paste);
     await user.click(screen.getByRole('button', { name: 'Weiter' }));
-    expect(onSubmit).toHaveBeenCalledWith(paste, 'Eingefuegter Text');
+    expect(onSubmit).toHaveBeenCalledWith(paste, 'Eingefügter Text');
   });
 
   it('submits file content with the file name as source label', async () => {
@@ -51,7 +51,7 @@ describe('ImportEntryScreen', () => {
     // 2 MB file: bigger than the 1 MB limit
     const big = new File([new Uint8Array(2 * 1024 * 1024)], 'big.md', { type: 'text/markdown' });
     await user.upload(fileInput, big);
-    expect(await screen.findByText(/zu gross/i)).toBeInTheDocument();
+    expect(await screen.findByText(/zu groß/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
   });
 
@@ -67,7 +67,7 @@ describe('ImportEntryScreen', () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<ImportEntryScreen onSubmit={onSubmit} onCancel={vi.fn()} />);
-    const textarea = screen.getByLabelText(/markdown-text einfuegen/i);
+    const textarea = screen.getByLabelText(/markdown-text einfügen/i);
     await user.type(textarea, 'kurz');
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
     expect(onSubmit).not.toHaveBeenCalled();

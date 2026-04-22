@@ -4,10 +4,10 @@ import { DonationSettingsSection } from './DonationSettingsSection';
 import { DONATION_URL } from './constants';
 
 describe('DonationSettingsSection', () => {
-  it('renders the "Phylax unterstuetzen" h2 and the description paragraph', () => {
+  it('renders the "Phylax unterstützen" h2 and the description paragraph', () => {
     render(<DonationSettingsSection />);
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' }),
+      screen.getByRole('heading', { level: 2, name: 'Phylax unterstützen' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Open-Source-Projekt/)).toBeInTheDocument();
     expect(screen.getByText(/ohne Werbung/)).toBeInTheDocument();
@@ -15,7 +15,7 @@ describe('DonationSettingsSection', () => {
 
   it('renders a DonateLink that points at DONATION_URL with safe external-link attributes', () => {
     render(<DonationSettingsSection />);
-    const link = screen.getByRole('link', { name: /Projekt unterstuetzen/ });
+    const link = screen.getByRole('link', { name: /Projekt unterstützen/ });
     expect(link).toHaveAttribute('href', DONATION_URL);
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -24,7 +24,7 @@ describe('DonationSettingsSection', () => {
   it('is addressable via aria-labelledby so nested landmarks stay accessible', () => {
     render(<DonationSettingsSection />);
     const section = screen
-      .getByRole('heading', { level: 2, name: 'Phylax unterstuetzen' })
+      .getByRole('heading', { level: 2, name: 'Phylax unterstützen' })
       .closest('section');
     expect(section).toHaveAttribute('aria-labelledby', 'donation-section-heading');
   });

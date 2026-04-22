@@ -7,14 +7,14 @@
       "body": "Der KI-Assistent strukturiert deine Eingaben, stellt aber keine Diagnosen und gibt keine medizinischen Empfehlungen."
     },
     "point-2": {
-      "heading": "Daten verlassen dein Geraet:",
-      "body-prefix": "Wenn du den KI-Assistenten nutzt, werden deine Eingaben an Anthropic gesendet, ueber deinen eigenen Anthropic-Account und mit deinem eigenen API-Schluessel. Anthropic behandelt dich als direkten Kunden, nicht Phylax. Anthropic speichert Anfragen und Antworten fuer 30 Tage zur Sicherheitspruefung und loescht sie dann automatisch. Anfragen werden nicht fuer KI-Training verwendet. Phylax selbst speichert keine Chat-Verlaeufe auf deinem Geraet. Details zur Datenverarbeitung durch Anthropic: ",
+      "heading": "Daten verlassen dein Gerät:",
+      "body-prefix": "Wenn du den KI-Assistenten nutzt, werden deine Eingaben an Anthropic gesendet, über deinen eigenen Anthropic-Account und mit deinem eigenen API-Schlüssel. Anthropic behandelt dich als direkten Kunden, nicht Phylax. Anthropic speichert Anfragen und Antworten für 30 Tage zur Sicherheitsprüfung und löscht sie dann automatisch. Anfragen werden nicht für KI-Training verwendet. Phylax selbst speichert keine Chat-Verläufe auf deinem Gerät. Details zur Datenverarbeitung durch Anthropic: ",
       "link-label": "privacy.claude.com",
       "body-suffix": "."
     },
     "point-3": {
       "heading": "Du kontrollierst den Zugang:",
-      "body": "Dein API-Schluessel wird verschluesselt auf deinem Geraet gespeichert. Du kannst die KI-Funktion jederzeit deaktivieren und den Schluessel loeschen."
+      "body": "Dein API-Schlüssel wird verschlüsselt auf deinem Gerät gespeichert. Du kannst die KI-Funktion jederzeit deaktivieren und den Schlüssel löschen."
     },
     "confirm-button": "Verstanden, KI aktivieren"
   },
@@ -24,11 +24,11 @@
     "error": "KI-Einstellungen konnten nicht geladen werden.",
     "status-inactive": "Status: Nicht aktiv",
     "status-configured": "Status: Konfiguriert",
-    "api-key-label": "API-Schluessel",
-    "suspicious-warning": "Schluesselformat sieht ungewoehnlich aus. Bitte pruefen.",
+    "api-key-label": "API-Schlüssel",
+    "suspicious-warning": "Schlüsselformat sieht ungewöhnlich aus. Bitte prüfen.",
     "activate-button": "KI aktivieren",
     "save-button": "Speichern",
-    "change-button": "Aendern",
+    "change-button": "Ändern",
     "model-label": "Modell",
     "model-custom-suffix": "(benutzerdefiniert)",
     "deactivate-button": "KI deaktivieren",
@@ -39,25 +39,25 @@
     "phylax-section": {
       "heading": "Was Phylax macht",
       "bullet-1": "Speichert keine Chat-Nachrichten lokal",
-      "bullet-2": "Nachrichten existieren nur waehrend der Sitzung",
-      "bullet-3": "Seitenneuladen loescht den Chat"
+      "bullet-2": "Nachrichten existieren nur während der Sitzung",
+      "bullet-3": "Seitenneuladen löscht den Chat"
     },
     "anthropic-section": {
       "heading": "Was Anthropic macht",
-      "bullet-1": "Speichert Anfragen und Antworten fuer 30 Tage zur Sicherheitspruefung",
-      "bullet-2": "Loescht sie danach automatisch",
-      "bullet-3": "Verwendet sie nicht fuer KI-Training",
+      "bullet-1": "Speichert Anfragen und Antworten für 30 Tage zur Sicherheitsprüfung",
+      "bullet-2": "Löscht sie danach automatisch",
+      "bullet-3": "Verwendet sie nicht für KI-Training",
       "details-prefix": "Details zur Datenverarbeitung: ",
       "link-label": "privacy.claude.com"
     },
     "user-control-section": {
       "heading": "Was du kontrollierst",
-      "bullet-1": "Der Anthropic-Account und API-Schluessel gehoeren dir, nicht Phylax",
+      "bullet-1": "Der Anthropic-Account und API-Schlüssel gehören dir, nicht Phylax",
       "bullet-2": "Du siehst deine Nutzung direkt in deinem Anthropic-Konto",
-      "bullet-3": "KI-Funktion jederzeit in Einstellungen deaktivieren (loescht den Schluessel aus Phylax)",
+      "bullet-3": "KI-Funktion jederzeit in Einstellungen deaktivieren (löscht den Schlüssel aus Phylax)",
       "bullet-4": "\"Profil teilen\" ist optional",
       "bullet-5": "Chat jederzeit mit \"Leeren\" entfernen",
-      "bullet-6": "API-Schluessel direkt bei Anthropic widerrufen (sofortige Wirkung)"
+      "bullet-6": "API-Schlüssel direkt bei Anthropic widerrufen (sofortige Wirkung)"
     }
   }
 }

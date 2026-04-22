@@ -5,8 +5,8 @@ import { makeTimelineEntry } from './test-helpers';
 
 describe('TimelineEntryCard', () => {
   it('renders the period as a level-2 heading', () => {
-    render(<TimelineEntryCard entry={makeTimelineEntry({ period: 'Maerz 2026' })} />);
-    expect(screen.getByRole('heading', { level: 2, name: 'Maerz 2026' })).toBeInTheDocument();
+    render(<TimelineEntryCard entry={makeTimelineEntry({ period: 'März 2026' })} />);
+    expect(screen.getByRole('heading', { level: 2, name: 'März 2026' })).toBeInTheDocument();
   });
 
   it('renders the title', () => {

@@ -46,7 +46,7 @@ describe('wrapFragmentForParser', () => {
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Magnesium 400 |
+| täglich | Magnesium 400 |
 
 ## Offene Punkte
 
@@ -69,7 +69,7 @@ describe('wrapFragmentForParser', () => {
 
   it('emits only the sections present in the fragment (no empty scaffolding)', () => {
     const fragment = requireFragment(
-      `## Supplemente\n\n| Kategorie | Praeparat |\n| --- | --- |\n| taeglich | Vitamin D3 |`,
+      `## Supplemente\n\n| Kategorie | Praeparat |\n| --- | --- |\n| täglich | Vitamin D3 |`,
     );
     const wrapped = wrapFragmentForParser(fragment);
 

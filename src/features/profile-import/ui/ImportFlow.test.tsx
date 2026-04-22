@@ -59,7 +59,7 @@ function renderFlow() {
 }
 
 async function pasteAndContinue(user: ReturnType<typeof userEvent.setup>) {
-  const textarea = await screen.findByLabelText(/markdown-text einfuegen/i);
+  const textarea = await screen.findByLabelText(/markdown-text einfügen/i);
   await user.click(textarea);
   await user.paste(FIXTURE);
   await user.click(screen.getByRole('button', { name: 'Weiter' }));

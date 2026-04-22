@@ -86,7 +86,7 @@ describe('SupplementsView', () => {
     await waitFor(() =>
       expect(screen.getByRole('heading', { level: 1, name: 'Supplemente' })).toBeInTheDocument(),
     );
-    expect(screen.getByRole('heading', { level: 2, name: /Taeglich/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /Täglich/ })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: /Pausiert/ })).toBeInTheDocument();
   });
 
@@ -118,7 +118,7 @@ describe('SupplementsView', () => {
     renderView();
     await waitFor(() => expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(2));
     const headings = screen.getAllByRole('heading', { level: 2 });
-    expect(headings[0]?.textContent).toMatch(/Taeglich/);
+    expect(headings[0]?.textContent).toMatch(/Täglich/);
     expect(headings[1]?.textContent).toMatch(/Pausiert/);
   });
 });

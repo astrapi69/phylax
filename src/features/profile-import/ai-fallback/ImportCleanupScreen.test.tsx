@@ -95,7 +95,7 @@ describe('ImportCleanupScreen', () => {
   it('shows the "few entries recognized" summary with count for a partial parse', async () => {
     renderScreen({ parseResult: partialResult(2) });
     await waitForConfigReady();
-    expect(screen.getByText(/Nur wenige Eintraege erkannt \(2 insgesamt\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Nur wenige Einträge erkannt \(2 insgesamt\)/)).toBeInTheDocument();
   });
 
   it('offers the cleanup button when AI is configured', async () => {
@@ -153,7 +153,7 @@ describe('ImportCleanupScreen', () => {
     await configureAI();
     renderScreen({ cleanup: { kind: 'error', error: { kind: 'auth' } } });
     await waitForConfigReady();
-    expect(screen.getByTestId('cleanup-error')).toHaveTextContent(/API-Schluessel ungueltig/);
+    expect(screen.getByTestId('cleanup-error')).toHaveTextContent(/API-Schlüssel ungültig/);
   });
 
   it('hides the proceed-partial button for an empty parse result', async () => {

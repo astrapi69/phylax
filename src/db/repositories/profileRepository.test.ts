@@ -35,7 +35,7 @@ function makeProfileData(): Omit<Profile, 'id' | 'profileId' | 'createdAt' | 'up
     warningSigns: ['Brustschmerzen bei Belastung', 'Ploetzlicher Schwindel'],
     externalReferences: ['Lebende Gesundheit Serie: https://example.com'],
     version: '1.3.1',
-    lastUpdateReason: 'Blutbild Maerz 2026 ergaenzt',
+    lastUpdateReason: 'Blutbild März 2026 ergaenzt',
   };
 }
 
@@ -69,7 +69,7 @@ describe('ProfileRepository', () => {
     expect(fetched?.warningSigns).toEqual(data.warningSigns);
     expect(fetched?.externalReferences).toEqual(data.externalReferences);
     expect(fetched?.version).toBe('1.3.1');
-    expect(fetched?.lastUpdateReason).toBe('Blutbild Maerz 2026 ergaenzt');
+    expect(fetched?.lastUpdateReason).toBe('Blutbild März 2026 ergaenzt');
 
     lock();
   });

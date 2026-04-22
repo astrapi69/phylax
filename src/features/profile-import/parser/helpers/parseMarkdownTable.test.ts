@@ -55,9 +55,9 @@ describe('parseMarkdownTable', () => {
     const md = [
       '| Kategorie | Praeparat |',
       '|-----------|-----------|',
-      '| **Taeglich** | Vitamin D |',
+      '| **Täglich** | Vitamin D |',
     ].join('\n');
     const rows = parseMarkdownTable(md);
-    expect(rows[0]?.['Kategorie']).toBe('**Taeglich**');
+    expect(rows[0]?.['Kategorie']).toBe('**Täglich**');
   });
 });

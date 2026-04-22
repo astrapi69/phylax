@@ -36,9 +36,9 @@ describe('parseLabeledBullets', () => {
   });
 
   it('handles bold label without dash prefix', () => {
-    const result = parseLabeledBullets('**Einschaetzung:** Unauffaellig.');
+    const result = parseLabeledBullets('**Einschätzung:** Unauffaellig.');
     expect(result).toHaveLength(1);
-    expect(result[0]?.label).toBe('Einschaetzung');
+    expect(result[0]?.label).toBe('Einschätzung');
   });
 
   it('handles colon outside bold markers', () => {

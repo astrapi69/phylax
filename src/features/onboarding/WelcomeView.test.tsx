@@ -33,15 +33,15 @@ describe('WelcomeView', () => {
   it('renders the tagline', () => {
     renderInRouter();
     expect(
-      screen.getByText('Deine Gesundheitsdaten. Lokal. Verschluesselt. Deins.'),
+      screen.getByText('Deine Gesundheitsdaten. Lokal. Verschlüsselt. Deins.'),
     ).toBeInTheDocument();
   });
 
   it('renders all three trust signals with titles and bodies', () => {
     renderInRouter();
     expect(screen.getByRole('heading', { level: 2, name: 'Lokal' })).toBeInTheDocument();
-    expect(screen.getByText('Alle Daten bleiben auf diesem Geraet.')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: 'Verschluesselt' })).toBeInTheDocument();
+    expect(screen.getByText('Alle Daten bleiben auf diesem Gerät.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Verschlüsselt' })).toBeInTheDocument();
     expect(screen.getByText('AES-256 mit deinem Passwort.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Offen' })).toBeInTheDocument();
     expect(screen.getByText('Kein Konto, kein Server, kein Tracking.')).toBeInTheDocument();

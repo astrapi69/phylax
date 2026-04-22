@@ -26,7 +26,7 @@ test.describe('Onboarding: first-run complete flow', () => {
     await page.getByRole('button', { name: 'Einrichten starten' }).click();
     await expect(page).toHaveURL(/\/privacy$/);
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Du haeltst den einzigen Schluessel.' }),
+      page.getByRole('heading', { level: 1, name: 'Du hältst den einzigen Schlüssel.' }),
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Verstanden, weiter' }).click();

@@ -22,7 +22,7 @@ test.describe('Backup export', () => {
     await page.getByRole('link', { name: 'Einstellungen' }).click();
     await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Datenverwaltung' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Verschluesseltes Backup' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Verschlüsseltes Backup' })).toBeVisible();
 
     // Fill password and trigger export.
     const passwordField = page.getByLabel('Passwort', { exact: true });

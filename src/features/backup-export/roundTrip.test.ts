@@ -87,7 +87,7 @@ describe('B-02 round-trip', () => {
       const openPointRepo = new OpenPointRepository();
       await openPointRepo.create({
         profileId: profile.id,
-        text: 'Vitamin D pruefen',
+        text: 'Vitamin D prüfen',
         context: 'Blutbild Q2',
         resolved: false,
       });

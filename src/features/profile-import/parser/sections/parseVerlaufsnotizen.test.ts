@@ -18,9 +18,9 @@ describe('parseVerlaufsnotizen', () => {
   });
 
   it('handles heading without dash (period only)', () => {
-    const md = '### Maerz 2026\n- Some notes';
+    const md = '### März 2026\n- Some notes';
     const result = parseVerlaufsnotizen(md);
-    expect(result[0]?.period).toBe('Maerz 2026');
+    expect(result[0]?.period).toBe('März 2026');
     expect(result[0]?.title).toBe('');
   });
 
@@ -28,18 +28,18 @@ describe('parseVerlaufsnotizen', () => {
     const md = [
       '### Dezember 2024 - Event A',
       'Content A',
-      '### Maerz 2026 - Event B',
+      '### März 2026 - Event B',
       'Content B',
     ].join('\n');
 
     const result = parseVerlaufsnotizen(md);
     expect(result).toHaveLength(2);
     expect(result[0]?.period).toBe('Dezember 2024');
-    expect(result[1]?.period).toBe('Maerz 2026');
+    expect(result[1]?.period).toBe('März 2026');
   });
 
   it('strips version markers from heading', () => {
-    const md = '### Maerz 2026 - Plan (NEU v1.3)\nContent';
+    const md = '### März 2026 - Plan (NEU v1.3)\nContent';
     const result = parseVerlaufsnotizen(md);
     expect(result[0]?.title).toBe('Plan');
   });

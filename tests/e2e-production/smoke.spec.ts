@@ -76,7 +76,7 @@ async function setupAuthenticatedState(page: Page, theme: ThemeMode, sysPref: Sy
 async function importFixture(page: Page) {
   const content = readFileSync(FIXTURE_PATH, 'utf-8');
   await page.getByRole('link', { name: 'Import' }).click();
-  await page.getByLabel(/markdown-text einfuegen/i).fill(content);
+  await page.getByLabel(/markdown-text einfügen/i).fill(content);
   await page.getByRole('button', { name: 'Weiter' }).click();
   await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
   await expect(page.getByRole('heading', { name: 'Vorschau' })).toBeVisible();
@@ -147,7 +147,7 @@ matrixTests('Smoke: profile create', 'profile-create', async (page, { theme, sys
 matrixTests('Smoke: profile view populated', 'profile-view', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await importFixture(page);
-  await page.getByRole('button', { name: 'Zur Uebersicht' }).click();
+  await page.getByRole('button', { name: 'Zur Übersicht' }).click();
   await expect(page.getByRole('heading', { level: 1, name: DEFAULT_PROFILE_NAME })).toBeVisible();
 });
 
@@ -166,7 +166,7 @@ matrixTests(
     await setupAuthenticatedState(page, theme, sysPref);
     const content = readFileSync(FIXTURE_PATH, 'utf-8');
     await page.getByRole('link', { name: 'Import' }).click();
-    await page.getByLabel(/markdown-text einfuegen/i).fill(content);
+    await page.getByLabel(/markdown-text einfügen/i).fill(content);
     await page.getByRole('button', { name: 'Weiter' }).click();
     await expect(
       page.getByRole('heading', { name: /In welches Profil importieren/i }),
@@ -178,7 +178,7 @@ matrixTests('Smoke: import preview', 'import-preview', async (page, { theme, sys
   await setupAuthenticatedState(page, theme, sysPref);
   const content = readFileSync(FIXTURE_PATH, 'utf-8');
   await page.getByRole('link', { name: 'Import' }).click();
-  await page.getByLabel(/markdown-text einfuegen/i).fill(content);
+  await page.getByLabel(/markdown-text einfügen/i).fill(content);
   await page.getByRole('button', { name: 'Weiter' }).click();
   await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
   await expect(page.getByRole('heading', { name: 'Vorschau' })).toBeVisible();
@@ -194,7 +194,7 @@ matrixTests(
     await importFixture(page);
     await page.getByRole('button', { name: 'Weiteren Import' }).click();
     const content = readFileSync(FIXTURE_PATH, 'utf-8');
-    await page.getByLabel(/markdown-text einfuegen/i).fill(content);
+    await page.getByLabel(/markdown-text einfügen/i).fill(content);
     await page.getByRole('button', { name: 'Weiter' }).click();
     await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
     await expect(page.getByRole('heading', { name: /Bestehende Daten ersetzen/i })).toBeVisible();
@@ -318,7 +318,7 @@ matrixTests('Smoke: timeline empty', 'timeline-empty', async (page, { theme, sys
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Verlauf' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeVisible();
-  await expect(page.getByText(/Noch keine Verlaufseintraege/)).toBeVisible();
+  await expect(page.getByText(/Noch keine Verlaufseinträge/)).toBeVisible();
 });
 
 matrixTests('Smoke: timeline populated', 'timeline-populated', async (page, { theme, sysPref }) => {

@@ -4,12 +4,12 @@
   },
   "theme": {
     "heading": "Darstellung",
-    "legend": "Theme auswaehlen",
+    "legend": "Theme auswählen",
     "options": {
       "light": "Hell",
       "dark": "Dunkel",
       "auto": "System folgen",
-      "auto-description": "Folgt den Einstellungen deines Geraets."
+      "auto-description": "Folgt den Einstellungen deines Geräts."
     }
   },
   "language": {
@@ -25,7 +25,7 @@
   },
   "export": {
     "heading": "Profil exportieren",
-    "description": "Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum naechsten Arztbesuch mit.",
+    "description": "Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum nächsten Arztbesuch mit.",
     "button": "Profil exportieren"
   }
 }

@@ -79,7 +79,7 @@ describe('parseBlutwerte', () => {
       '|-----------|----------|---------|----------|-----------|',
       '| Hb | 14.2 | g/dl | 13.5-17.5 | Normal |',
       '',
-      '**Einschaetzung Blutbild:** Alle Werte unauffaellig.',
+      '**Einschätzung Blutbild:** Alle Werte unauffaellig.',
     ].join('\n');
 
     const { labReports } = parseBlutwerte(md);

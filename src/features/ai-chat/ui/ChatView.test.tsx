@@ -53,7 +53,7 @@ describe('ChatView', () => {
   it('renders user and assistant messages with the KI label', () => {
     const messages: ChatMessage[] = [
       { id: 'u1', role: 'user', content: 'Ich habe Schulterschmerzen.', timestamp: 0 },
-      { id: 'a1', role: 'assistant', content: 'Danke fuer die Information.', timestamp: 1 },
+      { id: 'a1', role: 'assistant', content: 'Danke für die Information.', timestamp: 1 },
     ];
     mockUseChat({ messages });
     render(<ChatView />);
@@ -61,7 +61,7 @@ describe('ChatView', () => {
       'Ich habe Schulterschmerzen.',
     );
     expect(screen.getByTestId('message-bubble-assistant')).toHaveTextContent(
-      'Danke fuer die Information.',
+      'Danke für die Information.',
     );
     expect(screen.getByLabelText('KI-Assistent')).toBeInTheDocument();
   });
@@ -131,16 +131,14 @@ describe('ChatView', () => {
         {
           id: 's1',
           role: 'system',
-          content: 'API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.',
+          content: 'API-Schlüssel ungültig. Bitte prüfen unter Einstellungen.',
           timestamp: 0,
           errorKind: 'auth',
         },
       ],
     });
     render(<ChatView />);
-    expect(screen.getByTestId('message-bubble-system')).toHaveTextContent(
-      /API-Schluessel ungueltig/,
-    );
+    expect(screen.getByTestId('message-bubble-system')).toHaveTextContent(/API-Schlüssel ungültig/);
   });
 
   it('"Profil teilen" button is visible on the empty state and calls shareProfile', async () => {
@@ -167,7 +165,7 @@ describe('ChatView', () => {
     expect(screen.getByRole('button', { name: 'Profil teilen' })).toBeDisabled();
   });
 
-  it('clicking "In Profil uebernehmen" on an assistant message opens the preview modal', async () => {
+  it('clicking "In Profil übernehmen" on an assistant message opens the preview modal', async () => {
     mockUseChat({
       messages: [
         {
@@ -184,22 +182,22 @@ describe('ChatView', () => {
     await user.click(screen.getByTestId('commit-preview-button'));
     expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'commit-preview-title');
 
-    await user.click(screen.getByRole('button', { name: 'Schliessen' }));
+    await user.click(screen.getByRole('button', { name: 'Schließen' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('"Gefuehrte Sitzung starten" button is visible when no guided session is active', () => {
+  it('"Geführte Sitzung starten" button is visible when no guided session is active', () => {
     mockUseChat();
     render(<ChatView />);
-    expect(screen.getByRole('button', { name: 'Gefuehrte Sitzung starten' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Geführte Sitzung starten' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Sitzung beenden' })).not.toBeInTheDocument();
   });
 
-  it('clicking "Gefuehrte Sitzung starten" calls startGuidedSession', async () => {
+  it('clicking "Geführte Sitzung starten" calls startGuidedSession', async () => {
     const mocked = mockUseChat();
     const user = userEvent.setup();
     render(<ChatView />);
-    await user.click(screen.getByRole('button', { name: 'Gefuehrte Sitzung starten' }));
+    await user.click(screen.getByRole('button', { name: 'Geführte Sitzung starten' }));
     expect(mocked.startGuidedSession).toHaveBeenCalledOnce();
   });
 
@@ -213,7 +211,7 @@ describe('ChatView', () => {
     });
     render(<ChatView />);
     expect(
-      screen.getByRole('heading', { level: 1, name: 'KI-Assistent - Gefuehrte Sitzung' }),
+      screen.getByRole('heading', { level: 1, name: 'KI-Assistent - Geführte Sitzung' }),
     ).toBeInTheDocument();
     expect(screen.getByTestId('guided-session-indicator')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sitzung beenden' })).toBeInTheDocument();
@@ -245,10 +243,10 @@ describe('ChatView', () => {
 
     await user.click(iconBtn);
     expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'privacy-info-title');
-    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+    expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
 
-  it('committed assistant messages show the "In Profil uebernommen" badge instead of the button', () => {
+  it('committed assistant messages show the "In Profil übernommen" badge instead of the button', () => {
     mockUseChat({
       messages: [
         {
@@ -263,7 +261,7 @@ describe('ChatView', () => {
     render(<ChatView />);
 
     expect(screen.getByTestId('commit-preview-committed-badge')).toHaveTextContent(
-      'In Profil uebernommen',
+      'In Profil übernommen',
     );
     expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
   });

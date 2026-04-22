@@ -9,25 +9,25 @@ describe('AIDisclaimer', () => {
 
     expect(screen.getByRole('heading', { name: 'KI-Assistent aktivieren' })).toBeInTheDocument();
     expect(screen.getByText(/Keine medizinische Beratung/i)).toBeInTheDocument();
-    expect(screen.getByText(/Daten verlassen dein Geraet/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daten verlassen dein Gerät/i)).toBeInTheDocument();
     expect(screen.getByText(/Du kontrollierst den Zugang/i)).toBeInTheDocument();
   });
 
   it('point 2 names the BYOK model (user-owned Anthropic account and key)', () => {
     render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText(/ueber deinen eigenen Anthropic-Account/)).toBeInTheDocument();
+    expect(screen.getByText(/über deinen eigenen Anthropic-Account/)).toBeInTheDocument();
     expect(screen.getByText(/direkten Kunden, nicht Phylax/)).toBeInTheDocument();
   });
 
   it('point 2 names the 30-day retention window and auto-deletion', () => {
     render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+    expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
     expect(screen.getByText(/dann automatisch/)).toBeInTheDocument();
   });
 
   it('point 2 states that inputs are not used for AI training', () => {
     render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText(/nicht fuer KI-Training/)).toBeInTheDocument();
+    expect(screen.getByText(/nicht für KI-Training/)).toBeInTheDocument();
   });
 
   it('point 2 links to privacy.claude.com with safe target/rel attributes', () => {

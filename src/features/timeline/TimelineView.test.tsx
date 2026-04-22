@@ -77,14 +77,14 @@ describe('TimelineView', () => {
     // listChronological returns ascending; hook reverses to newest-first
     vi.spyOn(TimelineEntryRepository.prototype, 'listChronological').mockResolvedValue([
       mockEntry('old', 'Januar 2024', 'Erste', 1),
-      mockEntry('new', 'Maerz 2026', 'Neueste', 2),
+      mockEntry('new', 'März 2026', 'Neueste', 2),
     ]);
     renderView();
     await waitFor(() =>
       expect(screen.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeInTheDocument(),
     );
     const headings = screen.getAllByRole('heading', { level: 2 });
-    expect(headings[0]?.textContent).toBe('Maerz 2026');
+    expect(headings[0]?.textContent).toBe('März 2026');
     expect(headings[1]?.textContent).toBe('Januar 2024');
   });
 
@@ -93,7 +93,7 @@ describe('TimelineView', () => {
     vi.spyOn(TimelineEntryRepository.prototype, 'listChronological').mockResolvedValue([]);
     renderView();
     await waitFor(() =>
-      expect(screen.getByText(/Noch keine Verlaufseintraege/)).toBeInTheDocument(),
+      expect(screen.getByText(/Noch keine Verlaufseinträge/)).toBeInTheDocument(),
     );
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
@@ -104,9 +104,7 @@ describe('TimelineView', () => {
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockRejectedValue(new Error('boom'));
     renderView();
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
-    expect(screen.getByRole('alert').textContent).toMatch(
-      /Verlaufseintraege konnten nicht geladen/,
-    );
+    expect(screen.getByRole('alert').textContent).toMatch(/Verlaufseinträge konnten nicht geladen/);
     expect(consoleSpy).toHaveBeenCalledWith('[TimelineView]', 'boom');
     consoleSpy.mockRestore();
   });

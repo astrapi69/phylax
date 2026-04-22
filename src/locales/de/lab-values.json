@@ -14,10 +14,10 @@
       "report-number": "Bericht-Nr."
     },
     "section": {
-      "overall": "Gesamteinschaetzung",
+      "overall": "Gesamteinschätzung",
       "relevance": "Relevanz"
     },
-    "category-assessment": "Einschaetzung {{category}}"
+    "category-assessment": "Einschätzung {{category}}"
   },
   "table": {
     "parameter": "Parameter",

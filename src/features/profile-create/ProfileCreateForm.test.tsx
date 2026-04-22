@@ -32,8 +32,8 @@ describe('ProfileCreateForm', () => {
   it('renders all form fields', () => {
     renderForm();
     expect(screen.getByLabelText('Profilname')).toBeInTheDocument();
-    expect(screen.getByText('Fuer mich selbst')).toBeInTheDocument();
-    expect(screen.getByText('Stellvertretend fuer jemand anderen')).toBeInTheDocument();
+    expect(screen.getByText('Für mich selbst')).toBeInTheDocument();
+    expect(screen.getByText('Stellvertretend für jemand anderen')).toBeInTheDocument();
     expect(screen.getByLabelText('Initiale Version')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profil erstellen' })).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe('ProfileCreateForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.click(screen.getByText('Stellvertretend fuer jemand anderen'));
+    await user.click(screen.getByText('Stellvertretend für jemand anderen'));
     expect(screen.getByLabelText('Dein Name (als Betreuer)')).toBeInTheDocument();
   });
 
@@ -61,7 +61,7 @@ describe('ProfileCreateForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Profilname'), 'Test');
-    await user.click(screen.getByText('Stellvertretend fuer jemand anderen'));
+    await user.click(screen.getByText('Stellvertretend für jemand anderen'));
 
     expect(screen.getByRole('button', { name: 'Profil erstellen' })).toBeDisabled();
   });

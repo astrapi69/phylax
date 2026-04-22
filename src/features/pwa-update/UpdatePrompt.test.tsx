@@ -13,7 +13,7 @@ describe('UpdatePrompt', () => {
 
   it('renders message when needRefresh is true', () => {
     render(<UpdatePrompt needRefresh={true} onUpdate={vi.fn()} onDismiss={vi.fn()} />);
-    expect(screen.getByText('Eine neue Version ist verfuegbar.')).toBeInTheDocument();
+    expect(screen.getByText('Eine neue Version ist verfügbar.')).toBeInTheDocument();
   });
 
   it('calls onUpdate when update button clicked', async () => {
@@ -30,7 +30,7 @@ describe('UpdatePrompt', () => {
     const user = userEvent.setup();
     render(<UpdatePrompt needRefresh={true} onUpdate={vi.fn()} onDismiss={onDismiss} />);
 
-    await user.click(screen.getByRole('button', { name: 'Spaeter' }));
+    await user.click(screen.getByRole('button', { name: 'Später' }));
     expect(onDismiss).toHaveBeenCalledOnce();
   });
 });

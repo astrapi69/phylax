@@ -114,7 +114,7 @@ describe('PreviewScreen', () => {
     // No amber warnings block, no clean indicator: the skipped block stands alone.
     expect(screen.queryByTestId('warnings-disclosure')).not.toBeInTheDocument();
     expect(screen.queryByTestId('parse-clean')).not.toBeInTheDocument();
-    const btn = screen.getByRole('button', { name: /2 leere Abschnitte uebersprungen/ });
+    const btn = screen.getByRole('button', { name: /2 leere Abschnitte übersprungen/ });
     await user.click(btn);
     expect(screen.getByText(/Ausgangslage/)).toBeInTheDocument();
     expect(screen.getByText(/Erholung/)).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe('PreviewScreen', () => {
     expect(screen.getByTestId('skipped-disclosure')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /1 Warnung beim Parsen/ })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /1 leerer Abschnitt uebersprungen/ }),
+      screen.getByRole('button', { name: /1 leerer Abschnitt übersprungen/ }),
     ).toBeInTheDocument();
   });
 
@@ -200,7 +200,7 @@ describe('PreviewScreen', () => {
     expect(screen.getByText(/Schmerz bei Druck/)).toBeInTheDocument();
   });
 
-  it('Zurueck calls onBack', async () => {
+  it('Zurück calls onBack', async () => {
     const user = userEvent.setup();
     const onBack = vi.fn();
     render(
@@ -212,7 +212,7 @@ describe('PreviewScreen', () => {
         onBack={onBack}
       />,
     );
-    await user.click(screen.getByRole('button', { name: 'Zurueck' }));
+    await user.click(screen.getByRole('button', { name: 'Zurück' }));
     expect(onBack).toHaveBeenCalledOnce();
   });
 

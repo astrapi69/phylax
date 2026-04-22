@@ -1,25 +1,25 @@
 {
   "settings-section": {
-    "heading": "Phylax unterstuetzen",
-    "description": "Phylax wird als Open-Source-Projekt ohne Tracking, ohne Cloud und ohne Werbung entwickelt. Wenn dir die App hilft und du das Projekt unterstuetzen moechtest, findest du alle Spenden-Moeglichkeiten unter dem Link unten.",
-    "link": "Projekt unterstuetzen"
+    "heading": "Phylax unterstützen",
+    "description": "Phylax wird als Open-Source-Projekt ohne Tracking, ohne Cloud und ohne Werbung entwickelt. Wenn dir die App hilft und du das Projekt unterstützen möchtest, findest du alle Spenden-Möglichkeiten unter dem Link unten.",
+    "link": "Projekt unterstützen"
   },
   "onboarding-card": {
     "heading": "Willkommen bei Phylax",
     "description-1": "Phylax ist ein Open-Source-Projekt eines einzelnen Entwicklers. Keine Cloud, kein Tracking, keine Werbung.",
-    "description-2": "Wenn dir Phylax hilft und du das Projekt unterstuetzen moechtest:",
-    "support-button": "Projekt unterstuetzen",
+    "description-2": "Wenn dir Phylax hilft und du das Projekt unterstützen möchtest:",
+    "support-button": "Projekt unterstützen",
     "dismiss-button": "Verstanden",
     "settings-hint": "Du findest diesen Hinweis jederzeit in den Einstellungen."
   },
   "reminder-banner": {
     "aria-label": "Spenden-Hinweis",
-    "text_one": "Du nutzt Phylax jetzt seit einem Monat. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
-    "text_other": "Du nutzt Phylax jetzt seit {{count}} Monaten. Wenn dir das Projekt gefaellt, kannst du die Entwicklung unterstuetzen.",
-    "support-button": "Unterstuetzen",
+    "text_one": "Du nutzt Phylax jetzt seit einem Monat. Wenn dir das Projekt gefällt, kannst du die Entwicklung unterstützen.",
+    "text_other": "Du nutzt Phylax jetzt seit {{count}} Monaten. Wenn dir das Projekt gefällt, kannst du die Entwicklung unterstützen.",
+    "support-button": "Unterstützen",
     "not-now-button": "Nicht jetzt"
   },
   "link": {
-    "new-tab": "(oeffnet in neuem Tab)"
+    "new-tab": "(öffnet in neuem Tab)"
   }
 }

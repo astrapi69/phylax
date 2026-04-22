@@ -48,6 +48,6 @@ describe('ThemeSection', () => {
 
   it('shows helper text for the auto option', () => {
     renderSection();
-    expect(screen.getByText(/Folgt den Einstellungen deines Geraets/)).toBeInTheDocument();
+    expect(screen.getByText(/Folgt den Einstellungen deines Geräts/)).toBeInTheDocument();
   });
 });

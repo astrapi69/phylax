@@ -18,14 +18,12 @@ describe('PrivacyInfoContent', () => {
 
   it('explicitly states that inputs are not used for AI training', () => {
     render(<PrivacyInfoContent />);
-    expect(screen.getByText(/nicht fuer KI-Training/)).toBeInTheDocument();
+    expect(screen.getByText(/nicht für KI-Training/)).toBeInTheDocument();
   });
 
   it('names the user-owned account and API key up front', () => {
     render(<PrivacyInfoContent />);
-    expect(
-      screen.getByText(/Anthropic-Account und API-Schluessel gehoeren dir/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Anthropic-Account und API-Schlüssel gehören dir/)).toBeInTheDocument();
   });
 
   it('links to privacy.claude.com with safe target/rel attributes', () => {

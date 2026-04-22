@@ -1,7 +1,7 @@
 {
   "section": {
-    "heading": "Verschluesseltes Backup",
-    "description": "Erstelle eine .phylax-Datei mit allen Profildaten. Zum Wiederherstellen benoetigst du genau dieses Passwort."
+    "heading": "Verschlüsseltes Backup",
+    "description": "Erstelle eine .phylax-Datei mit allen Profildaten. Zum Wiederherstellen benötigst du genau dieses Passwort."
   },
   "form": {
     "password-label": "Passwort",
@@ -10,18 +10,18 @@
     "submit-working": "Backup wird erstellt..."
   },
   "status": {
-    "deriving": "Schluessel wird abgeleitet...",
-    "encrypting": "Daten werden verschluesselt...",
+    "deriving": "Schlüssel wird abgeleitet...",
+    "encrypting": "Daten werden verschlüsselt...",
     "ready": "Backup bereit.",
-    "downloaded": "Backup mit dem eingegebenen Passwort verschluesselt. Du benoetigst genau dieses Passwort fuer einen spaeteren Import.",
+    "downloaded": "Backup mit dem eingegebenen Passwort verschlüsselt. Du benötigst genau dieses Passwort für einen späteren Import.",
     "new-backup": "Weiteres Backup erstellen"
   },
   "error": {
     "password-too-short": "Passwort muss mindestens {{min}} Zeichen haben.",
     "no-profile": "Kein Profil zum Sichern vorhanden.",
     "locked": "App ist gesperrt. Bitte entsperren und erneut versuchen.",
-    "crypto-unavailable": "Browser unterstuetzt Web Crypto nicht.",
-    "encryption-failed": "Verschluesselung fehlgeschlagen.",
+    "crypto-unavailable": "Browser unterstützt Web Crypto nicht.",
+    "encryption-failed": "Verschlüsselung fehlgeschlagen.",
     "download-failed": "Download fehlgeschlagen. Versuch es erneut."
   }
 }

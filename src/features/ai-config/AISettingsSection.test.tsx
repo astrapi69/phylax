@@ -33,7 +33,7 @@ describe('AISettingsSection', () => {
 
     expect(screen.getByRole('heading', { name: 'KI-Assistent' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText(/Nicht aktiv/)).toBeInTheDocument());
-    expect(screen.getByLabelText('API-Schluessel')).toBeInTheDocument();
+    expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument();
   });
 
@@ -81,7 +81,7 @@ describe('AISettingsSection', () => {
       expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
     );
 
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-ant-abcdefghijklmnop1234');
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
     await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
 
     expect(screen.getByRole('heading', { name: 'KI-Assistent aktivieren' })).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('AISettingsSection', () => {
       expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
     );
 
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-ant-abcdefghijklmnop1234');
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
     await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
     await user.click(screen.getByRole('button', { name: /Verstanden, KI aktivieren/ }));
 
@@ -114,7 +114,7 @@ describe('AISettingsSection', () => {
       expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
     );
 
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-ant-abcdefghijklmnop1234');
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
     await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
 
     await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
@@ -141,11 +141,11 @@ describe('AISettingsSection', () => {
   it('shows format warning for short/malformed keys', async () => {
     const user = userEvent.setup();
     render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByLabelText('API-Schluessel')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument());
 
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-proj-xyz');
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-proj-xyz');
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/ungewoehnlich/);
+    expect(screen.getByRole('alert')).toHaveTextContent(/ungewöhnlich/);
   });
 
   it('activate button is disabled when the key input is empty', async () => {
@@ -157,14 +157,14 @@ describe('AISettingsSection', () => {
     expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeDisabled();
   });
 
-  it('"Aendern" reveals an input to replace the stored key without going through the disclaimer', async () => {
+  it('"Ändern" reveals an input to replace the stored key without going through the disclaimer', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxOLD1' });
     const user = userEvent.setup();
     render(<AISettingsSection />);
     await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
 
-    await user.click(screen.getByRole('button', { name: 'Aendern' }));
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-ant-xxxxxxxxxxxxxxxxNEW2');
+    await user.click(screen.getByRole('button', { name: 'Ändern' }));
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-xxxxxxxxxxxxxxxxNEW2');
     await user.click(screen.getByRole('button', { name: 'Speichern' }));
 
     await waitFor(() =>
@@ -174,14 +174,14 @@ describe('AISettingsSection', () => {
     expect(stored?.apiKey).toBe('sk-ant-xxxxxxxxxxxxxxxxNEW2');
   });
 
-  it('canceling "Aendern" does not modify the stored key', async () => {
+  it('canceling "Ändern" does not modify the stored key', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxKEEP' });
     const user = userEvent.setup();
     render(<AISettingsSection />);
     await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
 
-    await user.click(screen.getByRole('button', { name: 'Aendern' }));
-    await user.type(screen.getByLabelText('API-Schluessel'), 'sk-ant-never-saved');
+    await user.click(screen.getByRole('button', { name: 'Ändern' }));
+    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-never-saved');
     await user.click(screen.getByRole('button', { name: 'Abbrechen' }));
 
     await waitFor(() =>
@@ -209,6 +209,6 @@ describe('AISettingsSection', () => {
     await user.click(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' }));
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-labelledby', 'privacy-info-title');
-    expect(screen.getByText(/30 Tage zur Sicherheitspruefung/)).toBeInTheDocument();
+    expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
 });

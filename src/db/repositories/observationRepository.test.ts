@@ -17,7 +17,7 @@ function makeObsData(
   return {
     profileId: overrides.profileId ?? profileId,
     theme: overrides.theme ?? 'Schulter (links)',
-    fact: overrides.fact ?? 'Schmerz bei Banddrücken ueber Kopf.',
+    fact: overrides.fact ?? 'Schmerz bei Banddrücken über Kopf.',
     pattern: overrides.pattern ?? 'Nur unter Belastung, nie in Ruhe.',
     selfRegulation: overrides.selfRegulation ?? 'Training angepasst.',
     status: overrides.status ?? 'Chronisch-rezidivierend',
@@ -61,7 +61,7 @@ describe('ObservationRepository', () => {
         Ursprung: 'Detaillierte Vorgeschichte seit 2018.',
         Kausalitaetskette: 'Gurt -> Vorschaedigung -> SCM-Kompensation',
         'Sekundaere Ursache': 'SCM-Muskel als Mitverursacher',
-        Einschaetzung: 'Selbst + KI-gestuetzt',
+        Einschätzung: 'Selbst + KI-gestuetzt',
       };
       const obs = await repo.create(makeObsData({ extraSections: sections }));
       const fetched = await repo.getById(obs.id);
@@ -99,7 +99,7 @@ describe('ObservationRepository', () => {
 
     it('Umlauts and special characters survive', async () => {
       const sections = {
-        'Aerztliche Einschaetzung': 'Ueber 50% Verlust, groesser als erwartet.',
+        'Aerztliche Einschätzung': 'Ueber 50% Verlust, groesser als erwartet.',
         Note: 'Temperatur 37.5-38.5 Grad C. Puls >100. Wert <0.5.',
         Umlaute: 'Aerztliche Befunde: aehnlich wie frueher, oeffentlich zugaenglich.',
       };
@@ -131,7 +131,7 @@ describe('ObservationRepository', () => {
     it('50 keys all survive', async () => {
       const sections: Record<string, string> = {};
       for (let i = 1; i <= 50; i++) {
-        sections[`Section${i}`] = `Wert fuer Section ${i}`;
+        sections[`Section${i}`] = `Wert für Section ${i}`;
       }
       const obs = await repo.create(makeObsData({ extraSections: sections }));
       const fetched = await repo.getById(obs.id);
@@ -213,14 +213,14 @@ describe('ObservationRepository', () => {
       const obs = await repo.create(
         makeObsData({
           medicalFinding: 'Impingement-Syndrom, konservativ',
-          relevanceNotes: 'Relevant fuer Abnehmziel: Gelenkbelastung bei Uebergewicht.',
+          relevanceNotes: 'Relevant für Abnehmziel: Gelenkbelastung bei Uebergewicht.',
         }),
       );
       const fetched = await repo.getById(obs.id);
 
       expect(fetched?.medicalFinding).toBe('Impingement-Syndrom, konservativ');
       expect(fetched?.relevanceNotes).toBe(
-        'Relevant fuer Abnehmziel: Gelenkbelastung bei Uebergewicht.',
+        'Relevant für Abnehmziel: Gelenkbelastung bei Uebergewicht.',
       );
       lock();
     });

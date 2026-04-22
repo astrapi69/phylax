@@ -4,7 +4,7 @@ import { parseOffenePunkte } from './parseOffenePunkte';
 describe('parseOffenePunkte', () => {
   it('parses bullets grouped by context', () => {
     const md = [
-      '### Beim naechsten Arztbesuch',
+      '### Beim nächsten Arztbesuch',
       '- Vitamin D nachkontrollieren',
       '- TSH bestimmen lassen',
       '### Laufend beobachten',
@@ -13,7 +13,7 @@ describe('parseOffenePunkte', () => {
 
     const result = parseOffenePunkte(md);
     expect(result).toHaveLength(3);
-    expect(result[0]?.context).toBe('Beim naechsten Arztbesuch');
+    expect(result[0]?.context).toBe('Beim nächsten Arztbesuch');
     expect(result[0]?.text).toBe('Vitamin D nachkontrollieren');
     expect(result[1]?.text).toBe('TSH bestimmen lassen');
     expect(result[2]?.context).toBe('Laufend beobachten');
@@ -41,7 +41,7 @@ describe('parseOffenePunkte', () => {
   });
 
   it('handles section with no bullets as single point', () => {
-    const md = '### Dermatologen-Termin\nTermin vereinbaren fuer Hautcheck.';
+    const md = '### Dermatologen-Termin\nTermin vereinbaren für Hautcheck.';
     const result = parseOffenePunkte(md);
     expect(result).toHaveLength(1);
     expect(result[0]?.text).toContain('Hautcheck');

@@ -1,18 +1,18 @@
 {
   "heading": "Neues Profil erstellen",
-  "intro": "Erstelle dein erstes Gesundheitsprofil. Du kannst alle Details spaeter ergaenzen.",
+  "intro": "Erstelle dein erstes Gesundheitsprofil. Du kannst alle Details später ergänzen.",
   "form": {
     "name-label": "Profilname",
     "name-placeholder": "Mein Profil",
     "type-label": "Profiltyp",
-    "type-self": "Fuer mich selbst",
-    "type-proxy": "Stellvertretend fuer jemand anderen",
+    "type-self": "Für mich selbst",
+    "type-proxy": "Stellvertretend für jemand anderen",
     "managed-by-label": "Dein Name (als Betreuer)",
     "managed-by-placeholder": "Asterios",
     "managed-by-hint": "Wird gespeichert, um zu kennzeichnen, wer dieses Profil verwaltet.",
     "version-label": "Initiale Version",
     "version-placeholder": "1.0",
-    "version-hint": "Semver-Format empfohlen. Wird bei kuenftigen Aenderungen fortgeschrieben."
+    "version-hint": "Semver-Format empfohlen. Wird bei künftigen Änderungen fortgeschrieben."
   },
   "submit": {
     "label": "Profil erstellen",

@@ -219,13 +219,13 @@ describe('commitFragment', () => {
       openPoints: [
         {
           text: 'TSH-Wert nachmessen',
-          context: 'Beim naechsten Arztbesuch',
+          context: 'Beim nächsten Arztbesuch',
           resolved: false,
           priority: 'Hoch',
         },
         {
           text: 'MRT Knie rechts besprechen',
-          context: 'Beim naechsten Arztbesuch',
+          context: 'Beim nächsten Arztbesuch',
           resolved: false,
         },
       ],
@@ -241,7 +241,7 @@ describe('commitFragment', () => {
     const stored = await new OpenPointRepository().listByProfile(profile.id);
     expect(stored).toHaveLength(2);
     const tsh = stored.find((p) => p.text === 'TSH-Wert nachmessen');
-    expect(tsh?.context).toBe('Beim naechsten Arztbesuch');
+    expect(tsh?.context).toBe('Beim nächsten Arztbesuch');
     expect(tsh?.priority).toBe('Hoch');
     expect(tsh?.resolved).toBe(false);
   });
@@ -276,7 +276,7 @@ describe('commitFragment', () => {
       observations: [makeParsedObs('Knie rechts', { status: 'Akut' })],
       supplements: [makeParsedSupplement('Magnesium 400', { category: 'daily' })],
       openPoints: [
-        { text: 'MRT besprechen', context: 'Beim naechsten Arztbesuch', resolved: false },
+        { text: 'MRT besprechen', context: 'Beim nächsten Arztbesuch', resolved: false },
       ],
     });
     const diff = computeDiff(parseResult, { observations: [], supplements: [] });
@@ -392,7 +392,7 @@ describe('commitSummaryText', () => {
         newVersion: '1.0.1',
       }),
     ).toBe(
-      'Profil-Update gespeichert: 2 Beobachtungen, 3 offene Punkte uebernommen (Version 1.0.1).',
+      'Profil-Update gespeichert: 2 Beobachtungen, 3 offene Punkte übernommen (Version 1.0.1).',
     );
   });
 
@@ -407,7 +407,7 @@ describe('commitSummaryText', () => {
         newVersion: '1.0.1',
       }),
     ).toBe(
-      'Profil-Update gespeichert: 1 Beobachtung, 1 Supplement, 1 offener Punkt uebernommen (Version 1.0.1).',
+      'Profil-Update gespeichert: 1 Beobachtung, 1 Supplement, 1 offener Punkt übernommen (Version 1.0.1).',
     );
   });
 

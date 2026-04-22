@@ -62,7 +62,7 @@ describe('useTimeline', () => {
     await new Promise((r) => setTimeout(r, 3));
     await seedEntry(profile.id, 'Juni 2025', 'Mittlere Notiz');
     await new Promise((r) => setTimeout(r, 3));
-    await seedEntry(profile.id, 'Maerz 2026', 'Neueste Notiz');
+    await seedEntry(profile.id, 'März 2026', 'Neueste Notiz');
 
     const { result } = renderHook(() => useTimeline());
     await waitFor(() => expect(result.current.state.kind).toBe('loaded'));

@@ -14,12 +14,12 @@ reasoning note. Keep entries alphabetical within each section.
 | DE                     | EN                     | Notes                                                          |
 | ---------------------- | ---------------------- | -------------------------------------------------------------- |
 | Abweichender Laborwert | abnormal lab value     | ai-chat context counts; "abnormal" matches medical-EN register |
-| Arzt / Aerztin         | doctor                 | generic                                                        |
+| Arzt / Ärztin          | doctor                 | generic                                                        |
 | Bekannte Diagnosen     | Known diagnoses        | profile-view section heading                                   |
 | Beobachtung            | observation            | fits "living health" concept                                   |
 | Betreuer               | caregiver              | proxy-profile context                                          |
-| Gefuehrte Sitzung      | guided session         |                                                                |
-| Gesamteinschaetzung    | overall assessment     | lab-report summary heading                                     |
+| Geführte Sitzung       | guided session         |                                                                |
+| Gesamteinschätzung     | overall assessment     | lab-report summary heading                                     |
 | Gewichtsverlauf        | weight trend           | profile-summary base-data line                                 |
 | Hausarzt               | primary care physician | not "GP" (UK/AU) or "family doctor" (US informal)              |
 | Laborbefund            | lab report             | the document                                                   |
@@ -33,9 +33,9 @@ reasoning note. Keep entries alphabetical within each section.
 | Selbstregulation       | self-regulation        | established English term                                       |
 | Supplement             | supplement             |                                                                |
 | Unbekannt              | Unknown                | import source fallback                                         |
-| Ungeloest              | unresolved             | open-points heading qualifier in profile-summary               |
+| Ungelöst               | unresolved             | open-points heading qualifier in profile-summary               |
 | Verlauf (nav label)    | timeline               |                                                                |
-| Verlaufseintrag        | timeline entry         | singular; plural "Verlaufseintraege" -> "timeline entries"     |
+| Verlaufseintrag        | timeline entry         | singular; plural "Verlaufseinträge" -> "timeline entries"      |
 | Verlaufsnotiz          | timeline entry         | synonym used in import + profile-list UIs                      |
 | Warnhinweis            | warning                | generic warning (import parse warnings, etc.)                  |
 | Warnsignal             | warning sign           | medical red-flag sense                                         |
@@ -43,60 +43,60 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## Profile and base data
 
-| DE                         | EN                   | Notes                        |
-| -------------------------- | -------------------- | ---------------------------- |
-| Aktuelle Medikamente       | Current medications  | profile-view section heading |
-| Alter                      | age                  |                              |
-| Basisdaten                 | base data            |                              |
-| Diagnosen                  | diagnoses            |                              |
-| Eigenes Profil             | own profile          |                              |
-| Einschraenkungen           | limitations          |                              |
-| Externe Referenzen         | External references  | profile-view section heading |
-| Geburtsdatum               | date of birth        |                              |
-| Gewicht                    | weight               |                              |
-| Groesse                    | height               |                              |
-| Kontextnotizen             | Context notes        | profile-view base-data       |
-| Letzte Aenderung           | Last change          | profile-view header field    |
-| Medikamente                | medications          |                              |
-| Mein Profil                | My profile           | fallback display name        |
-| Profilauswahl              | profile selection    | import flow step             |
-| Relevante Einschraenkungen | Relevant limitations | profile-view section heading |
-| Stellvertretend fuer       | proxy for            |                              |
-| Stellvertreterprofil       | proxy profile        |                              |
-| Ziel (Gewicht)             | target (weight)      | weight target                |
+| DE                        | EN                   | Notes                        |
+| ------------------------- | -------------------- | ---------------------------- |
+| Aktuelle Medikamente      | Current medications  | profile-view section heading |
+| Alter                     | age                  |                              |
+| Basisdaten                | base data            |                              |
+| Diagnosen                 | diagnoses            |                              |
+| Eigenes Profil            | own profile          |                              |
+| Einschränkungen           | limitations          |                              |
+| Externe Referenzen        | External references  | profile-view section heading |
+| Geburtsdatum              | date of birth        |                              |
+| Gewicht                   | weight               |                              |
+| Größe                     | height               |                              |
+| Kontextnotizen            | Context notes        | profile-view base-data       |
+| Letzte Änderung           | Last change          | profile-view header field    |
+| Medikamente               | medications          |                              |
+| Mein Profil               | My profile           | fallback display name        |
+| Profilauswahl             | profile selection    | import flow step             |
+| Relevante Einschränkungen | Relevant limitations | profile-view section heading |
+| Stellvertretend für       | proxy for            |                              |
+| Stellvertreterprofil      | proxy profile        |                              |
+| Ziel (Gewicht)            | target (weight)      | weight target                |
 
 ## AI and commit flow
 
-| DE                                   | EN              | Notes                                                                |
-| ------------------------------------ | --------------- | -------------------------------------------------------------------- |
-| Aenderung                            | change          |                                                                      |
-| Anbieter                             | Provider        | AI provider dropdown label                                           |
-| API-Schluessel                       | API key         | AI config field                                                      |
-| benutzerdefiniert                    | custom          | model suffix                                                         |
-| Chat-Verlauf                         | Chat log        | ARIA label (role="log" precedent); use "Chat history" for visible UI |
-| Fortschritt                          | Progress        | guided-session indicator                                             |
-| KI                                   | AI              | abbreviation                                                         |
-| KI-Assistent                         | AI assistant    |                                                                      |
-| Konversation                         | conversation    | system framing context                                               |
-| Master-Passwort                      | master password |                                                                      |
-| Modell                               | Model           | AI config field                                                      |
-| Nachricht                            | message         | chat entry, input label                                              |
-| Profil teilen                        | share profile   |                                                                      |
-| Roh-Markdown                         | raw Markdown    |                                                                      |
-| Sitzung                              | session         | guided session                                                       |
-| Uebernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak                   |
-| Versionseintrag                      | version note    | "note" reads more naturally than "entry" for a description field     |
-| Versionsgeschichte                   | version history |                                                                      |
-| Vorschau                             | preview         |                                                                      |
+| DE                                  | EN              | Notes                                                                |
+| ----------------------------------- | --------------- | -------------------------------------------------------------------- |
+| Änderung                            | change          |                                                                      |
+| Anbieter                            | Provider        | AI provider dropdown label                                           |
+| API-Schlüssel                       | API key         | AI config field                                                      |
+| benutzerdefiniert                   | custom          | model suffix                                                         |
+| Chat-Verlauf                        | Chat log        | ARIA label (role="log" precedent); use "Chat history" for visible UI |
+| Fortschritt                         | Progress        | guided-session indicator                                             |
+| KI                                  | AI              | abbreviation                                                         |
+| KI-Assistent                        | AI assistant    |                                                                      |
+| Konversation                        | conversation    | system framing context                                               |
+| Master-Passwort                     | master password |                                                                      |
+| Modell                              | Model           | AI config field                                                      |
+| Nachricht                           | message         | chat entry, input label                                              |
+| Profil teilen                       | share profile   |                                                                      |
+| Roh-Markdown                        | raw Markdown    |                                                                      |
+| Sitzung                             | session         | guided session                                                       |
+| Übernehmen (commit fragment action) | apply           | end-user register; "commit" reserved for git-speak                   |
+| Versionseintrag                     | version note    | "note" reads more naturally than "entry" for a description field     |
+| Versionsgeschichte                  | version history |                                                                      |
+| Vorschau                            | preview         |                                                                      |
 
 ## Common actions and chrome
 
 | DE                   | EN                     | Notes                        |
 | -------------------- | ---------------------- | ---------------------------- |
 | Abbrechen            | Cancel                 |                              |
-| Aendern              | Change                 | change stored value (button) |
-| Auswaehlen           | Select                 |                              |
-| Datei auswaehlen     | Choose file            | file picker label            |
+| Ändern               | Change                 | change stored value (button) |
+| Auswählen            | Select                 |                              |
+| Datei auswählen      | Choose file            | file picker label            |
 | Datenschutz          | privacy                |                              |
 | Einstellungen        | settings               |                              |
 | Entsperren           | Unlock                 |                              |
@@ -106,7 +106,7 @@ reasoning note. Keep entries alphabetical within each section.
 | Ja, ersetzen         | Yes, replace           | destructive confirm          |
 | Laden...             | Loading...             |                              |
 | Leeren               | Clear                  |                              |
-| Schliessen           | Close                  |                              |
+| Schließen            | Close                  |                              |
 | Senden               | Send                   | chat submit button           |
 | Sortierung           | Sort                   | observations sort label      |
 | Speichern            | Save                   |                              |
@@ -115,57 +115,57 @@ reasoning note. Keep entries alphabetical within each section.
 | Systemsprache folgen | Follow system language | auto option                  |
 | Version              | Version                | profile header (semver)      |
 | Weiter               | Next                   |                              |
-| Zurueck              | Back                   |                              |
+| Zurück               | Back                   |                              |
 
 ## Table headers and field labels
 
-| DE            | EN             | Notes                                                                       |
-| ------------- | -------------- | --------------------------------------------------------------------------- |
-| Begruendung   | Rationale      | supplement card field                                                       |
-| Bericht-Nr.   | Report no.     | abbreviation                                                                |
-| Bewertung     | Assessment     | lab-values table row header                                                 |
-| Einheit       | Unit           |                                                                             |
-| Einschaetzung | Assessment     | lab-values category heading; same EN as "Bewertung" (context disambiguates) |
-| Empfehlung    | Recommendation | supplement card field                                                       |
-| Ergebnis      | Result         |                                                                             |
-| Labor         | Lab            |                                                                             |
-| Parameter     | Parameter      |                                                                             |
-| Referenz      | Reference      |                                                                             |
-| Relevanz      | Relevance      | observation card + lab-report section                                       |
+| DE           | EN             | Notes                                                                       |
+| ------------ | -------------- | --------------------------------------------------------------------------- |
+| Begründung   | Rationale      | supplement card field                                                       |
+| Bericht-Nr.  | Report no.     | abbreviation                                                                |
+| Bewertung    | Assessment     | lab-values table row header                                                 |
+| Einheit      | Unit           |                                                                             |
+| Einschätzung | Assessment     | lab-values category heading; same EN as "Bewertung" (context disambiguates) |
+| Empfehlung   | Recommendation | supplement card field                                                       |
+| Ergebnis     | Result         |                                                                             |
+| Labor        | Lab            |                                                                             |
+| Parameter    | Parameter      |                                                                             |
+| Referenz     | Reference      |                                                                             |
+| Relevanz     | Relevance      | observation card + lab-report section                                       |
 
 ## Error and status messages
 
-| DE                                                 | EN                                         | Notes                                                        |
-| -------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
-| API-Schluessel ungueltig.                          | Invalid API key.                           |                                                              |
-| App ist gesperrt.                                  | The app is locked.                         |                                                              |
-| Der KI-Dienst ist voruebergehend nicht erreichbar. | The AI service is temporarily unavailable. |                                                              |
-| Fehler beim KI-Dienst.                             | AI service error.                          |                                                              |
-| Fehler beim Speichern.                             | Error saving.                              |                                                              |
-| Kein Profil gefunden.                              | No profile found.                          |                                                              |
-| Keine Internetverbindung.                          | No internet connection.                    |                                                              |
-| leerer Abschnitt uebersprungen                     | empty section skipped                      | import preview info-level notice for placeholder H3 headings |
-| Zu viele Anfragen.                                 | Too many requests.                         |                                                              |
+| DE                                                | EN                                         | Notes                                                        |
+| ------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| API-Schlüssel ungültig.                           | Invalid API key.                           |                                                              |
+| App ist gesperrt.                                 | The app is locked.                         |                                                              |
+| Der KI-Dienst ist vorübergehend nicht erreichbar. | The AI service is temporarily unavailable. |                                                              |
+| Fehler beim KI-Dienst.                            | AI service error.                          |                                                              |
+| Fehler beim Speichern.                            | Error saving.                              |                                                              |
+| Kein Profil gefunden.                             | No profile found.                          |                                                              |
+| Keine Internetverbindung.                         | No internet connection.                    |                                                              |
+| leerer Abschnitt übersprungen                     | empty section skipped                      | import preview info-level notice for placeholder H3 headings |
+| Zu viele Anfragen.                                | Too many requests.                         |                                                              |
 
 ## Support and donation
 
-| DE                      | EN                  | Notes                                                                                        |
-| ----------------------- | ------------------- | -------------------------------------------------------------------------------------------- |
-| Projekt unterstuetzen   | Support the project |                                                                                              |
-| Spenden / Unterstuetzen | support             | "support" over "donate" - broader scope (stars, issues, code, word-of-mouth, plus Liberapay) |
-| Unterstuetzen           | Support             |                                                                                              |
+| DE                     | EN                  | Notes                                                                                        |
+| ---------------------- | ------------------- | -------------------------------------------------------------------------------------------- |
+| Projekt unterstützen   | Support the project |                                                                                              |
+| Spenden / Unterstützen | support             | "support" over "donate" - broader scope (stars, issues, code, word-of-mouth, plus Liberapay) |
+| Unterstützen           | Support             |                                                                                              |
 
 ## Badges and statuses
 
-| DE                          | EN                    | Notes                |
-| --------------------------- | --------------------- | -------------------- |
-| aktualisiert                | updated               | commit-preview badge |
-| neu                         | new                   | commit-preview badge |
-| Pausiert / pausiert         | Paused / paused       | supplement category  |
-| Regelmaessig / regelmaessig | Regular / regular     | supplement category  |
-| Taeglich / taeglich         | Daily / daily         | supplement category  |
-| unveraendert                | unchanged             | commit-preview badge |
-| Bei Bedarf / bei Bedarf     | As needed / as needed | supplement category  |
+| DE                      | EN                    | Notes                |
+| ----------------------- | --------------------- | -------------------- |
+| aktualisiert            | updated               | commit-preview badge |
+| neu                     | new                   | commit-preview badge |
+| Pausiert / pausiert     | Paused / paused       | supplement category  |
+| Regelmäßig / regelmäßig | Regular / regular     | supplement category  |
+| Täglich / täglich       | Daily / daily         | supplement category  |
+| unverändert             | unchanged             | commit-preview badge |
+| Bei Bedarf / bei Bedarf | As needed / as needed | supplement category  |
 
 ## Theme
 
@@ -185,8 +185,11 @@ reasoning note. Keep entries alphabetical within each section.
   SaaS conventions.
 - Sentences retain punctuation from the DE source (periods, ellipses,
   question marks).
-- Umlauts are never used. Source DE uses ASCII substitution
-  (ae/oe/ue/ss) per I18N-01l-a. EN has no umlauts anyway.
+- Umlauts in DE entries use real Unicode characters (`ä`, `ö`, `ü`,
+  `ß`, `Ä`, `Ö`, `Ü`). ASCII substitution is permitted only when
+  orthographically correct (post-reform spellings, proper nouns) per
+  the CLAUDE.md umlaut rule. The earlier I18N-01l-a blanket-ASCII
+  convention was reversed in TD-08. EN has no umlauts.
 - Interpolation placeholders (`{{name}}`, `{{count}}`, `{{min}}`, etc.)
   stay byte-identical across languages.
 - Plural forms use i18next `_one` / `_other` suffixes when the source

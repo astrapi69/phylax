@@ -27,13 +27,13 @@ describe('SupplementCard', () => {
       <SupplementCard supplement={makeSupplement({ rationale: 'Empfohlen nach Bluttest' })} />,
     );
     expect(screen.getByText(/Empfohlen nach Bluttest/)).toBeInTheDocument();
-    expect(screen.getByText(/Begruendung:/)).toBeInTheDocument();
+    expect(screen.getByText(/Begründung:/)).toBeInTheDocument();
   });
 
   it('hides recommendation and rationale lines when absent', () => {
     render(<SupplementCard supplement={makeSupplement()} />);
     expect(screen.queryByText(/Empfehlung:/)).toBeNull();
-    expect(screen.queryByText(/Begruendung:/)).toBeNull();
+    expect(screen.queryByText(/Begründung:/)).toBeNull();
   });
 
   it('applies muted styling and shows Pausiert badge when muted', () => {

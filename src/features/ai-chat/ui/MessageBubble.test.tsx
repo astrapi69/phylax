@@ -34,7 +34,7 @@ describe('MessageBubble', () => {
     render(<MessageBubble message={assistantMsg('Strukturierte Antwort.')} />);
     const bubble = screen.getByTestId('message-bubble-assistant');
     // The assistant bubble's wrapper is a left-aligned column so the
-    // "In Profil uebernehmen" action can sit directly under the bubble.
+    // "In Profil übernehmen" action can sit directly under the bubble.
     expect(bubble.parentElement).toHaveClass('items-start');
     const label = screen.getByLabelText('KI-Assistent');
     expect(label).toHaveTextContent('KI');
@@ -67,9 +67,9 @@ describe('MessageBubble', () => {
   });
 
   it('renders a system message centered with warning styling', () => {
-    render(<MessageBubble message={systemMsg('API-Schluessel ungueltig.')} />);
+    render(<MessageBubble message={systemMsg('API-Schlüssel ungültig.')} />);
     const bubble = screen.getByTestId('message-bubble-system');
-    expect(bubble).toHaveTextContent('API-Schluessel ungueltig.');
+    expect(bubble).toHaveTextContent('API-Schlüssel ungültig.');
     expect(bubble).toHaveClass('text-center');
   });
 
@@ -120,7 +120,7 @@ describe('MessageBubble', () => {
     );
   });
 
-  it('shows "In Profil uebernehmen" on an assistant message when a fragment is detected', async () => {
+  it('shows "In Profil übernehmen" on an assistant message when a fragment is detected', async () => {
     const onCommitPreview = vi.fn();
     const user = userEvent.setup();
     const msg: ChatMessage = assistantMsg(
@@ -129,7 +129,7 @@ describe('MessageBubble', () => {
     render(<MessageBubble message={msg} onCommitPreview={onCommitPreview} />);
 
     const btn = screen.getByTestId('commit-preview-button');
-    expect(btn).toHaveTextContent('In Profil uebernehmen');
+    expect(btn).toHaveTextContent('In Profil übernehmen');
 
     await user.click(btn);
     expect(onCommitPreview).toHaveBeenCalledOnce();
@@ -137,24 +137,24 @@ describe('MessageBubble', () => {
     expect(fragment.hasObservations).toBe(true);
   });
 
-  it('renders the "In Profil uebernommen" badge instead of the button when committed=true', () => {
+  it('renders the "In Profil übernommen" badge instead of the button when committed=true', () => {
     const msg = assistantMsg(
       '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
     );
     render(<MessageBubble message={msg} onCommitPreview={vi.fn()} committed={true} />);
     expect(screen.getByTestId('commit-preview-committed-badge')).toHaveTextContent(
-      'In Profil uebernommen',
+      'In Profil übernommen',
     );
     expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
   });
 
-  it('hides "In Profil uebernehmen" when the assistant message has no fragment', () => {
+  it('hides "In Profil übernehmen" when the assistant message has no fragment', () => {
     const msg = assistantMsg('Das war eine reine Rueckfrage - kein Block hier.');
     render(<MessageBubble message={msg} onCommitPreview={vi.fn()} />);
     expect(screen.queryByTestId('commit-preview-button')).not.toBeInTheDocument();
   });
 
-  it('hides "In Profil uebernehmen" while the assistant message is streaming', () => {
+  it('hides "In Profil übernehmen" while the assistant message is streaming', () => {
     const msg = assistantMsg(
       '### Linke Schulter\n- **Status:** Akut\n- **Beobachtung:** Druckschmerz',
       true,

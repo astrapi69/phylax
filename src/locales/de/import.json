@@ -9,18 +9,18 @@
     "heading": "Import aus Markdown",
     "intro": "Importiere ein bestehendes Lebende-Gesundheit Profil als Markdown-Datei oder Text.",
     "file": {
-      "heading": "Datei auswaehlen",
-      "cta": "Markdown-Datei waehlen (.md)",
+      "heading": "Datei auswählen",
+      "cta": "Markdown-Datei wählen (.md)",
       "loaded": "Geladen: {{name}} ({{size}})",
-      "too-large": "Datei ist zu gross ({{size}}). Maximum: {{max}}.",
+      "too-large": "Datei ist zu groß ({{size}}). Maximum: {{max}}.",
       "read-failed": "Datei konnte nicht gelesen werden."
     },
     "paste": {
-      "heading": "Oder Text einfuegen",
-      "sr-label": "Markdown-Text einfuegen",
+      "heading": "Oder Text einfügen",
+      "sr-label": "Markdown-Text einfügen",
       "placeholder": "# Medizinisches Profil...",
       "char-count": "{{chars}} Zeichen (mindestens {{min}})",
-      "source-label": "Eingefuegter Text"
+      "source-label": "Eingefügter Text"
     }
   },
   "selection": {
@@ -31,7 +31,7 @@
     },
     "intro-zero": "Erstelle zuerst ein Profil, um den Import zu starten.",
     "select-label": "Diesem Profil zuordnen",
-    "back-to-list": "Zurueck zur Profilauswahl",
+    "back-to-list": "Zurück zur Profilauswahl",
     "error": {
       "load-failed": "Profile konnten nicht geladen werden."
     }
@@ -43,10 +43,10 @@
     "content-heading": "Inhalt",
     "warnings-summary_one": "{{count}} Warnung beim Parsen",
     "warnings-summary_other": "{{count}} Warnungen beim Parsen",
-    "skipped-summary_one": "{{count}} leerer Abschnitt uebersprungen",
-    "skipped-summary_other": "{{count}} leere Abschnitte uebersprungen",
+    "skipped-summary_one": "{{count}} leerer Abschnitt übersprungen",
+    "skipped-summary_other": "{{count}} leere Abschnitte übersprungen",
     "unrecognized-summary_one": "{{count}} nicht erkannter Block",
-    "unrecognized-summary_other": "{{count}} nicht erkannte Bloecke",
+    "unrecognized-summary_other": "{{count}} nicht erkannte Blöcke",
     "clean": "✓ Keine Probleme beim Parsen festgestellt.",
     "view": {
       "observations": "Beobachtungen anzeigen ({{count}})",
@@ -59,8 +59,8 @@
   },
   "confirm": {
     "heading": "Bestehende Daten ersetzen?",
-    "body": "\"{{name}}\" enthaelt bereits:",
-    "warning": "Diese Daten werden beim Import unwiderruflich geloescht und durch die neuen ersetzt.",
+    "body": "\"{{name}}\" enthält bereits:",
+    "warning": "Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.",
     "lab-report-line_one": "{{count}} Laborbefund ({{values}} Werte)",
     "lab-report-line_other": "{{count}} Laborbefunde ({{values}} Werte)",
     "replace": "Ja, ersetzen"
@@ -69,14 +69,14 @@
     "success": {
       "heading": "Import erfolgreich",
       "body": "In \"{{name}}\" importiert:",
-      "home": "Zur Uebersicht",
+      "home": "Zur Übersicht",
       "restart": "Weiteren Import"
     },
     "failure": {
       "heading": "Import fehlgeschlagen",
       "body": "Der Import konnte nicht abgeschlossen werden.",
       "label-error": "Fehler:",
-      "unchanged": "Deine Daten wurden nicht geaendert.",
+      "unchanged": "Deine Daten wurden nicht geändert.",
       "retry": "Erneut versuchen"
     }
   },
@@ -84,16 +84,16 @@
     "heading": "Parser-Ergebnis",
     "summary": {
       "empty": "Es konnten keine Inhalte extrahiert werden.",
-      "partial": "Nur wenige Eintraege erkannt ({{total}} insgesamt). Moeglicherweise ist das Format fuer unseren Parser ungewoehnlich."
+      "partial": "Nur wenige Einträge erkannt ({{total}} insgesamt). Möglicherweise ist das Format für unseren Parser ungewöhnlich."
     },
     "loading": "KI bereinigt Markdown...",
-    "impossible": "Die KI konnte keine verwertbare Struktur aus deiner Eingabe herauslesen. Bitte pruefe den Inhalt manuell.",
-    "parse-failed-after": "Auch die bereinigte Ausgabe konnte nicht geparst werden. Hier die Roh-Ausgabe der KI zur manuellen Pruefung:",
+    "impossible": "Die KI konnte keine verwertbare Struktur aus deiner Eingabe herauslesen. Bitte prüfe den Inhalt manuell.",
+    "parse-failed-after": "Auch die bereinigte Ausgabe konnte nicht geparst werden. Hier die Roh-Ausgabe der KI zur manuellen Prüfung:",
     "not-configured": "Konfiguriere den KI-Assistenten in den Einstellungen, um automatische Bereinigung zu nutzen.",
     "chat-error": {
-      "auth": "API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.",
+      "auth": "API-Schlüssel ungültig. Bitte prüfen unter Einstellungen.",
       "rate-limit": "Zu viele Anfragen. Bitte warte einen Moment und versuche erneut.",
-      "server": "Der KI-Dienst ist voruebergehend nicht erreichbar.",
+      "server": "Der KI-Dienst ist vorübergehend nicht erreichbar.",
       "network": "Keine Internetverbindung.",
       "unknown": "Fehler beim KI-Dienst.",
       "unknown-with-detail": "Fehler beim KI-Dienst. ({{detail}})"
@@ -124,7 +124,7 @@
     "external-references_other": "{{count}} externe Referenzen"
   },
   "action": {
-    "back": "Zurueck",
+    "back": "Zurück",
     "next": "Weiter"
   }
 }

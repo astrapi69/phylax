@@ -16,7 +16,7 @@ describe('DonationOnboardingCard', () => {
       screen.getByRole('heading', { level: 2, name: 'Willkommen bei Phylax' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Open-Source-Projekt eines einzelnen Entwicklers/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Projekt unterstuetzen/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Projekt unterstützen/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Verstanden' })).toBeInTheDocument();
     expect(
       screen.getByText(/Du findest diesen Hinweis jederzeit in den Einstellungen/),
@@ -36,7 +36,7 @@ describe('DonationOnboardingCard', () => {
     expect(onDismiss).toHaveBeenCalledOnce();
   });
 
-  it('"Projekt unterstuetzen" flips onboardingSeen BEFORE onDismiss (synchronous order preserved)', async () => {
+  it('"Projekt unterstützen" flips onboardingSeen BEFORE onDismiss (synchronous order preserved)', async () => {
     const user = userEvent.setup();
     const order: string[] = [];
     const onDismiss = vi.fn(() => {
@@ -48,7 +48,7 @@ describe('DonationOnboardingCard', () => {
     });
     render(<DonationOnboardingCard onDismiss={onDismiss} />);
 
-    await user.click(screen.getByRole('link', { name: /Projekt unterstuetzen/ }));
+    await user.click(screen.getByRole('link', { name: /Projekt unterstützen/ }));
 
     expect(readDonationState().onboardingSeen).toBe(true);
     expect(onDismiss).toHaveBeenCalledOnce();
@@ -57,7 +57,7 @@ describe('DonationOnboardingCard', () => {
 
   it('DonateLink points at DONATION_URL with safe external-link attributes', () => {
     render(<DonationOnboardingCard onDismiss={vi.fn()} />);
-    const link = screen.getByRole('link', { name: /Projekt unterstuetzen/ });
+    const link = screen.getByRole('link', { name: /Projekt unterstützen/ });
     expect(link).toHaveAttribute('href', DONATION_URL);
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
@@ -69,7 +69,7 @@ describe('DonationOnboardingCard', () => {
     render(<DonationOnboardingCard onDismiss={onDismiss} />);
 
     await user.tab();
-    expect(screen.getByRole('link', { name: /Projekt unterstuetzen/ })).toHaveFocus();
+    expect(screen.getByRole('link', { name: /Projekt unterstützen/ })).toHaveFocus();
 
     await user.tab();
     expect(screen.getByRole('button', { name: 'Verstanden' })).toHaveFocus();

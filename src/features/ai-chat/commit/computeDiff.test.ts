@@ -64,7 +64,7 @@ function makeIncomingOpenPoint(
   text: string,
   fields: Partial<ParsedOpenPoint> = {},
 ): ParsedOpenPoint {
-  return { text, context: 'Beim naechsten Arztbesuch', resolved: false, ...fields };
+  return { text, context: 'Beim nächsten Arztbesuch', resolved: false, ...fields };
 }
 
 function makeParseResult(overrides: Partial<ParseResult> = {}): ParseResult {

@@ -2,7 +2,7 @@
   "loading": "Beobachtungen werden geladen...",
   "heading": "Beobachtungen",
   "section": {
-    "recent": "Kuerzlich aktualisiert",
+    "recent": "Kürzlich aktualisiert",
     "all": "Alle Themen"
   },
   "empty": {
@@ -30,7 +30,7 @@
   "sort": {
     "label": "Sortierung",
     "option": {
-      "recent": "Kuerzlich zuerst",
+      "recent": "Kürzlich zuerst",
       "alphabetical": "Alphabetisch"
     }
   },

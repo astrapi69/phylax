@@ -6,8 +6,8 @@ import { DONATION_URL } from './constants';
 
 describe('DonateLink', () => {
   it('renders children as the visible label', () => {
-    render(<DonateLink>Projekt unterstuetzen</DonateLink>);
-    expect(screen.getByRole('link', { name: /Projekt unterstuetzen/ })).toBeInTheDocument();
+    render(<DonateLink>Projekt unterstützen</DonateLink>);
+    expect(screen.getByRole('link', { name: /Projekt unterstützen/ })).toBeInTheDocument();
   });
 
   it('points at DONATION_URL and opens in a new tab with a safe rel', () => {
@@ -28,6 +28,6 @@ describe('DonateLink', () => {
 
   it('exposes a screen-reader-only "neuer Tab" hint', () => {
     render(<DonateLink>Support</DonateLink>);
-    expect(screen.getByText(/oeffnet in neuem Tab/)).toBeInTheDocument();
+    expect(screen.getByText(/öffnet in neuem Tab/)).toBeInTheDocument();
   });
 });

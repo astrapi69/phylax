@@ -4,7 +4,7 @@
   },
   "action": {
     "cancel": "Abbrechen",
-    "close": "Schliessen"
+    "close": "Schließen"
   },
   "status": {
     "loading": "Laden..."

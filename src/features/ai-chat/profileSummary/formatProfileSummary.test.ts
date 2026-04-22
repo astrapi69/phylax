@@ -114,7 +114,7 @@ function makeOpenPoint(text: string, overrides: Partial<OpenPoint> = {}): OpenPo
     createdAt: Date.now(),
     updatedAt: Date.now(),
     text,
-    context: 'Beim naechsten Arztbesuch',
+    context: 'Beim nächsten Arztbesuch',
     resolved: false,
     ...overrides,
   };
@@ -172,7 +172,7 @@ describe('formatWeightTrend', () => {
         { date: '2026-01-15', weightKg: 84 },
         { date: '2026-03-10', weightKg: 92 },
       ]),
-    ).toBe('84 kg (Jan 2026) -> 92 kg (Maerz 2026)');
+    ).toBe('84 kg (Jan 2026) -> 92 kg (März 2026)');
   });
 
   it('returns null when history has fewer than 2 entries', () => {
@@ -186,7 +186,7 @@ describe('formatWeightTrend', () => {
         { date: 'not-a-date', weightKg: 84 },
         { date: '2026-03-10', weightKg: 92 },
       ]),
-    ).toBe('84 kg (not-a-date) -> 92 kg (Maerz 2026)');
+    ).toBe('84 kg (not-a-date) -> 92 kg (März 2026)');
   });
 });
 
@@ -200,13 +200,13 @@ describe('formatProfileShareSummary', () => {
     const { markdown } = formatProfileShareSummary(t, baseInputs());
     expect(markdown).toContain('## Basisdaten');
     expect(markdown).toContain('- Alter: 56 Jahre');
-    expect(markdown).toContain('- Groesse: 183 cm');
+    expect(markdown).toContain('- Größe: 183 cm');
     expect(markdown).toContain('- Gewicht: 92 kg (Ziel: 82 kg)');
-    expect(markdown).toContain('- Gewichtsverlauf: 84 kg (Jan 2026) -> 92 kg (Maerz 2026)');
+    expect(markdown).toContain('- Gewichtsverlauf: 84 kg (Jan 2026) -> 92 kg (März 2026)');
     expect(markdown).toContain('- Bekannte Diagnosen: Impingement links, Veneninsuffizienz');
     expect(markdown).toContain('- Aktuelle Medikamente: Ibuprofen bei Bedarf');
-    expect(markdown).toContain('- Einschraenkungen: Gelenkprobleme beidseitig');
-    expect(markdown).toContain('- Hausarzt/Aerztin: Dr. Mueller (Allgemeinmedizin)');
+    expect(markdown).toContain('- Einschränkungen: Gelenkprobleme beidseitig');
+    expect(markdown).toContain('- Hausarzt/Ärztin: Dr. Mueller (Allgemeinmedizin)');
   });
 
   it('groups observations by theme, sorted German-locale, and truncates each field', () => {
@@ -283,8 +283,8 @@ describe('formatProfileShareSummary', () => {
         ],
       }),
     );
-    expect(markdown).toContain('- Vitamin D3 2000 IE (taeglich)');
-    expect(markdown).toContain('- Omega-3 (regelmaessig)');
+    expect(markdown).toContain('- Vitamin D3 2000 IE (täglich)');
+    expect(markdown).toContain('- Omega-3 (regelmäßig)');
     expect(markdown).toContain('- Magnesium (bei Bedarf)');
     expect(markdown).toContain('- Kreatin (pausiert)');
   });
@@ -295,7 +295,7 @@ describe('formatProfileShareSummary', () => {
       makeOpenPoint('Knie-MRT besprechen'),
     ];
     const withPoints = formatProfileShareSummary(t, baseInputs({ unresolvedOpenPoints: points }));
-    expect(withPoints.markdown).toContain('## Offene Punkte (ungeloest)');
+    expect(withPoints.markdown).toContain('## Offene Punkte (ungelöst)');
     expect(withPoints.markdown).toContain('- [Hoch] Wiederholungs-Blutabnahme');
     expect(withPoints.markdown).toContain('- Knie-MRT besprechen');
 
@@ -369,7 +369,7 @@ describe('formatProfileShareSummary', () => {
     expect(markdown).toContain('### Schulter');
   });
 
-  it('for proxy profiles, includes a "Gefuehrt von" line', () => {
+  it('for proxy profiles, includes a "Geführt von" line', () => {
     const proxy = makeProfile({
       baseData: {
         ...makeProfile().baseData,
@@ -380,6 +380,6 @@ describe('formatProfileShareSummary', () => {
     });
     const { markdown } = formatProfileShareSummary(t, baseInputs({ profile: proxy }));
     expect(markdown).toContain('# Profil: Mutter');
-    expect(markdown).toContain('Gefuehrt von: Anna Mueller');
+    expect(markdown).toContain('Geführt von: Anna Mueller');
   });
 });

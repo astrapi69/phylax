@@ -71,8 +71,8 @@ describe('buildVersionDescription', () => {
     );
   });
 
-  it('returns "keine Aenderungen" for an empty diff', () => {
-    expect(buildVersionDescription(t, emptyDiff())).toBe('KI-Update: keine Aenderungen');
+  it('returns "keine Änderungen" for an empty diff', () => {
+    expect(buildVersionDescription(t, emptyDiff())).toBe('KI-Update: keine Änderungen');
   });
 
   it('pluralizes supplements and open points correctly', () => {

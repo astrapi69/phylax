@@ -1,13 +1,13 @@
 {
   "welcome": {
-    "tagline": "Deine Gesundheitsdaten. Lokal. Verschluesselt. Deins.",
+    "tagline": "Deine Gesundheitsdaten. Lokal. Verschlüsselt. Deins.",
     "trust": {
       "local": {
         "title": "Lokal",
-        "body": "Alle Daten bleiben auf diesem Geraet."
+        "body": "Alle Daten bleiben auf diesem Gerät."
       },
       "encrypted": {
-        "title": "Verschluesselt",
+        "title": "Verschlüsselt",
         "body": "AES-256 mit deinem Passwort."
       },
       "open": {
@@ -21,29 +21,29 @@
     }
   },
   "privacy": {
-    "headline": "Du haeltst den einzigen Schluessel.",
+    "headline": "Du hältst den einzigen Schlüssel.",
     "section": {
       "does": {
         "title": "Was Phylax tut",
-        "body": "Speichert deine Eintraege verschluesselt in diesem Browser. Niemand ausser dir kann sie lesen."
+        "body": "Speichert deine Einträge verschlüsselt in diesem Browser. Niemand außer dir kann sie lesen."
       },
       "does-not": {
         "title": "Was Phylax nicht tut",
-        "body": "Keine Server-Kommunikation. Keine Passwort-Wiederherstellung. Kein Support, der \"das Passwort zuruecksetzt\"."
+        "body": "Keine Server-Kommunikation. Keine Passwort-Wiederherstellung. Kein Support, der \"das Passwort zurücksetzt\"."
       },
       "means": {
-        "title": "Was das fuer dich bedeutet",
+        "title": "Was das für dich bedeutet",
         "body": "Wenn du dein Passwort verlierst, sind deine Daten verloren. Wir empfehlen einen Passwort-Manager."
       }
     },
     "cta": {
       "primary": "Verstanden, weiter",
-      "back": "Zurueck"
+      "back": "Zurück"
     }
   },
   "setup": {
     "headline": "Master-Passwort festlegen",
-    "intro": "Dieses Passwort verschluesselt alle deine Daten. Ohne das Passwort gibt es keinen Zugang, keine Wiederherstellung und keinen Support.",
+    "intro": "Dieses Passwort verschlüsselt alle deine Daten. Ohne das Passwort gibt es keinen Zugang, keine Wiederherstellung und keinen Support.",
     "password": {
       "label": "Master-Passwort",
       "confirm-label": "Passwort wiederholen"
@@ -52,22 +52,22 @@
       "weak": "Schwach",
       "fair": "Mittel",
       "strong": "Stark",
-      "aria-label": "Passwortstaerke: {{label}}"
+      "aria-label": "Passwortstärke: {{label}}"
     },
     "warning": {
-      "body": "Wenn du dein Passwort vergisst, sind deine Daten verloren. Es gibt keinen Wiederherstellungsweg. Schreibe es an einen sicheren Ort, bevor du fortfaehrst.",
+      "body": "Wenn du dein Passwort vergisst, sind deine Daten verloren. Es gibt keinen Wiederherstellungsweg. Schreibe es an einen sicheren Ort, bevor du fortfährst.",
       "acknowledge": "Ich habe verstanden"
     },
     "submit": {
       "label": "Phylax einrichten",
-      "deriving": "Einrichtung laeuft..."
+      "deriving": "Einrichtung läuft..."
     },
-    "deriving-hint": "Schluessel wird aus deinem Passwort abgeleitet. Das kann einen Moment dauern.",
+    "deriving-hint": "Schlüssel wird aus deinem Passwort abgeleitet. Das kann einen Moment dauern.",
     "validation": {
       "empty": "Bitte ein Passwort eingeben.",
       "too-short": "Mindestens {{min}} Zeichen erforderlich.",
-      "mismatch": "Die Passwoerter stimmen nicht ueberein.",
-      "not-acknowledged": "Bitte bestaetige den Hinweis zum Passwortverlust."
+      "mismatch": "Die Passwörter stimmen nicht überein.",
+      "not-acknowledged": "Bitte bestätige den Hinweis zum Passwortverlust."
     },
     "error": {
       "meta-write-failed": "Einrichtung fehlgeschlagen. Bitte erneut versuchen."

@@ -64,26 +64,26 @@ describe('parseBeobachtungen', () => {
       '- **Muster:** M',
       '- **Selbstregulation:** S',
       '- **Status:** A',
-      '- **Relevanz fuer Abnehmziel:** Gelenkbelastung bei Uebergewicht.',
+      '- **Relevanz für Abnehmziel:** Gelenkbelastung bei Uebergewicht.',
     ].join('\n');
 
     const { observations } = parseBeobachtungen(md);
     expect(observations[0]?.relevanceNotes).toBe('Gelenkbelastung bei Uebergewicht.');
   });
 
-  it('detects AI source from Einschaetzung text', () => {
+  it('detects AI source from Einschätzung text', () => {
     const md = [
       '### 2.1 Test',
       '- **Beobachtung:** F',
       '- **Muster:** M',
       '- **Selbstregulation:** S',
       '- **Status:** A',
-      '- **Einschaetzung:** Selbst + KI-gestuetzt',
+      '- **Einschätzung:** Selbst + KI-gestuetzt',
     ].join('\n');
 
     const { observations } = parseBeobachtungen(md);
     expect(observations[0]?.source).toBe('ai');
-    expect(observations[0]?.extraSections['Einschaetzung']).toBe('Selbst + KI-gestuetzt');
+    expect(observations[0]?.extraSections['Einschätzung']).toBe('Selbst + KI-gestuetzt');
   });
 
   it('strips version markers from theme', () => {

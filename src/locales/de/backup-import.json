@@ -1,21 +1,21 @@
 {
   "select": {
     "heading": "Backup importieren",
-    "description": "Waehle die zuvor erstellte Phylax-Backup-Datei. Das Backup wird mit dem Passwort entschluesselt, mit dem es erstellt wurde.",
-    "file-picker-label": "Datei auswaehlen",
-    "no-file-selected": "Keine Datei ausgewaehlt.",
+    "description": "Wähle die zuvor erstellte Phylax-Backup-Datei. Das Backup wird mit dem Passwort entschlüsselt, mit dem es erstellt wurde.",
+    "file-picker-label": "Datei auswählen",
+    "no-file-selected": "Keine Datei ausgewählt.",
     "metadata": {
       "filename": "Datei",
-      "size": "Groesse",
+      "size": "Größe",
       "created": "Erstellt am",
       "source": "Quelle"
     },
     "continue": "Weiter",
-    "back-to-welcome": "Zurueck zur Startseite",
+    "back-to-welcome": "Zurück zur Startseite",
     "overwrite-warning": {
-      "title": "Achtung: Import ueberschreibt bestehende Daten",
-      "body": "Dein aktuelles Phylax-Profil wird durch den Import vollstaendig ersetzt. Diese Aktion kann nicht rueckgaengig gemacht werden.",
-      "acknowledge": "Ich verstehe, dass die Daten ueberschrieben werden."
+      "title": "Achtung: Import überschreibt bestehende Daten",
+      "body": "Dein aktuelles Phylax-Profil wird durch den Import vollständig ersetzt. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "acknowledge": "Ich verstehe, dass die Daten überschrieben werden."
     }
   },
   "unlock": {
@@ -27,19 +27,19 @@
     },
     "submit": {
       "label": "Importieren",
-      "deriving": "Schluessel wird abgeleitet...",
+      "deriving": "Schlüssel wird abgeleitet...",
       "populating": "Daten werden importiert..."
     }
   },
   "error": {
-    "invalid-json": "Die ausgewaehlte Datei ist kein gueltiges JSON.",
-    "missing-field": "Datei unvollstaendig. Fehlt: {{field}}",
-    "unsupported-version": "Datei-Version {{version}} wird nicht unterstuetzt.",
+    "invalid-json": "Die ausgewählte Datei ist kein gültiges JSON.",
+    "missing-field": "Datei unvollständig. Fehlt: {{field}}",
+    "unsupported-version": "Datei-Version {{version}} wird nicht unterstützt.",
     "wrong-type": "Das ist keine Phylax-Backup-Datei.",
-    "too-large": "Datei zu gross ({{size}} MB). Maximal 50 MB erlaubt.",
-    "corrupted": "Backup ist beschaedigt oder unvollstaendig.",
-    "wrong-password": "Falsches Passwort. Backup konnte nicht entschluesselt werden.",
-    "crypto-failed": "Entschluesselung fehlgeschlagen. Bitte versuche es erneut.",
+    "too-large": "Datei zu groß ({{size}} MB). Maximal 50 MB erlaubt.",
+    "corrupted": "Backup ist beschädigt oder unvollständig.",
+    "wrong-password": "Falsches Passwort. Backup konnte nicht entschlüsselt werden.",
+    "crypto-failed": "Entschlüsselung fehlgeschlagen. Bitte versuche es erneut.",
     "populate-failed": "Daten konnten nicht gespeichert werden: {{detail}}",
     "rate-limited_one": "Gesperrt. Versuch es in {{count}} Sekunde erneut.",
     "rate-limited_other": "Gesperrt. Versuch es in {{count}} Sekunden erneut."

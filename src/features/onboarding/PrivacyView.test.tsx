@@ -32,20 +32,20 @@ describe('PrivacyView', () => {
   it('renders the headline', () => {
     renderInRouter();
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Du haeltst den einzigen Schluessel.' }),
+      screen.getByRole('heading', { level: 1, name: 'Du hältst den einzigen Schlüssel.' }),
     ).toBeInTheDocument();
   });
 
   it('renders all three section titles and bodies', () => {
     renderInRouter();
     expect(screen.getByRole('heading', { level: 2, name: 'Was Phylax tut' })).toBeInTheDocument();
-    expect(screen.getByText(/Speichert deine Eintraege verschluesselt/)).toBeInTheDocument();
+    expect(screen.getByText(/Speichert deine Einträge verschlüsselt/)).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: 'Was Phylax nicht tut' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Keine Server-Kommunikation/)).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Was das fuer dich bedeutet' }),
+      screen.getByRole('heading', { level: 2, name: 'Was das für dich bedeutet' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Wenn du dein Passwort verlierst/)).toBeInTheDocument();
   });
@@ -60,7 +60,7 @@ describe('PrivacyView', () => {
   it('back CTA click navigates to /welcome', async () => {
     const user = userEvent.setup();
     renderInRouter();
-    await user.click(screen.getByRole('button', { name: 'Zurueck' }));
+    await user.click(screen.getByRole('button', { name: 'Zurück' }));
     expect(screen.getByTestId('destination-welcome')).toBeInTheDocument();
   });
 

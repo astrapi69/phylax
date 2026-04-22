@@ -172,7 +172,7 @@ describe('import plural forms (I18N-02-c)', () => {
   });
 
   it('preview.unrecognized-summary: count=5 renders plural', () => {
-    expect(tDe('preview.unrecognized-summary', { count: 5 })).toBe('5 nicht erkannte Bloecke');
+    expect(tDe('preview.unrecognized-summary', { count: 5 })).toBe('5 nicht erkannte Blöcke');
     expect(tEn('preview.unrecognized-summary', { count: 5 })).toBe('5 unrecognized blocks');
   });
 

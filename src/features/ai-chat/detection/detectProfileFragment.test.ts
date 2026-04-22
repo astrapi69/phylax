@@ -11,7 +11,7 @@ describe('detectProfileFragment', () => {
 - **Muster:** Besonders morgens
 - **Selbstregulation:** Noch nicht getestet
 
-Moechtest du das so uebernehmen?`;
+Moechtest du das so übernehmen?`;
 
     const result = detectProfileFragment(message);
     expect(result).not.toBeNull();
@@ -39,7 +39,7 @@ Letzter Befund: 2026-02-27 (Musterlabor)
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Vitamin D3 2000 IE |
+| täglich | Vitamin D3 2000 IE |
 | bei Bedarf | Magnesium 400 |`;
 
     const result = detectProfileFragment(message);
@@ -51,14 +51,14 @@ Letzter Befund: 2026-02-27 (Musterlabor)
   it('detects an Offene Punkte block with a context sub-heading', () => {
     const message = `## Offene Punkte
 
-### Beim naechsten Arztbesuch
+### Beim nächsten Arztbesuch
 - Termin beim Orthopaeden vereinbaren
 - Wiederholungs-Laborwerte in 4 Wochen`;
 
     const result = detectProfileFragment(message);
     expect(result?.hasOpenPoints).toBe(true);
     expect(result?.openPointsBlock).toContain('Termin beim Orthopaeden');
-    expect(result?.openPointsBlock).toContain('### Beim naechsten Arztbesuch');
+    expect(result?.openPointsBlock).toContain('### Beim nächsten Arztbesuch');
   });
 
   it('detects a mixed fragment (observation + supplement + open points)', () => {
@@ -74,7 +74,7 @@ Und die Supplemente:
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Magnesium 400 |
+| täglich | Magnesium 400 |
 
 Plus offene Punkte:
 
@@ -101,7 +101,7 @@ Plus offene Punkte:
 
   it('detects a fragment inside a triple-backtick code fence', () => {
     const message =
-      'Hier der Block zum Uebernehmen:\n\n```markdown\n### Knie links\n' +
+      'Hier der Block zum Übernehmen:\n\n```markdown\n### Knie links\n' +
       '- **Status:** Stabil\n- **Beobachtung:** Belastungsabhaengig\n```\n\nAlles klar?';
 
     const result = detectProfileFragment(message);
@@ -157,15 +157,15 @@ Rein erklaerender Text ohne Bullet-Felder.`;
   });
 
   describe('block termination (AI-08a fix)', () => {
-    it('trims the trailing "Moechtest du das uebernehmen?" question after an open-points block', () => {
-      const message = `Hier ist der Punkt fuer deinen naechsten Arztbesuch:
+    it('trims the trailing "Moechtest du das übernehmen?" question after an open-points block', () => {
+      const message = `Hier ist der Punkt für deinen nächsten Arztbesuch:
 
 ## Offene Punkte
 
-### Beim naechsten Arztbesuch
+### Beim nächsten Arztbesuch
 - TSH-Wert nachmessen
 
-Moechtest du das so uebernehmen?`;
+Moechtest du das so übernehmen?`;
 
       const result = detectProfileFragment(message);
       expect(result?.hasOpenPoints).toBe(true);
@@ -192,7 +192,7 @@ Moechtest du das so uebernehmen?`;
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Magnesium 400 |
+| täglich | Magnesium 400 |
 
 Ich hoffe das hilft.`;
 
@@ -206,7 +206,7 @@ Ich hoffe das hilft.`;
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Vitamin D3 |
+| täglich | Vitamin D3 |
 | bei Bedarf | Magnesium 400 |
 
 Noch Fragen?`;
@@ -221,19 +221,19 @@ Noch Fragen?`;
     it('real-world regression: TSH-Wert nachmessen block produced clean from the AI response', () => {
       // Exact pattern observed in browser testing: the trailing question
       // used to be absorbed into the open-point text.
-      const message = `Hier ist der Punkt fuer deinen naechsten Arztbesuch:
+      const message = `Hier ist der Punkt für deinen nächsten Arztbesuch:
 
 ## Offene Punkte
-### Beim naechsten Arztbesuch
+### Beim nächsten Arztbesuch
 - TSH-Wert nachmessen
 
-Moechtest du das so uebernehmen?`;
+Moechtest du das so übernehmen?`;
 
       const result = detectProfileFragment(message);
       if (!result) throw new Error('expected a detected fragment');
       expect(result.hasOpenPoints).toBe(true);
       expect(result.openPointsBlock).toBe(
-        '## Offene Punkte\n### Beim naechsten Arztbesuch\n- TSH-Wert nachmessen',
+        '## Offene Punkte\n### Beim nächsten Arztbesuch\n- TSH-Wert nachmessen',
       );
     });
   });

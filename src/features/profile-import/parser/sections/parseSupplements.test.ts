@@ -4,9 +4,9 @@ import { parseSupplements } from './parseSupplements';
 describe('parseSupplements', () => {
   it('parses a standard supplements table', () => {
     const md = [
-      '| Kategorie | Praeparat | Empfehlung | Begruendung |',
+      '| Kategorie | Praeparat | Empfehlung | Begründung |',
       '|-----------|-----------|------------|-------------|',
-      '| **Beibehalten (taeglich)** | Vitamin D3 2000 IE (tetesept) | Morgens | Empfohlen nach Bluttest |',
+      '| **Beibehalten (täglich)** | Vitamin D3 2000 IE (tetesept) | Morgens | Empfohlen nach Bluttest |',
       '| | Omega-3 | Abends | Entzuendungshemmend |',
     ].join('\n');
 
@@ -24,9 +24,9 @@ describe('parseSupplements', () => {
 
   it('maps all category types', () => {
     const md = [
-      '| Kategorie | Praeparat | Empfehlung | Begruendung |',
+      '| Kategorie | Praeparat | Empfehlung | Begründung |',
       '|-----------|-----------|------------|-------------|',
-      '| **Beibehalten (taeglich)** | A | | |',
+      '| **Beibehalten (täglich)** | A | | |',
       '| **Beibehalten (3-4x/Woche)** | B | | |',
       '| **Pausiert** | C | | |',
       '| **Bei Bedarf** | D | | |',
@@ -41,9 +41,9 @@ describe('parseSupplements', () => {
 
   it('parses name without brand', () => {
     const md = [
-      '| Kategorie | Praeparat | Empfehlung | Begruendung |',
+      '| Kategorie | Praeparat | Empfehlung | Begründung |',
       '|-----------|-----------|------------|-------------|',
-      '| Taeglich | Magnesium 400mg | Abends | |',
+      '| Täglich | Magnesium 400mg | Abends | |',
     ].join('\n');
 
     const result = parseSupplements(md);
@@ -57,9 +57,9 @@ describe('parseSupplements', () => {
 
   it('skips rows without praeparat', () => {
     const md = [
-      '| Kategorie | Praeparat | Empfehlung | Begruendung |',
+      '| Kategorie | Praeparat | Empfehlung | Begründung |',
       '|-----------|-----------|------------|-------------|',
-      '| Taeglich | | Morgens | Reason |',
+      '| Täglich | | Morgens | Reason |',
     ].join('\n');
 
     expect(parseSupplements(md)).toEqual([]);
@@ -67,9 +67,9 @@ describe('parseSupplements', () => {
 
   it('handles optional fields as undefined', () => {
     const md = [
-      '| Kategorie | Praeparat | Empfehlung | Begruendung |',
+      '| Kategorie | Praeparat | Empfehlung | Begründung |',
       '|-----------|-----------|------------|-------------|',
-      '| Taeglich | Vitamin C | | |',
+      '| Täglich | Vitamin C | | |',
     ].join('\n');
 
     const result = parseSupplements(md);

@@ -17,7 +17,7 @@ function makeData(
   return {
     profileId: overrides.profileId ?? profileId,
     text: overrides.text ?? 'Vitamin D nachkontrollieren',
-    context: overrides.context ?? 'Beim naechsten Arztbesuch',
+    context: overrides.context ?? 'Beim nächsten Arztbesuch',
     resolved: overrides.resolved ?? false,
     priority: overrides.priority,
     timeHorizon: overrides.timeHorizon,

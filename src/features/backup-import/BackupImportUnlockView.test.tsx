@@ -100,7 +100,7 @@ describe('BackupImportUnlockView', () => {
     await waitFor(
       () =>
         expect(
-          screen.getByText(/Falsches Passwort. Backup konnte nicht entschluesselt werden./),
+          screen.getByText(/Falsches Passwort. Backup konnte nicht entschlüsselt werden./),
         ).toBeInTheDocument(),
       { timeout: 10_000 },
     );

@@ -157,7 +157,7 @@ describe('SetupView', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(/Bitte bestaetige den Hinweis zum Passwortverlust/i),
+        screen.getByText(/Bitte bestätige den Hinweis zum Passwortverlust/i),
       ).toBeInTheDocument(),
     );
   });

@@ -79,7 +79,7 @@ describe('LabReportCard', () => {
       />,
     );
     expect(
-      screen.getByRole('heading', { level: 3, name: 'Gesamteinschaetzung' }),
+      screen.getByRole('heading', { level: 3, name: 'Gesamteinschätzung' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Insgesamt unauffaellig.')).toBeInTheDocument();
   });
@@ -95,7 +95,7 @@ describe('LabReportCard', () => {
         valuesByCategory={new Map()}
       />,
     );
-    expect(screen.queryByRole('heading', { name: 'Gesamteinschaetzung' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Gesamteinschätzung' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Relevanz' })).toBeNull();
   });
 });

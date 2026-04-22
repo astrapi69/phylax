@@ -52,14 +52,14 @@ describe('TimelineEntryRepository', () => {
   it('round-trips all fields', async () => {
     const e = await repo.create(
       makeData({
-        period: 'Maerz 2026',
+        period: 'März 2026',
         title: 'Gewichtszunahme und Abnehmplan',
         content: '- Gewicht: 96.5kg\n- Ziel: 85kg\n- Plan erstellt',
         source: 'ai',
       }),
     );
     const fetched = await repo.getById(e.id);
-    expect(fetched?.period).toBe('Maerz 2026');
+    expect(fetched?.period).toBe('März 2026');
     expect(fetched?.title).toBe('Gewichtszunahme und Abnehmplan');
     expect(fetched?.content).toBe('- Gewicht: 96.5kg\n- Ziel: 85kg\n- Plan erstellt');
     expect(fetched?.source).toBe('ai');
@@ -109,7 +109,7 @@ describe('TimelineEntryRepository', () => {
   });
 
   it('period with German month names preserved verbatim', async () => {
-    const periods = ['Januar 2024', 'Februar 2025', 'Maerz 2026', 'Oktober-November 2025'];
+    const periods = ['Januar 2024', 'Februar 2025', 'März 2026', 'Oktober-November 2025'];
     for (const period of periods) {
       const e = await repo.create(makeData({ period }));
       const fetched = await repo.getById(e.id);

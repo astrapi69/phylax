@@ -2,11 +2,11 @@
   "loading": "Verlauf wird geladen...",
   "heading": "Verlauf",
   "empty": {
-    "body": "Noch keine Verlaufseintraege erfasst.",
+    "body": "Noch keine Verlaufseinträge erfasst.",
     "cta": "Importiere ein Profil mit Verlaufsnotizen",
     "suffix": ", um sie hier zu sehen."
   },
   "error": {
-    "load-failed": "Verlaufseintraege konnten nicht geladen werden."
+    "load-failed": "Verlaufseinträge konnten nicht geladen werden."
   }
 }

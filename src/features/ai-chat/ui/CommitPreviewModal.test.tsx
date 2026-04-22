@@ -73,11 +73,11 @@ const MIXED_FRAGMENT = requireFragment(`### Linke Schulter
 
 | Kategorie | Praeparat |
 | --- | --- |
-| taeglich | Magnesium 400 |
+| täglich | Magnesium 400 |
 
 ## Offene Punkte
 
-### Beim naechsten Arztbesuch
+### Beim nächsten Arztbesuch
 - MRT Knie rechts besprechen
 - TSH-Wert nachmessen`);
 
@@ -140,7 +140,7 @@ describe('CommitPreviewModal (diff view)', () => {
     expect(changedRow).toHaveTextContent('Stabil');
   });
 
-  it('hides "(unveraendert)" lines by default and reveals them when the toggle is on', async () => {
+  it('hides "(unverändert)" lines by default and reveals them when the toggle is on', async () => {
     const profile = await seedProfile();
     await new ObservationRepository().create({
       profileId: profile.id,
@@ -158,13 +158,13 @@ describe('CommitPreviewModal (diff view)', () => {
     await waitFor(() => expect(screen.getByTestId('observation-changed')).toBeInTheDocument());
 
     const changedRow = screen.getByTestId('observation-changed');
-    // Default: unchanged fields hidden (no "(unveraendert)" visible)
-    expect(changedRow).not.toHaveTextContent(/unveraendert/);
+    // Default: unchanged fields hidden (no "(unverändert)" visible)
+    expect(changedRow).not.toHaveTextContent(/unverändert/);
 
     await user.click(screen.getByTestId('commit-preview-unchanged-toggle'));
 
     // Toggle on: unchanged fields appear
-    expect(screen.getByTestId('observation-changed')).toHaveTextContent(/unveraendert/i);
+    expect(screen.getByTestId('observation-changed')).toHaveTextContent(/unverändert/i);
   });
 
   it('auto-populates the version description from the diff, and the user can edit it', async () => {
@@ -173,7 +173,7 @@ describe('CommitPreviewModal (diff view)', () => {
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
 
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
-    const input = screen.getByLabelText('Beschreibung der Aenderung') as HTMLInputElement;
+    const input = screen.getByLabelText('Beschreibung der Änderung') as HTMLInputElement;
     expect(input.value).toContain('KI-Update');
     expect(input.value).toContain('Knie rechts neu');
 
@@ -182,7 +182,7 @@ describe('CommitPreviewModal (diff view)', () => {
     expect(input).toHaveValue('Meine Beschreibung');
   });
 
-  it('shows the "Keine Aenderungen" banner when the diff is empty', async () => {
+  it('shows the "Keine Änderungen" banner when the diff is empty', async () => {
     const profile = await seedProfile();
     // Seed an observation identical to what the fragment carries, so the
     // diff comes out all-unchanged.
@@ -199,7 +199,7 @@ describe('CommitPreviewModal (diff view)', () => {
 
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-empty')).toBeInTheDocument());
-    expect(screen.getByTestId('commit-preview-empty')).toHaveTextContent(/Keine Aenderungen/i);
+    expect(screen.getByTestId('commit-preview-empty')).toHaveTextContent(/Keine Änderungen/i);
   });
 
   it('renders the parser / diff warnings block when multi-match observations are found', async () => {
@@ -245,17 +245,17 @@ describe('CommitPreviewModal (diff view)', () => {
     );
   });
 
-  it('Uebernehmen is enabled once the diff loads and the description is non-empty', async () => {
+  it('Übernehmen is enabled once the diff loads and the description is non-empty', async () => {
     await seedProfile();
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
-    const btn = screen.getByRole('button', { name: 'Uebernehmen' });
+    const btn = screen.getByRole('button', { name: 'Übernehmen' });
     expect(btn).toBeEnabled();
     expect(btn).not.toHaveAttribute('title');
   });
 
-  it('Uebernehmen is disabled and carries the German hint when the diff is empty', async () => {
+  it('Übernehmen is disabled and carries the German hint when the diff is empty', async () => {
     const profile = await seedProfile();
     await new ObservationRepository().create({
       profileId: profile.id,
@@ -270,22 +270,22 @@ describe('CommitPreviewModal (diff view)', () => {
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-empty')).toBeInTheDocument());
 
-    const btn = screen.getByRole('button', { name: 'Uebernehmen' });
+    const btn = screen.getByRole('button', { name: 'Übernehmen' });
     expect(btn).toBeDisabled();
-    expect(btn.getAttribute('title')).toMatch(/Keine Aenderungen/);
+    expect(btn.getAttribute('title')).toMatch(/Keine Änderungen/);
   });
 
-  it('Uebernehmen is disabled when the description input is cleared', async () => {
+  it('Übernehmen is disabled when the description input is cleared', async () => {
     await seedProfile();
     const user = userEvent.setup();
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
-    await user.clear(screen.getByLabelText('Beschreibung der Aenderung'));
-    expect(screen.getByRole('button', { name: 'Uebernehmen' })).toBeDisabled();
+    await user.clear(screen.getByLabelText('Beschreibung der Änderung'));
+    expect(screen.getByRole('button', { name: 'Übernehmen' })).toBeDisabled();
   });
 
-  it('clicking Uebernehmen commits, surfaces the summary via onCommitSuccess, and closes the modal', async () => {
+  it('clicking Übernehmen commits, surfaces the summary via onCommitSuccess, and closes the modal', async () => {
     const profile = await seedProfile();
     const user = userEvent.setup();
     const onClose = vi.fn();
@@ -299,7 +299,7 @@ describe('CommitPreviewModal (diff view)', () => {
     );
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
-    await user.click(screen.getByRole('button', { name: 'Uebernehmen' }));
+    await user.click(screen.getByRole('button', { name: 'Übernehmen' }));
 
     await waitFor(() => expect(onCommitSuccess).toHaveBeenCalledOnce());
     const summary = onCommitSuccess.mock.calls[0]?.[0];
@@ -328,23 +328,23 @@ describe('CommitPreviewModal (diff view)', () => {
 
     // Lock the store so the pre-encryption step inside commitFragment throws.
     lock();
-    await user.click(screen.getByRole('button', { name: 'Uebernehmen' }));
+    await user.click(screen.getByRole('button', { name: 'Übernehmen' }));
 
     await waitFor(() => expect(screen.getByTestId('commit-error')).toBeInTheDocument());
     expect(onClose).not.toHaveBeenCalled();
     expect(onCommitSuccess).not.toHaveBeenCalled();
   });
 
-  it('"Schliessen" button calls onClose', async () => {
+  it('"Schließen" button calls onClose', async () => {
     await seedProfile();
     const onClose = vi.fn();
     const user = userEvent.setup();
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={onClose} />);
-    await user.click(screen.getByRole('button', { name: 'Schliessen' }));
+    await user.click(screen.getByRole('button', { name: 'Schließen' }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('exposes a dialog role with aria-modal and focuses "Schliessen" on mount', async () => {
+  it('exposes a dialog role with aria-modal and focuses "Schließen" on mount', async () => {
     await seedProfile();
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
@@ -352,6 +352,6 @@ describe('CommitPreviewModal (diff view)', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
     expect(dialog).toHaveAttribute('aria-labelledby', 'commit-preview-title');
-    expect(screen.getByRole('button', { name: 'Schliessen' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Schließen' })).toHaveFocus();
   });
 });

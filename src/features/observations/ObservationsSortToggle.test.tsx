@@ -10,7 +10,7 @@ describe('ObservationsSortToggle', () => {
     const values = Array.from(select.options).map((o) => o.value);
     expect(values).toEqual(['recent', 'alphabetical']);
     const labels = Array.from(select.options).map((o) => o.textContent);
-    expect(labels).toEqual(['Kuerzlich zuerst', 'Alphabetisch']);
+    expect(labels).toEqual(['Kürzlich zuerst', 'Alphabetisch']);
   });
 
   it('shows the current mode as the selected option', () => {

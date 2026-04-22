@@ -145,7 +145,7 @@ describe('useChat', () => {
     });
 
     const systemMsg = result.current.messages.find((m) => m.role === 'system');
-    expect(systemMsg?.content).toMatch(/API-Schluessel ungueltig/);
+    expect(systemMsg?.content).toMatch(/API-Schlüssel ungültig/);
     expect(systemMsg?.errorKind).toBe('auth');
     expect(result.current.isStreaming).toBe(false);
   });
@@ -498,7 +498,7 @@ describe('useChat guided session (AI-06)', () => {
 
     expect(result.current.guidedSession.active).toBe(false);
     const sys = result.current.messages.find((m) => m.role === 'system');
-    expect(sys?.content).toMatch(/Gefuehrte Sitzung beendet/);
+    expect(sys?.content).toMatch(/Geführte Sitzung beendet/);
   });
 
   it('system prompt includes the guided framing when a session is active', async () => {
@@ -580,9 +580,9 @@ describe('useChat guided session (AI-06)', () => {
 
 describe('errorMessageFor', () => {
   it('maps every ChatError kind to a distinct German string', () => {
-    expect(errorMessageFor(t, { kind: 'auth' })).toMatch(/API-Schluessel ungueltig/);
+    expect(errorMessageFor(t, { kind: 'auth' })).toMatch(/API-Schlüssel ungültig/);
     expect(errorMessageFor(t, { kind: 'rate-limit' })).toMatch(/Zu viele Anfragen/);
-    expect(errorMessageFor(t, { kind: 'server' })).toMatch(/voruebergehend nicht erreichbar/);
+    expect(errorMessageFor(t, { kind: 'server' })).toMatch(/vorübergehend nicht erreichbar/);
     expect(errorMessageFor(t, { kind: 'network' })).toMatch(/Keine Internetverbindung/);
     expect(errorMessageFor(t, { kind: 'unknown', message: 'model not found' })).toMatch(
       /model not found/,

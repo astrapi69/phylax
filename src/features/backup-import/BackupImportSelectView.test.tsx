@@ -62,7 +62,7 @@ describe('BackupImportSelectView', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Backup importieren' }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Datei auswaehlen')).toBeInTheDocument();
+    expect(screen.getByLabelText('Datei auswählen')).toBeInTheDocument();
   });
 
   it('continue button disabled before a file is selected', () => {
@@ -74,7 +74,7 @@ describe('BackupImportSelectView', () => {
     const user = userEvent.setup();
     renderView();
 
-    const input = screen.getByLabelText('Datei auswaehlen') as HTMLInputElement;
+    const input = screen.getByLabelText('Datei auswählen') as HTMLInputElement;
     await user.upload(input, makePhylaxFile('test.phylax'));
 
     await waitFor(() => expect(screen.getByTestId('backup-metadata')).toBeInTheDocument());
@@ -87,13 +87,11 @@ describe('BackupImportSelectView', () => {
     renderView();
 
     const bad = new File(['not-json'], 'bad.phylax', { type: 'application/json' });
-    const input = screen.getByLabelText('Datei auswaehlen') as HTMLInputElement;
+    const input = screen.getByLabelText('Datei auswählen') as HTMLInputElement;
     await user.upload(input, bad);
 
     await waitFor(() =>
-      expect(
-        screen.getByText('Die ausgewaehlte Datei ist kein gueltiges JSON.'),
-      ).toBeInTheDocument(),
+      expect(screen.getByText('Die ausgewählte Datei ist kein gültiges JSON.')).toBeInTheDocument(),
     );
   });
 
@@ -103,20 +101,18 @@ describe('BackupImportSelectView', () => {
     renderView();
 
     await waitFor(() =>
-      expect(
-        screen.getByText(/Achtung: Import ueberschreibt bestehende Daten/),
-      ).toBeInTheDocument(),
+      expect(screen.getByText(/Achtung: Import überschreibt bestehende Daten/)).toBeInTheDocument(),
     );
 
     await user.upload(
-      screen.getByLabelText('Datei auswaehlen') as HTMLInputElement,
+      screen.getByLabelText('Datei auswählen') as HTMLInputElement,
       makePhylaxFile(),
     );
     await waitFor(() => expect(screen.getByTestId('backup-metadata')).toBeInTheDocument());
 
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
 
-    await user.click(screen.getByLabelText('Ich verstehe, dass die Daten ueberschrieben werden.'));
+    await user.click(screen.getByLabelText('Ich verstehe, dass die Daten überschrieben werden.'));
 
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeEnabled();
   });

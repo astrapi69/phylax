@@ -3,12 +3,12 @@
   "heading": "Supplemente",
   "empty": {
     "body": "Noch keine Supplemente erfasst.",
-    "cta": "Importiere ein Profil mit Ergaenzungsplan",
+    "cta": "Importiere ein Profil mit Ergänzungsplan",
     "suffix": ", um sie hier zu sehen."
   },
   "category": {
-    "daily": "Taeglich",
-    "regular": "Regelmaessig",
+    "daily": "Täglich",
+    "regular": "Regelmäßig",
     "on-demand": "Bei Bedarf",
     "paused": "Pausiert"
   },
@@ -16,7 +16,7 @@
     "paused-badge": "Pausiert",
     "field": {
       "recommendation": "Empfehlung",
-      "rationale": "Begruendung"
+      "rationale": "Begründung"
     }
   },
   "error": {

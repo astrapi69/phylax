@@ -1,19 +1,19 @@
 {
   "heading": {
-    "guided": "KI-Assistent - Gefuehrte Sitzung"
+    "guided": "KI-Assistent - Geführte Sitzung"
   },
   "welcome": {
     "title": "Willkommen beim KI-Assistenten.",
     "intro": "Beschreibe deine Gesundheitsbeobachtungen in eigenen Worten. Ich helfe dir, sie zu strukturieren.",
     "examples-title": "Beispiele",
     "example-1": "\"Ich habe seit drei Wochen Schulterschmerzen links.\"",
-    "example-2": "\"Mein Blutdruck war letzte Woche mehrfach ueber 140/90.\"",
+    "example-2": "\"Mein Blutdruck war letzte Woche mehrfach über 140/90.\"",
     "example-3": "\"Ich nehme seit Januar Vitamin D.\""
   },
   "header": {
     "share-profile": "Profil teilen",
     "share-profile-loading": "Lade Profil...",
-    "start-guided": "Gefuehrte Sitzung starten",
+    "start-guided": "Geführte Sitzung starten",
     "clear": "Leeren",
     "end-session": "Sitzung beenden",
     "confirm-end": "Sitzung wirklich beenden?",
@@ -32,8 +32,8 @@
   },
   "message": {
     "ai-badge": "KI",
-    "committed-badge": "In Profil uebernommen",
-    "commit-cta": "In Profil uebernehmen",
+    "committed-badge": "In Profil übernommen",
+    "commit-cta": "In Profil übernehmen",
     "context": {
       "badge": "Profil geteilt",
       "collapse": "Ausblenden",
@@ -50,46 +50,46 @@
     }
   },
   "guided": {
-    "indicator-aria-label": "Fortschritt der gefuehrten Sitzung",
+    "indicator-aria-label": "Fortschritt der geführten Sitzung",
     "pill-aria-completed": "{{label}}: erfasst",
     "pill-aria-pending": "{{label}}: ausstehend",
     "section": {
       "observations": "Beobachtungen",
       "supplements": "Supplemente"
     },
-    "end-message": "Gefuehrte Sitzung beendet.",
-    "opening-message": "Willkommen zur gefuehrten Sitzung. Ich fuehre dich durch drei Bereiche deines Profils:\n\n1. Beobachtungen\n2. Supplemente\n3. Offene Punkte\n\nBasisdaten erfasst du ueber das Profil-Formular, Laborwerte importierst du separat, Verlaufsnotizen ebenfalls.\n\nDu kannst die Sitzung jederzeit beenden. Lass uns mit den Beobachtungen anfangen: gibt es etwas, das dir gesundheitlich gerade auffaellt oder dich beschaeftigt?"
+    "end-message": "Geführte Sitzung beendet.",
+    "opening-message": "Willkommen zur geführten Sitzung. Ich führe dich durch drei Bereiche deines Profils:\n\n1. Beobachtungen\n2. Supplemente\n3. Offene Punkte\n\nBasisdaten erfasst du über das Profil-Formular, Laborwerte importierst du separat, Verlaufsnotizen ebenfalls.\n\nDu kannst die Sitzung jederzeit beenden. Lass uns mit den Beobachtungen anfangen: gibt es etwas, das dir gesundheitlich gerade auffällt oder dich beschäftigt?"
   },
   "system": {
     "config-loading": "Einstellungen werden geladen, bitte kurz warten.",
-    "not-configured": "KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schluessel unter Einstellungen.",
+    "not-configured": "KI-Assistent ist nicht konfiguriert. Bitte hinterlege einen API-Schlüssel unter Einstellungen.",
     "locked": "App ist gesperrt. Bitte entsperre sie erneut.",
-    "context-framing": "[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext fuer die folgende Konversation verwenden]"
+    "context-framing": "[Aktuelles Gesundheitsprofil des Nutzers - bitte als Kontext für die folgende Konversation verwenden]"
   },
   "error": {
     "chat-error": {
-      "auth": "API-Schluessel ungueltig. Bitte pruefen unter Einstellungen.",
+      "auth": "API-Schlüssel ungültig. Bitte prüfen unter Einstellungen.",
       "rate-limit": "Zu viele Anfragen. Bitte warte einen Moment.",
-      "server": "Der KI-Dienst ist voruebergehend nicht erreichbar.",
+      "server": "Der KI-Dienst ist vorübergehend nicht erreichbar.",
       "network": "Keine Internetverbindung.",
       "unknown": "Fehler beim KI-Dienst.",
       "unknown-with-detail": "Fehler beim KI-Dienst: {{detail}}"
     }
   },
   "commit-preview": {
-    "heading": "Profil-Aenderungen Vorschau",
-    "intro": "Die KI hat folgende Aenderungen strukturiert. Nichts davon ist bisher gespeichert.",
+    "heading": "Profil-Änderungen Vorschau",
+    "intro": "Die KI hat folgende Änderungen strukturiert. Nichts davon ist bisher gespeichert.",
     "loading": "Profil wird geladen...",
     "error": {
       "locked": "App ist gesperrt. Bitte entsperre sie und versuche erneut."
     },
     "disabled-reason": {
-      "no-changes": "Keine Aenderungen - die KI-Vorschlaege entsprechen dem aktuellen Profil.",
+      "no-changes": "Keine Änderungen - die KI-Vorschläge entsprechen dem aktuellen Profil.",
       "need-description": "Beschreibung erforderlich."
     },
     "warnings-heading": "Hinweise",
-    "empty-diff": "Keine Aenderungen vorhanden.",
-    "show-unchanged": "Unveraenderte Felder und Eintraege anzeigen",
+    "empty-diff": "Keine Änderungen vorhanden.",
+    "show-unchanged": "Unveränderte Felder und Einträge anzeigen",
     "section": {
       "observations": "Beobachtungen",
       "supplements": "Supplemente",
@@ -98,7 +98,7 @@
     "badge": {
       "new": "neu",
       "changed": "aktualisiert",
-      "unchanged": "unveraendert"
+      "unchanged": "unverändert"
     },
     "field": {
       "obs": {
@@ -111,27 +111,27 @@
         "category": "Kategorie",
         "brand": "Marke",
         "recommendation": "Empfehlung",
-        "rationale": "Begruendung"
+        "rationale": "Begründung"
       }
     },
     "supp-category": {
-      "daily": "taeglich",
-      "regular": "regelmaessig",
+      "daily": "täglich",
+      "regular": "regelmäßig",
       "on-demand": "bei Bedarf",
       "paused": "pausiert"
     },
     "placeholder": {
       "empty": "(leer)",
-      "unchanged": "(unveraendert)"
+      "unchanged": "(unverändert)"
     },
     "version": {
-      "sr-label": "Beschreibung der Aenderung",
-      "hint": "Erscheint in der Versionsgeschichte. Kann vor dem Uebernehmen angepasst werden."
+      "sr-label": "Beschreibung der Änderung",
+      "hint": "Erscheint in der Versionsgeschichte. Kann vor dem Übernehmen angepasst werden."
     },
     "raw-toggle": "Roh-Markdown anzeigen",
     "footer": {
-      "commit": "Uebernehmen",
-      "committing": "Wird uebernommen..."
+      "commit": "Übernehmen",
+      "committing": "Wird übernommen..."
     },
     "commit-error": {
       "locked": "App wurde gesperrt. Bitte entsperre sie und versuche erneut.",
@@ -141,7 +141,7 @@
   },
   "commit-summary": {
     "no-changes": "Profil-Update gespeichert (Version {{version}}).",
-    "with-parts": "Profil-Update gespeichert: {{parts}} uebernommen (Version {{version}}).",
+    "with-parts": "Profil-Update gespeichert: {{parts}} übernommen (Version {{version}}).",
     "obs_one": "{{count}} Beobachtung",
     "obs_other": "{{count}} Beobachtungen",
     "supp_one": "{{count}} Supplement",
@@ -150,7 +150,7 @@
     "open-points_other": "{{count}} offene Punkte"
   },
   "version-description": {
-    "empty": "KI-Update: keine Aenderungen",
+    "empty": "KI-Update: keine Änderungen",
     "prefix": "KI-Update: {{parts}}",
     "theme-new": "{{theme}} neu",
     "theme-updated": "{{theme}} aktualisiert",
@@ -171,22 +171,22 @@
       "observations": "## Beobachtungen",
       "lab-values": "## Laborwerte",
       "supplements": "## Supplemente",
-      "open-points": "## Offene Punkte (ungeloest)",
+      "open-points": "## Offene Punkte (ungelöst)",
       "warning-signs": "## Warnsignale"
     },
-    "managed-by": "Gefuehrt von: {{name}}",
+    "managed-by": "Geführt von: {{name}}",
     "unspecified": "(nicht angegeben)",
     "base-data": {
       "age": "- Alter: {{age}} Jahre",
-      "height": "- Groesse: {{cm}} cm",
+      "height": "- Größe: {{cm}} cm",
       "weight": "- Gewicht: {{kg}} kg{{target}}",
       "weight-target": " (Ziel: {{kg}} kg)",
       "weight-trend": "- Gewichtsverlauf: {{trend}}",
       "weight-trend-format": "{{first}} kg ({{firstDate}}) -> {{last}} kg ({{lastDate}})",
       "diagnoses": "- Bekannte Diagnosen: {{list}}",
       "medications": "- Aktuelle Medikamente: {{list}}",
-      "limitations": "- Einschraenkungen: {{list}}",
-      "doctor": "- Hausarzt/Aerztin: {{name}}{{specialty}}"
+      "limitations": "- Einschränkungen: {{list}}",
+      "doctor": "- Hausarzt/Ärztin: {{name}}{{specialty}}"
     },
     "observation": {
       "theme-heading": "### {{theme}}",
@@ -204,8 +204,8 @@
     "supplement": {
       "line": "- {{name}} ({{category}})",
       "category": {
-        "daily": "taeglich",
-        "regular": "regelmaessig",
+        "daily": "täglich",
+        "regular": "regelmäßig",
         "on-demand": "bei Bedarf",
         "paused": "pausiert"
       }
@@ -218,7 +218,7 @@
     "months": [
       "Jan",
       "Feb",
-      "Maerz",
+      "März",
       "Apr",
       "Mai",
       "Juni",

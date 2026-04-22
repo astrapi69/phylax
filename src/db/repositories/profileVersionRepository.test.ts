@@ -52,13 +52,13 @@ describe('ProfileVersionRepository', () => {
     const v = await repo.create(
       makeData({
         version: '1.3.1',
-        changeDescription: 'Blutbild Maerz 2026 ergaenzt',
+        changeDescription: 'Blutbild März 2026 ergaenzt',
         changeDate: '2026-03-20',
       }),
     );
     const fetched = await repo.getById(v.id);
     expect(fetched?.version).toBe('1.3.1');
-    expect(fetched?.changeDescription).toBe('Blutbild Maerz 2026 ergaenzt');
+    expect(fetched?.changeDescription).toBe('Blutbild März 2026 ergaenzt');
     expect(fetched?.changeDate).toBe('2026-03-20');
     lock();
   });

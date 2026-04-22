@@ -19,16 +19,16 @@ describe('PrivacyInfoPopover', () => {
     expect(screen.getByRole('heading', { name: 'Was du kontrollierst' })).toBeInTheDocument();
   });
 
-  it('focuses the Schliessen button on open', () => {
+  it('focuses the Schließen button on open', () => {
     render(<PrivacyInfoPopover open={true} onClose={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Schliessen' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Schließen' })).toHaveFocus();
   });
 
-  it('Schliessen button calls onClose', async () => {
+  it('Schließen button calls onClose', async () => {
     const onClose = vi.fn();
     const user = userEvent.setup();
     render(<PrivacyInfoPopover open={true} onClose={onClose} />);
-    await user.click(screen.getByRole('button', { name: 'Schliessen' }));
+    await user.click(screen.getByRole('button', { name: 'Schließen' }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 
