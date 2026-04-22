@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getLockState } from '../crypto';
-import { metaExists } from '../db/meta';
+import { resolveAuthState, type AuthState } from './resolveAuthState';
 
 /**
  * Root entry decision. Mounted at `/` by the AppRoutes tree.
@@ -10,10 +9,8 @@ import { metaExists } from '../db/meta';
  * - Meta row present, keystore locked  -> /unlock    (returning user)
  * - Meta row present, keystore unlocked -> /profile  (authenticated home)
  *
- * Uses `metaExists()` + `getLockState()` directly (no new auth-guard
- * helper for now; the same decision logic lives in ProtectedRoute.
- * Consolidation into a shared `resolveAuthDestination()` is tracked as
- * a future tech-debt entry).
+ * Reads auth state via the shared `resolveAuthState` helper (TD-06);
+ * ProtectedRoute and SetupFlowGuard share the same source of truth.
  *
  * Renders null during the single meta-read tick; IndexedDB index
  * lookups are sub-millisecond so the blank frame is invisible. A
@@ -24,15 +21,9 @@ export function EntryRouter() {
 
   useEffect(() => {
     let cancelled = false;
-    void metaExists().then((exists) => {
+    void resolveAuthState().then((state) => {
       if (cancelled) return;
-      if (!exists) {
-        setTarget('/welcome');
-      } else if (getLockState() === 'locked') {
-        setTarget('/unlock');
-      } else {
-        setTarget('/profile');
-      }
+      setTarget(stateToEntryDestination(state));
     });
     return () => {
       cancelled = true;
@@ -41,4 +32,22 @@ export function EntryRouter() {
 
   if (target === null) return null;
   return <Navigate to={target} replace />;
+}
+
+/**
+ * EntryRouter's policy for mapping the shared auth state to a
+ * destination. Co-located because the mapping is EntryRouter-specific:
+ * unlocked users land on `/profile` _here_; other consumers map the
+ * same state to other actions (ProtectedRoute renders children;
+ * SetupFlowGuard redirects to /unlock).
+ */
+function stateToEntryDestination(state: AuthState): string {
+  switch (state) {
+    case 'no-vault':
+      return '/welcome';
+    case 'locked':
+      return '/unlock';
+    case 'unlocked':
+      return '/profile';
+  }
 }

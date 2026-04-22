@@ -1,8 +1,8 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getLockState, onLockStateChange } from '../crypto';
-import { metaExists } from '../db/meta';
+import { onLockStateChange } from '../crypto';
+import { resolveAuthState } from './resolveAuthState';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -27,14 +27,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
 
   useEffect(() => {
-    metaExists().then((exists) => {
-      if (!exists) {
-        setAuthState('onboarding');
-      } else if (getLockState() === 'locked') {
-        setAuthState('locked');
-      } else {
-        setAuthState('ready');
-      }
+    void resolveAuthState().then((state) => {
+      if (state === 'no-vault') setAuthState('onboarding');
+      else if (state === 'locked') setAuthState('locked');
+      else setAuthState('ready');
     });
   }, []);
 

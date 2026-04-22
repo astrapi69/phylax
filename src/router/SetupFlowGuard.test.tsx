@@ -61,7 +61,7 @@ describe('SetupFlowGuard', () => {
     await waitFor(() => expect(screen.getByTestId('child-welcome')).toBeInTheDocument());
     expect(screen.queryByTestId('destination-unlock')).not.toBeInTheDocument();
     expect(errorSpy).toHaveBeenCalledWith(
-      'SetupFlowGuard: metaExists failed, allowing setup flow',
+      'SetupFlowGuard: resolveAuthState failed, allowing setup flow',
       expect.any(Error),
     );
     errorSpy.mockRestore();

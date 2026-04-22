@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { metaExists } from '../db/meta';
+import { resolveAuthState } from './resolveAuthState';
 
 type GuardState = 'checking' | 'allowed' | 'redirect';
 
@@ -10,31 +10,36 @@ type GuardState = 'checking' | 'allowed' | 'redirect';
  * direct-link visit cannot reach `useSetupVault.runSetup()` and
  * overwrite meta.
  *
- * Renders null during the single meta-read tick (matches EntryRouter's
+ * Reads auth state via the shared `resolveAuthState` helper (TD-06).
+ * Currently collapses `locked` and `unlocked` into the same redirect
+ * target (`/unlock`); a follow-up tech-debt entry covers routing the
+ * already-unlocked case to `/profile` instead.
+ *
+ * Renders null during the single state-read tick (matches EntryRouter's
  * loading style; avoids a brief welcome-screen flash before the
  * redirect fires). Children render via `<Outlet />` once the check
  * clears.
  *
- * Fail-open on metaExists rejection: if the IndexedDB read throws (e.g.
- * Safari-private-mode quirks, DB corruption, or a broken shim), the
- * guard lets the setup flow render rather than trapping the user on a
- * blank screen. The defensive check inside `useSetupVault.runSetup()`
- * still refuses to overwrite an existing vault, so fail-open on the
- * guard does not re-open the data-loss path.
+ * Fail-open on resolveAuthState rejection: if the IndexedDB read throws
+ * (e.g. Safari-private-mode quirks, DB corruption, or a broken shim),
+ * the guard lets the setup flow render rather than trapping the user
+ * on a blank screen. The defensive check inside
+ * `useSetupVault.runSetup()` still refuses to overwrite an existing
+ * vault, so fail-open on the guard does not re-open the data-loss path.
  */
 export function SetupFlowGuard() {
   const [state, setState] = useState<GuardState>('checking');
 
   useEffect(() => {
     let cancelled = false;
-    metaExists()
-      .then((exists) => {
+    resolveAuthState()
+      .then((authState) => {
         if (cancelled) return;
-        setState(exists ? 'redirect' : 'allowed');
+        setState(authState === 'no-vault' ? 'allowed' : 'redirect');
       })
       .catch((err) => {
         if (cancelled) return;
-        console.error('SetupFlowGuard: metaExists failed, allowing setup flow', err);
+        console.error('SetupFlowGuard: resolveAuthState failed, allowing setup flow', err);
         setState('allowed');
       });
     return () => {
