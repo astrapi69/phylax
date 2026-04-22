@@ -64,14 +64,14 @@ describe('PreviewScreen', () => {
     expect(screen.getByTestId('parse-clean')).toBeInTheDocument();
   });
 
-  it('shows the warnings disclosure when warnings are present', async () => {
+  it('shows the warnings disclosure when warning-severity notices are present', async () => {
     const user = userEvent.setup();
     const pr = makeResult({
       report: {
         recognized: [],
         unrecognized: [],
         metadata: {},
-        warnings: [{ section: 'Basisdaten', message: 'unerwartet' }],
+        warnings: [{ section: 'Basisdaten', severity: 'warning', message: 'unerwartet' }],
       },
     });
     render(
@@ -87,6 +87,66 @@ describe('PreviewScreen', () => {
     const btn = screen.getByRole('button', { name: /1 Warnung beim Parsen/ });
     await user.click(btn);
     expect(screen.getByText(/unerwartet/)).toBeInTheDocument();
+  });
+
+  it('shows a separate skipped-sections disclosure for info-severity notices', async () => {
+    const user = userEvent.setup();
+    const pr = makeResult({
+      report: {
+        recognized: [],
+        unrecognized: [],
+        metadata: {},
+        warnings: [
+          { section: 'Ausgangslage', severity: 'info', message: 'Section is empty. Skipped.' },
+          { section: 'Erholung', severity: 'info', message: 'Section is empty. Skipped.' },
+        ],
+      },
+    });
+    render(
+      <PreviewScreen
+        parseResult={pr}
+        sourceLabel="x"
+        targetProfileName="y"
+        onConfirm={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+    // No amber warnings block, no clean indicator: the skipped block stands alone.
+    expect(screen.queryByTestId('warnings-disclosure')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('parse-clean')).not.toBeInTheDocument();
+    const btn = screen.getByRole('button', { name: /2 leere Abschnitte uebersprungen/ });
+    await user.click(btn);
+    expect(screen.getByText(/Ausgangslage/)).toBeInTheDocument();
+    expect(screen.getByText(/Erholung/)).toBeInTheDocument();
+  });
+
+  it('separates warning-severity and info-severity notices into distinct disclosures', () => {
+    const pr = makeResult({
+      report: {
+        recognized: [],
+        unrecognized: [],
+        metadata: {},
+        warnings: [
+          { section: 'Basisdaten', severity: 'warning', message: 'unerwartet' },
+          { section: 'Ausgangslage', severity: 'info', message: 'Section is empty. Skipped.' },
+        ],
+      },
+    });
+    render(
+      <PreviewScreen
+        parseResult={pr}
+        sourceLabel="x"
+        targetProfileName="y"
+        onConfirm={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId('warnings-disclosure')).toBeInTheDocument();
+    expect(screen.getByTestId('skipped-disclosure')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /1 Warnung beim Parsen/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /1 leerer Abschnitt uebersprungen/ }),
+    ).toBeInTheDocument();
   });
 
   it('shows unrecognized disclosure when present', () => {

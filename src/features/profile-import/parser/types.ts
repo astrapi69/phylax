@@ -74,8 +74,19 @@ export interface RecognizedSection {
   itemCount: number;
 }
 
+/**
+ * Severity classifies parser notices:
+ * - 'warning': malformed source that likely needs user attention
+ *   (content present but required fields missing).
+ * - 'info': benign, expected condition (empty placeholder section).
+ *   Info notices are displayed separately in the UI and do not count
+ *   as soft-failure signals for the AI cleanup fallback.
+ */
+export type ParseWarningSeverity = 'info' | 'warning';
+
 export interface ParseWarning {
   section: string;
+  severity: ParseWarningSeverity;
   message: string;
   rawContent?: string;
 }

@@ -93,12 +93,54 @@ describe('parseBeobachtungen', () => {
     expect(observations[0]?.theme).toBe('Ernaehrung');
   });
 
-  it('warns on observation with no core fields', () => {
+  it('warns and skips the entity when a section has content but no recognized fields', () => {
     const md = '### 2.1 Empty\nJust some text without labeled bullets.';
     const { observations, warnings } = parseBeobachtungen(md);
-    expect(observations).toHaveLength(1);
+    expect(observations).toHaveLength(0);
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]?.message).toContain('no fact, pattern, or self-regulation');
+    expect(warnings[0]?.severity).toBe('warning');
+    expect(warnings[0]?.section).toBe('Empty');
+    expect(warnings[0]?.message).toContain(
+      'no recognized Beobachtung / Muster / Selbstregulation fields',
+    );
+    expect(warnings[0]?.rawContent).toContain('Just some text');
+  });
+
+  it('emits an info-level notice and skips the entity for a completely empty section', () => {
+    const md = ['### 2.1 Ausgangslage', '', '', '### 2.2 Brustkorb', '- **Beobachtung:** F'].join(
+      '\n',
+    );
+    const { observations, warnings } = parseBeobachtungen(md);
+    // Only the populated section becomes an Observation. No ghost entity.
+    expect(observations).toHaveLength(1);
+    expect(observations[0]?.theme).toBe('Brustkorb');
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]?.severity).toBe('info');
+    expect(warnings[0]?.section).toBe('Ausgangslage');
+    expect(warnings[0]?.message).toContain('empty');
+    expect(warnings[0]?.rawContent).toBeUndefined();
+  });
+
+  it('distinguishes empty placeholders from malformed entries in one pass', () => {
+    const md = [
+      '### 2.1 Ausgangslage',
+      '',
+      '### 2.2 Erholung',
+      '',
+      '### 2.3 Broken',
+      'Some prose but no labeled bullets.',
+      '### 2.4 Valid',
+      '- **Beobachtung:** F',
+      '- **Muster:** M',
+      '- **Selbstregulation:** S',
+    ].join('\n');
+    const { observations, warnings } = parseBeobachtungen(md);
+    expect(observations).toHaveLength(1);
+    expect(observations[0]?.theme).toBe('Valid');
+    const infoSections = warnings.filter((w) => w.severity === 'info').map((w) => w.section);
+    const warningSections = warnings.filter((w) => w.severity === 'warning').map((w) => w.section);
+    expect(infoSections).toEqual(['Ausgangslage', 'Erholung']);
+    expect(warningSections).toEqual(['Broken']);
   });
 
   it('preserves multi-line selfRegulation', () => {

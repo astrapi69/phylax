@@ -135,16 +135,17 @@ reasoning note. Keep entries alphabetical within each section.
 
 ## Error and status messages
 
-| DE                                                 | EN                                         | Notes |
-| -------------------------------------------------- | ------------------------------------------ | ----- |
-| API-Schluessel ungueltig.                          | Invalid API key.                           |       |
-| App ist gesperrt.                                  | The app is locked.                         |       |
-| Der KI-Dienst ist voruebergehend nicht erreichbar. | The AI service is temporarily unavailable. |       |
-| Fehler beim KI-Dienst.                             | AI service error.                          |       |
-| Fehler beim Speichern.                             | Error saving.                              |       |
-| Kein Profil gefunden.                              | No profile found.                          |       |
-| Keine Internetverbindung.                          | No internet connection.                    |       |
-| Zu viele Anfragen.                                 | Too many requests.                         |       |
+| DE                                                 | EN                                         | Notes                                                        |
+| -------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| API-Schluessel ungueltig.                          | Invalid API key.                           |                                                              |
+| App ist gesperrt.                                  | The app is locked.                         |                                                              |
+| Der KI-Dienst ist voruebergehend nicht erreichbar. | The AI service is temporarily unavailable. |                                                              |
+| Fehler beim KI-Dienst.                             | AI service error.                          |                                                              |
+| Fehler beim Speichern.                             | Error saving.                              |                                                              |
+| Kein Profil gefunden.                              | No profile found.                          |                                                              |
+| Keine Internetverbindung.                          | No internet connection.                    |                                                              |
+| leerer Abschnitt uebersprungen                     | empty section skipped                      | import preview info-level notice for placeholder H3 headings |
+| Zu viele Anfragen.                                 | Too many requests.                         |                                                              |
 
 ## Support and donation
 

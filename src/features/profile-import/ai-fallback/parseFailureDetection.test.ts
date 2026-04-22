@@ -23,6 +23,7 @@ function resultWith(
     supplements: number;
     openPoints: number;
     warnings: number;
+    infoNotices: number;
     hasProfile: boolean;
   }>,
 ): ParseResult {
@@ -30,10 +31,17 @@ function resultWith(
   r.observations = Array.from({ length: parts.observations ?? 0 }, () => ({}) as never);
   r.supplements = Array.from({ length: parts.supplements ?? 0 }, () => ({}) as never);
   r.openPoints = Array.from({ length: parts.openPoints ?? 0 }, () => ({}) as never);
-  r.report.warnings = Array.from({ length: parts.warnings ?? 0 }, (_, i) => ({
+  const warnings = Array.from({ length: parts.warnings ?? 0 }, (_, i) => ({
     section: `s${i}`,
+    severity: 'warning' as const,
     message: `w${i}`,
   }));
+  const infos = Array.from({ length: parts.infoNotices ?? 0 }, (_, i) => ({
+    section: `i${i}`,
+    severity: 'info' as const,
+    message: `info ${i}`,
+  }));
+  r.report.warnings = [...warnings, ...infos];
   if (parts.hasProfile) {
     r.profile = {} as ParseResult['profile'];
   }
@@ -84,5 +92,9 @@ describe('shouldOfferCleanup', () => {
         resultWith({ observations: 10, supplements: 4, openPoints: 6, warnings: 2 }),
       ),
     ).toBe(false);
+  });
+
+  it('false for low-entity result with only info-level notices (empty placeholders are benign)', () => {
+    expect(shouldOfferCleanup(resultWith({ observations: 2, infoNotices: 6 }))).toBe(false);
   });
 });

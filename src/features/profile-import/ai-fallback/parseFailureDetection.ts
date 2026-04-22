@@ -38,7 +38,9 @@ export const LOW_ENTITY_THRESHOLD = 3;
  *
  * 1. The result is entirely empty (hard failure).
  * 2. Fewer than LOW_ENTITY_THRESHOLD entities were extracted AND the
- *    parser emitted warnings (soft failure, likely partial recognition).
+ *    parser emitted warning-severity notices (soft failure, likely
+ *    partial recognition). Info-severity notices (empty placeholder
+ *    sections) are benign by design and do not count.
  *
  * Well-formed imports with many entities never trigger the offer, even
  * if a few warnings are present. Well-formed imports with zero warnings
@@ -48,6 +50,6 @@ export const LOW_ENTITY_THRESHOLD = 3;
 export function shouldOfferCleanup(result: ParseResult): boolean {
   if (isEmptyParseResult(result)) return true;
   const total = totalEntityCount(result);
-  const hasWarnings = result.report.warnings.length > 0;
+  const hasWarnings = result.report.warnings.some((w) => w.severity === 'warning');
   return total < LOW_ENTITY_THRESHOLD && hasWarnings;
 }

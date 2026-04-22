@@ -41,6 +41,19 @@ export function parseBeobachtungen(content: string): {
     if (sub.level === 0 || !sub.heading) continue;
 
     const theme = cleanTheme(sub.heading);
+
+    // Empty H3 under Relevante Vorgeschichte is treated as an intentional
+    // placeholder (category exists, no entries yet). No ghost entity,
+    // info-level notice so the user still sees what was skipped.
+    if (sub.content.trim().length === 0) {
+      warnings.push({
+        section: theme,
+        severity: 'info',
+        message: 'Section is empty. Skipped.',
+      });
+      continue;
+    }
+
     const bullets = parseLabeledBullets(sub.content);
 
     const obs: ParsedObservation = {
@@ -81,11 +94,17 @@ export function parseBeobachtungen(content: string): {
     }
 
     if (!obs.fact && !obs.pattern && !obs.selfRegulation) {
+      // Content-but-no-fields: likely a typo or unfinished edit. Warn and
+      // skip the entity; pushing a ghost observation with all-empty fields
+      // would pollute the vault and round-trip.
       warnings.push({
         section: theme,
-        message: 'Observation has no fact, pattern, or self-regulation fields',
+        severity: 'warning',
+        message:
+          'Section has content but no recognized Beobachtung / Muster / Selbstregulation fields',
         rawContent: sub.content.substring(0, 200),
       });
+      continue;
     }
 
     observations.push(obs);

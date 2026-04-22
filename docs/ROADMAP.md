@@ -88,6 +88,7 @@ Note on IDs: the parser was originally committed under the `[O-07]` tag before t
 - [x] **IM-03b** Import UI: file picker or paste-in, structured preview with counts/warnings/unrecognized, profile selection, confirm-replace dialog (commit pending)
 - [ ] **IM-04** Post-import navigation: land on the imported profile, create profile version entry automatically
 - [ ] **IM-05** Import conflict handling beyond replace-all: detect existing data, offer replace vs. selective merge vs. cancel
+- [x] **IM-06** Distinguish empty placeholder sections from malformed observation entries: parser emits info-severity notice for blank H3 under Relevante Vorgeschichte, warning-severity for content-but-no-recognized-fields, skips ghost entity creation in both cases. Preview UI splits into separate warnings / skipped-sections disclosures (commit pending)
 
 ---
 

@@ -29,7 +29,10 @@ export function PreviewScreen({
     warningSigns: parseResult.profile?.warningSigns.length ?? 0,
     externalReferences: parseResult.profile?.externalReferences.length ?? 0,
   };
-  const hasWarnings = parseResult.report.warnings.length > 0;
+  const warningNotices = parseResult.report.warnings.filter((w) => w.severity === 'warning');
+  const infoNotices = parseResult.report.warnings.filter((w) => w.severity === 'info');
+  const hasWarnings = warningNotices.length > 0;
+  const hasSkipped = infoNotices.length > 0;
   const hasUnrecognized = parseResult.report.unrecognized.length > 0;
 
   return (
@@ -74,16 +77,32 @@ export function PreviewScreen({
         </ul>
       </section>
 
-      <section className="mb-4">
+      <section className="mb-4 space-y-2">
         {hasWarnings ? (
           <Collapsible
-            summary={t('preview.warnings-summary', { count: parseResult.report.warnings.length })}
+            summary={t('preview.warnings-summary', { count: warningNotices.length })}
             icon="!"
             iconClass="bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200"
             testId="warnings-disclosure"
           >
             <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
-              {parseResult.report.warnings.map((w, i) => (
+              {warningNotices.map((w, i) => (
+                <li key={i}>
+                  <span className="font-medium">[{w.section}]</span> {w.message}
+                </li>
+              ))}
+            </ul>
+          </Collapsible>
+        ) : null}
+        {hasSkipped ? (
+          <Collapsible
+            summary={t('preview.skipped-summary', { count: infoNotices.length })}
+            icon="i"
+            iconClass="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+            testId="skipped-disclosure"
+          >
+            <ul className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
+              {infoNotices.map((w, i) => (
                 <li key={i}>
                   <span className="font-medium">[{w.section}]</span> {w.message}
                 </li>
@@ -107,7 +126,7 @@ export function PreviewScreen({
             </ul>
           </Collapsible>
         ) : null}
-        {!hasWarnings && !hasUnrecognized && (
+        {!hasWarnings && !hasSkipped && !hasUnrecognized && (
           <p className="text-sm text-green-700 dark:text-green-400" data-testid="parse-clean">
             {t('preview.clean')}
           </p>

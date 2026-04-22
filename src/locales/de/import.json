@@ -43,6 +43,8 @@
     "content-heading": "Inhalt",
     "warnings-summary_one": "{{count}} Warnung beim Parsen",
     "warnings-summary_other": "{{count}} Warnungen beim Parsen",
+    "skipped-summary_one": "{{count}} leerer Abschnitt uebersprungen",
+    "skipped-summary_other": "{{count}} leere Abschnitte uebersprungen",
     "unrecognized-summary_one": "{{count}} nicht erkannter Block",
     "unrecognized-summary_other": "{{count}} nicht erkannte Bloecke",
     "clean": "✓ Keine Probleme beim Parsen festgestellt.",

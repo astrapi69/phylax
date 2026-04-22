@@ -43,6 +43,8 @@
     "content-heading": "Content",
     "warnings-summary_one": "{{count}} warning during parsing",
     "warnings-summary_other": "{{count}} warnings during parsing",
+    "skipped-summary_one": "{{count}} empty section skipped",
+    "skipped-summary_other": "{{count}} empty sections skipped",
     "unrecognized-summary_one": "{{count}} unrecognized block",
     "unrecognized-summary_other": "{{count}} unrecognized blocks",
     "clean": "✓ No issues detected during parsing.",
