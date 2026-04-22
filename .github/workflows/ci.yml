@@ -77,9 +77,13 @@ jobs:
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
+          # `timeout 240s` kills an attempt that hangs (e.g. apt stuck on a
+          # mirror InRelease fetch) so the retry loop can actually iterate
+          # instead of waiting for the 15-min job timeout.
           for i in 1 2 3; do
-            npx playwright install --with-deps chromium && exit 0
-            echo "Attempt $i failed; retrying in 20s..." >&2
+            timeout 240s npx playwright install --with-deps chromium && exit 0
+            rc=$?
+            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
             sleep 20
           done
           echo "All 3 attempts failed" >&2
@@ -88,8 +92,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: |
           for i in 1 2 3; do
-            npx playwright install-deps chromium && exit 0
-            echo "Attempt $i failed; retrying in 20s..." >&2
+            timeout 240s npx playwright install-deps chromium && exit 0
+            rc=$?
+            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
             sleep 20
           done
           echo "All 3 attempts failed" >&2
@@ -167,9 +172,13 @@ jobs:
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
+          # `timeout 240s` kills an attempt that hangs (e.g. apt stuck on a
+          # mirror InRelease fetch) so the retry loop can actually iterate
+          # instead of waiting for the 15-min job timeout.
           for i in 1 2 3; do
-            npx playwright install --with-deps chromium && exit 0
-            echo "Attempt $i failed; retrying in 20s..." >&2
+            timeout 240s npx playwright install --with-deps chromium && exit 0
+            rc=$?
+            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
             sleep 20
           done
           echo "All 3 attempts failed" >&2
@@ -178,8 +187,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: |
           for i in 1 2 3; do
-            npx playwright install-deps chromium && exit 0
-            echo "Attempt $i failed; retrying in 20s..." >&2
+            timeout 240s npx playwright install-deps chromium && exit 0
+            rc=$?
+            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
             sleep 20
           done
           echo "All 3 attempts failed" >&2
