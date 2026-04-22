@@ -207,9 +207,8 @@ entirely in the browser and works offline after the first visit.
 
 ### Run from source
 
-Requires Node.js 22.12 or later (per `engines.node`); CI and the
-pinned `.nvmrc` default to Node 24 LTS. If you use nvm, `nvm use`
-picks up the `.nvmrc` version.
+Requires Node.js 24 or later. CI and `.nvmrc` both pin Node 24. If
+you use nvm, `nvm use` picks up the `.nvmrc` version.
 
 ```bash
 git clone https://github.com/astrapi69/phylax.git
