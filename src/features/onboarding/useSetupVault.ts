@@ -7,13 +7,13 @@ import {
   lock,
 } from '../../crypto';
 import { db } from '../../db/schema';
-import { writeMeta, VERIFICATION_TOKEN } from '../../db/meta';
+import { writeMeta, metaExists, VERIFICATION_TOKEN } from '../../db/meta';
 import { encodeMetaPayload, DEFAULT_SETTINGS } from '../../db/settings';
 import { recordSuccessfulAttempt } from '../unlock/rateLimit';
 
 export type SetupStatus = 'idle' | 'deriving' | 'done' | 'error';
 
-export type SetupError = { kind: 'meta-write-failed' };
+export type SetupError = { kind: 'meta-write-failed' } | { kind: 'vault-already-exists' };
 
 export interface SetupVaultHook {
   status: SetupStatus;
@@ -40,6 +40,18 @@ export function useSetupVault(): SetupVaultHook {
   const runSetup = useCallback(async (password: string) => {
     setStatus('deriving');
     setError(undefined);
+
+    // Defensive belt-and-suspenders check. SetupFlowGuard already redirects
+    // direct-link visits to /unlock when meta exists (TD-05); this closes
+    // the millisecond-window race where a parallel tab created a vault
+    // between guard-mount and submit, and refuses any programmatic bypass
+    // (tests, devtools). Keystore stays locked; no meta overwrite.
+    if (await metaExists()) {
+      console.error('[useSetupVault] runSetup called with existing vault; refusing to overwrite');
+      setError({ kind: 'vault-already-exists' });
+      setStatus('error');
+      return;
+    }
 
     const salt = generateSalt();
     const key = await deriveKeyFromPassword(password, salt);

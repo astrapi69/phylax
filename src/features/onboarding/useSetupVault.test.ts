@@ -70,6 +70,32 @@ describe('useSetupVault', () => {
     expect(keys).not.toContain('key');
   });
 
+  it('refuses to overwrite an existing vault and reports vault-already-exists', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Seed an existing vault meta row directly so metaExists() returns true.
+    const { writeMeta } = await import('../../db/meta');
+    await writeMeta(new ArrayBuffer(32), new ArrayBuffer(64));
+
+    const transactionSpy = vi.spyOn(db, 'transaction');
+
+    const { result } = renderHook(() => useSetupVault());
+
+    await act(async () => {
+      await result.current.runSetup('setup-password-12');
+    });
+
+    await waitFor(() => expect(result.current.status).toBe('error'));
+    expect(result.current.error).toEqual({ kind: 'vault-already-exists' });
+    expect(transactionSpy).not.toHaveBeenCalled();
+    const metaCount = await db.meta.count();
+    expect(metaCount).toBe(1); // unchanged seed row
+    expect(errorSpy).toHaveBeenCalled();
+
+    transactionSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
   it('locks the keystore and reports meta-write-failed when the transaction throws', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const transactionSpy = vi

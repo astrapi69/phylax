@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { EntryRouter } from './EntryRouter';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequireProfile } from './RequireProfile';
+import { SetupFlowGuard } from './SetupFlowGuard';
 import { AppShell } from '../features/app-shell';
 import { WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
 import { UnlockView } from '../features/unlock';
@@ -35,7 +36,9 @@ function ProfileCreatePage() {
  *   on vault + keystore state (ONB-01a).
  * - /welcome, /privacy, /setup: first-run onboarding flow screens
  *   (ONB-01b/c). SetupView owns the meta-row write and then navigates
- *   to /profile/create.
+ *   to /profile/create. Wrapped in SetupFlowGuard (TD-05): a direct
+ *   visit with an existing vault redirects to /unlock instead of
+ *   letting useSetupVault.runSetup() overwrite meta.
  * - /backup/import/select, /backup/import/unlock: encrypted backup
  *   import flow (stubs in ONB-01a; filled in ONB-01e). Distinct from
  *   /import which handles Markdown profile import.
@@ -51,9 +54,12 @@ export function AppRoutes() {
       <Route path="/" element={<EntryRouter />} />
 
       {/* Full-screen routes (no shell) */}
-      <Route path="/welcome" element={<WelcomeView />} />
-      <Route path="/privacy" element={<PrivacyView />} />
-      <Route path="/setup" element={<SetupView />} />
+      {/* Setup flow: SetupFlowGuard redirects to /unlock when a vault exists */}
+      <Route element={<SetupFlowGuard />}>
+        <Route path="/welcome" element={<WelcomeView />} />
+        <Route path="/privacy" element={<PrivacyView />} />
+        <Route path="/setup" element={<SetupView />} />
+      </Route>
       <Route path="/backup/import/select" element={<BackupImportSelectView />} />
       <Route path="/backup/import/unlock" element={<BackupImportUnlockView />} />
       <Route path="/unlock" element={<UnlockView />} />
