@@ -38,6 +38,48 @@ const STRENGTH_ARIA_VALUE: Record<PasswordStrength, number> = {
   strong: 100,
 };
 
+function VisibilityToggle({
+  visible,
+  onToggle,
+  labelShow,
+  labelHide,
+  disabled,
+}: {
+  visible: boolean;
+  onToggle: () => void;
+  labelShow: string;
+  labelHide: string;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      disabled={disabled}
+      aria-label={visible ? labelHide : labelShow}
+      aria-pressed={visible}
+      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200 dark:focus:text-gray-200 dark:focus-visible:ring-offset-gray-900"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+        <circle cx="12" cy="12" r="3" />
+        {visible && <line x1="4" y1="4" x2="20" y2="20" />}
+      </svg>
+    </button>
+  );
+}
+
 function renderSetupError(error: SetupValidationError, t: TFunction<'onboarding'>): string {
   switch (error.kind) {
     case 'empty':
@@ -64,6 +106,8 @@ export function SetupView() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acknowledged, setAcknowledged] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmVisible, setConfirmVisible] = useState(false);
 
   const { status, error: setupError, runSetup } = useSetupVault();
   const zxcvbn = useLazyZxcvbn();
@@ -124,19 +168,28 @@ export function SetupView() {
             >
               {t('setup.password.label')}
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setShowError(false);
-              }}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-              autoComplete="new-password"
-              aria-describedby={passwordErrorVisible ? 'password-error' : undefined}
-              disabled={status === 'deriving' || status === 'done'}
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={passwordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setShowError(false);
+                }}
+                className="w-full rounded border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                autoComplete="new-password"
+                aria-describedby={passwordErrorVisible ? 'password-error' : undefined}
+                disabled={status === 'deriving' || status === 'done'}
+              />
+              <VisibilityToggle
+                visible={passwordVisible}
+                onToggle={() => setPasswordVisible((v) => !v)}
+                labelShow={t('setup.password.toggleVisibility.show')}
+                labelHide={t('setup.password.toggleVisibility.hide')}
+                disabled={status === 'deriving' || status === 'done'}
+              />
+            </div>
             {password.length > 0 && (
               <div className="mt-1">
                 <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
@@ -174,18 +227,27 @@ export function SetupView() {
             >
               {t('setup.password.confirm-label')}
             </label>
-            <input
-              id="confirm-password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                setShowError(false);
-              }}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-              autoComplete="new-password"
-              disabled={status === 'deriving' || status === 'done'}
-            />
+            <div className="relative">
+              <input
+                id="confirm-password"
+                type={confirmVisible ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setShowError(false);
+                }}
+                className="w-full rounded border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                autoComplete="new-password"
+                disabled={status === 'deriving' || status === 'done'}
+              />
+              <VisibilityToggle
+                visible={confirmVisible}
+                onToggle={() => setConfirmVisible((v) => !v)}
+                labelShow={t('setup.password.toggleVisibility.show')}
+                labelHide={t('setup.password.toggleVisibility.hide')}
+                disabled={status === 'deriving' || status === 'done'}
+              />
+            </div>
           </div>
 
           <div className="mb-4">

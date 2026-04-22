@@ -141,6 +141,74 @@ describe('SetupView', () => {
     vi.doUnmock('./useLazyZxcvbn');
   });
 
+  it('toggles password visibility on the master password field', async () => {
+    const user = userEvent.setup();
+    renderInRouter();
+    const input = screen.getByLabelText('Master-Passwort') as HTMLInputElement;
+    // Two fields, two toggles, both labeled "Passwort anzeigen" initially.
+    // The password field's toggle is the first one in document order.
+    const getPasswordToggle = () => {
+      const toggles = screen.getAllByRole('button', {
+        name: /Passwort (anzeigen|verbergen)/,
+      });
+      const first = toggles[0];
+      if (!first) throw new Error('password toggle not found');
+      return first;
+    };
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(getPasswordToggle()).toHaveAttribute('aria-label', 'Passwort anzeigen');
+    expect(getPasswordToggle()).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(getPasswordToggle());
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(getPasswordToggle()).toHaveAttribute('aria-label', 'Passwort verbergen');
+    expect(getPasswordToggle()).toHaveAttribute('aria-pressed', 'true');
+
+    await user.click(getPasswordToggle());
+    expect(input).toHaveAttribute('type', 'password');
+    expect(getPasswordToggle()).toHaveAttribute('aria-label', 'Passwort anzeigen');
+    expect(getPasswordToggle()).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('password and confirm-password toggles operate independently', async () => {
+    const user = userEvent.setup();
+    renderInRouter();
+    const pwInput = screen.getByLabelText('Master-Passwort') as HTMLInputElement;
+    const confirmInput = screen.getByLabelText('Passwort wiederholen') as HTMLInputElement;
+    const getToggle = (index: 0 | 1) => {
+      const toggles = screen.getAllByRole('button', {
+        name: /Passwort (anzeigen|verbergen)/,
+      });
+      const btn = toggles[index];
+      if (!btn) throw new Error(`toggle[${index}] not found`);
+      return btn;
+    };
+
+    // Reveal only the password field (first toggle in document order).
+    await user.click(getToggle(0));
+    expect(pwInput).toHaveAttribute('type', 'text');
+    expect(confirmInput).toHaveAttribute('type', 'password');
+
+    // Reveal the confirm field; password stays revealed.
+    await user.click(getToggle(1));
+    expect(pwInput).toHaveAttribute('type', 'text');
+    expect(confirmInput).toHaveAttribute('type', 'text');
+
+    // Hide the password field; confirm stays revealed.
+    await user.click(getToggle(0));
+    expect(pwInput).toHaveAttribute('type', 'password');
+    expect(confirmInput).toHaveAttribute('type', 'text');
+  });
+
+  it('localizes the visibility toggle label when i18n language is en', async () => {
+    await i18n.changeLanguage('en');
+    renderInRouter();
+    expect(screen.getAllByRole('button', { name: 'Show password' })).toHaveLength(2);
+    await i18n.changeLanguage('de');
+  });
+
   it('shows the not-acknowledged error when the form is submitted without checkbox', async () => {
     const user = userEvent.setup();
     renderInRouter();
