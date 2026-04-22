@@ -46,7 +46,7 @@ test.describe('Profile creation', () => {
 
   test('filling proxy profile with managedBy creates and redirects', async ({ page }) => {
     await page.getByLabel('Profilname').fill('Mutters Profil');
-    await page.getByText('Stellvertretend fuer jemand anderen').click();
+    await page.getByText('Stellvertretend für jemand anderen').click();
     await page.getByLabel('Dein Name (als Betreuer)').fill('Asterios');
     await page.getByRole('button', { name: 'Profil erstellen' }).click();
 
