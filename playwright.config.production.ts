@@ -21,6 +21,15 @@ export default defineConfig({
     // The preview server mirrors that base path, so the test baseURL must
     // include it; otherwise requests to '/' hit the root and 404.
     baseURL: 'http://localhost:6174/phylax/',
+    // Pin the app language to German for the whole suite. Post-I18N-02-e
+    // (commit 8301afd) the i18n detector reads navigator.language first,
+    // which Chromium reports as en-US by default and would flip every
+    // DE-label-based assertion in this smoke suite to English (92 test
+    // failures). Setting `locale: 'de-DE'` makes the detector resolve
+    // to 'de' on every fresh load. Keep this value in lockstep with
+    // `playwright.config.ts`; drift between the two configs caused the
+    // initial dev vs production lag (B-02 fixed dev, this restored prod).
+    locale: 'de-DE',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

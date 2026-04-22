@@ -10,11 +10,14 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:6173',
     // Pin the app language to German for the whole suite. Post-I18N-02-e
-    // the detector reads navigator.language first, which Chromium reports
-    // as en-US by default and would flip every DE-label-based assertion
-    // to English. `locale` sets navigator.language to de-DE so the
-    // detector resolves to 'de' on every fresh load, including routes
-    // that run before any test-scoped localStorage pin takes effect.
+    // (commit 8301afd) the detector reads navigator.language first, which
+    // Chromium reports as en-US by default and would flip every
+    // DE-label-based assertion to English. `locale` sets navigator.language
+    // to de-DE so the detector resolves to 'de' on every fresh load,
+    // including routes that run before any test-scoped localStorage pin
+    // takes effect. Keep this value in lockstep with
+    // `playwright.config.production.ts`; drift caused a 92-test production
+    // failure when only the dev config was updated in B-02.
     locale: 'de-DE',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
