@@ -2,16 +2,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { triggerDownload } from './download';
 
 describe('triggerDownload', () => {
-  let createObjectURL: ReturnType<typeof vi.fn>;
-  let revokeObjectURL: ReturnType<typeof vi.fn>;
+  let createObjectURL: ReturnType<typeof vi.fn<typeof URL.createObjectURL>>;
+  let revokeObjectURL: ReturnType<typeof vi.fn<typeof URL.revokeObjectURL>>;
   let originalCreate: typeof URL.createObjectURL;
   let originalRevoke: typeof URL.revokeObjectURL;
 
   beforeEach(() => {
     originalCreate = URL.createObjectURL;
     originalRevoke = URL.revokeObjectURL;
-    createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
-    revokeObjectURL = vi.fn();
+    createObjectURL = vi.fn<typeof URL.createObjectURL>().mockReturnValue('blob:mock-url');
+    revokeObjectURL = vi.fn<typeof URL.revokeObjectURL>();
     URL.createObjectURL = createObjectURL;
     URL.revokeObjectURL = revokeObjectURL;
     // Default: swallow the click so jsdom does not try to navigate.

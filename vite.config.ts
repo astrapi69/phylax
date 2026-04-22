@@ -95,6 +95,24 @@ export default defineConfig(({ mode }) => {
         './src/test/setup.ts',
       ],
       include: ['src/**/*.test.{ts,tsx}'],
+      // Vitest 4 expanded the default `toFake` list to include
+      // `queueMicrotask`, `requestAnimationFrame`, and friends. React 18's
+      // scheduler relies on `queueMicrotask` to flush effects after
+      // `renderHook`; if the microtask queue is mocked, effects never run
+      // and tests hang under fake timers. Restrict `toFake` to the
+      // Vitest-3 default set of timer primitives to keep existing
+      // `vi.useFakeTimers()` callsites working without per-test overrides.
+      fakeTimers: {
+        toFake: [
+          'setTimeout',
+          'clearTimeout',
+          'setInterval',
+          'clearInterval',
+          'setImmediate',
+          'clearImmediate',
+          'Date',
+        ],
+      },
       coverage: {
         provider: 'v8',
         reporter: ['text', 'text-summary', 'lcov'],
