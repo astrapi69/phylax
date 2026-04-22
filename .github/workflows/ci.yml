@@ -65,7 +65,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: make test-e2e
+      # Inline the Makefile target body (= `npm run test:e2e`). The
+      # Playwright container image does not ship `make`. See
+      # .claude/rules/ai-workflow.md "CI-in-container exception".
+      - run: npm run test:e2e
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
@@ -128,7 +131,10 @@ jobs:
         with:
           name: production-build
           path: dist/
-      - run: make test-e2e-production
+      # Inline the Makefile target body
+      # (= `npx playwright test --config playwright.config.production.ts`).
+      # See .claude/rules/ai-workflow.md "CI-in-container exception".
+      - run: npx playwright test --config playwright.config.production.ts
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
