@@ -126,6 +126,41 @@ phylax/
 
 ## Sprache
 
-- Code, Kommentare, Commit-Messages: Englisch
-- Dokumentation in `docs/`: Deutsch
-- UI-Strings: via i18next, initial DE und EN
+Die Projekt-Dokumentation hat zwei primäre Leserschaften mit unterschiedlichen Sprachen. Die Regel folgt der primären Audience jedes Artefakts, nicht seinem Dateityp.
+
+**Englisch:**
+
+- Source-Code, Typen, Variablennamen, Dateinamen, Imports
+- Code-Kommentare und TODOs
+- Commit-Messages, Branch-Namen, Tags, PR-Titel
+- ADRs (`docs/decisions/ADR-*.md`)
+- CI-/Workflow-Dokumentation (`docs/ci-gates.md`, Kommentare in `.github/workflows/*.yml`)
+- Contributor-Dokumentation (`docs/i18n-contributing.md`)
+- i18n-Glossar-Schlüssel und -Struktur (`docs/i18n-glossary.md`, bilingual wo nötig)
+- Claude-Code-Prompts (Default; Ausnahme: Translation-Review-Tasks, die explizit eine Ziel-Locale betreffen, dürfen in der Zielsprache sein)
+
+**Deutsch:**
+
+- `CLAUDE.md` (primärer Leser: der Entwickler)
+- `docs/CONCEPT.md` (Domänenkonzept; Phylax adressiert primär den DE-Markt wegen ePA/gematik)
+- `docs/backup-format.md` (user-facing Dokumentation)
+- `docs/ROADMAP.md` (interne Planung, Entwickler-Perspektive)
+
+**Locale-Strings** (user-facing Text in `src/locales/<lang>/*.json`): in der jeweiligen Zielsprache, unter Beachtung der Umlaut-Regel unten.
+
+### Umlaut-Regel (DE)
+
+Deutsche Strings in Locales und deutschen Docs verwenden die Unicode-Zeichen `ä`, `ö`, `ü`, `ß`, `Ä`, `Ö`, `Ü`. ASCII-Transliteration (`ae`, `oe`, `ue`, `ss`) ist nur zulässig, wenn sie orthografisch korrekt ist (neue Rechtschreibung wie `dass`, Eigennamen). Automatische Transliteration bei der Extraktion von Strings in Locale-Dateien oder Docs ist nicht erlaubt.
+
+## Gate-Verification bei Cross-Cutting Changes
+
+Änderungen, die shared Infrastructure berühren (i18n-Locales, shared Types, Cross-Component-Renames, Dependency-Upgrades, Build-Config), müssen alle deklarierten Test-Suites grün haben, bevor ein Gate als abgeschlossen gilt:
+
+- `make test` (Unit)
+- `make test-e2e` (Dev-Playwright)
+- `make test-e2e-production` (Production-Playwright)
+- `make typecheck`
+- `make lint`
+- `make build`
+
+Single-Feature-Änderungen mit begrenztem Blast-Radius dürfen einzelne Suites auslassen, wenn dies explizit begründet wird. Cross-Cutting-Änderungen dürfen das nicht. Lokaler Pass ist notwendig, aber nicht hinreichend; der CI-Run auf dem finalen Commit muss ebenfalls grün sein, bevor der Task geschlossen wird.
