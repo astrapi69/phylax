@@ -14,7 +14,7 @@ describe('promptFragments', () => {
     it('identifies the role as Strukturierungsassistent and denies medical authority', () => {
       expect(ROLE_DEFINITION).toMatch(/Strukturierungsassistent/);
       expect(ROLE_DEFINITION).toMatch(/kein Arzt/);
-      expect(ROLE_DEFINITION).toMatch(/keine medizinischen Ratschlaege/);
+      expect(ROLE_DEFINITION).toMatch(/keine medizinischen Ratschläge/);
     });
   });
 
@@ -49,15 +49,15 @@ describe('promptFragments', () => {
       expect(block).toMatch(/Diagnosen stellen oder vorschlagen/i);
       expect(block).toMatch(/Behandlungen.*empfehlen|Medikamente.*empfehlen/i);
       expect(block).toMatch(/klinische Bedeutung/i);
-      expect(block).toMatch(/Ernaehrungsplaene|Diaeten|Trainingsplaene/i);
+      expect(block).toMatch(/Ernährungspläne|Diäten|Trainingspläne/i);
       expect(block).toMatch(/widerspr/i);
       expect(block).toMatch(/Notfallberatung/i);
-      expect(block).toMatch(/Medikamente.*(absetzen|aendern)/i);
+      expect(block).toMatch(/Medikamente.*(absetzen|ändern)/i);
     });
 
     it('permits suggesting a doctor visit without saying why', () => {
       const allowedBlock = BOUNDARIES.split('Du DARFST:')[1] ?? '';
-      expect(allowedBlock).toMatch(/Arztbesuch sinnvoll sein koennte/i);
+      expect(allowedBlock).toMatch(/Arztbesuch sinnvoll sein könnte/i);
       expect(allowedBlock).toMatch(/ohne zu sagen warum/i);
     });
   });
@@ -65,8 +65,8 @@ describe('promptFragments', () => {
   describe('UNCERTAINTY_MARKING', () => {
     it('contains all three uncertainty markers', () => {
       expect(UNCERTAINTY_MARKING).toContain('Nicht sicher, ob dies unter');
-      expect(UNCERTAINTY_MARKING).toContain('Zu klaeren:');
-      expect(UNCERTAINTY_MARKING).toContain('Hinweis: Diese Information scheint unvollstaendig.');
+      expect(UNCERTAINTY_MARKING).toContain('Zu klären:');
+      expect(UNCERTAINTY_MARKING).toContain('Hinweis: Diese Information scheint unvollständig.');
     });
 
     it('instructs the model not to fabricate', () => {
@@ -86,8 +86,8 @@ describe('promptFragments', () => {
     });
 
     it('documents the supplement table categories', () => {
-      expect(PROFILE_OUTPUT_FORMAT).toContain('taeglich');
-      expect(PROFILE_OUTPUT_FORMAT).toContain('regelmaessig');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('täglich');
+      expect(PROFILE_OUTPUT_FORMAT).toContain('regelmäßig');
       expect(PROFILE_OUTPUT_FORMAT).toContain('bei Bedarf');
       expect(PROFILE_OUTPUT_FORMAT).toContain('pausiert');
     });
@@ -129,12 +129,12 @@ describe('promptFragments', () => {
 
     it('uses the subject name in the clarifying question when provided', () => {
       const text = proxyExtensionFragment('Anna Mueller', 'Mutter');
-      expect(text).toMatch(/hat\s+Mutter\s+dir das erzaehlt/);
+      expect(text).toMatch(/hat\s+Mutter\s+dir das erzählt/);
     });
 
     it('falls back to "die betroffene Person" when subject name is blank', () => {
       const text = proxyExtensionFragment('Anna Mueller', '   ');
-      expect(text).toMatch(/hat\s+die betroffene Person\s+dir das erzaehlt/);
+      expect(text).toMatch(/hat\s+die betroffene Person\s+dir das erzählt/);
     });
 
     it('falls back to "(nicht angegeben)" when caregiver is blank', () => {
@@ -152,7 +152,7 @@ describe('promptFragments', () => {
     it('includes a sensitivity reminder', () => {
       const text = proxyExtensionFragment('Anna', 'Mutter');
       expect(text).toMatch(/sensibel/i);
-      expect(text).toMatch(/eingeschraenkt[\s\S]*Selbstauskunft/i);
+      expect(text).toMatch(/eingeschränkt[\s\S]*Selbstauskunft/i);
     });
   });
 });

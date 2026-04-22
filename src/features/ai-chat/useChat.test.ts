@@ -513,7 +513,7 @@ describe('useChat guided session (AI-06)', () => {
       await result.current.sendMessage('Ich habe Schulterschmerzen.');
     });
 
-    expect(lastStreamCall?.system).toMatch(/gefuehrte Sitzung/i);
+    expect(lastStreamCall?.system).toMatch(/geführte Sitzung/i);
     expect(lastStreamCall?.system).toMatch(/Offene Punkte - Fragen/);
   });
 
@@ -526,7 +526,7 @@ describe('useChat guided session (AI-06)', () => {
       await result.current.sendMessage('Ich habe Schulterschmerzen.');
     });
 
-    expect(lastStreamCall?.system).not.toMatch(/gefuehrte Sitzung/i);
+    expect(lastStreamCall?.system).not.toMatch(/geführte Sitzung/i);
   });
 
   it('markGuidedSessionCommit with a mixed diff marks all touched sections', async () => {

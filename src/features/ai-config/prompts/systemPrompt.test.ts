@@ -91,14 +91,14 @@ describe('generateSystemPrompt', () => {
     it('forbids framing diet or training plans as medical advice', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
       const forbidden = prompt.split('Du DARFST:')[0] ?? '';
-      expect(forbidden).toMatch(/Ernaehrungsplaene, Diaeten oder Trainingsplaene/);
+      expect(forbidden).toMatch(/Ernährungspläne, Diäten oder Trainingspläne/);
     });
 
     it('forbids contradicting the doctor and advising medication changes', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
       const forbidden = prompt.split('Du DARFST:')[0] ?? '';
       expect(forbidden).toMatch(/Dem Arzt des Nutzers widersprechen/);
-      expect(forbidden).toMatch(/verschriebene Medikamente abzusetzen oder zu aendern/);
+      expect(forbidden).toMatch(/verschriebene Medikamente abzusetzen oder zu ändern/);
     });
 
     it('forbids emergency medical advice', () => {
@@ -110,7 +110,7 @@ describe('generateSystemPrompt', () => {
     it('permits suggesting a doctor visit without justification', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
       const allowed = prompt.split('Du DARFST:')[1] ?? '';
-      expect(allowed).toMatch(/Arztbesuch sinnvoll sein koennte/);
+      expect(allowed).toMatch(/Arztbesuch sinnvoll sein könnte/);
       expect(allowed).toMatch(/ohne zu sagen warum/);
     });
   });
@@ -118,7 +118,7 @@ describe('generateSystemPrompt', () => {
   describe('output format', () => {
     it('includes the Phylax profile-output format contract in every prompt', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
-      expect(prompt).toMatch(/Format fuer Profil-Aenderungen/);
+      expect(prompt).toMatch(/Format für Profil-Änderungen/);
       expect(prompt).toContain('### [Thema]');
       expect(prompt).toContain('## Supplemente');
       expect(prompt).toContain('## Offene Punkte');
@@ -129,7 +129,7 @@ describe('generateSystemPrompt', () => {
     it('instructs the model to flag uncertainty and not fabricate', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
       expect(prompt).toContain('Nicht sicher, ob dies unter');
-      expect(prompt).toContain('Zu klaeren:');
+      expect(prompt).toContain('Zu klären:');
       expect(prompt).toMatch(/Erfinde keine Informationen/);
     });
   });
@@ -137,15 +137,15 @@ describe('generateSystemPrompt', () => {
   describe('proxy extension', () => {
     it('self profiles do NOT include the proxy extension', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
-      expect(prompt).not.toMatch(/stellvertretend gefuehrt/);
+      expect(prompt).not.toMatch(/stellvertretend geführt/);
       expect(prompt).not.toMatch(/Betreuer\/in/);
     });
 
     it('proxy profiles include the extension with managedBy and subject name', () => {
       const prompt = generateSystemPrompt({ profile: proxyProfile(), observations: [] });
-      expect(prompt).toMatch(/stellvertretend gefuehrt/);
+      expect(prompt).toMatch(/stellvertretend geführt/);
       expect(prompt).toContain('Betreuer/in: Anna Mueller');
-      expect(prompt).toMatch(/hat\s+Mutter\s+dir das erzaehlt/);
+      expect(prompt).toMatch(/hat\s+Mutter\s+dir das erzählt/);
     });
 
     it('proxy profiles include the beobachtet vs berichtet distinction', () => {
@@ -185,7 +185,7 @@ describe('generateSystemPrompt', () => {
   describe('guided-session framing', () => {
     it('omits the guided framing by default', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
-      expect(prompt).not.toMatch(/gefuehrte Sitzung/i);
+      expect(prompt).not.toMatch(/geführte Sitzung/i);
     });
 
     it('appends the guided framing when guided is true', () => {
@@ -194,8 +194,8 @@ describe('generateSystemPrompt', () => {
         observations: [],
         guided: true,
       });
-      expect(prompt).toMatch(/gefuehrte Sitzung/i);
-      expect(prompt).toMatch(/Basisdaten \(werden ueber das Profil-Formular erfasst\)/);
+      expect(prompt).toMatch(/geführte Sitzung/i);
+      expect(prompt).toMatch(/Basisdaten \(werden über das Profil-Formular erfasst\)/);
     });
 
     it('places the guided framing after the output-format contract', () => {
@@ -204,8 +204,8 @@ describe('generateSystemPrompt', () => {
         observations: [],
         guided: true,
       });
-      const outputIdx = prompt.indexOf('Format fuer Profil-Aenderungen');
-      const guidedIdx = prompt.indexOf('gefuehrte Sitzung');
+      const outputIdx = prompt.indexOf('Format für Profil-Änderungen');
+      const guidedIdx = prompt.indexOf('geführte Sitzung');
       expect(outputIdx).toBeGreaterThan(-1);
       expect(guidedIdx).toBeGreaterThan(outputIdx);
     });
