@@ -80,8 +80,12 @@ test.describe('Import flow', () => {
     await expect(page.getByRole('heading', { name: /Import erfolgreich/i })).toBeVisible({
       timeout: 15000,
     });
-    // Summary shows observation count from the real fixture
-    await expect(page.getByText(/18 Beobachtungen/)).toBeVisible();
+    // Summary shows observation count from the real fixture. Only sections
+    // with a recognized Beobachtung / Muster / Selbstregulation triad become
+    // Observations; narrative-bullet or table-only sections under
+    // Belastungsreaktionen and Gewichtsmanagement surface as warning-level
+    // notices instead of ghost entities (IM-06).
+    await expect(page.getByText(/12 Beobachtungen/)).toBeVisible();
 
     // Navigating home lands on /profile showing the imported profile's name.
     await page.getByRole('button', { name: 'Zur Uebersicht' }).click();
