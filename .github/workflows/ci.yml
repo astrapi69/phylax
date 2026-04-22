@@ -16,8 +16,8 @@ jobs:
     name: Lint & Typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -32,14 +32,14 @@ jobs:
       matrix:
         node-version: [24]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
       - run: make test-coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.node-version == 24
         with:
           name: coverage-report
@@ -50,59 +50,28 @@ jobs:
     name: E2E (Dev)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # TD-10 (b+c): Playwright's official container image ships with
+    # browsers and all system deps pre-baked. Running the job inside
+    # the container eliminates the apt-install flake class that TD-10
+    # (a)+(a2) worked around with retries. Pin the tag to the
+    # @playwright/test version installed in package.json; mismatches
+    # cause subtle driver-vs-browser incompatibilities.
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Harden apt against Ubuntu mirror flakes
-        # TD-10 (a): cb6d691 CI flaked twice on azure.archive.ubuntu.com
-        # InRelease stalls during `playwright install-deps`. Adding apt
-        # retries + a short per-fetch timeout lets transient stalls
-        # recover instead of eating the 15-min job timeout (TD-04).
-        run: |
-          sudo tee /etc/apt/apt.conf.d/99-ci-retry >/dev/null <<'APTCONF'
-          Acquire::Retries "3";
-          Acquire::http::Timeout "30";
-          Acquire::https::Timeout "30";
-          APTCONF
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: |
-          # `timeout 240s` kills an attempt that hangs (e.g. apt stuck on a
-          # mirror InRelease fetch) so the retry loop can actually iterate
-          # instead of waiting for the 15-min job timeout.
-          for i in 1 2 3; do
-            timeout 240s npx playwright install --with-deps chromium && exit 0
-            rc=$?
-            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
-            sleep 20
-          done
-          echo "All 3 attempts failed" >&2
-          exit 1
-      - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: |
-          for i in 1 2 3; do
-            timeout 240s npx playwright install-deps chromium && exit 0
-            rc=$?
-            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
-            sleep 20
-          done
-          echo "All 3 attempts failed" >&2
-          exit 1
-      - run: make test-e2e
+      # Inline the Makefile target body (= `npm run test:e2e`). The
+      # Playwright container image does not ship `make`. See
+      # .claude/rules/ai-workflow.md "CI-in-container exception".
+      - run: npm run test:e2e
       - name: Upload Playwright report on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-dev
           path: playwright-report/
@@ -112,8 +81,8 @@ jobs:
     name: Build & Bundle Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -135,7 +104,7 @@ jobs:
           done
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Budgets enforced by size-limit (see .size-limit.json)." >> $GITHUB_STEP_SUMMARY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: production-build
           path: dist/
@@ -146,62 +115,29 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
+    # TD-10 (b+c): see comment on e2e-dev. Same container image; the
+    # production build artifact is downloaded into the container
+    # workspace and exercised against preview.
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Harden apt against Ubuntu mirror flakes
-        # TD-10 (a): mirror the e2e-dev hardening so the asymmetry
-        # does not produce different flake profiles between the two
-        # E2E jobs.
-        run: |
-          sudo tee /etc/apt/apt.conf.d/99-ci-retry >/dev/null <<'APTCONF'
-          Acquire::Retries "3";
-          Acquire::http::Timeout "30";
-          Acquire::https::Timeout "30";
-          APTCONF
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: |
-          # `timeout 240s` kills an attempt that hangs (e.g. apt stuck on a
-          # mirror InRelease fetch) so the retry loop can actually iterate
-          # instead of waiting for the 15-min job timeout.
-          for i in 1 2 3; do
-            timeout 240s npx playwright install --with-deps chromium && exit 0
-            rc=$?
-            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
-            sleep 20
-          done
-          echo "All 3 attempts failed" >&2
-          exit 1
-      - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: |
-          for i in 1 2 3; do
-            timeout 240s npx playwright install-deps chromium && exit 0
-            rc=$?
-            echo "Attempt $i failed with exit $rc; retrying in 20s..." >&2
-            sleep 20
-          done
-          echo "All 3 attempts failed" >&2
-          exit 1
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: production-build
           path: dist/
-      - run: make test-e2e-production
+      # Inline the Makefile target body
+      # (= `npx playwright test --config playwright.config.production.ts`).
+      # See .claude/rules/ai-workflow.md "CI-in-container exception".
+      - run: npx playwright test --config playwright.config.production.ts
       - name: Upload Playwright report on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-production
           path: playwright-report/
