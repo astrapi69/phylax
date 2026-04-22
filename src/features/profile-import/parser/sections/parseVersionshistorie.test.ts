@@ -46,6 +46,32 @@ describe('parseVersionshistorie', () => {
     expect(parseVersionshistorie(md)).toEqual([]);
   });
 
+  it('accepts the Unicode "Änderung" column header [TD-09 a]', () => {
+    const md = [
+      '| Version | Datum | Änderung |',
+      '|---------|-------|----------|',
+      '| 1.0 | März 2026 | Erste Änderung |',
+    ].join('\n');
+
+    const result = parseVersionshistorie(md);
+    expect(result).toHaveLength(1);
+    expect(result[0]?.version).toBe('1.0');
+    expect(result[0]?.changeDate).toBe('2026-03-01');
+    expect(result[0]?.changeDescription).toBe('Erste Änderung');
+  });
+
+  it('accepts the lowercase Unicode "änderung" column header [TD-09 a]', () => {
+    const md = [
+      '| version | datum | änderung |',
+      '|---------|-------|----------|',
+      '| 1.0 | März 2026 | Erste Änderung |',
+    ].join('\n');
+
+    const result = parseVersionshistorie(md);
+    expect(result).toHaveLength(1);
+    expect(result[0]?.changeDescription).toBe('Erste Änderung');
+  });
+
   it('defaults to "unknown" version when missing', () => {
     const md = [
       '| Version | Datum | Aenderung |',

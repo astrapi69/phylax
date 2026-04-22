@@ -1,7 +1,11 @@
 const GERMAN_MONTHS: Record<string, string> = {
   januar: '01',
   februar: '02',
+  // TD-09 (a): accept both the ASCII transliteration (`maerz`) and the
+  // Unicode form (`märz`) so real ePA exports and Phylax's own
+  // post-TD-09-c Unicode export both parse.
   maerz: '03',
+  märz: '03',
   april: '04',
   mai: '05',
   juni: '06',
@@ -37,8 +41,13 @@ export function parseGermanDate(text: string): string | null {
     return `${year}-${month}-${day}`;
   }
 
-  // "Month YYYY" format (German month names)
-  const monthYear = /^([A-Za-z\u00e4\u00f6\u00fc]+)\s+(\d{4})$/.exec(trimmed);
+  // "Month YYYY" format (German month names). Character class
+  // accepts both lowercase (äöü) and uppercase (ÄÖÜ) umlauts plus ß
+  // so `März`, `MÄRZ`, and similar tokens all match; the actual
+  // month validation happens via the lowercased lookup below.
+  const monthYear = /^([A-Za-z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)\s+(\d{4})$/.exec(
+    trimmed,
+  );
   if (monthYear) {
     const monthName = (monthYear[1] ?? '').toLowerCase();
     const year = monthYear[2] ?? '';

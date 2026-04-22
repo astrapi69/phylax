@@ -207,6 +207,24 @@ describe('parseProfile', () => {
       const result = parseProfile(md);
       expect(result.profile?.baseData.profileType).toBeUndefined();
     });
+
+    it('routes a Unicode "Ernährung und Gewicht" heading to the gewichtsmanagement section [TD-09 a]', () => {
+      const md = [
+        '## 1. Basisdaten',
+        '- **Alter:** 56',
+        '## 6. Ernährung und Gewicht',
+        '### Ausgangslage',
+        '- **Beobachtung:** Startgewicht 92 kg',
+        '- **Muster:** Moderate Bewegung',
+        '- **Selbstregulation:** Kaloriendefizit',
+      ].join('\n');
+
+      const result = parseProfile(md);
+      // gewichtsmanagement heading is routed to the observations parser,
+      // so the observation under ### Ausgangslage should land in results.
+      expect(result.observations.length).toBeGreaterThan(0);
+      expect(result.observations[0]?.theme).toBe('Ausgangslage');
+    });
   });
 
   describe('integration: real example profile v1.3.1', () => {

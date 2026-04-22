@@ -29,7 +29,12 @@ const SECTION_PATTERNS: Array<{
   { pattern: /blutwerte|laborwerte|blutbild/i, key: 'blutwerte' },
   { pattern: /belastungsreaktionen/i, key: 'belastungsreaktionen' },
   { pattern: /vertr(?:ae|\u00e4)glichkeiten|supplemente|medikamente/i, key: 'supplements' },
-  { pattern: /gewichtsmanagement|ernaehrung.*gewicht|abnehmplan/i, key: 'gewichtsmanagement' },
+  // TD-09 (a): accept both transliterated (`ernaehrung`) and Unicode
+  // (`ernährung`) forms so exports from either era route correctly.
+  {
+    pattern: /gewichtsmanagement|ern(?:ae|ä)hrung.*gewicht|abnehmplan/i,
+    key: 'gewichtsmanagement',
+  },
   { pattern: /warnsignale/i, key: 'warnsignale' },
   { pattern: /selbstregulationsverhalten/i, key: 'selbstregulation_summary' },
   { pattern: /externe\s+referenzen/i, key: 'externe_referenzen' },

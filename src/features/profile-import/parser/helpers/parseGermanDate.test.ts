@@ -30,6 +30,12 @@ describe('parseGermanDate', () => {
     expect(parseGermanDate('MAERZ 2026')).toBe('2026-03-01');
   });
 
+  it('accepts the Unicode `März` form alongside the transliteration [TD-09 a]', () => {
+    expect(parseGermanDate('März 2026')).toBe('2026-03-01');
+    expect(parseGermanDate('märz 2026')).toBe('2026-03-01');
+    expect(parseGermanDate('MÄRZ 2026')).toBe('2026-03-01');
+  });
+
   it('returns null for two-digit year', () => {
     expect(parseGermanDate('28.08.69')).toBeNull();
   });
