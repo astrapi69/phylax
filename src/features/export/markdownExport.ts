@@ -57,7 +57,7 @@ export function exportProfileAsMarkdown(
   );
 
   // Section order + numbering follow the canonical Lebende-Gesundheit
-  // fixture: 1 Basisdaten, 2 Vorgeschichte, 3 Blutwerte, 5 Vertraeglichkeiten,
+  // fixture: 1 Basisdaten, 2 Vorgeschichte, 3 Blutwerte, 5 Verträglichkeiten,
   // 7 Warnsignale, 9 Externe Referenzen, 10 Verlaufsnotizen, 11 Offene Punkte.
   // Sections 4 (Belastungsreaktionen), 6 (Gewichtsmanagement), 8
   // (Selbstregulationsverhalten) exist in the fixture but are out of
@@ -99,7 +99,7 @@ export function exportProfileAsMarkdown(
       `**Letzte Aktualisierung:** ${exportedAt}`,
     ];
     if (lastUpdateReason) {
-      lines.push(`**Aenderungsgrund:** ${lastUpdateReason}`);
+      lines.push(`**Änderungsgrund:** ${lastUpdateReason}`);
     }
     return lines.join('\n');
   }
@@ -109,7 +109,7 @@ function buildBasisdaten(base: Profile['baseData']): string | null {
   const lines: string[] = [];
   if (base.birthDate) lines.push(`- **Geburtsdatum:** ${base.birthDate}`);
   if (typeof base.age === 'number') lines.push(`- **Alter:** ${base.age}`);
-  if (typeof base.heightCm === 'number') lines.push(`- **Groesse:** ${base.heightCm} cm`);
+  if (typeof base.heightCm === 'number') lines.push(`- **Größe:** ${base.heightCm} cm`);
   if (typeof base.weightKg === 'number') lines.push(`- **Gewicht:** ${base.weightKg} kg`);
   if (typeof base.targetWeightKg === 'number') {
     lines.push(`- **Zielgewicht:** ${base.targetWeightKg} kg`);
@@ -121,7 +121,7 @@ function buildBasisdaten(base: Profile['baseData']): string | null {
     lines.push(`- **Aktuelle Medikation:** ${base.currentMedications.join(', ')}`);
   }
   if (base.relevantLimitations.length > 0) {
-    lines.push(`- **Relevante Einschraenkungen:** ${base.relevantLimitations.join(', ')}`);
+    lines.push(`- **Relevante Einschränkungen:** ${base.relevantLimitations.join(', ')}`);
   }
   if (base.primaryDoctor?.name) {
     const d = base.primaryDoctor;
@@ -200,16 +200,16 @@ function buildBlutwerte(reports: readonly LabReport[], values: readonly LabValue
 }
 
 const SUPPLEMENT_CATEGORY_LABEL: Record<SupplementCategory, string> = {
-  daily: 'taeglich',
-  regular: 'regelmaessig',
+  daily: 'täglich',
+  regular: 'regelmäßig',
   'on-demand': 'bei Bedarf',
   paused: 'pausiert',
 };
 
 function buildSupplemente(supplements: readonly Supplement[]): string | null {
   if (supplements.length === 0) return null;
-  const lines: string[] = ['## 5. Vertraeglichkeiten', '', '### Supplemente / Medikamente', ''];
-  lines.push('| Kategorie | Praeparat |');
+  const lines: string[] = ['## 5. Verträglichkeiten', '', '### Supplemente / Medikamente', ''];
+  lines.push('| Kategorie | Präparat |');
   lines.push('| --- | --- |');
   const sorted = [...supplements].sort((a, b) => a.name.localeCompare(b.name, 'de'));
   for (const s of sorted) {
@@ -277,7 +277,7 @@ function buildFooter(version: string, lastUpdateReason: string | undefined): str
     `**Profil-Version:** ${version}`,
   ];
   if (lastUpdateReason) {
-    lines.push(`**Letzter Aenderungsgrund:** ${lastUpdateReason}`);
+    lines.push(`**Letzter Änderungsgrund:** ${lastUpdateReason}`);
   }
   return lines.join('\n');
 }

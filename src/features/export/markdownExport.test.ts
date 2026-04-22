@@ -62,7 +62,7 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).toContain('## 1. Basisdaten');
     expect(md).not.toContain('## 2. Relevante Vorgeschichte');
     expect(md).not.toContain('## 3. Blutwerte');
-    expect(md).not.toContain('## 5. Vertraeglichkeiten');
+    expect(md).not.toContain('## 5. Verträglichkeiten');
     expect(md).not.toContain('## 11. Offene Punkte');
     expect(md).not.toContain('## 10. Verlaufsnotizen');
   });
@@ -161,9 +161,9 @@ describe('exportProfileAsMarkdown', () => {
       },
     ];
     const md = exportProfileAsMarkdown(profile, [], [], [], supplements, [], []);
-    expect(md).toContain('## 5. Vertraeglichkeiten');
+    expect(md).toContain('## 5. Verträglichkeiten');
     expect(md).toContain('### Supplemente / Medikamente');
-    expect(md).toContain('| taeglich | Magnesium 400 |');
+    expect(md).toContain('| täglich | Magnesium 400 |');
     expect(md).toContain('| bei Bedarf | Ibuprofen 400 |');
   });
 
