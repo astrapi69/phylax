@@ -138,7 +138,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             onClick={() => void handleMarkdownExport()}
             disabled={working}
             data-testid="export-markdown-button"
-            className="rounded border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
           >
             <span className="font-semibold">{t('dialog.markdown.title')}</span>
             <br />
@@ -151,7 +151,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             <p
               role="alert"
               data-testid="export-error"
-              className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+              className="rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
             >
               {status.message}
             </p>
@@ -175,7 +175,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             type="button"
             onClick={onClose}
             disabled={working}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             {t('common:action.cancel')}
           </button>

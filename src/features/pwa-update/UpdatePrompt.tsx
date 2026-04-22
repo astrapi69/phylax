@@ -18,7 +18,7 @@ export function UpdatePrompt({ needRefresh, onUpdate, onDismiss }: UpdatePromptP
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-lg bg-gray-800 p-4 shadow-lg"
+      className="fixed right-4 bottom-4 left-4 z-50 mx-auto max-w-md rounded-lg bg-gray-800 p-4 shadow-lg"
       role="alert"
     >
       <p className="mb-3 text-sm text-white">{t('available')}</p>
@@ -26,14 +26,14 @@ export function UpdatePrompt({ needRefresh, onUpdate, onDismiss }: UpdatePromptP
         <button
           type="button"
           onClick={onUpdate}
-          className="rounded bg-blue-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-600"
+          className="rounded-sm bg-blue-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-600"
         >
           {t('update')}
         </button>
         <button
           type="button"
           onClick={onDismiss}
-          className="rounded bg-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-500"
+          className="rounded-sm bg-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-500"
         >
           {t('later')}
         </button>

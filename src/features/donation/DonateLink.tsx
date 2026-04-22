@@ -37,7 +37,7 @@ export function DonateLink({
   const base = 'inline-flex items-center gap-1 transition-colors';
   const style =
     variant === 'primary'
-      ? 'rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600'
+      ? 'rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600'
       : 'text-sm font-medium text-blue-700 underline underline-offset-2 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-100';
 
   function handleClick(_event: MouseEvent<HTMLAnchorElement>) {

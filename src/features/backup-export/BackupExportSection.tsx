@@ -76,7 +76,7 @@ export function BackupExportSection() {
         <div
           role="status"
           aria-live="polite"
-          className="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900 dark:border-green-700 dark:bg-green-900/30 dark:text-green-100"
+          className="rounded-sm border border-green-300 bg-green-50 p-3 text-sm text-green-900 dark:border-green-700 dark:bg-green-900/30 dark:text-green-100"
         >
           <p className="font-medium">{t('status.downloaded')}</p>
           <p className="mt-1 font-mono text-xs">{state.filename}</p>
@@ -86,7 +86,7 @@ export function BackupExportSection() {
               setPassword('');
               reset();
             }}
-            className="mt-3 rounded border border-green-500 px-3 py-1.5 text-sm font-medium text-green-900 transition-colors hover:bg-green-100 dark:border-green-400 dark:text-green-100 dark:hover:bg-green-900/50"
+            className="mt-3 rounded-sm border border-green-500 px-3 py-1.5 text-sm font-medium text-green-900 transition-colors hover:bg-green-100 dark:border-green-400 dark:text-green-100 dark:hover:bg-green-900/50"
           >
             {t('status.new-backup')}
           </button>
@@ -107,7 +107,7 @@ export function BackupExportSection() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={working}
               autoComplete="current-password"
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
             />
             <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
               {t('form.password-help', { min: MIN_PASSWORD_LENGTH })}
@@ -117,7 +117,7 @@ export function BackupExportSection() {
           <button
             type="submit"
             disabled={!submitEnabled}
-            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+            className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
           >
             {working ? t('form.submit-working') : t('form.submit-label')}
           </button>
@@ -135,7 +135,7 @@ export function BackupExportSection() {
           {state.kind === 'error' && (
             <p
               role="alert"
-              className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100"
+              className="rounded-sm border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-100"
             >
               {renderError(state.error, t)}
             </p>

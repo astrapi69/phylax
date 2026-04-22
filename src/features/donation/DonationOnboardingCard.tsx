@@ -37,7 +37,7 @@ export function DonationOnboardingCard({ onDismiss }: DonationOnboardingCardProp
     <section
       aria-labelledby="donation-onboarding-heading"
       data-testid="donation-onboarding-card"
-      className="rounded border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/60"
+      className="rounded-sm border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/60"
     >
       <h2
         id="donation-onboarding-heading"
@@ -58,7 +58,7 @@ export function DonationOnboardingCard({ onDismiss }: DonationOnboardingCardProp
         <button
           type="button"
           onClick={markSeenAndDismiss}
-          className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+          className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
         >
           {t('onboarding-card.dismiss-button')}
         </button>

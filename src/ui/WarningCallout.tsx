@@ -33,7 +33,7 @@ export function WarningCallout({
   return (
     <div
       role={role}
-      className={`rounded border p-3 text-sm ${SEVERITY_CLASSES[severity]}${className ? ` ${className}` : ''}`}
+      className={`rounded-sm border p-3 text-sm ${SEVERITY_CLASSES[severity]}${className ? ` ${className}` : ''}`}
     >
       {title && <p className="mb-1 font-semibold">{title}</p>}
       {children}

@@ -21,7 +21,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
   if (source === 'user') return null;
   return (
     <span
-      className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium ${STYLES[source]}`}
+      className={`inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium ${STYLES[source]}`}
     >
       {t(`source.${source}`)}
     </span>

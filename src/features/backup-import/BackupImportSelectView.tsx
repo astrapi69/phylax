@@ -91,7 +91,7 @@ export function BackupImportSelectView() {
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="mb-2 text-2xl font-bold text-gray-900 focus:outline-none dark:text-gray-100"
+          className="mb-2 text-2xl font-bold text-gray-900 focus:outline-hidden dark:text-gray-100"
         >
           {t('select.heading')}
         </h1>
@@ -139,7 +139,7 @@ export function BackupImportSelectView() {
         {metadata && parsed && (
           <dl
             data-testid="backup-metadata"
-            className="mb-4 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded border border-gray-200 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="mb-4 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800"
           >
             <dt className="font-medium text-gray-700 dark:text-gray-300">
               {t('select.metadata.filename')}
@@ -171,7 +171,7 @@ export function BackupImportSelectView() {
           type="button"
           onClick={handleContinue}
           disabled={!readyToContinue}
-          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+          className="w-full rounded-sm bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
         >
           {t('select.continue')}
         </button>

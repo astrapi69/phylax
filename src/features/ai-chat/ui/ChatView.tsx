@@ -77,7 +77,7 @@ export function ChatView() {
                   type="button"
                   onClick={() => void shareProfile()}
                   disabled={isStreaming || isSharingProfile}
-                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   {isSharingProfile ? t('header.share-profile-loading') : t('header.share-profile')}
                 </button>
@@ -85,7 +85,7 @@ export function ChatView() {
                   type="button"
                   onClick={startGuidedSession}
                   disabled={isStreaming || isSharingProfile}
-                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   {t('header.start-guided')}
                 </button>
@@ -94,7 +94,7 @@ export function ChatView() {
                     type="button"
                     onClick={clearChat}
                     disabled={isStreaming || isSharingProfile}
-                    className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                    className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                   >
                     {t('header.clear')}
                   </button>
@@ -106,7 +106,7 @@ export function ChatView() {
                 type="button"
                 onClick={() => setConfirmEnd(true)}
                 disabled={isStreaming || isSharingProfile}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
                 {t('header.end-session')}
               </button>
@@ -123,14 +123,14 @@ export function ChatView() {
                     endGuidedSession();
                     setConfirmEnd(false);
                   }}
-                  className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="rounded-sm border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   {t('header.confirm-end-yes')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmEnd(false)}
-                  className="rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="rounded-sm border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   {t('header.confirm-end-no')}
                 </button>
@@ -147,7 +147,7 @@ export function ChatView() {
                 type="button"
                 onClick={() => void shareProfile()}
                 disabled={isStreaming || isSharingProfile}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
               >
                 {isSharingProfile ? t('header.share-profile-loading') : t('header.share-profile')}
               </button>
@@ -156,7 +156,7 @@ export function ChatView() {
                   type="button"
                   onClick={clearChat}
                   disabled={isStreaming || isSharingProfile}
-                  className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   {t('header.clear')}
                 </button>
@@ -190,7 +190,7 @@ export function ChatView() {
           <button
             type="button"
             onClick={cancelStream}
-            className="rounded border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="rounded-sm border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             {t('common:action.cancel')}
           </button>
@@ -224,7 +224,7 @@ function PrivacyInfoButton({ onOpen }: { onOpen: () => void }) {
       onClick={onOpen}
       aria-label={t('header.privacy-info-label')}
       data-testid="chat-privacy-info-button"
-      className="inline-flex h-9 w-9 items-center justify-center rounded border border-gray-300 text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-gray-300 text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
     >
       <svg
         aria-hidden="true"
@@ -253,7 +253,7 @@ function WelcomeMessage() {
         {t('welcome.title')}
       </p>
       <p className="mb-4">{t('welcome.intro')}</p>
-      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-600 dark:text-gray-400">
+      <p className="mb-2 text-xs font-medium tracking-wide text-gray-600 uppercase dark:text-gray-400">
         {t('welcome.examples-title')}
       </p>
       <ul className="space-y-1 text-left">

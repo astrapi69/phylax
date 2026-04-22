@@ -95,7 +95,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
                 value={hook.password}
                 onChange={(e) => hook.setPassword(e.target.value)}
                 disabled={isLocked}
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
                 autoComplete="current-password"
                 aria-describedby={hook.error ? 'unlock-error' : undefined}
               />
@@ -122,7 +122,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
             )}
 
             {hook.failedAttempts >= 3 && !isLocked && (
-              <p className="mb-4 rounded border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-200">
+              <p className="mb-4 rounded-sm border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800 dark:border-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-200">
                 {t('hint.after-failures')}
               </p>
             )}
@@ -130,7 +130,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
             <button
               type="submit"
               disabled={!hook.submitEnabled}
-              className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+              className="w-full rounded-sm bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
             >
               {t('submit.label')}
             </button>

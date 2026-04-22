@@ -86,7 +86,7 @@ export function ProfileList({
                   <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
                     {getDisplayName(profile)}
                   </h3>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  <p className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
                     {profileTypeBadge(t, profile)}
                   </p>
                   {counts !== undefined && (
@@ -98,7 +98,7 @@ export function ProfileList({
                 <button
                   type="button"
                   onClick={() => onSelect(profile.id)}
-                  className="self-start rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  className="self-start rounded-sm bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
                   {resolvedSelectLabel}
                 </button>
@@ -113,7 +113,7 @@ export function ProfileList({
           <button
             type="button"
             onClick={onCreateNew}
-            className="w-full rounded border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-800 md:w-auto"
+            className="w-full rounded-sm border border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 md:w-auto dark:border-gray-600 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-800"
           >
             {t('action.create-new')}
           </button>

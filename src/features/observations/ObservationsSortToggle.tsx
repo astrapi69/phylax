@@ -29,7 +29,7 @@ export function ObservationsSortToggle({ mode, onChange }: ObservationsSortToggl
         value={mode}
         onChange={handleChange}
         aria-label={t('sort.label')}
-        className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+        className="rounded-sm border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
       >
         <option value="recent">{t('sort.option.recent')}</option>
         <option value="alphabetical">{t('sort.option.alphabetical')}</option>

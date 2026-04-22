@@ -18,8 +18,8 @@ export function OpenPointItem({ point }: OpenPointItemProps) {
   const { t } = useTranslation('open-points');
   const { id, text, resolved, priority, timeHorizon, details } = point;
   const containerClass = resolved
-    ? 'rounded border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
-    : 'rounded border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
+    ? 'rounded-sm border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
+    : 'rounded-sm border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
   const textId = `open-point-${id}-text`;
 
   return (
@@ -47,7 +47,7 @@ export function OpenPointItem({ point }: OpenPointItemProps) {
             {priority && <Badge>{priority}</Badge>}
             {timeHorizon && <Badge>{timeHorizon}</Badge>}
             {resolved && (
-              <span className="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+              <span className="rounded-sm bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                 {t('item.resolved-badge')}
               </span>
             )}
@@ -65,7 +65,7 @@ export function OpenPointItem({ point }: OpenPointItemProps) {
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+    <span className="rounded-sm bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
       {children}
     </span>
   );

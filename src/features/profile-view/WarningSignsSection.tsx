@@ -18,7 +18,7 @@ export function WarningSignsSection({ signs }: WarningSignsSectionProps) {
   return (
     <section
       aria-labelledby="warning-signs-heading"
-      className="rounded border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-950/40"
+      className="rounded-sm border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-950/40"
     >
       <h2
         id="warning-signs-heading"
