@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DocumentUploadButton } from './DocumentUploadButton';
 import { DocumentList } from './DocumentList';
+import { StorageQuotaIndicator } from './StorageQuotaIndicator';
 
 /**
  * Documents view. D-02 added the upload button; D-04 adds the list
@@ -24,6 +25,7 @@ export function DocumentsPlaceholder() {
       </div>
       <DocumentUploadButton onUploaded={() => setRefreshKey((n) => n + 1)} />
       <DocumentList versionKey={refreshKey} />
+      <StorageQuotaIndicator versionKey={refreshKey} />
     </div>
   );
 }

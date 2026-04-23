@@ -73,5 +73,11 @@
   },
   "attached-documents": {
     "heading": "Angehängte Dokumente"
+  },
+  "quota": {
+    "heading": "Speicherbelegung",
+    "usage": "{{usage}} von {{quota}} belegt ({{percent}} %)",
+    "warning-medium": "Speicher wird voll. Bald ältere Dokumente überprüfen.",
+    "warning-high": "Speicher fast voll. Ältere Dokumente löschen, um Platz zu schaffen."
   }
 }

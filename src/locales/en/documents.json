@@ -73,5 +73,11 @@
   },
   "attached-documents": {
     "heading": "Attached documents"
+  },
+  "quota": {
+    "heading": "Storage usage",
+    "usage": "{{usage}} of {{quota}} used ({{percent}}%)",
+    "warning-medium": "Storage is filling up. Review older documents soon.",
+    "warning-high": "Storage almost full. Delete older documents to free space."
   }
 }
