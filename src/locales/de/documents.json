@@ -79,5 +79,9 @@
     "usage": "{{usage}} von {{quota}} belegt ({{percent}} %)",
     "warning-medium": "Speicher wird voll. Bald ältere Dokumente überprüfen.",
     "warning-high": "Speicher fast voll. Ältere Dokumente löschen, um Platz zu schaffen."
+  },
+  "persistence": {
+    "denied": "Browser hat dauerhaften Speicher nicht gewährt. Daten können unter Speicherdruck vom Browser gelöscht werden. Tipp: App zum Startbildschirm hinzufügen.",
+    "dismiss": "Hinweis schließen"
   }
 }

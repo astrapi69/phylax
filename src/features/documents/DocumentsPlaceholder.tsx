@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { DocumentUploadButton } from './DocumentUploadButton';
 import { DocumentList } from './DocumentList';
 import { StorageQuotaIndicator } from './StorageQuotaIndicator';
+import { PersistentStorageBanner } from './PersistentStorageBanner';
 
 /**
  * Documents view. D-02 added the upload button; D-04 adds the list
@@ -23,6 +24,7 @@ export function DocumentsPlaceholder() {
         <h1 className="mb-1 text-xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
         <p className="text-sm text-gray-600 dark:text-gray-400">{t('intro')}</p>
       </div>
+      <PersistentStorageBanner versionKey={refreshKey} />
       <DocumentUploadButton onUploaded={() => setRefreshKey((n) => n + 1)} />
       <DocumentList versionKey={refreshKey} />
       <StorageQuotaIndicator versionKey={refreshKey} />

@@ -11,6 +11,7 @@ import {
   isAcceptedDocumentType,
   type AcceptedDocumentType,
 } from './mimeTypes';
+import { usePersistentStorage } from './usePersistentStorage';
 
 export { ACCEPTED_DOCUMENT_TYPES, type AcceptedDocumentType };
 
@@ -48,97 +49,107 @@ export interface UseDocumentUploadResult {
  */
 export function useDocumentUpload(): UseDocumentUploadResult {
   const [status, setStatus] = useState<DocumentUploadStatus>({ kind: 'idle' });
+  const { requestPersistence } = usePersistentStorage();
 
   const reset = useCallback(() => {
     setStatus({ kind: 'idle' });
   }, []);
 
-  const upload = useCallback(async (file: File): Promise<void> => {
-    if (!isAcceptedDocumentType(file.type)) {
-      setStatus({
-        kind: 'error',
-        error: { kind: 'unsupported-type', mimeType: file.type },
-      });
-      return;
-    }
-    if (file.size > DOCUMENT_SIZE_LIMIT_BYTES) {
-      setStatus({
-        kind: 'error',
-        error: {
-          kind: 'file-too-large',
-          actualBytes: file.size,
-          limitBytes: DOCUMENT_SIZE_LIMIT_BYTES,
-        },
-      });
-      return;
-    }
-
-    setStatus({ kind: 'uploading', filename: file.name });
-
-    let content: ArrayBuffer;
-    try {
-      content = await file.arrayBuffer();
-    } catch (err) {
-      setStatus({
-        kind: 'error',
-        error: {
-          kind: 'read-failed',
-          detail: err instanceof Error ? err.message : String(err),
-        },
-      });
-      return;
-    }
-
-    let profileId: string;
-    try {
-      const profile = await new ProfileRepository().getCurrentProfile();
-      if (!profile) {
-        setStatus({ kind: 'error', error: { kind: 'no-profile' } });
+  const upload = useCallback(
+    async (file: File): Promise<void> => {
+      if (!isAcceptedDocumentType(file.type)) {
+        setStatus({
+          kind: 'error',
+          error: { kind: 'unsupported-type', mimeType: file.type },
+        });
         return;
       }
-      profileId = profile.id;
-    } catch (err) {
-      setStatus({
-        kind: 'error',
-        error: {
-          kind: 'generic',
-          detail: err instanceof Error ? err.message : String(err),
-        },
-      });
-      return;
-    }
-
-    try {
-      const repo = new DocumentRepository();
-      const document = await repo.create({
-        profileId,
-        filename: file.name,
-        mimeType: file.type,
-        sizeBytes: file.size,
-        content,
-      });
-      setStatus({ kind: 'success', document });
-    } catch (err) {
-      if (err instanceof DocumentSizeLimitError) {
+      if (file.size > DOCUMENT_SIZE_LIMIT_BYTES) {
         setStatus({
           kind: 'error',
           error: {
             kind: 'file-too-large',
-            actualBytes: err.actualBytes,
-            limitBytes: err.limitBytes,
+            actualBytes: file.size,
+            limitBytes: DOCUMENT_SIZE_LIMIT_BYTES,
           },
         });
         return;
       }
-      setStatus({
-        kind: 'error',
-        error: {
-          kind: 'generic',
-          detail: err instanceof Error ? err.message : String(err),
-        },
-      });
-    }
-  }, []);
+
+      setStatus({ kind: 'uploading', filename: file.name });
+
+      let content: ArrayBuffer;
+      try {
+        content = await file.arrayBuffer();
+      } catch (err) {
+        setStatus({
+          kind: 'error',
+          error: {
+            kind: 'read-failed',
+            detail: err instanceof Error ? err.message : String(err),
+          },
+        });
+        return;
+      }
+
+      let profileId: string;
+      try {
+        const profile = await new ProfileRepository().getCurrentProfile();
+        if (!profile) {
+          setStatus({ kind: 'error', error: { kind: 'no-profile' } });
+          return;
+        }
+        profileId = profile.id;
+      } catch (err) {
+        setStatus({
+          kind: 'error',
+          error: {
+            kind: 'generic',
+            detail: err instanceof Error ? err.message : String(err),
+          },
+        });
+        return;
+      }
+
+      try {
+        const repo = new DocumentRepository();
+        const document = await repo.create({
+          profileId,
+          filename: file.name,
+          mimeType: file.type,
+          sizeBytes: file.size,
+          content,
+        });
+        setStatus({ kind: 'success', document });
+        // Fire-and-forget: request persistent-storage permission on
+        // every upload whose persistence is still transient. Internal
+        // session guard in the hook prevents double-calls per page
+        // load; awaiting would block upload-success propagation
+        // because `persist()` can prompt (Firefox) or take a moment.
+        requestPersistence();
+      } catch (err) {
+        if (err instanceof DocumentSizeLimitError) {
+          setStatus({
+            kind: 'error',
+            error: {
+              kind: 'file-too-large',
+              actualBytes: err.actualBytes,
+              limitBytes: err.limitBytes,
+            },
+          });
+          return;
+        }
+        setStatus({
+          kind: 'error',
+          error: {
+            kind: 'generic',
+            detail: err instanceof Error ? err.message : String(err),
+          },
+        });
+      }
+    },
+    [requestPersistence],
+  );
 
   return { status, upload, reset };
 }

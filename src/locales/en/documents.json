@@ -79,5 +79,9 @@
     "usage": "{{usage}} of {{quota}} used ({{percent}}%)",
     "warning-medium": "Storage is filling up. Review older documents soon.",
     "warning-high": "Storage almost full. Delete older documents to free space."
+  },
+  "persistence": {
+    "denied": "Browser did not grant persistent storage. Data may be evicted under storage pressure. Tip: add the app to your home screen.",
+    "dismiss": "Dismiss notice"
   }
 }
