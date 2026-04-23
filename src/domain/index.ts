@@ -6,3 +6,4 @@ export type { Supplement, SupplementCategory } from './supplement/types';
 export type { OpenPoint, OpenPointContext } from './openPoint/types';
 export type { ProfileVersion } from './profileVersion/types';
 export type { TimelineEntry } from './timelineEntry/types';
+export type { Document } from './document/types';

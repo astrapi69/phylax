@@ -47,8 +47,34 @@ export type OpenPointRow = EncryptedRow;
 /** Version history entry. Encrypted payload: version, changeDescription, source. */
 export type ProfileVersionRow = EncryptedRow;
 
-/** Encrypted document (PDF, image). Encrypted payload: file content, name, mimeType, linked observation IDs. */
+/**
+ * Encrypted document METADATA (filename, mimeType, sizeBytes,
+ * description, linked observation / lab-value IDs). The binary content
+ * lives in a separate `document_blobs` row keyed by the same `id`,
+ * split from metadata so list-view reads do not pull the blob into
+ * memory. See `DocumentBlobRow` and `DocumentRepository`.
+ */
 export type DocumentRow = EncryptedRow;
+
+/**
+ * Encrypted document blob (Phase 4, D-01 schema v3).
+ *
+ * One row per `DocumentRow`, keyed by the same `id`. Carries only the
+ * primary key + the encrypted payload; has no profileId index because
+ * cross-profile isolation is enforced at the metadata row and both
+ * rows are always created/deleted atomically in the same transaction.
+ *
+ * Storage wire format for `payload`: 12-byte IV || ciphertext || 16-byte
+ * GCM auth tag, matching the F-07 convention used elsewhere. D-03
+ * implements the encrypt/decrypt pipeline; at D-01 only the table
+ * shell exists.
+ */
+export interface DocumentBlobRow {
+  /** Matches the `id` of the owning DocumentRow. */
+  id: string;
+  /** IV + ciphertext + auth tag (AES-256-GCM). */
+  payload: ArrayBuffer;
+}
 
 /** Lab report (parent of LabValues). Encrypted payload: reportDate, labName, assessments, etc. */
 export type LabReportRow = EncryptedRow;

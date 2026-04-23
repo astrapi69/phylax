@@ -12,6 +12,7 @@ const EXPECTED_TABLES = [
   'open_points',
   'profile_versions',
   'documents',
+  'document_blobs',
   'timeline_entries',
   'meta',
 ];
@@ -137,8 +138,19 @@ describe('PhylaxDb schema', () => {
     db.close();
   });
 
-  it('schema version is 2', () => {
-    expect(db.verno).toBe(2);
+  it('schema version is 3', () => {
+    expect(db.verno).toBe(3);
+  });
+
+  it('v3 document_blobs table accepts put/get by id only', async () => {
+    await db.open();
+    const payload = new ArrayBuffer(64);
+    await db.documentBlobs.put({ id: 'doc-1', payload });
+
+    const blob = await db.documentBlobs.get('doc-1');
+    expect(blob?.id).toBe('doc-1');
+    expect(blob?.payload.byteLength).toBe(64);
+    db.close();
   });
 
   it('v2 tables exist and accept put/get', async () => {
