@@ -1,4 +1,22 @@
 {
   "heading": "Dokumente",
-  "placeholder": "Diese Funktion wird in einer späteren Phase implementiert."
+  "intro": "Lade PDFs oder Bilder verschlüsselt in dein Profil hoch. Maximal 10 MB pro Datei.",
+  "placeholder": "Diese Funktion wird in einer späteren Phase implementiert.",
+  "upload": {
+    "button": {
+      "idle": "Datei hochladen",
+      "uploading": "Wird hochgeladen..."
+    },
+    "success": "\"{{filename}}\" wurde verschlüsselt gespeichert.",
+    "error": {
+      "no-profile": "Kein Profil ausgewählt. Bitte zuerst ein Profil anlegen.",
+      "unsupported-type": "Dateityp \"{{mimeType}}\" wird nicht unterstützt. Erlaubt: PDF, PNG, JPEG, WebP.",
+      "file-too-large": "Datei zu groß ({{sizeMb}} MB). Maximum: {{limitMb}} MB.",
+      "read-failed": "Datei konnte nicht gelesen werden.",
+      "generic": "Upload fehlgeschlagen. Bitte erneut versuchen."
+    }
+  },
+  "list": {
+    "empty": "Noch keine Dokumente vorhanden."
+  }
 }

@@ -1,4 +1,22 @@
 {
   "heading": "Documents",
-  "placeholder": "This feature will be implemented in a later phase."
+  "intro": "Upload PDFs or images into your profile, encrypted at rest. 10 MB maximum per file.",
+  "placeholder": "This feature will be implemented in a later phase.",
+  "upload": {
+    "button": {
+      "idle": "Upload file",
+      "uploading": "Uploading..."
+    },
+    "success": "\"{{filename}}\" stored encrypted.",
+    "error": {
+      "no-profile": "No profile selected. Create a profile first.",
+      "unsupported-type": "File type \"{{mimeType}}\" is not supported. Accepted: PDF, PNG, JPEG, WebP.",
+      "file-too-large": "File too large ({{sizeMb}} MB). Maximum: {{limitMb}} MB.",
+      "read-failed": "File could not be read.",
+      "generic": "Upload failed. Please try again."
+    }
+  },
+  "list": {
+    "empty": "No documents yet."
+  }
 }

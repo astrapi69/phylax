@@ -11,6 +11,36 @@ import { afterEach } from 'vitest';
 // that the detector resolves to 'de' before this import runs.
 import '../i18n/config';
 
+// jsdom (current pinned version) does not implement
+// `Blob.prototype.arrayBuffer` / `File.prototype.arrayBuffer`. The
+// document upload flow (Phase 4 D-02) calls `file.arrayBuffer()` to
+// pass raw bytes into the encryption pipeline; without this shim the
+// upload-hook tests fail with "f.arrayBuffer is not a function".
+// Implementation reads via FileReader, which jsdom does provide.
+if (
+  typeof Blob !== 'undefined' &&
+  typeof (Blob.prototype as Blob & { arrayBuffer?: () => Promise<ArrayBuffer> }).arrayBuffer !==
+    'function'
+) {
+  (Blob.prototype as Blob & { arrayBuffer: () => Promise<ArrayBuffer> }).arrayBuffer = function (
+    this: Blob,
+  ): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (result instanceof ArrayBuffer) {
+          resolve(result);
+        } else {
+          reject(new Error('FileReader did not return ArrayBuffer'));
+        }
+      };
+      reader.onerror = () => reject(reader.error ?? new Error('FileReader failed'));
+      reader.readAsArrayBuffer(this);
+    });
+  };
+}
+
 // jsdom does not implement matchMedia. Install a minimal shim that tests can
 // override per-test when they need to simulate a specific prefers-color-scheme.
 // Default: "light" (not matching the dark media query).

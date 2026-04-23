@@ -8,4 +8,9 @@ export { SupplementRepository } from './supplementRepository';
 export { OpenPointRepository } from './openPointRepository';
 export { ProfileVersionRepository } from './profileVersionRepository';
 export { TimelineEntryRepository } from './timelineEntryRepository';
-export { DocumentRepository } from './documentRepository';
+export {
+  DocumentRepository,
+  DocumentSizeLimitError,
+  DOCUMENT_SIZE_LIMIT_BYTES,
+  type DocumentCreateInput,
+} from './documentRepository';
