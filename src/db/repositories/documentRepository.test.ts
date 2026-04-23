@@ -481,6 +481,39 @@ describe('DocumentRepository (D-01 foundation)', () => {
       expect(byLab.map((d) => d.filename)).toEqual(['a.pdf']);
     });
 
+    it('update with only linkedObservationId set and existing clean succeeds and preserves linkedLabValueId absence', async () => {
+      const created = await repo.create({
+        ...makeMetadata(),
+        content: makeBytes(8),
+      });
+
+      const updated = await repo.update(created.id, { linkedObservationId: 'obs-direct' });
+
+      expect(updated.linkedObservationId).toBe('obs-direct');
+      expect(updated.linkedLabValueId).toBeUndefined();
+    });
+
+    it('update that does not touch link fields skips the link validation path', async () => {
+      // Exercises the outer-if false branch in the override. Patch
+      // only changes `description`; no validation work runs.
+      const created = await repo.create({
+        ...makeMetadata({ description: 'before' }),
+        content: makeBytes(8),
+      });
+
+      const updated = await repo.update(created.id, { description: 'after' });
+
+      expect(updated.description).toBe('after');
+    });
+
+    it('update with a link field on a non-existent id delegates to the base update (which throws)', async () => {
+      // Exercises the `if (existing)` false branch in the override —
+      // validator is skipped, base update raises "not found".
+      await expect(repo.update('does-not-exist', { linkedObservationId: 'obs-x' })).rejects.toThrow(
+        /not found/,
+      );
+    });
+
     it('listByObservation is scoped to the given profile', async () => {
       // Seed docs under a separate profile and confirm they do not leak.
       const otherProfile = await new ProfileRepository().create({
