@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { detectInitialLanguage } from './detector';
@@ -29,30 +29,19 @@ import notFoundDE from '../locales/de/not-found.json';
 import backupImportDE from '../locales/de/backup-import.json';
 import backupExportDE from '../locales/de/backup-export.json';
 
-import commonEN from '../locales/en/common.json';
-import onboardingEN from '../locales/en/onboarding.json';
-import unlockEN from '../locales/en/unlock.json';
-import settingsEN from '../locales/en/settings.json';
-import appShellEN from '../locales/en/app-shell.json';
-import themeEN from '../locales/en/theme.json';
-import pwaUpdateEN from '../locales/en/pwa-update.json';
-import documentsEN from '../locales/en/documents.json';
-import notFoundEN from '../locales/en/not-found.json';
-import backupImportEN from '../locales/en/backup-import.json';
-import observationsEN from '../locales/en/observations.json';
-import labValuesEN from '../locales/en/lab-values.json';
-import supplementsEN from '../locales/en/supplements.json';
-import openPointsEN from '../locales/en/open-points.json';
-import timelineEN from '../locales/en/timeline.json';
-import profileViewEN from '../locales/en/profile-view.json';
-import profileListEN from '../locales/en/profile-list.json';
-import profileCreateEN from '../locales/en/profile-create.json';
-import exportEN from '../locales/en/export.json';
-import aiConfigEN from '../locales/en/ai-config.json';
-import donationEN from '../locales/en/donation.json';
-import importEN from '../locales/en/import.json';
-import aiChatEN from '../locales/en/ai-chat.json';
-import backupExportEN from '../locales/en/backup-export.json';
+/**
+ * Lazy-loaded EN locale resources. `import.meta.glob` (without
+ * `eager: true`) emits one chunk per matching file at build time;
+ * each chunk is fetched on demand via the i18next backend below.
+ *
+ * Result: EN namespaces stay out of the main JS bundle. DE users
+ * (the primary market per CLAUDE.md) never download EN strings.
+ * EN users pay one parallel-fetch round-trip on first paint
+ * (orchestrated by `loadLanguageBundle('en')` in `main.tsx`'s
+ * bootstrap), then the service worker precaches the chunks.
+ */
+type LocaleModule = { default: Record<string, unknown> };
+const enLoaders = import.meta.glob<LocaleModule>('../locales/en/*.json');
 
 /**
  * Namespace identifiers. Keep this list in sync with the JSON imports
@@ -103,10 +92,58 @@ export const LANGUAGE_SWITCHER_ENABLED = true;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 /**
+ * i18next backend that resolves missing namespace bundles via the
+ * lazy-loaded `enLoaders` glob. DE is preloaded into `init.resources`
+ * below, so the backend is only consulted for EN (and any future
+ * non-primary language).
+ *
+ * Inline rather than via `i18next-resources-to-backend` to avoid a
+ * dependency for ~20 lines of glue.
+ */
+const lazyBackend: BackendModule = {
+  type: 'backend',
+  init: () => {},
+  read: (language, namespace, callback) => {
+    if (language !== 'en') {
+      callback(null, {});
+      return;
+    }
+    const path = `../locales/en/${namespace}.json`;
+    const loader = enLoaders[path];
+    if (!loader) {
+      callback(null, {});
+      return;
+    }
+    loader().then(
+      (mod) => {
+        callback(null, mod.default);
+      },
+      (err: unknown) => {
+        callback(err instanceof Error ? err : new Error(String(err)), false);
+      },
+    );
+  },
+};
+
+/**
+ * Eagerly fetch every namespace for `language` and add it to i18n's
+ * resource store. Call from `main.tsx` before mounting React when the
+ * detected language is non-primary (i.e. not DE), so the first render
+ * paints translated strings instead of raw keys.
+ */
+export async function loadLanguageBundle(language: SupportedLanguage): Promise<void> {
+  if (language === 'de') return; // DE is statically preloaded
+  await i18n.loadNamespaces([...NAMESPACES]);
+  await i18n.loadLanguages([language]);
+}
+
+/**
  * Synchronous i18next initialization.
  *
- * Resources are imported statically so every namespace is available on
- * the first render; no async loading, no Suspense fallback.
+ * DE resources are statically imported (eager) so the German first-paint
+ * cost is unchanged. EN resources are wired through the lazy backend
+ * above; `partialBundledLanguages: true` tells i18next to consult the
+ * backend only for namespaces missing from the preloaded resource map.
  *
  * Initial language comes from `detectInitialLanguage()`:
  *   1. localStorage `phylax-language` (user preference)
@@ -114,80 +151,57 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
  *   3. `'en'` fallback
  *
  * `fallbackLng: false` by design. Missing keys surface as raw keys
- * instead of cross-language fallback. Cross-language fallback would
- * render DE text to EN users (or vice versa), which reads as broken.
- * All populated namespaces have full DE+EN parity after I18N-02-d;
- * any missing key is a bug to fix, not an expected state.
+ * instead of cross-language fallback. All populated namespaces have
+ * full DE+EN parity after I18N-02-d.
  */
-void i18n.use(initReactI18next).init({
-  resources: {
-    de: {
-      common: commonDE,
-      onboarding: onboardingDE,
-      unlock: unlockDE,
-      'profile-view': profileViewDE,
-      'profile-list': profileListDE,
-      'profile-create': profileCreateDE,
-      observations: observationsDE,
-      'lab-values': labValuesDE,
-      supplements: supplementsDE,
-      'open-points': openPointsDE,
-      timeline: timelineDE,
-      import: importDE,
-      'ai-chat': aiChatDE,
-      'ai-config': aiConfigDE,
-      donation: donationDE,
-      settings: settingsDE,
-      export: exportDE,
-      errors: errorsDE,
-      'app-shell': appShellDE,
-      theme: themeDE,
-      'pwa-update': pwaUpdateDE,
-      documents: documentsDE,
-      'not-found': notFoundDE,
-      'backup-import': backupImportDE,
-      'backup-export': backupExportDE,
+void i18n
+  .use(lazyBackend)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      de: {
+        common: commonDE,
+        onboarding: onboardingDE,
+        unlock: unlockDE,
+        'profile-view': profileViewDE,
+        'profile-list': profileListDE,
+        'profile-create': profileCreateDE,
+        observations: observationsDE,
+        'lab-values': labValuesDE,
+        supplements: supplementsDE,
+        'open-points': openPointsDE,
+        timeline: timelineDE,
+        import: importDE,
+        'ai-chat': aiChatDE,
+        'ai-config': aiConfigDE,
+        donation: donationDE,
+        settings: settingsDE,
+        export: exportDE,
+        errors: errorsDE,
+        'app-shell': appShellDE,
+        theme: themeDE,
+        'pwa-update': pwaUpdateDE,
+        documents: documentsDE,
+        'not-found': notFoundDE,
+        'backup-import': backupImportDE,
+        'backup-export': backupExportDE,
+      },
     },
-    en: {
-      common: commonEN,
-      onboarding: onboardingEN,
-      unlock: unlockEN,
-      settings: settingsEN,
-      'app-shell': appShellEN,
-      theme: themeEN,
-      'pwa-update': pwaUpdateEN,
-      documents: documentsEN,
-      'not-found': notFoundEN,
-      'backup-import': backupImportEN,
-      observations: observationsEN,
-      'lab-values': labValuesEN,
-      supplements: supplementsEN,
-      'open-points': openPointsEN,
-      timeline: timelineEN,
-      'profile-view': profileViewEN,
-      'profile-list': profileListEN,
-      'profile-create': profileCreateEN,
-      export: exportEN,
-      'ai-config': aiConfigEN,
-      donation: donationEN,
-      import: importEN,
-      'ai-chat': aiChatEN,
-      'backup-export': backupExportEN,
+    partialBundledLanguages: true,
+    lng: detectInitialLanguage(),
+    supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
+    fallbackLng: false,
+    defaultNS: 'common',
+    ns: NAMESPACES as unknown as string[],
+    interpolation: {
+      // React already escapes by default; let it do that job.
+      escapeValue: false,
     },
-  },
-  lng: detectInitialLanguage(),
-  supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
-  fallbackLng: false,
-  defaultNS: 'common',
-  ns: NAMESPACES as unknown as string[],
-  interpolation: {
-    // React already escapes by default; let it do that job.
-    escapeValue: false,
-  },
-  react: {
-    // Synchronous resources means React Suspense is not needed.
-    useSuspense: false,
-  },
-});
+    react: {
+      // Synchronous DE resources; EN is awaited in main.tsx bootstrap
+      // before mount, so Suspense is still not needed.
+      useSuspense: false,
+    },
+  });
 
 export default i18n;

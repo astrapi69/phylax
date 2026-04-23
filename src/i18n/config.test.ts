@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import i18n, { NAMESPACES, SUPPORTED_LANGUAGES } from './config';
+import { describe, it, expect, beforeAll } from 'vitest';
+import i18n, { NAMESPACES, SUPPORTED_LANGUAGES, loadLanguageBundle } from './config';
+
+// Lazy-loaded EN must be hydrated before assertions that exercise EN
+// resources (lazy-load tech-debt followup). DE is preloaded at init.
+beforeAll(async () => {
+  await loadLanguageBundle('en');
+});
 
 describe('i18n config', () => {
   it('initializes with a supported language selected', () => {
