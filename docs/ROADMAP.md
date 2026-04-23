@@ -190,9 +190,9 @@ Goal: AI as primary input method for profile creation and updates. User provides
 
 Goal: upload PDFs and images, store them encrypted, view them, link them to profile sections.
 
-- [ ] **D-01** Document repository: store encrypted blobs with metadata, linked to profileId
-- [ ] **D-02** File upload component with size limit (10MB per file) and type validation
-- [ ] **D-03** Encrypted blob storage: chunk large files if needed
+- [x] **D-01** Document repository: storage foundation for the documents feature. Two-row model: `documents` table (encrypted metadata via `EncryptedRepository`) + new `document_blobs` table keyed by same id (Dexie v3, no-op upgrade since documents was empty). `DocumentRepository` skeleton exposes metadata CRUD today and `create`/`getContent` stubs that D-03 filled in. Atomic two-row `delete` already enforced via Dexie transaction.
+- [x] **D-02** File upload component: `useDocumentUpload` state machine (idle/uploading/success/error), MIME validation against `ACCEPTED_DOCUMENT_TYPES` (PDF, PNG, JPEG, WebP), size validation against `DOCUMENT_SIZE_LIMIT_BYTES` (10 MB), and a `DocumentUploadButton` styling a hidden `<input type=file>`. Structured `DocumentUploadError` discriminated union drives localized messages via `role=status` / `role=alert`. jsdom `Blob.prototype.arrayBuffer` polyfill added to `src/test/setup.ts` for hook tests.
+- [x] **D-03** Encrypted blob storage: raw AES-256-GCM over the ArrayBuffer (no JSON detour). `DocumentRepository.create` pre-encrypts metadata AND blob outside the Dexie transaction (same rule as `EncryptedRepository.serialize`), then writes both rows atomically. `DocumentSizeLimitError` enforces the 10 MB cap at the repo (defense in depth; UI gates earlier with a localized message). `copyToFreshArrayBuffer` prevents leaking unrelated bytes from shared Uint8Array backing buffers. No chunking — 10 MB fits a single AES-GCM record comfortably.
 - [x] **D-04** Document list view with thumbnails for images: `useDocuments` hook loads metadata newest-first with a `versionKey` refetch trigger bumped on every successful upload; `DocumentList` renders loading / error (no-profile, generic) / empty / populated states; `DocumentListItem` decrypts `image/*` blobs into object URLs on mount (revoked on unmount) with a generic file icon fallback for PDFs and decrypt failures. Metadata-only fetch keeps list render cheap.
 - [ ] **D-05** PDF viewer (native browser PDF or `pdf.js` if bundling is acceptable)
 - [ ] **D-06** Image viewer with zoom
