@@ -17,6 +17,13 @@
     }
   },
   "list": {
-    "empty": "No documents yet."
+    "empty": "No documents yet.",
+    "loading": "Loading documents...",
+    "error": {
+      "no-profile": "No profile selected. Create a profile first.",
+      "generic": "Could not load documents. Please try again."
+    },
+    "meta": "{{size}} · {{date}}",
+    "aria-label": "Documents"
   }
 }

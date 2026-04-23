@@ -1,0 +1,133 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { Document } from '../../domain';
+import { DocumentRepository } from '../../db/repositories';
+
+export interface DocumentListItemProps {
+  document: Document;
+}
+
+const IMAGE_MIME_PREFIX = 'image/';
+
+/**
+ * Single row in the documents list. Metadata is rendered immediately
+ * from the Document object; an image thumbnail (for `image/*` MIME
+ * types) is fetched on mount by decrypting the blob and wrapping it
+ * in an object URL. Non-image documents render a generic file icon.
+ *
+ * Memory hygiene: every blob URL created here is revoked on unmount
+ * (or when the thumbnail promise resolves after the component has
+ * already unmounted) so nothing leaks between list re-renders or
+ * navigations away from the documents view.
+ */
+export function DocumentListItem({ document }: DocumentListItemProps) {
+  const { t, i18n } = useTranslation('documents');
+  const isImage = document.mimeType.startsWith(IMAGE_MIME_PREFIX);
+  const thumbnailUrl = useThumbnailUrl(document, isImage);
+
+  const sizeLabel = formatSize(document.sizeBytes);
+  const dateLabel = formatDate(document.createdAt, i18n.language);
+
+  return (
+    <li
+      className="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-3 text-sm dark:border-gray-700 dark:bg-gray-900"
+      data-testid={`document-item-${document.id}`}
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
+        {isImage && thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt=""
+            className="h-full w-full object-cover"
+            data-testid="thumbnail"
+          />
+        ) : (
+          <FileIcon mimeType={document.mimeType} />
+        )}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate font-medium text-gray-900 dark:text-gray-100">
+          {document.filename}
+        </span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {t('list.meta', { size: sizeLabel, date: dateLabel })}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * Decrypt the document blob once and expose its content as an object
+ * URL for rendering. Revokes the URL on unmount or when the component
+ * is unmounted while the decrypt is still in flight.
+ */
+function useThumbnailUrl(document: Document, enabled: boolean): string | null {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let revokedUrl: string | null = null;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const repo = new DocumentRepository();
+        const content = await repo.getContent(document.id);
+        if (cancelled || !content) return;
+        const blob = new Blob([content], { type: document.mimeType });
+        const objectUrl = URL.createObjectURL(blob);
+        revokedUrl = objectUrl;
+        setUrl(objectUrl);
+      } catch {
+        // Swallow: list continues to render metadata + generic icon.
+        // Viewer components (D-05/D-06) surface decrypt errors to the
+        // user; the list is read-only metadata.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (revokedUrl) URL.revokeObjectURL(revokedUrl);
+    };
+  }, [document.id, document.mimeType, enabled]);
+
+  return url;
+}
+
+function FileIcon({ mimeType }: { mimeType: string }) {
+  const isPdf = mimeType === 'application/pdf';
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="text-gray-500 dark:text-gray-400"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      {isPdf && <path d="M9 15h6M9 11h6" />}
+    </svg>
+  );
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDate(unixMs: number, language: string): string {
+  return new Intl.DateTimeFormat(language, {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  }).format(unixMs);
+}

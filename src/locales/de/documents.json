@@ -17,6 +17,13 @@
     }
   },
   "list": {
-    "empty": "Noch keine Dokumente vorhanden."
+    "empty": "Noch keine Dokumente vorhanden.",
+    "loading": "Dokumente werden geladen...",
+    "error": {
+      "no-profile": "Kein Profil ausgewählt. Bitte zuerst ein Profil anlegen.",
+      "generic": "Dokumente konnten nicht geladen werden. Bitte erneut versuchen."
+    },
+    "meta": "{{size}} · {{date}}",
+    "aria-label": "Dokumente"
   }
 }

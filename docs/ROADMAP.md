@@ -193,7 +193,7 @@ Goal: upload PDFs and images, store them encrypted, view them, link them to prof
 - [ ] **D-01** Document repository: store encrypted blobs with metadata, linked to profileId
 - [ ] **D-02** File upload component with size limit (10MB per file) and type validation
 - [ ] **D-03** Encrypted blob storage: chunk large files if needed
-- [ ] **D-04** Document list view with thumbnails for images
+- [x] **D-04** Document list view with thumbnails for images: `useDocuments` hook loads metadata newest-first with a `versionKey` refetch trigger bumped on every successful upload; `DocumentList` renders loading / error (no-profile, generic) / empty / populated states; `DocumentListItem` decrypts `image/*` blobs into object URLs on mount (revoked on unmount) with a generic file icon fallback for PDFs and decrypt failures. Metadata-only fetch keeps list render cheap.
 - [ ] **D-05** PDF viewer (native browser PDF or `pdf.js` if bundling is acceptable)
 - [ ] **D-06** Image viewer with zoom
 - [ ] **D-07** Link documents to observations or lab values
