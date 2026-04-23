@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Document } from '../../domain';
 import { DocumentRepository } from '../../db/repositories';
+import { isImageMimeType } from './mimeTypes';
 
 export interface DocumentListItemProps {
   document: Document;
 }
-
-const IMAGE_MIME_PREFIX = 'image/';
 
 /**
  * Single row in the documents list. Metadata is rendered immediately
@@ -23,7 +22,7 @@ const IMAGE_MIME_PREFIX = 'image/';
  */
 export function DocumentListItem({ document }: DocumentListItemProps) {
   const { t, i18n } = useTranslation('documents');
-  const isImage = document.mimeType.startsWith(IMAGE_MIME_PREFIX);
+  const isImage = isImageMimeType(document.mimeType);
   const thumbnailUrl = useThumbnailUrl(document, isImage);
 
   const sizeLabel = formatSize(document.sizeBytes);

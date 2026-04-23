@@ -33,6 +33,12 @@
       "not-found": "Dokument nicht gefunden. Es wurde möglicherweise gelöscht.",
       "decrypt-failed": "Dokument konnte nicht entschlüsselt werden. Bitte App entsperren und erneut versuchen.",
       "unsupported-type": "Vorschau für Dateityp \"{{mimeType}}\" wird noch nicht unterstützt."
+    },
+    "image": {
+      "zoom-in": "Vergrößern",
+      "zoom-out": "Verkleinern",
+      "reset": "Anpassen",
+      "fit": "Angepasst"
     }
   }
 }

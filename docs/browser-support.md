@@ -55,6 +55,24 @@ The PDF iframe uses `sandbox="allow-scripts"`.
 - Trade-off: PDFs whose form logic makes same-origin requests (rare
   in medical documents) will have degraded form behavior. Accepted.
 
+## Image viewer (D-06)
+
+Images are rendered in a native `<img>` element with zoom controlled
+by React state and `width`/`height` attributes (no CSS transforms,
+so native scrollbars provide pan automatically).
+
+- Whitelisted MIME types: `image/png`, `image/jpeg`, `image/webp`.
+  `image/svg+xml` is deliberately excluded because SVG can carry
+  script; it would bypass the Phylax sandboxing model. Enforced at
+  both the upload layer and the viewer dispatcher.
+- Zoom: +/- buttons, reset ("Fit") button, Ctrl+wheel, and keyboard
+  shortcuts (`+`, `-`, `0`). Range 25% to 500% of natural size.
+- Pan: via the container's `overflow: auto` scrollbars. Works with
+  mouse drag on scrollbars, touch swipe, and keyboard arrow keys.
+- Mobile pinch zoom is deferred to a future polish task. Mobile
+  users get the zoom buttons plus native scrollbar pan, which is
+  functional if less fluid.
+
 ## IndexedDB eviction
 
 iOS Safari clears IndexedDB after 7 days of site inactivity unless

@@ -6,21 +6,13 @@ import {
   ProfileRepository,
 } from '../../db/repositories';
 import type { Document } from '../../domain';
+import {
+  ACCEPTED_DOCUMENT_TYPES,
+  isAcceptedDocumentType,
+  type AcceptedDocumentType,
+} from './mimeTypes';
 
-/**
- * MIME types accepted by the upload component. PDFs and the three
- * widely-supported lossless+lossy image formats. Conservative on
- * purpose: viewer code (D-05/D-06) is built only for these. Adding a
- * new type here means adding viewer support too.
- */
-export const ACCEPTED_DOCUMENT_TYPES = [
-  'application/pdf',
-  'image/png',
-  'image/jpeg',
-  'image/webp',
-] as const;
-
-export type AcceptedDocumentType = (typeof ACCEPTED_DOCUMENT_TYPES)[number];
+export { ACCEPTED_DOCUMENT_TYPES, type AcceptedDocumentType };
 
 export type DocumentUploadError =
   | { kind: 'no-profile' }
@@ -62,7 +54,7 @@ export function useDocumentUpload(): UseDocumentUploadResult {
   }, []);
 
   const upload = useCallback(async (file: File): Promise<void> => {
-    if (!isAcceptedType(file.type)) {
+    if (!isAcceptedDocumentType(file.type)) {
       setStatus({
         kind: 'error',
         error: { kind: 'unsupported-type', mimeType: file.type },
@@ -149,8 +141,4 @@ export function useDocumentUpload(): UseDocumentUploadResult {
   }, []);
 
   return { status, upload, reset };
-}
-
-function isAcceptedType(mime: string): mime is AcceptedDocumentType {
-  return (ACCEPTED_DOCUMENT_TYPES as readonly string[]).includes(mime);
 }

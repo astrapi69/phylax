@@ -1,8 +1,8 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDocumentContent, type DocumentContentState } from './useDocumentContent';
-
-const PDF_MIME = 'application/pdf';
+import { isImageMimeType, isPdfMimeType } from './mimeTypes';
+import { ImageViewer } from './ImageViewer';
 
 /**
  * Route component for `/documents/:id`. Routes by URL param into a
@@ -74,10 +74,16 @@ function ViewerBody({ state }: { state: DocumentContentState }) {
   // state.kind === 'ready'. MIME dispatcher: pick viewer by
   // metadata.mimeType (trusted since it was set at upload time and is
   // re-read from the encrypted metadata row), never by filename
-  // extension. D-06 will add the `image/*` branch; the current branch
-  // for images is the 'unsupported-type' fallback.
-  if (state.document.mimeType === PDF_MIME) {
+  // extension. Explicit whitelist match against the shared constants
+  // in `mimeTypes.ts` — NOT an `image/*` prefix match — because
+  // image/svg+xml can carry script and must never silently route into
+  // the image viewer.
+  if (isPdfMimeType(state.document.mimeType)) {
     return <PdfViewer url={state.url} filename={state.document.filename} />;
+  }
+
+  if (isImageMimeType(state.document.mimeType)) {
+    return <ImageViewer url={state.url} filename={state.document.filename} />;
   }
 
   return (

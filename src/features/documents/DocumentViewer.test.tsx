@@ -126,7 +126,7 @@ describe('DocumentViewer', () => {
     expect(err.textContent).toMatch(/nicht gefunden/i);
   });
 
-  it('renders unsupported-type fallback for non-PDF MIMEs (image/* awaits D-06)', async () => {
+  it('routes image/png to the ImageViewer (not the unsupported-type fallback)', async () => {
     const profileId = await seedProfile();
     const id = await seedDocument(
       profileId,
@@ -137,8 +137,29 @@ describe('DocumentViewer', () => {
 
     renderAtPath(`/documents/${id}`);
 
+    const img = await waitFor(() => screen.getByTestId('image-viewer-img'));
+    expect(img.tagName).toBe('IMG');
+    expect(img).toHaveAttribute('alt', 'scan.png');
+    expect(screen.queryByTestId('viewer-error')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pdf-viewer-iframe')).not.toBeInTheDocument();
+  });
+
+  it('renders unsupported-type fallback for non-whitelisted MIMEs (e.g. image/svg+xml)', async () => {
+    const profileId = await seedProfile();
+    // image/svg+xml is deliberately excluded from IMAGE_MIME_TYPES to
+    // prevent executable-SVG from ever entering the image viewer path.
+    const id = await seedDocument(
+      profileId,
+      'diagram.svg',
+      'image/svg+xml',
+      new Uint8Array([0x3c, 0x73, 0x76, 0x67]),
+    );
+
+    renderAtPath(`/documents/${id}`);
+
     const err = await waitFor(() => screen.getByTestId('viewer-error'));
-    expect(err.textContent).toMatch(/image\/png/);
+    expect(err.textContent).toMatch(/svg/);
+    expect(screen.queryByTestId('image-viewer-img')).not.toBeInTheDocument();
     expect(screen.queryByTestId('pdf-viewer-iframe')).not.toBeInTheDocument();
   });
 

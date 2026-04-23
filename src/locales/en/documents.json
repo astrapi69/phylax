@@ -33,6 +33,12 @@
       "not-found": "Document not found. It may have been deleted.",
       "decrypt-failed": "Could not decrypt document. Unlock the app and try again.",
       "unsupported-type": "Preview for file type \"{{mimeType}}\" is not supported yet."
+    },
+    "image": {
+      "zoom-in": "Zoom in",
+      "zoom-out": "Zoom out",
+      "reset": "Fit",
+      "fit": "Fit"
     }
   }
 }
