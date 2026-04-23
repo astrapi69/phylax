@@ -16,6 +16,7 @@ import { SupplementsView } from '../features/supplements';
 import { OpenPointsView } from '../features/open-points';
 import { TimelineView } from '../features/timeline';
 import { DocumentsPlaceholder } from '../features/documents/DocumentsPlaceholder';
+import { DocumentViewer } from '../features/documents/DocumentViewer';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
 import { ChatView } from '../features/ai-chat';
@@ -96,6 +97,7 @@ export function AppRoutes() {
         <Route path="/open-points" element={<OpenPointsView />} />
         <Route path="/timeline" element={<TimelineView />} />
         <Route path="/documents" element={<DocumentsPlaceholder />} />
+        <Route path="/documents/:id" element={<DocumentViewer />} />
         <Route path="/chat" element={<ChatView />} />
         <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsScreen />} />

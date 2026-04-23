@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Document } from '../../domain';
 import { DocumentRepository } from '../../db/repositories';
@@ -29,30 +30,31 @@ export function DocumentListItem({ document }: DocumentListItemProps) {
   const dateLabel = formatDate(document.createdAt, i18n.language);
 
   return (
-    <li
-      className="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-3 text-sm dark:border-gray-700 dark:bg-gray-900"
-      data-testid={`document-item-${document.id}`}
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
-        {isImage && thumbnailUrl ? (
-          <img
-            src={thumbnailUrl}
-            alt=""
-            className="h-full w-full object-cover"
-            data-testid="thumbnail"
-          />
-        ) : (
-          <FileIcon mimeType={document.mimeType} />
-        )}
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate font-medium text-gray-900 dark:text-gray-100">
-          {document.filename}
-        </span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          {t('list.meta', { size: sizeLabel, date: dateLabel })}
-        </span>
-      </div>
+    <li data-testid={`document-item-${document.id}`}>
+      <Link
+        to={`/documents/${document.id}`}
+        className="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-900 hover:border-blue-400 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-blue-500 dark:hover:bg-blue-900/20"
+        data-testid={`document-item-link-${document.id}`}
+      >
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
+          {isImage && thumbnailUrl ? (
+            <img
+              src={thumbnailUrl}
+              alt=""
+              className="h-full w-full object-cover"
+              data-testid="thumbnail"
+            />
+          ) : (
+            <FileIcon mimeType={document.mimeType} />
+          )}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate font-medium">{document.filename}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {t('list.meta', { size: sizeLabel, date: dateLabel })}
+          </span>
+        </div>
+      </Link>
     </li>
   );
 }

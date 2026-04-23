@@ -25,5 +25,14 @@
     },
     "meta": "{{size}} · {{date}}",
     "aria-label": "Documents"
+  },
+  "viewer": {
+    "back": "← Back to list",
+    "loading": "Loading document...",
+    "error": {
+      "not-found": "Document not found. It may have been deleted.",
+      "decrypt-failed": "Could not decrypt document. Unlock the app and try again.",
+      "unsupported-type": "Preview for file type \"{{mimeType}}\" is not supported yet."
+    }
   }
 }

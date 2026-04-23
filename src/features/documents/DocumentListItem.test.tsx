@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../i18n/config';
 import { lock, unlock } from '../../crypto';
 import { readMeta } from '../../db/meta';
@@ -74,9 +75,11 @@ describe('DocumentListItem', () => {
     );
 
     render(
-      <ul>
-        <DocumentListItem document={doc} />
-      </ul>,
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText('report.pdf')).toBeInTheDocument();
@@ -94,9 +97,11 @@ describe('DocumentListItem', () => {
     const doc = await seedDocument(profileId, 'scan.png', 'image/png', png);
 
     render(
-      <ul>
-        <DocumentListItem document={doc} />
-      </ul>,
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
     );
 
     const thumb = await waitFor(() => screen.getByTestId('thumbnail'));
@@ -105,6 +110,28 @@ describe('DocumentListItem', () => {
     expect(thumb.getAttribute('src')).toMatch(/^blob:/);
     // Decorative image: alt is empty per WCAG best practice.
     expect(thumb).toHaveAttribute('alt', '');
+  });
+
+  it('wraps the row in a link to /documents/:id', async () => {
+    const profileId = await seedProfile();
+    const doc = await seedDocument(
+      profileId,
+      'linked.pdf',
+      'application/pdf',
+      new Uint8Array([0x25, 0x50]),
+    );
+
+    render(
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByTestId(`document-item-link-${doc.id}`);
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', `/documents/${doc.id}`);
   });
 
   it('falls back to the generic file icon when the blob decrypt fails', async () => {
@@ -117,9 +144,11 @@ describe('DocumentListItem', () => {
     await db.documentBlobs.put({ id: doc.id, payload: new ArrayBuffer(4) });
 
     render(
-      <ul>
-        <DocumentListItem document={doc} />
-      </ul>,
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
     );
 
     // No thumbnail rendered, metadata still shown.

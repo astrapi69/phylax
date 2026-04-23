@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import 'fake-indexeddb/auto';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import i18n from '../../i18n/config';
 import { lock, unlock } from '../../crypto';
 import { readMeta } from '../../db/meta';
@@ -56,13 +57,21 @@ beforeEach(async () => {
 describe('DocumentList', () => {
   it('renders the loading placeholder while the hook is loading', async () => {
     await seedProfile();
-    render(<DocumentList />);
+    render(
+      <MemoryRouter>
+        <DocumentList />
+      </MemoryRouter>,
+    );
     expect(screen.getByTestId('documents-loading')).toBeInTheDocument();
   });
 
   it('renders the empty state when no documents exist for the profile', async () => {
     await seedProfile();
-    render(<DocumentList />);
+    render(
+      <MemoryRouter>
+        <DocumentList />
+      </MemoryRouter>,
+    );
 
     await waitFor(() => expect(screen.getByTestId('documents-empty')).toBeInTheDocument());
   });
@@ -72,7 +81,11 @@ describe('DocumentList', () => {
     await setupCompletedOnboarding(TEST_PASSWORD);
     await unlockCurrent();
 
-    render(<DocumentList />);
+    render(
+      <MemoryRouter>
+        <DocumentList />
+      </MemoryRouter>,
+    );
 
     await waitFor(() => expect(screen.getByTestId('documents-error')).toBeInTheDocument());
     expect(screen.getByTestId('documents-error')).toHaveAttribute('role', 'alert');
@@ -83,7 +96,11 @@ describe('DocumentList', () => {
     await seedPdf(profileId, 'alpha.pdf');
     await seedPdf(profileId, 'beta.pdf');
 
-    render(<DocumentList />);
+    render(
+      <MemoryRouter>
+        <DocumentList />
+      </MemoryRouter>,
+    );
 
     await waitFor(() => expect(screen.getByTestId('documents-list')).toBeInTheDocument());
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
