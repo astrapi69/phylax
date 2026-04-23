@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDocumentContent, type DocumentContentState } from './useDocumentContent';
 import { isImageMimeType, isPdfMimeType } from './mimeTypes';
 import { ImageViewer } from './ImageViewer';
+import { LinkEditor } from './LinkEditor';
 
 /**
  * Route component for `/documents/:id`. Routes by URL param into a
@@ -18,7 +20,12 @@ export function DocumentViewer() {
 
 function DocumentViewerById({ id }: { id: string }) {
   const { t } = useTranslation('documents');
-  const state = useDocumentContent(id);
+  // Bump to force a refetch after a link mutation via LinkEditor so
+  // the header + LinkEditor reflect the new linked entity without a
+  // full navigation. Key on the original `id` so identity changes
+  // still restart the content load (hook logic in useDocumentContent).
+  const [reloadKey, setReloadKey] = useState(0);
+  const state = useDocumentContent(id, reloadKey);
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,6 +46,9 @@ function DocumentViewerById({ id }: { id: string }) {
           </h1>
         )}
       </header>
+      {state.kind === 'ready' && (
+        <LinkEditor document={state.document} onChanged={() => setReloadKey((k) => k + 1)} />
+      )}
       <ViewerBody state={state} />
     </div>
   );

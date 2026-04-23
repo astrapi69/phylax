@@ -2,7 +2,12 @@ import { db } from '../schema';
 import type { Document } from '../../domain';
 import { encryptWithStoredKey, decryptWithStoredKey, generateId } from '../../crypto';
 import { EncryptedRepository } from './encryptedRepository';
+import { validateDocumentLinks } from '../../domain/document/validation';
 import type { DocumentBlobRow } from '../types';
+
+export { DocumentLinkConflictError } from '../../domain/document/validation';
+
+type DocumentPatch = Partial<Omit<Document, 'id' | 'profileId' | 'createdAt'>>;
 
 /**
  * Error thrown when a document upload exceeds the per-file size cap.
@@ -75,6 +80,7 @@ export class DocumentRepository extends EncryptedRepository<Document> {
     if (data.content.byteLength > DOCUMENT_SIZE_LIMIT_BYTES) {
       throw new DocumentSizeLimitError(data.content.byteLength);
     }
+    validateDocumentLinks(data);
 
     const { content, ...metadata } = data;
     const now = Date.now();
@@ -125,6 +131,82 @@ export class DocumentRepository extends EncryptedRepository<Document> {
    */
   getMetadata(id: string): Promise<Document | null> {
     return this.getById(id);
+  }
+
+  /**
+   * Validate link fields before delegating to the inherited update.
+   * If the patch touches either link field, the final state (existing
+   * merged with patch) must satisfy `validateDocumentLinks`. Rejects
+   * with `DocumentLinkConflictError` before any persistence side
+   * effect runs.
+   */
+  override async update(id: string, patch: DocumentPatch): Promise<Document> {
+    if ('linkedObservationId' in patch || 'linkedLabValueId' in patch) {
+      const existing = await this.getById(id);
+      if (existing) {
+        const finalLinks = {
+          linkedObservationId:
+            'linkedObservationId' in patch
+              ? patch.linkedObservationId
+              : existing.linkedObservationId,
+          linkedLabValueId:
+            'linkedLabValueId' in patch ? patch.linkedLabValueId : existing.linkedLabValueId,
+        };
+        validateDocumentLinks(finalLinks);
+      }
+    }
+    return super.update(id, patch);
+  }
+
+  /**
+   * Atomically link this document to an observation. Clears any
+   * existing `linkedLabValueId` in the same write so the mutual
+   * exclusion invariant survives even if the caller is switching
+   * between link kinds.
+   */
+  async linkToObservation(id: string, observationId: string): Promise<Document> {
+    return this.update(id, {
+      linkedObservationId: observationId,
+      linkedLabValueId: undefined,
+    });
+  }
+
+  /**
+   * Atomically link this document to a lab value. Clears any existing
+   * `linkedObservationId` in the same write.
+   */
+  async linkToLabValue(id: string, labValueId: string): Promise<Document> {
+    return this.update(id, {
+      linkedLabValueId: labValueId,
+      linkedObservationId: undefined,
+    });
+  }
+
+  /** Clear both link fields. Safe on already-unlinked documents. */
+  async unlink(id: string): Promise<Document> {
+    return this.update(id, {
+      linkedObservationId: undefined,
+      linkedLabValueId: undefined,
+    });
+  }
+
+  /**
+   * Documents linked to a given observation, scoped to a profile.
+   *
+   * In-memory filter over `listByProfile` (consistent with the
+   * "no plaintext indexes" rule in CLAUDE.md; the per-profile dataset
+   * is small enough that a full decrypt-then-filter is the right
+   * trade-off vs. adding a secondary encrypted index).
+   */
+  async listByObservation(profileId: string, observationId: string): Promise<Document[]> {
+    const all = await this.listByProfile(profileId);
+    return all.filter((d) => d.linkedObservationId === observationId);
+  }
+
+  /** Documents linked to a given lab value, scoped to a profile. */
+  async listByLabValue(profileId: string, labValueId: string): Promise<Document[]> {
+    const all = await this.listByProfile(profileId);
+    return all.filter((d) => d.linkedLabValueId === labValueId);
   }
 
   /**

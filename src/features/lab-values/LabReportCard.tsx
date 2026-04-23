@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { LabReport, LabValue } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 import { CategoryAssessment } from './CategoryAssessment';
 import { LabValuesTable } from './LabValuesTable';
+import { AttachedDocumentsForLabReport } from '../documents/AttachedDocumentsForLabReport';
 
 interface LabReportCardProps {
   report: LabReport;
@@ -28,6 +30,7 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
 
   const formattedDate = formatGermanDate(reportDate);
   const categories = Array.from(valuesByCategory.entries());
+  const allValues = useMemo(() => Array.from(valuesByCategory.values()).flat(), [valuesByCategory]);
 
   return (
     <section
@@ -82,6 +85,8 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
             <MarkdownContent>{relevanceNotes}</MarkdownContent>
           </div>
         )}
+
+        <AttachedDocumentsForLabReport values={allValues} />
       </div>
     </section>
   );

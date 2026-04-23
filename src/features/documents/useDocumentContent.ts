@@ -32,7 +32,7 @@ export type DocumentContentState =
  *   other error from the repository. Detail is preserved for
  *   diagnostics but the UI only surfaces a localized generic message.
  */
-export function useDocumentContent(id: string): DocumentContentState {
+export function useDocumentContent(id: string, reloadKey: number = 0): DocumentContentState {
   const [state, setState] = useState<DocumentContentState>({ kind: 'loading' });
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function useDocumentContent(id: string): DocumentContentState {
       cancelled = true;
       if (createdUrl) URL.revokeObjectURL(createdUrl);
     };
-  }, [id]);
+  }, [id, reloadKey]);
 
   return state;
 }

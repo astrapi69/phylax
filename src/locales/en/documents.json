@@ -16,16 +16,6 @@
       "generic": "Upload failed. Please try again."
     }
   },
-  "list": {
-    "empty": "No documents yet.",
-    "loading": "Loading documents...",
-    "error": {
-      "no-profile": "No profile selected. Create a profile first.",
-      "generic": "Could not load documents. Please try again."
-    },
-    "meta": "{{size}} · {{date}}",
-    "aria-label": "Documents"
-  },
   "viewer": {
     "back": "← Back to list",
     "loading": "Loading document...",
@@ -39,6 +29,39 @@
       "zoom-out": "Zoom out",
       "reset": "Fit",
       "fit": "Fit"
+    },
+    "link": {
+      "heading": "Linked to",
+      "none": "Not linked",
+      "linked-prefix": "Linked to",
+      "to-observation": "Link to observation",
+      "to-lab-value": "Link to lab value",
+      "unlink": "Unlink",
+      "picker-observation": "Select observation",
+      "picker-lab-value": "Select lab value",
+      "missing-entity": "Linked entry no longer exists.",
+      "save": "Save",
+      "cancel": "Cancel"
     }
+  },
+  "link": {
+    "kind": {
+      "observation": "observation",
+      "lab-value": "lab value"
+    }
+  },
+  "list": {
+    "empty": "No documents yet.",
+    "loading": "Loading documents...",
+    "error": {
+      "no-profile": "No profile selected. Create a profile first.",
+      "generic": "Could not load documents. Please try again."
+    },
+    "meta": "{{size}} · {{date}}",
+    "aria-label": "Documents",
+    "link-indicator-tooltip": "Linked to {{kind}}"
+  },
+  "attached-documents": {
+    "heading": "Attached documents"
   }
 }

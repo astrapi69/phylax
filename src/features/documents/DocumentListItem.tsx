@@ -48,13 +48,52 @@ export function DocumentListItem({ document }: DocumentListItemProps) {
           )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-medium">{document.filename}</span>
+          <span className="flex items-center gap-1.5">
+            <span className="truncate font-medium">{document.filename}</span>
+            <LinkIndicator document={document} />
+          </span>
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {t('list.meta', { size: sizeLabel, date: dateLabel })}
           </span>
         </div>
       </Link>
     </li>
+  );
+}
+
+function LinkIndicator({ document }: { document: Document }) {
+  const { t } = useTranslation('documents');
+  const kind = document.linkedObservationId
+    ? 'observation'
+    : document.linkedLabValueId
+      ? 'lab-value'
+      : null;
+  if (!kind) return null;
+  const tooltip = t('list.link-indicator-tooltip', { kind: t(`link.kind.${kind}`) });
+  return (
+    <span
+      role="img"
+      aria-label={tooltip}
+      title={tooltip}
+      className="shrink-0 text-blue-600 dark:text-blue-400"
+      data-testid={`link-indicator-${kind}`}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72" />
+      </svg>
+    </span>
   );
 }
 

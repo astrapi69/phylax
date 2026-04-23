@@ -16,16 +16,6 @@
       "generic": "Upload fehlgeschlagen. Bitte erneut versuchen."
     }
   },
-  "list": {
-    "empty": "Noch keine Dokumente vorhanden.",
-    "loading": "Dokumente werden geladen...",
-    "error": {
-      "no-profile": "Kein Profil ausgewählt. Bitte zuerst ein Profil anlegen.",
-      "generic": "Dokumente konnten nicht geladen werden. Bitte erneut versuchen."
-    },
-    "meta": "{{size}} · {{date}}",
-    "aria-label": "Dokumente"
-  },
   "viewer": {
     "back": "← Zurück zur Liste",
     "loading": "Dokument wird geladen...",
@@ -39,6 +29,39 @@
       "zoom-out": "Verkleinern",
       "reset": "Anpassen",
       "fit": "Angepasst"
+    },
+    "link": {
+      "heading": "Verknüpft mit",
+      "none": "Nicht verknüpft",
+      "linked-prefix": "Verknüpft mit",
+      "to-observation": "Mit Beobachtung verknüpfen",
+      "to-lab-value": "Mit Laborwert verknüpfen",
+      "unlink": "Verknüpfung lösen",
+      "picker-observation": "Beobachtung auswählen",
+      "picker-lab-value": "Laborwert auswählen",
+      "missing-entity": "Verknüpfter Eintrag existiert nicht mehr.",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
     }
+  },
+  "link": {
+    "kind": {
+      "observation": "Beobachtung",
+      "lab-value": "Laborwert"
+    }
+  },
+  "list": {
+    "empty": "Noch keine Dokumente vorhanden.",
+    "loading": "Dokumente werden geladen...",
+    "error": {
+      "no-profile": "Kein Profil ausgewählt. Bitte zuerst ein Profil anlegen.",
+      "generic": "Dokumente konnten nicht geladen werden. Bitte erneut versuchen."
+    },
+    "meta": "{{size}} · {{date}}",
+    "aria-label": "Dokumente",
+    "link-indicator-tooltip": "Verknüpft mit {{kind}}"
+  },
+  "attached-documents": {
+    "heading": "Angehängte Dokumente"
   }
 }

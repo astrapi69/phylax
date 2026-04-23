@@ -6,6 +6,7 @@ import { ProfileRepository } from './profileRepository';
 import {
   DocumentRepository,
   DocumentSizeLimitError,
+  DocumentLinkConflictError,
   DOCUMENT_SIZE_LIMIT_BYTES,
 } from './documentRepository';
 import { db } from '../schema';
@@ -360,6 +361,156 @@ describe('DocumentRepository (D-01 foundation)', () => {
 
       expect(await db.documents.get(created.id)).toBeUndefined();
       expect(await db.documentBlobs.get(created.id)).toBeUndefined();
+    });
+  });
+
+  describe('link helpers (D-07)', () => {
+    function makeBytes(n: number): ArrayBuffer {
+      const buf = new ArrayBuffer(n);
+      new Uint8Array(buf).fill(1);
+      return buf;
+    }
+
+    it('linkToObservation sets observation link and clears any prior lab-value link', async () => {
+      const created = await repo.create({
+        ...makeMetadata({ linkedLabValueId: 'lv-existing' }),
+        content: makeBytes(16),
+      });
+
+      const updated = await repo.linkToObservation(created.id, 'obs-1');
+
+      expect(updated.linkedObservationId).toBe('obs-1');
+      expect(updated.linkedLabValueId).toBeUndefined();
+
+      const readBack = await repo.getById(created.id);
+      if (!readBack) throw new Error('expected persisted document');
+      expect(readBack.linkedObservationId).toBe('obs-1');
+      expect(readBack.linkedLabValueId).toBeUndefined();
+    });
+
+    it('linkToLabValue sets lab-value link and clears any prior observation link', async () => {
+      const created = await repo.create({
+        ...makeMetadata({ linkedObservationId: 'obs-existing' }),
+        content: makeBytes(16),
+      });
+
+      const updated = await repo.linkToLabValue(created.id, 'lv-2');
+
+      expect(updated.linkedLabValueId).toBe('lv-2');
+      expect(updated.linkedObservationId).toBeUndefined();
+    });
+
+    it('unlink clears both fields', async () => {
+      const created = await repo.create({
+        ...makeMetadata({ linkedObservationId: 'obs-1' }),
+        content: makeBytes(16),
+      });
+
+      const updated = await repo.unlink(created.id);
+
+      expect(updated.linkedObservationId).toBeUndefined();
+      expect(updated.linkedLabValueId).toBeUndefined();
+    });
+
+    it('create rejects both link fields at once with DocumentLinkConflictError', async () => {
+      await expect(
+        repo.create({
+          ...makeMetadata({
+            linkedObservationId: 'obs-1',
+            linkedLabValueId: 'lv-1',
+          }),
+          content: makeBytes(16),
+        }),
+      ).rejects.toThrow(DocumentLinkConflictError);
+    });
+
+    it('update rejects a patch that would leave both link fields set', async () => {
+      const created = await repo.create({
+        ...makeMetadata({ linkedObservationId: 'obs-existing' }),
+        content: makeBytes(16),
+      });
+
+      // Patch that sets lab value without clearing observation -> both would be set.
+      await expect(repo.update(created.id, { linkedLabValueId: 'lv-new' })).rejects.toThrow(
+        DocumentLinkConflictError,
+      );
+
+      // Underlying data must remain unchanged (validation runs before persistence).
+      const readBack = await repo.getById(created.id);
+      if (!readBack) throw new Error('expected persisted document');
+      expect(readBack.linkedObservationId).toBe('obs-existing');
+      expect(readBack.linkedLabValueId).toBeUndefined();
+    });
+
+    it('listByObservation returns only documents linked to the given observation', async () => {
+      const a = await repo.create({
+        ...makeMetadata({ filename: 'a.pdf' }),
+        content: makeBytes(8),
+      });
+      const b = await repo.create({
+        ...makeMetadata({ filename: 'b.pdf' }),
+        content: makeBytes(8),
+      });
+      const c = await repo.create({
+        ...makeMetadata({ filename: 'c.pdf' }),
+        content: makeBytes(8),
+      });
+
+      await repo.linkToObservation(a.id, 'obs-target');
+      await repo.linkToObservation(b.id, 'obs-other');
+      await repo.linkToLabValue(c.id, 'lv-x');
+
+      const byObs = await repo.listByObservation(profileId, 'obs-target');
+      expect(byObs.map((d) => d.filename)).toEqual(['a.pdf']);
+    });
+
+    it('listByLabValue returns only documents linked to the given lab value', async () => {
+      const a = await repo.create({
+        ...makeMetadata({ filename: 'a.pdf' }),
+        content: makeBytes(8),
+      });
+      const b = await repo.create({
+        ...makeMetadata({ filename: 'b.pdf' }),
+        content: makeBytes(8),
+      });
+
+      await repo.linkToLabValue(a.id, 'lv-target');
+      await repo.linkToObservation(b.id, 'obs-x');
+
+      const byLab = await repo.listByLabValue(profileId, 'lv-target');
+      expect(byLab.map((d) => d.filename)).toEqual(['a.pdf']);
+    });
+
+    it('listByObservation is scoped to the given profile', async () => {
+      // Seed docs under a separate profile and confirm they do not leak.
+      const otherProfile = await new ProfileRepository().create({
+        baseData: {
+          weightHistory: [],
+          knownDiagnoses: [],
+          currentMedications: [],
+          relevantLimitations: [],
+          profileType: 'self',
+        },
+        warningSigns: [],
+        externalReferences: [],
+        version: '1.0',
+      });
+      const mine = await repo.create({
+        ...makeMetadata({ filename: 'mine.pdf' }),
+        content: makeBytes(8),
+      });
+      await repo.linkToObservation(mine.id, 'obs-shared');
+
+      const theirs = await repo.create({
+        ...makeMetadata({ profileId: otherProfile.id, filename: 'theirs.pdf' }),
+        content: makeBytes(8),
+      });
+      await repo.linkToObservation(theirs.id, 'obs-shared');
+
+      const mineList = await repo.listByObservation(profileId, 'obs-shared');
+      const theirsList = await repo.listByObservation(otherProfile.id, 'obs-shared');
+      expect(mineList.map((d) => d.filename)).toEqual(['mine.pdf']);
+      expect(theirsList.map((d) => d.filename)).toEqual(['theirs.pdf']);
     });
   });
 });

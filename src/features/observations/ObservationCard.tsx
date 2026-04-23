@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { Observation } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 import { SourceBadge } from './SourceBadge';
+import { AttachedDocumentsForObservation } from '../documents/AttachedDocumentsList';
 
 interface ObservationCardProps {
   observation: Observation;
@@ -89,6 +90,7 @@ export function ObservationCard({
         {Object.entries(extraSections).map(([key, value]) => (
           <Field key={key} label={key} content={value} />
         ))}
+        <AttachedDocumentsForObservation observationId={observation.id} />
       </div>
     </details>
   );

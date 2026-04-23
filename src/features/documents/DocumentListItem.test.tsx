@@ -112,6 +112,73 @@ describe('DocumentListItem', () => {
     expect(thumb).toHaveAttribute('alt', '');
   });
 
+  it('renders the link-chain indicator when linked to an observation', async () => {
+    const profileId = await seedProfile();
+    const docRaw = await seedDocument(
+      profileId,
+      'linked-obs.pdf',
+      'application/pdf',
+      new Uint8Array([0x25]),
+    );
+    const doc = await new DocumentRepository().linkToObservation(docRaw.id, 'obs-x');
+
+    render(
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
+    );
+
+    const indicator = screen.getByTestId('link-indicator-observation');
+    expect(indicator).toHaveAttribute('aria-label');
+    expect(indicator.getAttribute('aria-label')).toMatch(/Beobachtung/);
+    expect(screen.queryByTestId('link-indicator-lab-value')).not.toBeInTheDocument();
+  });
+
+  it('renders the link-chain indicator when linked to a lab value', async () => {
+    const profileId = await seedProfile();
+    const docRaw = await seedDocument(
+      profileId,
+      'linked-lv.pdf',
+      'application/pdf',
+      new Uint8Array([0x25]),
+    );
+    const doc = await new DocumentRepository().linkToLabValue(docRaw.id, 'lv-x');
+
+    render(
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
+    );
+
+    const indicator = screen.getByTestId('link-indicator-lab-value');
+    expect(indicator.getAttribute('aria-label')).toMatch(/Laborwert/);
+  });
+
+  it('does not render any link indicator on an unlinked document', async () => {
+    const profileId = await seedProfile();
+    const doc = await seedDocument(
+      profileId,
+      'plain.pdf',
+      'application/pdf',
+      new Uint8Array([0x25]),
+    );
+
+    render(
+      <MemoryRouter>
+        <ul>
+          <DocumentListItem document={doc} />
+        </ul>
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByTestId('link-indicator-observation')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('link-indicator-lab-value')).not.toBeInTheDocument();
+  });
+
   it('wraps the row in a link to /documents/:id', async () => {
     const profileId = await seedProfile();
     const doc = await seedDocument(

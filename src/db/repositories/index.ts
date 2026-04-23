@@ -11,6 +11,7 @@ export { TimelineEntryRepository } from './timelineEntryRepository';
 export {
   DocumentRepository,
   DocumentSizeLimitError,
+  DocumentLinkConflictError,
   DOCUMENT_SIZE_LIMIT_BYTES,
   type DocumentCreateInput,
 } from './documentRepository';
