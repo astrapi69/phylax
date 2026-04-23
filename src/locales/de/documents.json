@@ -42,6 +42,16 @@
       "missing-entity": "Verknüpfter Eintrag existiert nicht mehr.",
       "save": "Speichern",
       "cancel": "Abbrechen"
+    },
+    "delete": {
+      "region-label": "Dokument löschen",
+      "button": "Dokument löschen",
+      "confirm": "\"{{filename}}\" dauerhaft löschen? Kann nicht rückgängig gemacht werden.",
+      "linked-warning": "Dieses Dokument ist mit einer {{kind}} verknüpft. Die {{kind}} bleibt erhalten.",
+      "confirm-button": "Löschen bestätigen",
+      "cancel": "Abbrechen",
+      "deleting": "Wird gelöscht...",
+      "error": "Löschen fehlgeschlagen. Bitte erneut versuchen."
     }
   },
   "link": {

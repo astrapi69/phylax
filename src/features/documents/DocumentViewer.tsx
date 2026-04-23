@@ -5,6 +5,7 @@ import { useDocumentContent, type DocumentContentState } from './useDocumentCont
 import { isImageMimeType, isPdfMimeType } from './mimeTypes';
 import { ImageViewer } from './ImageViewer';
 import { LinkEditor } from './LinkEditor';
+import { DeleteDocumentButton } from './DeleteDocumentButton';
 
 /**
  * Route component for `/documents/:id`. Routes by URL param into a
@@ -50,6 +51,7 @@ function DocumentViewerById({ id }: { id: string }) {
         <LinkEditor document={state.document} onChanged={() => setReloadKey((k) => k + 1)} />
       )}
       <ViewerBody state={state} />
+      {state.kind === 'ready' && <DeleteDocumentButton document={state.document} />}
     </div>
   );
 }
