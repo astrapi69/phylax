@@ -17,5 +17,19 @@
       "confirm-button": "Verarbeiten",
       "cancel-button": "Abbrechen"
     }
+  },
+  "ai": {
+    "error": {
+      "network": "Verbindung zum AI-Anbieter fehlgeschlagen. Erneut versuchen.",
+      "rate-limit": "AI-Anbieter limitiert. In ein paar Minuten erneut versuchen.",
+      "auth": "API-Key ungültig oder abgelaufen. Bitte in den Einstellungen prüfen.",
+      "content-policy": "AI-Anbieter hat den Inhalt abgelehnt. Sensible Daten bitte manuell entfernen und erneut versuchen.",
+      "payload-too-large": "Dokument zu groß für den AI-Anbieter. Bitte teilen oder kürzen.",
+      "response-truncated": "AI-Antwort zu lang. Bitte das Dokument in kleineren Teilen importieren.",
+      "malformed-response": "Unerwartete Antwort vom AI-Anbieter. Erneut versuchen.",
+      "ai-config-missing": "AI noch nicht konfiguriert. Bitte API-Key in den Einstellungen hinterlegen.",
+      "server": "AI-Anbieter hat einen Server-Fehler gemeldet. Erneut versuchen."
+    },
+    "uncertain": "Klassifizierung unsicher. Bitte bestätigen, dass dies ein {{type}}-Dokument ist."
   }
 }

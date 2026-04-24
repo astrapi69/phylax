@@ -17,5 +17,19 @@
       "confirm-button": "Process",
       "cancel-button": "Cancel"
     }
+  },
+  "ai": {
+    "error": {
+      "network": "Could not reach the AI provider. Please retry.",
+      "rate-limit": "AI provider rate-limited. Please retry in a few minutes.",
+      "auth": "API key invalid or expired. Please check it in Settings.",
+      "content-policy": "AI provider refused the content. Please remove sensitive data and retry.",
+      "payload-too-large": "Document too large for the AI provider. Please split or shorten.",
+      "response-truncated": "AI response too long. Please import the document in smaller parts.",
+      "malformed-response": "Unexpected response from the AI provider. Please retry.",
+      "ai-config-missing": "AI not configured yet. Please set your API key in Settings.",
+      "server": "AI provider reported a server error. Please retry."
+    },
+    "uncertain": "Classification uncertain. Please confirm this is a {{type}} document."
   }
 }

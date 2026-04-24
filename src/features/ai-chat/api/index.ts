@@ -1,2 +1,15 @@
 export { streamCompletion } from './anthropicClient';
-export type { AnthropicMessage, AnthropicStreamOptions, ChatError } from './types';
+export { requestCompletion } from './requestCompletion';
+export type {
+  AnthropicMessage,
+  AnthropicStreamOptions,
+  ChatError,
+  ContentBlock,
+  TextBlock,
+  ImageBlock,
+  ToolUseBlock,
+  ToolResultBlock,
+  ToolDefinition,
+  RequestCompletionOptions,
+  RequestCompletionResult,
+} from './types';
