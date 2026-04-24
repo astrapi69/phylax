@@ -124,7 +124,7 @@ export const EXTRACT_OBSERVATIONS_TOOL: ToolDefinition = {
 
 export const EXTRACT_LAB_VALUES_TOOL: ToolDefinition = {
   name: 'extract_lab_values',
-  description: 'Extrahiere Laborwerte aus dem Dokument.',
+  description: 'Extrahiere Laborwerte und Berichtsmetadaten aus dem Dokument.',
   input_schema: {
     type: 'object',
     properties: {
@@ -151,6 +151,16 @@ export const EXTRACT_LAB_VALUES_TOOL: ToolDefinition = {
           },
           required: ['category', 'parameter', 'result'],
         },
+      },
+      reportDate: {
+        type: 'string',
+        description:
+          'Berichtsdatum als ISO-Datum (YYYY-MM-DD), falls eindeutig im Dokument erkennbar (z.B. "Befund vom 14.04.2026"). Leer lassen, wenn unklar oder mehrdeutig.',
+      },
+      labName: {
+        type: 'string',
+        description:
+          'Name des Labors oder der ausstellenden Einrichtung, falls explizit im Dokument genannt (z.B. "Synlab MVZ", "Labor Berlin"). Leer lassen, wenn nicht eindeutig erkennbar.',
       },
     },
     required: ['labValues'],

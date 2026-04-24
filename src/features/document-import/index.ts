@@ -54,4 +54,15 @@ export type {
   SupplementDraft,
   OpenPointDraft,
   ExtractedDrafts,
+  LabReportMeta,
 } from './drafts';
+export type { LabValuesExtractionResult } from './extract';
+export {
+  commitDrafts,
+  isSelectionEmpty,
+  totalCommitted,
+  type CommitOptions,
+  type CommitResult,
+  type CommitTypeResult,
+  type DraftSelection,
+} from './commit';

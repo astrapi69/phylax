@@ -13,6 +13,7 @@ import {
 import type { DocumentClassification, PreparedInput } from './types';
 import type {
   ExtractedDrafts,
+  LabReportMeta,
   LabValueDraft,
   ObservationDraft,
   OpenPointDraft,
@@ -59,13 +60,29 @@ export async function extractEntries(
   const model = options.model ?? EXTRACTION_MODEL;
   const sharedOpts = { ...options, model };
 
-  const [observations, labValues, supplements, openPoints] = await Promise.all([
+  const [observations, labResult, supplements, openPoints] = await Promise.all([
     extractObservations(input, classification, config.apiKey, sharedOpts),
     extractLabValues(input, classification, config.apiKey, sharedOpts),
     extractSupplements(input, classification, config.apiKey, sharedOpts),
     extractOpenPoints(input, classification, config.apiKey, sharedOpts),
   ]);
-  return { observations, labValues, supplements, openPoints };
+  return {
+    observations,
+    labValues: labResult.drafts,
+    supplements,
+    openPoints,
+    labReportMeta: labResult.meta,
+  };
+}
+
+/**
+ * Result of `extractLabValues`: per-value drafts plus document-level
+ * report metadata used by the IMP-04 commit pipeline to synthesize
+ * the parent `LabReport`.
+ */
+export interface LabValuesExtractionResult {
+  drafts: LabValueDraft[];
+  meta: LabReportMeta;
 }
 
 // ─── Per-class extractors ────────────────────────────────────────────
@@ -94,7 +111,7 @@ export async function extractLabValues(
   classification: DocumentClassification,
   apiKey: string,
   options: ExtractOptions & { model: string },
-): Promise<LabValueDraft[]> {
+): Promise<LabValuesExtractionResult> {
   const toolUse = await callExtractorWithTool({
     input,
     classification,
@@ -103,9 +120,38 @@ export async function extractLabValues(
     tool: EXTRACT_LAB_VALUES_TOOL,
     entityKindGerman: 'Laborwerte',
   });
-  const items = (toolUse.input as { labValues?: unknown }).labValues;
-  if (!Array.isArray(items)) return [];
-  return items.map(toLabValueDraft);
+  const raw = toolUse.input as {
+    labValues?: unknown;
+    reportDate?: unknown;
+    labName?: unknown;
+  };
+  const items = Array.isArray(raw.labValues) ? raw.labValues : [];
+  return {
+    drafts: items.map(toLabValueDraft),
+    meta: toLabReportMeta(raw.reportDate, raw.labName),
+  };
+}
+
+/**
+ * Convert raw tool_use fields to a `LabReportMeta`. Only retains a
+ * `reportDate` that round-trips ISO YYYY-MM-DD parsing so the commit
+ * pipeline can trust the value without re-validating.
+ */
+function toLabReportMeta(rawDate: unknown, rawName: unknown): LabReportMeta {
+  const meta: LabReportMeta = {};
+  if (typeof rawDate === 'string' && isIsoDate(rawDate)) {
+    meta.reportDate = rawDate;
+  }
+  if (typeof rawName === 'string' && rawName.trim().length > 0) {
+    meta.labName = rawName.trim();
+  }
+  return meta;
+}
+
+function isIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const ts = Date.parse(value);
+  return Number.isFinite(ts);
 }
 
 export async function extractSupplements(

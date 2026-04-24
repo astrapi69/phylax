@@ -63,15 +63,41 @@ export type OpenPointDraft = Pick<
 };
 
 /**
+ * Document-level metadata returned by the lab-values extractor (IMP-04).
+ *
+ * Lab values are FK-bound to a `LabReport` in the domain model. The
+ * AI extractor surfaces report-date and lab-name when the source
+ * document makes them explicit (most lab reports do). The IMP-04
+ * commit pipeline uses these to synthesize a `LabReport` row that
+ * the accepted lab values reference.
+ *
+ * Both fields are optional — the AI returns them only when the
+ * document is unambiguous. On commit:
+ * - `reportDate` missing or unparseable → fall back to today's ISO date.
+ * - `labName` missing → leave the synthetic report's `labName` undefined.
+ */
+export interface LabReportMeta {
+  /** ISO date (YYYY-MM-DD) extracted from the document, if unambiguous. */
+  reportDate?: string;
+  /** Lab name extracted from the document, if explicitly present. */
+  labName?: string;
+}
+
+/**
  * Aggregate result of `extractEntries(input, classification)`. Each
- * field is a (possibly empty) array. Empty arrays are valid: a doctor
+ * draft array is (possibly empty). Empty arrays are valid: a doctor
  * letter with no actionable items returns `openPoints: []`.
+ *
+ * `labReportMeta` carries document-level fields needed to synthesize
+ * the parent `LabReport` at commit time. Always present; fields
+ * within may be absent when the AI could not extract them.
  */
 export interface ExtractedDrafts {
   observations: ObservationDraft[];
   labValues: LabValueDraft[];
   supplements: SupplementDraft[];
   openPoints: OpenPointDraft[];
+  labReportMeta: LabReportMeta;
 }
 
 /** Empty drafts aggregate; used when classification short-circuits. */
@@ -80,4 +106,5 @@ export const EMPTY_DRAFTS: ExtractedDrafts = {
   labValues: [],
   supplements: [],
   openPoints: [],
+  labReportMeta: {},
 };

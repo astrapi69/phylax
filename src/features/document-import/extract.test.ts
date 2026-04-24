@@ -99,6 +99,8 @@ describe('extractEntries', () => {
                     assessment: 'normal',
                   },
                 ],
+                reportDate: '2026-04-14',
+                labName: 'Synlab MVZ',
               },
             },
           ],
@@ -148,6 +150,40 @@ describe('extractEntries', () => {
     expect(result.supplements[0]?.category).toBe('daily');
     expect(result.openPoints).toHaveLength(1);
     expect(result.openPoints[0]?.resolved).toBe(false);
+    expect(result.labReportMeta.reportDate).toBe('2026-04-14');
+    expect(result.labReportMeta.labName).toBe('Synlab MVZ');
+  });
+
+  it('drops malformed reportDate and missing labName from labReportMeta', async () => {
+    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk', model: 'm' });
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (_url, init) => {
+      const body = JSON.parse((init as RequestInit).body as string);
+      const toolName = body.tool_choice?.name as string;
+      if (toolName === 'extract_lab_values') {
+        return jsonResponse({
+          content: [
+            {
+              type: 'tool_use',
+              id: 't',
+              name: toolName,
+              input: { labValues: [], reportDate: 'not-a-date', labName: '   ' },
+            },
+          ],
+          stop_reason: 'tool_use',
+        });
+      }
+      const arrayKey = toolName
+        .replace('extract_', '')
+        .replace(/_(\w)/g, (_m, c) => c.toUpperCase());
+      return jsonResponse({
+        content: [{ type: 'tool_use', id: 't', name: toolName, input: { [arrayKey]: [] } }],
+        stop_reason: 'tool_use',
+      });
+    });
+
+    const result = await extractEntries(textInput('x'), LAB_CLASSIFICATION);
+    expect(result.labReportMeta.reportDate).toBeUndefined();
+    expect(result.labReportMeta.labName).toBeUndefined();
   });
 
   it('returns empty arrays when extractors return no items', async () => {
@@ -176,6 +212,7 @@ describe('extractEntries', () => {
     expect(result.labValues).toEqual([]);
     expect(result.supplements).toEqual([]);
     expect(result.openPoints).toEqual([]);
+    expect(result.labReportMeta).toEqual({});
   });
 
   it('propagates AiCallError when one of the parallel calls fails', async () => {
