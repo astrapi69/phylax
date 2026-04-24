@@ -33,3 +33,20 @@ export function isImageMimeType(mime: string): mime is ImageMimeType {
 export function isAcceptedDocumentType(mime: string): mime is AcceptedDocumentType {
   return (ACCEPTED_DOCUMENT_TYPES as readonly string[]).includes(mime);
 }
+
+/**
+ * Plain-text MIME types accepted by the document-import pipeline
+ * (Phase 4b IMP-series). These are NOT in `ACCEPTED_DOCUMENT_TYPES`
+ * because the documents-feature upload UI (D-02) intentionally
+ * restricts to PDF + raster images. Text imports flow through a
+ * separate path (no encrypted blob storage; routed straight to
+ * AI extraction once IMP-03 lands).
+ */
+export const TEXT_MIME_TYPE = 'text/plain' as const;
+export const MARKDOWN_MIME_TYPE = 'text/markdown' as const;
+export const TEXT_MIME_TYPES = [TEXT_MIME_TYPE, MARKDOWN_MIME_TYPE] as const;
+export type TextMimeType = (typeof TEXT_MIME_TYPES)[number];
+
+export function isTextMimeType(mime: string): mime is TextMimeType {
+  return (TEXT_MIME_TYPES as readonly string[]).includes(mime);
+}
