@@ -1,0 +1,13 @@
+{
+  "dialog": {
+    "title": "Alle Daten löschen",
+    "warning": "Damit werden alle lokal gespeicherten Phylax-Daten dauerhaft gelöscht: Profile, Beobachtungen, Laborwerte, Dokumente, KI-Konfiguration und Einstellungen. Es gibt keinen Wiederherstellungsweg.",
+    "challenge-prompt": "Tippe {{challenge}}, um zu bestätigen.",
+    "challenge-placeholder": "{{challenge}}",
+    "confirm-button": "Endgültig löschen",
+    "cancel-button": "Abbrechen",
+    "progress": "Daten werden gelöscht...",
+    "blocked": "Andere Phylax-Tabs sind geöffnet. Bitte schließe sie und versuche es erneut.",
+    "partial-failure": "Daten gelöscht. Einige Browser-Caches konnten nicht geleert werden. Lösche die Browser-Daten manuell, falls dich das stört."
+  }
+}

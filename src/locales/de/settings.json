@@ -27,5 +27,10 @@
     "heading": "Profil exportieren",
     "description": "Lade dein Profil als Markdown-Datei herunter. Bringe es ausgedruckt oder als Datei zum nächsten Arztbesuch mit.",
     "button": "Profil exportieren"
+  },
+  "danger-zone": {
+    "heading": "Gefahrenzone",
+    "description": "Lösche unwiderruflich alle lokal gespeicherten Phylax-Daten dieses Geräts. Profile, Beobachtungen, Laborwerte, Dokumente, KI-Konfiguration. Kein Wiederherstellungsweg.",
+    "reset-button": "Alle Daten löschen"
   }
 }

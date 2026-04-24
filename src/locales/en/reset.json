@@ -1,0 +1,13 @@
+{
+  "dialog": {
+    "title": "Delete all data",
+    "warning": "This will permanently delete all Phylax data stored locally: profiles, observations, lab values, documents, AI configuration, and settings. There is no recovery path.",
+    "challenge-prompt": "Type {{challenge}} to confirm.",
+    "challenge-placeholder": "{{challenge}}",
+    "confirm-button": "Delete permanently",
+    "cancel-button": "Cancel",
+    "progress": "Deleting data...",
+    "blocked": "Other Phylax tabs are open. Please close them and retry.",
+    "partial-failure": "Data deleted. Some browser caches could not be cleared. Clear your browser data manually if this is a concern."
+  }
+}

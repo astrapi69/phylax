@@ -20,6 +20,7 @@
   "backup-link": {
     "label": "Import data from backup"
   },
+  "forgotten-password-link": "Forgot your password? Delete all data and start over",
   "error": {
     "wrong-password": "Wrong password.",
     "no-meta": "Setup was not completed. Please set up Phylax again."

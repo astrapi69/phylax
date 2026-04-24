@@ -291,6 +291,7 @@ Goal: production-quality UX, mobile-ready, accessible, internationalized.
 - [ ] **P-14** Image viewer: pinch-to-zoom on touch devices (PointerEvents + gesture composition + `touch-action` config). D-06 ships mobile with zoom buttons + native scrollbar pan.
 - [ ] **P-15** Document link picker: evaluate a searchable combobox (e.g. custom native-datalist or a dedicated small component) when observation / lab-value counts per profile exceed ~30. D-07 ships a native `<select>` which is keyboard-accessible and zero-bundle but becomes scroll-heavy at larger counts. Marker only, no commitment.
 - [ ] **P-16** Inline list-row delete affordance for documents, pending a shared modal-dialog system for the app. D-08 ships viewer-only two-step confirm; list-row delete would need focus-trapped confirmation and is a modal concern, not a feature-local one.
+- [ ] **P-17** Migrate `ResetDialog` (full-data reset) to the shared modal-dialog system (O-20) once it ships. Currently inline in `src/features/reset/ResetDialog.tsx` with `role="alertdialog"` + `aria-modal="true"` but no focus trap or backdrop. Same migration class as P-16.
 
 ---
 

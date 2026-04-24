@@ -87,6 +87,10 @@ phylax/
 - Mobile-First: jede Komponente muss auf 360px Breite funktionieren
 - Dark Mode via Tailwind `dark:`-Variante
 
+### Browser-Storage-Key-Konvention
+
+Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (Bindestrich) oder `phylax.` (Punkt). Das Full-Data-Reset-Feature (`src/features/reset/useResetAllData.ts`) iteriert beide Stores anhand dieses Prefix-Musters und löscht alle passenden Keys; neue Keys, die nicht der Konvention folgen, überleben einen Reset und führen zu inkonsistentem App-Zustand. Beim Hinzufügen eines neuen Storage-Keys: Konvention einhalten, sonst Reset-Hook anpassen und dokumentieren.
+
 ### Testing
 
 - Jedes Crypto-Modul hat Unit-Tests

@@ -28,6 +28,7 @@ import documentsDE from '../locales/de/documents.json';
 import notFoundDE from '../locales/de/not-found.json';
 import backupImportDE from '../locales/de/backup-import.json';
 import backupExportDE from '../locales/de/backup-export.json';
+import resetDE from '../locales/de/reset.json';
 
 /**
  * Lazy-loaded EN locale resources. `import.meta.glob` (without
@@ -74,6 +75,7 @@ export const NAMESPACES = [
   'not-found',
   'backup-import',
   'backup-export',
+  'reset',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -185,6 +187,7 @@ void i18n
         'not-found': notFoundDE,
         'backup-import': backupImportDE,
         'backup-export': backupExportDE,
+        reset: resetDE,
       },
     },
     partialBundledLanguages: true,

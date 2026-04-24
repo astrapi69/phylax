@@ -1,8 +1,9 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getSafeReturnTo } from '../../router/returnTo';
 import { useUnlock } from './useUnlock';
+import { ResetDialog } from '../reset';
 
 interface UnlockViewProps {
   onUnlocked?: () => void;
@@ -51,6 +52,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
 
   const hook = useUnlock(handleUnlocked);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [resetOpen, setResetOpen] = useState(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -143,6 +145,23 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
         >
           {t('backup-link.label')}
         </Link>
+
+        {!resetOpen && (
+          <button
+            type="button"
+            onClick={() => setResetOpen(true)}
+            className="mt-2 block w-full text-center text-sm text-gray-600 underline hover:text-red-700 dark:text-gray-400 dark:hover:text-red-400"
+            data-testid="unlock-forgotten-password-link"
+          >
+            {t('forgotten-password-link')}
+          </button>
+        )}
+
+        {resetOpen && (
+          <div className="mt-4">
+            <ResetDialog onCancel={() => setResetOpen(false)} />
+          </div>
+        )}
       </div>
     </div>
   );

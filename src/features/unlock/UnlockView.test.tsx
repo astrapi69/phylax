@@ -105,4 +105,31 @@ describe('UnlockView', () => {
     expect(screen.getByRole('link', { name: 'Import data from backup' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
   });
+
+  it('renders the forgotten-password reset link by default; opens ResetDialog when clicked', async () => {
+    const user = userEvent.setup();
+    renderUnlock();
+
+    const link = screen.getByTestId('unlock-forgotten-password-link');
+    expect(link).toBeInTheDocument();
+    expect(screen.queryByTestId('reset-dialog')).not.toBeInTheDocument();
+
+    await user.click(link);
+
+    expect(screen.getByTestId('reset-dialog')).toBeInTheDocument();
+    expect(screen.queryByTestId('unlock-forgotten-password-link')).not.toBeInTheDocument();
+  });
+
+  it('cancelling the ResetDialog returns to the link state', async () => {
+    const user = userEvent.setup();
+    renderUnlock();
+
+    await user.click(screen.getByTestId('unlock-forgotten-password-link'));
+    expect(screen.getByTestId('reset-dialog')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('reset-cancel-btn'));
+
+    expect(screen.queryByTestId('reset-dialog')).not.toBeInTheDocument();
+    expect(screen.getByTestId('unlock-forgotten-password-link')).toBeInTheDocument();
+  });
 });

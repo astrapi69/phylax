@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ThemeSection } from './ThemeSection';
 import { LanguageSection } from './LanguageSection';
+import { DangerZoneSection } from './DangerZoneSection';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
 import { ExportButton } from '../export';
@@ -43,6 +44,7 @@ export function SettingsScreen() {
         <BackupExportSection />
       </section>
       <DonationSettingsSection />
+      <DangerZoneSection />
     </div>
   );
 }

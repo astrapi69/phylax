@@ -27,5 +27,10 @@
     "heading": "Export profile",
     "description": "Download your profile as a Markdown file. Bring it printed or as a file to your next doctor's visit.",
     "button": "Export profile"
+  },
+  "danger-zone": {
+    "heading": "Danger zone",
+    "description": "Permanently delete all Phylax data stored locally on this device. Profiles, observations, lab values, documents, AI configuration. No recovery path.",
+    "reset-button": "Delete all data"
   }
 }

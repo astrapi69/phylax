@@ -20,6 +20,7 @@
   "backup-link": {
     "label": "Daten von Backup importieren"
   },
+  "forgotten-password-link": "Passwort vergessen? Alle Daten löschen und neu starten",
   "error": {
     "wrong-password": "Falsches Passwort.",
     "no-meta": "Einrichtung nicht abgeschlossen. Bitte richte Phylax neu ein."
