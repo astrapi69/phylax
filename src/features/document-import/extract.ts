@@ -10,6 +10,7 @@ import {
   EXTRACT_OPEN_POINTS_TOOL,
   extractorSystemPrompt,
 } from './prompts';
+import type { ExtractorName } from './promptTemplates';
 import type { DocumentClassification, PreparedInput } from './types';
 import type {
   ExtractedDrafts,
@@ -211,7 +212,11 @@ async function callExtractorWithTool(args: CallExtractorOptions): Promise<ToolUs
         return await requestCompletion({
           apiKey: args.apiKey,
           model: args.options.model,
-          system: extractorSystemPrompt(args.classification.type, args.entityKindGerman),
+          system: extractorSystemPrompt(
+            args.classification.type,
+            args.entityKindGerman,
+            args.tool.name as ExtractorName,
+          ),
           messages,
           tools: [args.tool],
           toolChoice: { type: 'tool', name: args.tool.name },

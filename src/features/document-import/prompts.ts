@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../ai-chat/api';
 import type { DocumentType } from './types';
+import { composeExtractorPrompt, type ExtractorName } from './promptTemplates';
 
 /**
  * System prompts and tool schemas for the IMP-03 classifier and
@@ -14,7 +15,7 @@ import type { DocumentType } from './types';
  * (insurer-app PDFs, lab-result scans, doctor letters).
  */
 
-const STRUCTURE_ONLY = `Du strukturierst medizinische Dokumente. Du stellst keine
+export const STRUCTURE_ONLY = `Du strukturierst medizinische Dokumente. Du stellst keine
 Diagnosen, gibst keine Therapieempfehlungen und übernimmst keine
 klinische Verantwortung. Du extrahierst, was im Dokument steht —
 nicht mehr, nicht weniger. Bei Unsicherheit lieber leer lassen als
@@ -69,16 +70,25 @@ export const CLASSIFICATION_TOOL: ToolDefinition = {
 
 // ─── Per-class extractor prompts ─────────────────────────────────────
 
-export function extractorSystemPrompt(documentType: DocumentType, entityKind: string): string {
-  return `${STRUCTURE_ONLY}
-
-Das vorliegende Dokument ist klassifiziert als: ${documentType}.
-
-Extrahiere alle ${entityKind}, die im Dokument explizit erwähnt sind.
-Erfinde nichts. Wenn das Dokument keine ${entityKind} enthält, gib
-ein leeres Array zurück. Bei jedem Eintrag: nur Felder ausfüllen,
-deren Wert im Dokument explizit steht; optionale Felder leer lassen,
-wenn der Wert nicht im Text steht.`;
+/**
+ * Compose the extractor system prompt for a given document type +
+ * entity kind + specific extractor tool.
+ *
+ * IMP-06 wires the per-`DocumentType` refinement registry in
+ * `promptTemplates.ts`; the generic `STRUCTURE_ONLY` base is always
+ * present (safety language cannot be dropped by a template).
+ */
+export function extractorSystemPrompt(
+  documentType: DocumentType,
+  entityKind: string,
+  extractorName: ExtractorName,
+): string {
+  return composeExtractorPrompt({
+    documentType,
+    entityKind,
+    extractorName,
+    structureOnlyBase: STRUCTURE_ONLY,
+  });
 }
 
 // ─── Extractor tool schemas ──────────────────────────────────────────

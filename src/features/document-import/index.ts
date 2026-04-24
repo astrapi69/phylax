@@ -87,3 +87,9 @@ export {
   type DeleteWithProvenanceResult,
 } from './deleteWithProvenance';
 export type { SourceDocumentOutcome, SourceDocumentSkipReason } from './commit';
+export {
+  PROMPT_TEMPLATES,
+  composeExtractorPrompt,
+  type ExtractorName,
+  type PromptTemplate,
+} from './promptTemplates';
