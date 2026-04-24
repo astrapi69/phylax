@@ -5,11 +5,17 @@ import { encryptWithStoredKey, decryptWithStoredKey } from '../crypto';
 export type { AIProvider, AIProviderConfig } from './settings';
 
 /** Default Anthropic model. Cost-effective default for structured output. */
-export const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
+export const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-6';
 
-/** Known Anthropic models surfaced in the model dropdown. */
+/**
+ * Known Anthropic models surfaced in the model dropdown. Ordered by
+ * decreasing capability / increasing cost: Opus for the highest-quality
+ * needs, Sonnet as the cost-effective default, Haiku for cheap +
+ * fast use cases (e.g. classification short-circuit in IMP-03).
+ */
 export const ANTHROPIC_MODELS: readonly string[] = [
-  'claude-sonnet-4-20250514',
+  'claude-opus-4-7',
+  'claude-sonnet-4-6',
   'claude-haiku-4-5-20251001',
 ];
 

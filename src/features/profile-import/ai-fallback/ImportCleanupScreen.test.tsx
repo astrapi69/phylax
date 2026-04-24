@@ -44,7 +44,7 @@ async function configureAI(): Promise<void> {
   await saveAIConfig({
     provider: 'anthropic',
     apiKey: 'sk-ant-test-key-xxxxxxxxx',
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
   });
 }
 

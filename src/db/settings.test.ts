@@ -91,7 +91,7 @@ describe('MetaPayload encoding/decoding', () => {
     const aiConfig: AIProviderConfig = {
       provider: 'anthropic',
       apiKey: 'sk-ant-abc123',
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
     };
     const payload: MetaPayload = {
       verificationToken: VERIFICATION_TOKEN,

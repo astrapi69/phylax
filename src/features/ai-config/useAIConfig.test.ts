@@ -41,14 +41,14 @@ describe('useAIConfig', () => {
     await aiConfigDb.saveAIConfig({
       provider: 'anthropic',
       apiKey: 'sk-ant-stored',
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
     });
 
     const { result } = renderHook(() => useAIConfig());
 
     await waitFor(() => expect(result.current.state.status).toBe('configured'));
     expect(result.current.state.config?.apiKey).toBe('sk-ant-stored');
-    expect(result.current.state.config?.model).toBe('claude-sonnet-4-20250514');
+    expect(result.current.state.config?.model).toBe('claude-sonnet-4-6');
   });
 
   it('saveConfig transitions to configured and persists', async () => {

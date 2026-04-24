@@ -28,7 +28,7 @@ async function seedConfiguredSession(): Promise<void> {
   await saveAIConfig({
     provider: 'anthropic',
     apiKey: 'sk-ant-configured-key-test-1234',
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
   });
   await new ProfileRepository().create({
     baseData: {
@@ -299,7 +299,7 @@ describe('useChat', () => {
       await result.current.sendMessage('hi');
     });
     expect(lastStreamCall?.apiKey).toBe('sk-ant-configured-key-test-1234');
-    expect(lastStreamCall?.model).toBe('claude-sonnet-4-20250514');
+    expect(lastStreamCall?.model).toBe('claude-sonnet-4-6');
   });
 
   it('shareProfile appends a context message with counts and does NOT call the API', async () => {

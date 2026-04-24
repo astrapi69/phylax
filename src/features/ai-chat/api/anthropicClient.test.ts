@@ -43,7 +43,7 @@ const STOP_EVENT = `event: message_stop\ndata: ${JSON.stringify({ type: 'message
 function baseOptions() {
   return {
     apiKey: 'sk-ant-test-key-012345',
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     system: 'You are a test.',
     messages: [{ role: 'user' as const, content: 'hi' }],
     onToken: vi.fn<(token: string) => void>(),
@@ -90,7 +90,7 @@ describe('streamCompletion - request shape', () => {
     const init = fetchSpy.mock.calls[0]?.[1] as RequestInit;
     const body = JSON.parse(init.body as string);
     expect(body).toEqual({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       system: 'You are a test.',
       messages: [{ role: 'user', content: 'hi' }],
       max_tokens: 2048,

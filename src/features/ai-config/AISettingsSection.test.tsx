@@ -41,7 +41,7 @@ describe('AISettingsSection', () => {
     await saveAIConfig({
       provider: 'anthropic',
       apiKey: 'sk-ant-abcdefghijklmnop-ABCD',
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
     });
 
     render(<AISettingsSection />);
@@ -70,7 +70,7 @@ describe('AISettingsSection', () => {
     await waitFor(() => expect(screen.getByLabelText('Modell')).toBeInTheDocument());
     const select = screen.getByLabelText('Modell') as HTMLSelectElement;
     const values = Array.from(select.options).map((o) => o.value);
-    expect(values).toContain('claude-sonnet-4-20250514');
+    expect(values).toContain('claude-sonnet-4-6');
     expect(values).toContain('claude-haiku-4-5-20251001');
   });
 

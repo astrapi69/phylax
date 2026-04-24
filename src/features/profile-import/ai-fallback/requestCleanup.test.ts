@@ -41,7 +41,7 @@ describe('requestCleanup', () => {
     await saveAIConfig({
       provider: 'anthropic',
       apiKey: 'sk-ant-test-key-xxxxxxxxx',
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
     });
     vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
       lastCall = opts;
