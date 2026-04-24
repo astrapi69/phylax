@@ -27,8 +27,39 @@ describe('ImportButton', () => {
     const user = userEvent.setup({ applyAccept: false });
     render(<ImportButton />);
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (!input) throw new Error('expected file input');
     const file = new File(['x'], 'note.txt', { type: 'text/plain' });
     await user.upload(input, file);
     await waitFor(() => expect(screen.getByTestId('import-flow')).toBeInTheDocument());
+  });
+
+  it('clears the input value after selection so the same file can be re-picked', async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    render(<ImportButton />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (!input) throw new Error('expected file input');
+    const file = new File(['x'], 'note.txt', { type: 'text/plain' });
+    await user.upload(input, file);
+    expect(input.value).toBe('');
+  });
+
+  it('does not open the flow on empty selection (cancelled file picker)', () => {
+    render(<ImportButton />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (!input) throw new Error('expected file input');
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(screen.queryByTestId('import-flow')).toBeNull();
+  });
+
+  it('unmounts the flow when the user cancels via Escape (handleClose path)', async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    render(<ImportButton />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (!input) throw new Error('expected file input');
+    const file = new File(['x'], 'note.txt', { type: 'text/plain' });
+    await user.upload(input, file);
+    await waitFor(() => expect(screen.getByTestId('import-flow')).toBeInTheDocument());
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByTestId('import-flow')).toBeNull());
   });
 });

@@ -320,6 +320,136 @@ describe('useImportSession state machine', () => {
     expect(result.current.state.kind).toBe('done');
   });
 
+  it('editLabValue patches the corresponding draft entry', async () => {
+    const pipeline = fakePipeline();
+    pipeline.extractEntries.mockResolvedValueOnce({
+      observations: [],
+      labValues: [{ category: 'Blutbild', parameter: 'Haemoglobin', result: '14.2' }],
+      supplements: [],
+      openPoints: [],
+      labReportMeta: {},
+    });
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(txtFile());
+    });
+    act(() => {
+      result.current.editLabValue(0, { parameter: 'TSH' });
+    });
+    if (result.current.state.kind === 'reviewing') {
+      expect(result.current.state.drafts.labValues[0]?.parameter).toBe('TSH');
+    } else {
+      throw new Error('expected reviewing state');
+    }
+  });
+
+  it('editSupplement patches the corresponding draft entry', async () => {
+    const pipeline = fakePipeline();
+    pipeline.extractEntries.mockResolvedValueOnce({
+      observations: [],
+      labValues: [],
+      supplements: [{ name: 'Vit D', category: 'daily' }],
+      openPoints: [],
+      labReportMeta: {},
+    });
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(txtFile());
+    });
+    act(() => {
+      result.current.editSupplement(0, { brand: 'tetesept' });
+    });
+    if (result.current.state.kind === 'reviewing') {
+      expect(result.current.state.drafts.supplements[0]?.brand).toBe('tetesept');
+    } else {
+      throw new Error('expected reviewing state');
+    }
+  });
+
+  it('editOpenPoint patches the corresponding draft entry', async () => {
+    const pipeline = fakePipeline();
+    pipeline.extractEntries.mockResolvedValueOnce({
+      observations: [],
+      labValues: [],
+      supplements: [],
+      openPoints: [{ text: 'X', context: 'Y', resolved: false }],
+      labReportMeta: {},
+    });
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(txtFile());
+    });
+    act(() => {
+      result.current.editOpenPoint(0, { priority: 'hoch' });
+    });
+    if (result.current.state.kind === 'reviewing') {
+      expect(result.current.state.drafts.openPoints[0]?.priority).toBe('hoch');
+    } else {
+      throw new Error('expected reviewing state');
+    }
+  });
+
+  it('reset returns to idle from any state', async () => {
+    const pipeline = fakePipeline();
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(txtFile());
+    });
+    expect(result.current.state.kind).toBe('reviewing');
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.state.kind).toBe('idle');
+  });
+
+  it('grantConsent with rememberForSession true forwards the option', async () => {
+    const pipeline = fakePipeline();
+    const file = txtFile('scan.pdf');
+    pipeline.prepare.mockResolvedValueOnce({
+      kind: 'consent-required',
+      reason: 'pdf-rasterization',
+      file,
+    });
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(file);
+    });
+    await act(async () => {
+      await result.current.grantConsent(true);
+    });
+    expect(pipeline.prepareWithConsent).toHaveBeenCalledWith(file, {
+      rememberForSession: true,
+    });
+  });
+
+  it('grantConsent honors a consent-declined re-result by collapsing to idle', async () => {
+    const pipeline = fakePipeline();
+    const file = txtFile('scan.pdf');
+    pipeline.prepare.mockResolvedValueOnce({
+      kind: 'consent-required',
+      reason: 'pdf-rasterization',
+      file,
+    });
+    pipeline.prepareWithConsent.mockResolvedValueOnce({ kind: 'consent-declined' });
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.pickFile(file);
+    });
+    await act(async () => {
+      await result.current.grantConsent(false);
+    });
+    expect(result.current.state.kind).toBe('idle');
+  });
+
+  it('retry returns to idle when no last file is remembered', async () => {
+    const pipeline = fakePipeline();
+    const { result } = renderHook(() => useImportSession({ pipeline }));
+    await act(async () => {
+      await result.current.retry();
+    });
+    expect(result.current.state.kind).toBe('idle');
+  });
+
   it('commit failure surfaces as commit error', async () => {
     const pipeline = fakePipeline();
     pipeline.commitDrafts.mockRejectedValueOnce(new Error('crypto failure'));

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import i18n from '../../../i18n/config';
 import { ImportFlow } from './ImportFlow';
@@ -120,6 +120,63 @@ describe('ImportFlow', () => {
     await waitFor(() => expect(screen.getByTestId('consent-dialog')).toBeInTheDocument());
   });
 
+  it('grants consent and continues to classify+review', async () => {
+    const user = userEvent.setup();
+    const pipeline = fakes();
+    pipeline.prepare.mockResolvedValueOnce({
+      kind: 'consent-required',
+      reason: 'pdf-rasterization',
+      file: txtFile('scan.pdf'),
+    });
+    render(
+      <ImportFlow
+        initialFile={txtFile('scan.pdf')}
+        onClose={vi.fn()}
+        pipelineOverrides={pipeline}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId('consent-dialog')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Verarbeiten' }));
+    await waitFor(() => expect(pipeline.prepareWithConsent).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByTestId('review-panel')).toBeInTheDocument());
+  });
+
+  it('declines consent and closes via onDecline', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const pipeline = fakes();
+    pipeline.prepare.mockResolvedValueOnce({
+      kind: 'consent-required',
+      reason: 'pdf-rasterization',
+      file: txtFile('scan.pdf'),
+    });
+    render(
+      <ImportFlow
+        initialFile={txtFile('scan.pdf')}
+        onClose={onClose}
+        pipelineOverrides={pipeline}
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId('consent-dialog')).toBeInTheDocument());
+    const dialog = screen.getByTestId('consent-dialog');
+    const cancelBtn = within(dialog).getByRole('button', { name: 'Abbrechen' });
+    await user.click(cancelBtn);
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('rejects classification and returns to idle', async () => {
+    const user = userEvent.setup();
+    const pipeline = fakes();
+    pipeline.classifyDocument.mockResolvedValueOnce({
+      classification: { type: 'doctor-letter', confidence: 0.5 },
+      uncertain: true,
+    });
+    render(<ImportFlow initialFile={txtFile()} onClose={vi.fn()} pipelineOverrides={pipeline} />);
+    await waitFor(() => expect(screen.getByTestId('classification-confirm')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Nein, abbrechen' }));
+    await waitFor(() => expect(screen.queryByTestId('classification-confirm')).toBeNull());
+  });
+
   it('renders ClassificationConfirm and continues to extract on confirm', async () => {
     const user = userEvent.setup();
     const pipeline = fakes();
@@ -221,6 +278,40 @@ describe('ImportFlow', () => {
     await waitFor(() => expect(screen.getByTestId('review-panel')).toBeInTheDocument());
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('renders commit-error message when commitDrafts throws', async () => {
+    const user = userEvent.setup();
+    const pipeline = fakes();
+    pipeline.commitDrafts.mockRejectedValueOnce(new Error('write failed'));
+    render(<ImportFlow initialFile={txtFile()} onClose={vi.fn()} pipelineOverrides={pipeline} />);
+    await waitFor(() => expect(screen.getByTestId('review-panel')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: '1 übernehmen' }));
+    await waitFor(() => expect(screen.getByTestId('import-flow-error')).toBeInTheDocument());
+    expect(screen.getByText(/write failed/)).toBeInTheDocument();
+  });
+
+  it('renders prepare-error message when prepare throws non-AI error', async () => {
+    const pipeline = fakes();
+    pipeline.prepare.mockRejectedValueOnce(new Error('disk read failed'));
+    render(<ImportFlow initialFile={txtFile()} onClose={vi.fn()} pipelineOverrides={pipeline} />);
+    await waitFor(() => expect(screen.getByTestId('import-flow-error')).toBeInTheDocument());
+    expect(screen.getByText(/disk read failed/)).toBeInTheDocument();
+  });
+
+  it('done-state Schließen button calls onClose with the commit result', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const pipeline = fakes();
+    render(<ImportFlow initialFile={txtFile()} onClose={onClose} pipelineOverrides={pipeline} />);
+    await waitFor(() => expect(screen.getByTestId('review-panel')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: '1 übernehmen' }));
+    await waitFor(() => expect(screen.getByTestId('import-flow-done')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Schließen' }));
+    expect(onClose).toHaveBeenCalled();
+    const lastCall = onClose.mock.calls[onClose.mock.calls.length - 1];
+    if (!lastCall) throw new Error('expected close call');
+    expect(lastCall[0]).toMatchObject({ abortError: null });
   });
 
   it('exposes role=dialog with aria-modal=true', async () => {

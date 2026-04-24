@@ -229,6 +229,166 @@ describe('ReviewPanel', () => {
     expect(onEdit).toHaveBeenCalledWith(0, { category: 'paused' });
   });
 
+  it('forwards lab-value edits and renders updated summary', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<Harness initialSelection={ALL_SELECTED} onEditLabValue={onEdit} />);
+    const row = screen.getByTestId('lab-value-row');
+    await user.click(within(row).getByRole('button', { name: 'Bearbeiten' }));
+    const paramInput = within(row).getByDisplayValue('Haemoglobin');
+    await user.clear(paramInput);
+    await user.type(paramInput, 'Kreatinin');
+    expect(onEdit).toHaveBeenLastCalledWith(0, expect.objectContaining({ parameter: 'Kreatinin' }));
+  });
+
+  it('coerces empty lab-value optional field to undefined', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<Harness initialSelection={ALL_SELECTED} onEditLabValue={onEdit} />);
+    const row = screen.getByTestId('lab-value-row');
+    await user.click(within(row).getByRole('button', { name: 'Bearbeiten' }));
+    const unitInput = within(row).getByDisplayValue('g/dl');
+    await user.clear(unitInput);
+    expect(onEdit).toHaveBeenLastCalledWith(0, { unit: undefined });
+  });
+
+  it('forwards supplement brand edits including coerce-to-undefined when cleared', async () => {
+    const user = userEvent.setup();
+    const drafts = fullDrafts();
+    const supp = drafts.supplements[0];
+    if (!supp) throw new Error('expected supplement');
+    supp.brand = 'tetesept';
+    const onEdit = vi.fn();
+    render(<Harness initialSelection={ALL_SELECTED} onEditSupplement={onEdit} drafts={drafts} />);
+    const row = screen.getByTestId('supplement-row');
+    await user.click(within(row).getByRole('button', { name: 'Bearbeiten' }));
+    const brandInput = within(row).getByDisplayValue('tetesept');
+    await user.clear(brandInput);
+    expect(onEdit).toHaveBeenLastCalledWith(0, { brand: undefined });
+  });
+
+  it('forwards open-point edits including text + context + optional fields', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<Harness initialSelection={ALL_SELECTED} onEditOpenPoint={onEdit} />);
+    const row = screen.getByTestId('open-point-row');
+    await user.click(within(row).getByRole('button', { name: 'Bearbeiten' }));
+    const ctxInput = within(row).getByDisplayValue('In 3 Monaten');
+    await user.clear(ctxInput);
+    await user.type(ctxInput, 'Beim Hausarzt');
+    expect(onEdit).toHaveBeenLastCalledWith(
+      0,
+      expect.objectContaining({ context: 'Beim Hausarzt' }),
+    );
+  });
+
+  it('toggles selection back on when checkbox re-clicked after uncheck', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <Harness
+        initialSelection={{ observations: [], labValues: [0], supplements: [], openPoints: [] }}
+        onSelectionChange={onChange}
+      />,
+    );
+    const obsRow = screen.getByTestId('observation-row');
+    const checkbox = within(obsRow).getByRole('checkbox');
+    expect(checkbox).not.toBeChecked();
+    await user.click(checkbox);
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ observations: [0] }));
+  });
+
+  it('forwards observation optional medicalFinding + relevanceNotes edits', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<Harness initialSelection={ALL_SELECTED} onEditObservation={onEdit} />);
+    const row = screen.getByTestId('observation-row');
+    await user.click(within(row).getByRole('button', { name: 'Bearbeiten' }));
+    const labels = within(row).getAllByText('Ärztlicher Befund');
+    expect(labels.length).toBeGreaterThan(0);
+    const findingTextarea = within(row)
+      .getAllByRole('textbox')
+      .find((el) => {
+        const lab = el.closest('label');
+        return lab?.textContent?.includes('Ärztlicher Befund');
+      });
+    if (!findingTextarea) throw new Error('expected medical-finding textarea');
+    await user.type(findingTextarea, 'Anämie');
+    expect(onEdit).toHaveBeenLastCalledWith(
+      0,
+      expect.objectContaining({ medicalFinding: 'Anämie' }),
+    );
+  });
+
+  it('exercises every editable field across all four row types', async () => {
+    const user = userEvent.setup();
+    const onObs = vi.fn();
+    const onLab = vi.fn();
+    const onSupp = vi.fn();
+    const onOp = vi.fn();
+    render(
+      <Harness
+        initialSelection={ALL_SELECTED}
+        onEditObservation={onObs}
+        onEditLabValue={onLab}
+        onEditSupplement={onSupp}
+        onEditOpenPoint={onOp}
+      />,
+    );
+
+    async function typeAt(inputs: HTMLElement[], idx: number, text: string): Promise<void> {
+      const el = inputs[idx];
+      if (!el) throw new Error(`expected input at idx ${idx} (got ${inputs.length})`);
+      await user.type(el, text);
+    }
+
+    // Observation: hit pattern, selfRegulation, status, relevanceNotes
+    const obsRow = screen.getByTestId('observation-row');
+    await user.click(within(obsRow).getByRole('button', { name: 'Bearbeiten' }));
+    const obsInputs = within(obsRow).getAllByRole('textbox');
+    // theme, fact, pattern, selfRegulation, status, medicalFinding, relevanceNotes (7)
+    if (obsInputs.length < 7) throw new Error(`expected 7 obs inputs, got ${obsInputs.length}`);
+    await typeAt(obsInputs, 2, 'a');
+    await typeAt(obsInputs, 3, 'b');
+    await typeAt(obsInputs, 4, 'c');
+    await typeAt(obsInputs, 6, 'd');
+
+    // Lab value: hit unit, referenceRange, assessment
+    const labRow = screen.getByTestId('lab-value-row');
+    await user.click(within(labRow).getByRole('button', { name: 'Bearbeiten' }));
+    const labInputs = within(labRow).getAllByRole('textbox');
+    // category, parameter, result, unit, referenceRange, assessment (6)
+    if (labInputs.length < 6) throw new Error(`expected 6 lab inputs, got ${labInputs.length}`);
+    await typeAt(labInputs, 3, 'a');
+    await typeAt(labInputs, 4, 'b');
+    await typeAt(labInputs, 5, 'c');
+
+    // Supplement: hit recommendation + rationale
+    const suppRow = screen.getByTestId('supplement-row');
+    await user.click(within(suppRow).getByRole('button', { name: 'Bearbeiten' }));
+    const suppInputs = within(suppRow).getAllByRole('textbox');
+    // name, brand, recommendation, rationale (4 textboxes; category is select)
+    if (suppInputs.length < 4) throw new Error(`expected 4 supp inputs, got ${suppInputs.length}`);
+    await typeAt(suppInputs, 2, 'a');
+    await typeAt(suppInputs, 3, 'b');
+
+    // Open point: hit text, priority, timeHorizon, details
+    const opRow = screen.getByTestId('open-point-row');
+    await user.click(within(opRow).getByRole('button', { name: 'Bearbeiten' }));
+    const opInputs = within(opRow).getAllByRole('textbox');
+    // text, context, priority, timeHorizon, details (5)
+    if (opInputs.length < 5) throw new Error(`expected 5 op inputs, got ${opInputs.length}`);
+    await typeAt(opInputs, 0, 'a');
+    await typeAt(opInputs, 2, 'b');
+    await typeAt(opInputs, 3, 'c');
+    await typeAt(opInputs, 4, 'd');
+
+    expect(onObs).toHaveBeenCalled();
+    expect(onLab).toHaveBeenCalled();
+    expect(onSupp).toHaveBeenCalled();
+    expect(onOp).toHaveBeenCalled();
+  });
+
   it('renders empty state per section when no drafts', () => {
     const drafts: ExtractedDrafts = {
       observations: [],
