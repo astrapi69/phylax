@@ -206,6 +206,18 @@ describe('prepare() — image dispatch (prepareImage mocked)', () => {
   });
 });
 
+describe('prepareWithConsent() — defensive non-PDF re-route', () => {
+  it('re-routes a non-PDF file through prepare() and returns ready when it succeeds', async () => {
+    const file = makeFile(['plain text'], 'note.txt', 'text/plain');
+
+    const result = await prepareWithConsent(file);
+
+    expect(result.kind).toBe('ready');
+    if (result.kind !== 'ready' || result.input.mode !== 'text') throw new Error('unreachable');
+    expect(result.input.textContent).toBe('plain text');
+  });
+});
+
 describe('prepareWithConsent()', () => {
   it('rasterizes when called on a PDF after consent', async () => {
     const rasterSpy = vi

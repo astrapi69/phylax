@@ -113,6 +113,7 @@ export async function preparePdfWithRasterization(file: File): Promise<PreparedI
     // honor it by returning text-mode if applicable. Idempotent.
     return makeTextPreparedInput(analysis.text, file);
   }
+  /* v8 ignore start - multimodal assembly requires Canvas APIs, see rasterizeAllPages comment */
   const { document } = analysis;
   const partialText = await extractAllText(document);
   const pageImages = await rasterizeAllPages(document);
@@ -122,6 +123,7 @@ export async function preparePdfWithRasterization(file: File): Promise<PreparedI
     imageData: pageImages,
     sourceFile: makeSourceFileMetadata(file),
   };
+  /* v8 ignore stop */
 }
 
 async function analyzePdf(file: File): Promise<PdfAnalysis> {
@@ -153,10 +155,12 @@ async function loadPdfDocument(data: ArrayBuffer): Promise<PdfDocumentLike> {
   // suffix; dev + prod both produce a same-origin chunk, no CDN
   // fetch. Privacy posture preserved (no runtime third-party
   // network calls). See ADR-0017.
+  /* v8 ignore start - worker init only exercised in real browsers; jsdom mock pre-sets workerPort */
   if (!pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
     const PdfWorker = (await import('pdfjs-dist/build/pdf.worker.min.mjs?worker')).default;
     pdfjs.GlobalWorkerOptions.workerPort = new PdfWorker();
   }
+  /* v8 ignore stop */
   const loadingTask = pdfjs.getDocument({
     data,
     // Disable runtime font fetches — Phylax forbids third-party
@@ -183,6 +187,7 @@ async function extractAllText(document: PdfDocumentLike): Promise<string> {
   return parts.join('\n\n').trim();
 }
 
+/* v8 ignore start - rasterization requires HTMLCanvasElement.getContext('2d') + canvas.toBlob, neither in jsdom; exercised by manual smoke + future prod E2E with real Chromium */
 async function rasterizeAllPages(document: PdfDocumentLike): Promise<ArrayBuffer[]> {
   const images: ArrayBuffer[] = [];
   const scale = RASTERIZATION_DPI / PDFJS_BASE_DPI;
@@ -220,6 +225,7 @@ function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
     );
   });
 }
+/* v8 ignore stop */
 
 function makeTextPreparedInput(text: string, file: File): PreparedInput {
   return {
