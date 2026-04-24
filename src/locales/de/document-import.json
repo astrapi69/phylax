@@ -31,5 +31,83 @@
       "server": "AI-Anbieter hat einen Server-Fehler gemeldet. Erneut versuchen."
     },
     "uncertain": "Klassifizierung unsicher. Bitte bestätigen, dass dies ein {{type}}-Dokument ist."
+  },
+  "import": {
+    "button": "Importieren",
+    "button-hint": "Inhalte automatisch extrahieren",
+    "flow": {
+      "title": "Dokument importieren",
+      "preparing": "Datei wird vorbereitet...",
+      "classifying": "Dokument wird analysiert...",
+      "extracting": "Inhalte werden extrahiert...",
+      "committing": "Wird gespeichert...",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "retry": "Erneut versuchen",
+      "memory-hint": "Die Quelldatei bleibt nur im Arbeitsspeicher. Schließt du diesen Dialog, geht sie verloren.",
+      "no-profile": "Kein Profil vorhanden. Bitte zuerst ein Profil anlegen.",
+      "prepare-error": "Datei konnte nicht vorbereitet werden: {{detail}}",
+      "commit-error": "Speichern fehlgeschlagen: {{detail}}"
+    },
+    "classification-confirm": {
+      "title": "Dokumenttyp prüfen",
+      "body": "Die Klassifizierung ist unsicher (Konfidenz {{confidence}}). Ist das ein {{type}}-Dokument?",
+      "confirm": "Ja, fortfahren",
+      "reject": "Nein, abbrechen"
+    },
+    "review": {
+      "title": "Extrahierte Einträge prüfen",
+      "intro": "Wähle aus, welche Einträge übernommen werden sollen. Vor dem Speichern kannst du jeden Eintrag bearbeiten.",
+      "lab-meta-hint": "Es wird automatisch ein Laborbefund mit Datum {{date}} erstellt.",
+      "lab-meta-hint-with-name": "Es wird automatisch ein Laborbefund vom Labor \"{{labName}}\" mit Datum {{date}} erstellt.",
+      "section": {
+        "observations": "Beobachtungen",
+        "lab-values": "Laborwerte",
+        "supplements": "Ergänzungen / Supplemente",
+        "open-points": "Offene Punkte"
+      },
+      "select-checkbox": "Übernehmen",
+      "edit": "Bearbeiten",
+      "edit-done": "Fertig",
+      "empty": "Keine Einträge dieses Typs gefunden.",
+      "commit-button": "{{count}} übernehmen",
+      "commit-button-empty": "Keine Auswahl",
+      "fields": {
+        "theme": "Thema",
+        "fact": "Fakt",
+        "pattern": "Muster",
+        "self-regulation": "Selbstregulation",
+        "status": "Status",
+        "medical-finding": "Ärztlicher Befund",
+        "relevance-notes": "Querverweise",
+        "category": "Kategorie",
+        "parameter": "Parameter",
+        "result": "Wert",
+        "unit": "Einheit",
+        "reference-range": "Referenzbereich",
+        "assessment": "Bewertung",
+        "name": "Name",
+        "brand": "Marke",
+        "recommendation": "Einnahme",
+        "rationale": "Begründung",
+        "text": "Aktion",
+        "context": "Kontext",
+        "priority": "Priorität",
+        "time-horizon": "Zeithorizont",
+        "details": "Details"
+      },
+      "supplement-category": {
+        "daily": "täglich",
+        "regular": "regelmäßig",
+        "paused": "pausiert",
+        "on-demand": "bei Bedarf"
+      }
+    },
+    "done": {
+      "title": "Erfolgreich importiert",
+      "summary": "{{succeeded}} Eintrag/Einträge gespeichert.",
+      "partial-failures": "{{failed}} Eintrag/Einträge konnten nicht gespeichert werden.",
+      "lab-report": "Ein neuer Laborbefund wurde angelegt."
+    }
   }
 }

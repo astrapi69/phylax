@@ -4,6 +4,7 @@ import { DocumentUploadButton } from './DocumentUploadButton';
 import { DocumentList } from './DocumentList';
 import { StorageQuotaIndicator } from './StorageQuotaIndicator';
 import { PersistentStorageBanner } from './PersistentStorageBanner';
+import { ImportButton } from '../document-import/ui/ImportButton';
 
 /**
  * Documents view. D-02 added the upload button; D-04 adds the list
@@ -25,7 +26,10 @@ export function DocumentsPlaceholder() {
         <p className="text-sm text-gray-600 dark:text-gray-400">{t('intro')}</p>
       </div>
       <PersistentStorageBanner versionKey={refreshKey} />
-      <DocumentUploadButton onUploaded={() => setRefreshKey((n) => n + 1)} />
+      <div className="flex flex-wrap items-center gap-3">
+        <DocumentUploadButton onUploaded={() => setRefreshKey((n) => n + 1)} />
+        <ImportButton onImported={() => setRefreshKey((n) => n + 1)} />
+      </div>
       <DocumentList versionKey={refreshKey} />
       <StorageQuotaIndicator versionKey={refreshKey} />
     </div>

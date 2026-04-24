@@ -31,5 +31,83 @@
       "server": "AI provider reported a server error. Please retry."
     },
     "uncertain": "Classification uncertain. Please confirm this is a {{type}} document."
+  },
+  "import": {
+    "button": "Import",
+    "button-hint": "Extract content automatically",
+    "flow": {
+      "title": "Import document",
+      "preparing": "Preparing file...",
+      "classifying": "Analyzing document...",
+      "extracting": "Extracting content...",
+      "committing": "Saving...",
+      "cancel": "Cancel",
+      "close": "Close",
+      "retry": "Retry",
+      "memory-hint": "The source file is held in memory only. Closing this dialog discards it.",
+      "no-profile": "No profile yet. Please create a profile first.",
+      "prepare-error": "Could not prepare file: {{detail}}",
+      "commit-error": "Saving failed: {{detail}}"
+    },
+    "classification-confirm": {
+      "title": "Confirm document type",
+      "body": "Classification is uncertain (confidence {{confidence}}). Is this a {{type}} document?",
+      "confirm": "Yes, continue",
+      "reject": "No, cancel"
+    },
+    "review": {
+      "title": "Review extracted entries",
+      "intro": "Choose which entries to keep. You can edit each entry before saving.",
+      "lab-meta-hint": "A lab report dated {{date}} will be created automatically.",
+      "lab-meta-hint-with-name": "A lab report from \"{{labName}}\" dated {{date}} will be created automatically.",
+      "section": {
+        "observations": "Observations",
+        "lab-values": "Lab values",
+        "supplements": "Supplements",
+        "open-points": "Open points"
+      },
+      "select-checkbox": "Keep",
+      "edit": "Edit",
+      "edit-done": "Done",
+      "empty": "No entries of this type found.",
+      "commit-button": "Save {{count}}",
+      "commit-button-empty": "Nothing selected",
+      "fields": {
+        "theme": "Theme",
+        "fact": "Fact",
+        "pattern": "Pattern",
+        "self-regulation": "Self-regulation",
+        "status": "Status",
+        "medical-finding": "Medical finding",
+        "relevance-notes": "Cross-references",
+        "category": "Category",
+        "parameter": "Parameter",
+        "result": "Value",
+        "unit": "Unit",
+        "reference-range": "Reference range",
+        "assessment": "Assessment",
+        "name": "Name",
+        "brand": "Brand",
+        "recommendation": "Intake",
+        "rationale": "Rationale",
+        "text": "Action",
+        "context": "Context",
+        "priority": "Priority",
+        "time-horizon": "Time horizon",
+        "details": "Details"
+      },
+      "supplement-category": {
+        "daily": "daily",
+        "regular": "regular",
+        "paused": "paused",
+        "on-demand": "on demand"
+      }
+    },
+    "done": {
+      "title": "Imported",
+      "summary": "{{succeeded}} entry/entries saved.",
+      "partial-failures": "{{failed}} entry/entries could not be saved.",
+      "lab-report": "A new lab report was created."
+    }
   }
 }

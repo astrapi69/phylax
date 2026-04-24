@@ -33,5 +33,12 @@
     "limit": "250 KB",
     "gzip": true,
     "running": false
+  },
+  {
+    "name": "pdf.js chunk (lazy)",
+    "path": "dist/assets/pdf-*.js",
+    "limit": "130 KB",
+    "gzip": true,
+    "running": false
   }
 ]
