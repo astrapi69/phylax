@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Document } from '../../domain';
-import { DocumentRepository } from '../../db/repositories';
+import {
+  countDerivedEntities,
+  deleteWithProvenance,
+} from '../document-import/deleteWithProvenance';
 
 export interface DeleteDocumentButtonProps {
   document: Document;
@@ -42,6 +45,7 @@ export function DeleteDocumentButton({ document }: DeleteDocumentButtonProps) {
   const navigate = useNavigate();
   const [state, setState] = useState<DeleteState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [derivedCount, setDerivedCount] = useState<number>(0);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   const linkedKind: 'observation' | 'lab-value' | null = document.linkedObservationId
@@ -50,10 +54,19 @@ export function DeleteDocumentButton({ document }: DeleteDocumentButtonProps) {
       ? 'lab-value'
       : null;
 
-  const openConfirm = useCallback(() => {
+  const openConfirm = useCallback(async () => {
     setError(null);
     setState('confirming');
-  }, []);
+    // Surface derived-entity count for the cascade warning (IMP-05).
+    // Best-effort: failure to count does not block the delete path
+    // (user can still proceed; the cascade itself is robust).
+    try {
+      const counts = await countDerivedEntities(document.id);
+      setDerivedCount(counts.total);
+    } catch {
+      setDerivedCount(0);
+    }
+  }, [document.id]);
 
   const cancel = useCallback(() => {
     setState('idle');
@@ -64,14 +77,18 @@ export function DeleteDocumentButton({ document }: DeleteDocumentButtonProps) {
     setState('deleting');
     setError(null);
     try {
-      const repo = new DocumentRepository();
-      await repo.delete(document.id);
+      const result = await deleteWithProvenance(document.id);
+      if (result.kind === 'cleanup-failed') {
+        setError(t('viewer.delete.derived-cleanup-failed'));
+        setState('confirming');
+        return;
+      }
       navigate('/documents', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
       setState('confirming');
     }
-  }, [document.id, navigate]);
+  }, [document.id, navigate, t]);
 
   // Move focus to Cancel when entering confirm state so a keyboard
   // user whose Enter activated `[Delete document]` does not have the
@@ -124,6 +141,11 @@ export function DeleteDocumentButton({ document }: DeleteDocumentButtonProps) {
       {linkedKind && (
         <p className="mt-1 text-red-800 dark:text-red-300" data-testid="delete-linked-warning">
           {t('viewer.delete.linked-warning', { kind: t(`link.kind.${linkedKind}`) })}
+        </p>
+      )}
+      {derivedCount > 0 && (
+        <p className="mt-1 text-red-800 dark:text-red-300" data-testid="delete-derived-warning">
+          {t('viewer.delete.derived-entries-warning', { count: derivedCount })}
         </p>
       )}
       {error && (

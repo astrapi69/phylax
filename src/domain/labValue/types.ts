@@ -29,6 +29,15 @@ export interface LabReport extends DomainEntity {
   overallAssessment?: string;
   /** Cross-theme relevance, e.g. "Relevanz fuer Abnehmziel" */
   relevanceNotes?: string;
+
+  /**
+   * Import provenance (IMP-05). Points to a `Document` saved during
+   * an IMP-04 import commit as the source of this report (when the
+   * report was synthesized from an imported file). Cleared to
+   * `undefined` when the source Document is deleted; the report and
+   * its lab values survive.
+   */
+  sourceDocumentId?: string;
 }
 
 /**
@@ -56,4 +65,9 @@ export interface LabValue extends DomainEntity {
   referenceRange?: string;
   /** Assessment: "normal", "erniedrigt", "erhoht", or free text */
   assessment?: string;
+
+  /**
+   * Import provenance (IMP-05). Same semantics as on `Observation`.
+   */
+  sourceDocumentId?: string;
 }

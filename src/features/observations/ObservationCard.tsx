@@ -3,6 +3,7 @@ import type { Observation } from '../../domain';
 import { MarkdownContent } from '../profile-view';
 import { SourceBadge } from './SourceBadge';
 import { AttachedDocumentsForObservation } from '../documents/AttachedDocumentsList';
+import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 
 interface ObservationCardProps {
   observation: Observation;
@@ -74,6 +75,7 @@ export function ObservationCard({
               {status}
             </span>
             <SourceBadge source={source} />
+            <ProvenanceBadge sourceDocumentId={observation.sourceDocumentId} />
           </div>
           {excerpt && <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{excerpt}</p>}
         </div>

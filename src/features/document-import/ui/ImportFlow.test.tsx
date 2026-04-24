@@ -54,6 +54,7 @@ function happyResult(): CommitResult {
     openPoints: { attempted: 0, succeeded: 0, failed: 0 },
     labReportId: null,
     abortError: null,
+    sourceDocument: { kind: 'not-applicable' },
   };
 }
 
@@ -224,7 +225,11 @@ describe('ImportFlow', () => {
     await waitFor(() => expect(pipeline.commitDrafts).toHaveBeenCalled());
     const callArgs = pipeline.commitDrafts.mock.calls[0];
     if (!callArgs) throw new Error('expected commit call');
-    expect(callArgs[2]).toEqual({ sourceFileName: 'mein-doc.pdf' });
+    expect(callArgs[2]).toMatchObject({
+      sourceFileName: 'mein-doc.pdf',
+      sourceFile: expect.any(File),
+      documentDescription: expect.stringContaining('Importiert'),
+    });
     await waitFor(() => expect(screen.getByTestId('import-flow-done')).toBeInTheDocument());
   });
 

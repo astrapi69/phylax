@@ -91,4 +91,16 @@ export interface Observation extends DomainEntity {
    * too much across observations. Markdown content in values.
    */
   extraSections: Record<string, string>;
+
+  /**
+   * Import provenance (IMP-05). Points to a `Document` saved during
+   * an IMP-04 import commit as the source of this observation.
+   *
+   * Distinct from D-07's user-curated `Document.linkedObservationId`
+   * (1:1 mutex on the Document side). `sourceDocumentId` is N:1 from
+   * the entity side and set only by the import pipeline, never via
+   * user UI. Cleared to `undefined` when the source Document is
+   * deleted (D-08 cascade); the entity itself survives.
+   */
+  sourceDocumentId?: string;
 }

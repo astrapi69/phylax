@@ -107,7 +107,31 @@
       "title": "Imported",
       "summary": "{{succeeded}} entry/entries saved.",
       "partial-failures": "{{failed}} entry/entries could not be saved.",
-      "lab-report": "A new lab report was created."
+      "lab-report": "A new lab report was created.",
+      "source-saved": "Source file saved: {{filename}}",
+      "source-skipped": {
+        "size-limit": "Source file exceeds the 10 MB size limit. Entries still imported.",
+        "quota": "Browser storage full. Entries imported, source not saved.",
+        "encryption-failed": "Source file could not be encrypted. Entries imported.",
+        "unknown": "Source file could not be saved. Entries imported."
+      }
+    },
+    "source-document": {
+      "description-prefix": "Imported"
+    },
+    "document-type": {
+      "lab-report": "Lab report",
+      "doctor-letter": "Doctor letter",
+      "prescription": "Prescription",
+      "imaging-report": "Imaging report",
+      "insurer-app-export": "Insurer app export",
+      "generic-medical-document": "medical document"
+    },
+    "provenance": {
+      "label": "From import: {{filename}}",
+      "tooltip": "Imported from {{filename}}. Click to open.",
+      "loading": "Loading source...",
+      "missing": "Source removed"
     }
   }
 }

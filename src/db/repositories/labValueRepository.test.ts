@@ -23,6 +23,7 @@ function makeValueData(
     unit: overrides.unit,
     referenceRange: overrides.referenceRange,
     assessment: overrides.assessment,
+    sourceDocumentId: overrides.sourceDocumentId,
   };
 }
 
@@ -203,5 +204,21 @@ describe('LabValueRepository', () => {
     );
 
     lock();
+  });
+
+  describe('sourceDocumentId (IMP-05)', () => {
+    it('round-trips when set', async () => {
+      const v = await repo.create(makeValueData({ sourceDocumentId: 'doc-1' }));
+      expect((await repo.getById(v.id))?.sourceDocumentId).toBe('doc-1');
+    });
+
+    it('listBySourceDocument filters correctly', async () => {
+      await repo.create(makeValueData({ parameter: 'TSH', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeValueData({ parameter: 'Hb', sourceDocumentId: 'doc-2' }));
+      await repo.create(makeValueData({ parameter: 'Kreatinin' }));
+
+      const matched = await repo.listBySourceDocument('doc-1');
+      expect(matched.map((v) => v.parameter)).toEqual(['TSH']);
+    });
   });
 });

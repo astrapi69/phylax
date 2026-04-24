@@ -29,4 +29,9 @@ export interface Supplement extends DomainEntity {
   recommendation?: string;
   /** Why this supplement, e.g. "Empfohlen nach Bluttest Dezember 2024" */
   rationale?: string;
+
+  /**
+   * Import provenance (IMP-05). Same semantics as on `Observation`.
+   */
+  sourceDocumentId?: string;
 }

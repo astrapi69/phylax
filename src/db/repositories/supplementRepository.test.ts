@@ -21,6 +21,7 @@ function makeData(
     category: overrides.category ?? 'daily',
     recommendation: overrides.recommendation,
     rationale: overrides.rationale,
+    sourceDocumentId: overrides.sourceDocumentId,
   };
 }
 
@@ -148,5 +149,20 @@ describe('SupplementRepository', () => {
     const result = await repo.listByProfile(profileId);
     expect(result).toHaveLength(1);
     lock();
+  });
+
+  describe('sourceDocumentId (IMP-05)', () => {
+    it('round-trips when set', async () => {
+      const s = await repo.create(makeData({ sourceDocumentId: 'doc-1' }));
+      expect((await repo.getById(s.id))?.sourceDocumentId).toBe('doc-1');
+    });
+
+    it('listBySourceDocument filters correctly', async () => {
+      await repo.create(makeData({ name: 'A', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeData({ name: 'B', sourceDocumentId: 'doc-2' }));
+      await repo.create(makeData({ name: 'C' }));
+      const matched = await repo.listBySourceDocument('doc-1');
+      expect(matched.map((s) => s.name)).toEqual(['A']);
+    });
   });
 });

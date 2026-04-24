@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { Supplement } from '../../domain';
+import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 
 interface SupplementCardProps {
   supplement: Supplement;
@@ -32,6 +33,7 @@ export function SupplementCard({ supplement, muted = false }: SupplementCardProp
             {t('card.paused-badge')}
           </span>
         )}
+        <ProvenanceBadge sourceDocumentId={supplement.sourceDocumentId} />
       </div>
       {recommendation && (
         <FieldLine label={t('card.field.recommendation')} value={recommendation} />

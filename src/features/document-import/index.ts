@@ -78,3 +78,12 @@ export { ImportFlow } from './ui/ImportFlow';
 export { ConsentDialog } from './ui/ConsentDialog';
 export { ClassificationConfirm } from './ui/ClassificationConfirm';
 export { ReviewPanel } from './ui/ReviewPanel';
+export { ProvenanceBadge } from './ui/ProvenanceBadge';
+export type { ProvenanceBadgeProps } from './ui/ProvenanceBadge';
+export {
+  countDerivedEntities,
+  deleteWithProvenance,
+  type DerivedEntityCounts,
+  type DeleteWithProvenanceResult,
+} from './deleteWithProvenance';
+export type { SourceDocumentOutcome, SourceDocumentSkipReason } from './commit';

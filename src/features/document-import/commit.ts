@@ -1,4 +1,6 @@
 import {
+  DocumentRepository,
+  DocumentSizeLimitError,
   LabReportRepository,
   LabValueRepository,
   ObservationRepository,
@@ -62,11 +64,48 @@ export interface CommitResult {
    * Currently only set when no profile exists (precondition failure).
    */
   abortError: 'no-profile' | null;
+  /**
+   * Outcome of the IMP-05 source-Document save step. Discriminated:
+   * - `saved`: the source file became a Document row; accepted
+   *   entities got `sourceDocumentId` set to this id.
+   * - `skipped`: save failed (size, quota, crypto, unknown). Entities
+   *   still commit but without `sourceDocumentId`. The import is NOT
+   *   aborted on this path.
+   * - `not-applicable`: caller did not supply a source File (batch
+   *   import, legacy caller, tests).
+   */
+  sourceDocument: SourceDocumentOutcome;
 }
+
+/** IMP-05 source-Document save outcome. */
+export type SourceDocumentOutcome =
+  | { kind: 'saved'; documentId: string; filename: string }
+  | { kind: 'skipped'; reason: SourceDocumentSkipReason }
+  | { kind: 'not-applicable' };
+
+export type SourceDocumentSkipReason = 'size-limit' | 'quota' | 'encryption-failed' | 'unknown';
 
 export interface CommitOptions {
   /** Source filename used to seed the synthetic lab report's `contextNote`. */
   sourceFileName: string;
+  /**
+   * Source File to save as a Document (IMP-05). When present, the
+   * pipeline saves it first and threads the resulting documentId to
+   * every accepted entity as `sourceDocumentId`. When omitted,
+   * `sourceDocument` in the result is `not-applicable`.
+   *
+   * Best-effort: a failed Document save surfaces as
+   * `{ kind: 'skipped', reason }` and does NOT abort the commit.
+   * Entities still land; they simply miss the provenance link.
+   */
+  sourceFile?: File;
+  /**
+   * Human-readable description saved on the Document row. Defaults
+   * to `"Importiert"` when omitted. Callers (useImportSession) build
+   * a type-specific label like `"Importiert: Laborbefund"` via the
+   * i18n surface.
+   */
+  documentDescription?: string;
   /**
    * Override `Date.now` for the synthetic-report fallback date. Tests
    * pin time so the fallback path is deterministic.
@@ -80,6 +119,7 @@ export interface CommitOptions {
     labValue?: LabValueRepository;
     supplement?: SupplementRepository;
     openPoint?: OpenPointRepository;
+    document?: DocumentRepository;
   };
 }
 
@@ -87,14 +127,23 @@ export interface CommitOptions {
  * Commit selected drafts to the encrypted repositories.
  *
  * Pipeline:
- * 1. Resolve current profile (precondition).
- * 2. Observations → ObservationRepository.create per accepted draft.
- * 3. If lab values selected, synthesize a LabReport (using
+ * 1. Resolve current profile (precondition; `no-profile` aborts).
+ * 2. (IMP-05) When a `sourceFile` is supplied, save it as a Document
+ *    first. Best-effort: failures don't abort, they surface as
+ *    `sourceDocument: { kind: 'skipped', reason }`. On success every
+ *    entity created below gets `sourceDocumentId` set to the new id.
+ * 3. Observations → ObservationRepository.create per accepted draft.
+ * 4. If lab values selected, synthesize a LabReport (using
  *    `labReportMeta.reportDate` if present, today's ISO date
  *    otherwise; `labName` from meta when present), then write each
  *    lab value with `reportId` set to the synthetic report's id.
- * 4. Supplements → SupplementRepository.create per accepted draft.
- * 5. Open points → OpenPointRepository.create per accepted draft.
+ *    The synthetic report inherits `sourceDocumentId` too so its
+ *    provenance matches the derived values.
+ * 5. Supplements → SupplementRepository.create per accepted draft.
+ * 6. Open points → OpenPointRepository.create per accepted draft.
+ * 7. (IMP-05 cleanup-if-zero) If every entity type committed zero
+ *    rows and we had saved a Document, delete the orphan Document
+ *    so it doesn't confuse the user in the Documents list.
  *
  * Best-effort within each type: per-write failures are tallied,
  * not raised. Cross-type pipeline aborts only on missing profile.
@@ -115,6 +164,7 @@ export async function commitDrafts(
     labValue: labValueRepo,
     supplement: options.repos?.supplement ?? new SupplementRepository(),
     openPoint: options.repos?.openPoint ?? new OpenPointRepository(),
+    document: options.repos?.document ?? new DocumentRepository(),
   };
   const now = options.now ?? (() => new Date());
 
@@ -126,6 +176,7 @@ export async function commitDrafts(
     openPoints: { ...empty },
     labReportId: null,
     abortError: null,
+    sourceDocument: { kind: 'not-applicable' },
   };
 
   const profile = await repos.profile.getCurrentProfile();
@@ -135,12 +186,28 @@ export async function commitDrafts(
   }
   const profileId = profile.id;
 
+  // IMP-05: save source Document first so sourceDocumentId can flow
+  // into every entity create below. Best-effort; failures don't abort.
+  let sourceDocumentId: string | undefined;
+  if (options.sourceFile) {
+    const saveResult = await saveSourceDocument({
+      file: options.sourceFile,
+      profileId,
+      description: options.documentDescription,
+      repo: repos.document,
+    });
+    result.sourceDocument = saveResult;
+    if (saveResult.kind === 'saved') {
+      sourceDocumentId = saveResult.documentId;
+    }
+  }
+
   // 1. Observations
   const acceptedObservations = pickAccepted(drafts.observations, selection.observations);
   result.observations.attempted = acceptedObservations.length;
   for (const draft of acceptedObservations) {
     try {
-      await repos.observation.create(observationCreateInput(draft, profileId));
+      await repos.observation.create(observationCreateInput(draft, profileId, sourceDocumentId));
       result.observations.succeeded += 1;
     } catch {
       result.observations.failed += 1;
@@ -157,12 +224,15 @@ export async function commitDrafts(
         profileId,
         options.sourceFileName,
         now(),
+        sourceDocumentId,
       );
       const report = await repos.labReport.create(reportInput);
       result.labReportId = report.id;
       for (const draft of acceptedLabValues) {
         try {
-          await repos.labValue.create(labValueCreateInput(draft, profileId, report.id));
+          await repos.labValue.create(
+            labValueCreateInput(draft, profileId, report.id, sourceDocumentId),
+          );
           result.labValues.succeeded += 1;
         } catch {
           result.labValues.failed += 1;
@@ -179,7 +249,7 @@ export async function commitDrafts(
   result.supplements.attempted = acceptedSupplements.length;
   for (const draft of acceptedSupplements) {
     try {
-      await repos.supplement.create(supplementCreateInput(draft, profileId));
+      await repos.supplement.create(supplementCreateInput(draft, profileId, sourceDocumentId));
       result.supplements.succeeded += 1;
     } catch {
       result.supplements.failed += 1;
@@ -191,14 +261,69 @@ export async function commitDrafts(
   result.openPoints.attempted = acceptedOpenPoints.length;
   for (const draft of acceptedOpenPoints) {
     try {
-      await repos.openPoint.create(openPointCreateInput(draft, profileId));
+      await repos.openPoint.create(openPointCreateInput(draft, profileId, sourceDocumentId));
       result.openPoints.succeeded += 1;
     } catch {
       result.openPoints.failed += 1;
     }
   }
 
+  // IMP-05 cleanup-if-zero: if nothing landed and we had saved a
+  // Document, delete the orphan so it doesn't surface in the
+  // Documents list with no derived entries.
+  if (result.sourceDocument.kind === 'saved' && totalCommitted(result) === 0) {
+    try {
+      await repos.document.delete(result.sourceDocument.documentId);
+    } catch {
+      // Silently ignore — the orphan survives but is visible to the user
+      // who can delete it manually via D-08.
+    }
+    result.sourceDocument = { kind: 'skipped', reason: 'unknown' };
+  }
+
   return result;
+}
+
+interface SaveSourceDocumentArgs {
+  file: File;
+  profileId: string;
+  description: string | undefined;
+  repo: DocumentRepository;
+}
+
+async function saveSourceDocument(args: SaveSourceDocumentArgs): Promise<SourceDocumentOutcome> {
+  try {
+    const content = await args.file.arrayBuffer();
+    const document = await args.repo.create({
+      profileId: args.profileId,
+      filename: args.file.name,
+      mimeType: args.file.type || 'application/octet-stream',
+      sizeBytes: args.file.size,
+      description: args.description ?? 'Importiert',
+      content,
+    });
+    return {
+      kind: 'saved',
+      documentId: document.id,
+      filename: document.filename,
+    };
+  } catch (err) {
+    return {
+      kind: 'skipped',
+      reason: classifySaveError(err),
+    };
+  }
+}
+
+function classifySaveError(err: unknown): SourceDocumentSkipReason {
+  if (err instanceof DocumentSizeLimitError) return 'size-limit';
+  if (err instanceof DOMException) {
+    if (err.name === 'QuotaExceededError') return 'quota';
+    if (err.name === 'DataCloneError' || err.name === 'OperationError') {
+      return 'encryption-failed';
+    }
+  }
+  return 'unknown';
 }
 
 /** True when the selection map has no accepted drafts of any type. */
@@ -235,6 +360,7 @@ function pickAccepted<T>(drafts: readonly T[], indices: readonly number[]): T[] 
 function observationCreateInput(
   draft: ObservationDraft,
   profileId: string,
+  sourceDocumentId: string | undefined,
 ): Omit<Observation, 'id' | 'createdAt' | 'updatedAt'> {
   return {
     profileId,
@@ -247,6 +373,7 @@ function observationCreateInput(
     medicalFinding: draft.medicalFinding,
     relevanceNotes: draft.relevanceNotes,
     extraSections: draft.extraSections,
+    sourceDocumentId,
   };
 }
 
@@ -255,6 +382,7 @@ function labReportCreateInput(
   profileId: string,
   sourceFileName: string,
   now: Date,
+  sourceDocumentId: string | undefined,
 ): Omit<LabReport, 'id' | 'createdAt' | 'updatedAt'> {
   const reportDate = meta.reportDate ?? toIsoDate(now);
   return {
@@ -263,6 +391,7 @@ function labReportCreateInput(
     labName: meta.labName,
     contextNote: `Importiert aus ${sourceFileName}`,
     categoryAssessments: {},
+    sourceDocumentId,
   };
 }
 
@@ -270,6 +399,7 @@ function labValueCreateInput(
   draft: LabValueDraft,
   profileId: string,
   reportId: string,
+  sourceDocumentId: string | undefined,
 ): Omit<LabValue, 'id' | 'createdAt' | 'updatedAt'> {
   return {
     profileId,
@@ -280,12 +410,14 @@ function labValueCreateInput(
     unit: draft.unit,
     referenceRange: draft.referenceRange,
     assessment: draft.assessment,
+    sourceDocumentId,
   };
 }
 
 function supplementCreateInput(
   draft: SupplementDraft,
   profileId: string,
+  sourceDocumentId: string | undefined,
 ): Omit<Supplement, 'id' | 'createdAt' | 'updatedAt'> {
   return {
     profileId,
@@ -294,12 +426,14 @@ function supplementCreateInput(
     category: draft.category,
     recommendation: draft.recommendation,
     rationale: draft.rationale,
+    sourceDocumentId,
   };
 }
 
 function openPointCreateInput(
   draft: OpenPointDraft,
   profileId: string,
+  sourceDocumentId: string | undefined,
 ): Omit<OpenPoint, 'id' | 'createdAt' | 'updatedAt'> {
   return {
     profileId,
@@ -309,6 +443,7 @@ function openPointCreateInput(
     priority: draft.priority,
     timeHorizon: draft.timeHorizon,
     details: draft.details,
+    sourceDocumentId,
   };
 }
 

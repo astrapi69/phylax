@@ -107,7 +107,31 @@
       "title": "Erfolgreich importiert",
       "summary": "{{succeeded}} Eintrag/Einträge gespeichert.",
       "partial-failures": "{{failed}} Eintrag/Einträge konnten nicht gespeichert werden.",
-      "lab-report": "Ein neuer Laborbefund wurde angelegt."
+      "lab-report": "Ein neuer Laborbefund wurde angelegt.",
+      "source-saved": "Quelldatei gespeichert: {{filename}}",
+      "source-skipped": {
+        "size-limit": "Quelldatei überschreitet die Speichergrenze (10 MB). Einträge importiert.",
+        "quota": "Browser-Speicher voll. Einträge importiert, Quelldatei nicht.",
+        "encryption-failed": "Quelldatei konnte nicht verschlüsselt werden. Einträge importiert.",
+        "unknown": "Quelldatei konnte nicht gespeichert werden. Einträge importiert."
+      }
+    },
+    "source-document": {
+      "description-prefix": "Importiert"
+    },
+    "document-type": {
+      "lab-report": "Laborbefund",
+      "doctor-letter": "Arztbrief",
+      "prescription": "Rezept",
+      "imaging-report": "Bildgebungsbefund",
+      "insurer-app-export": "Krankenkassen-Export",
+      "generic-medical-document": "medizinisches Dokument"
+    },
+    "provenance": {
+      "label": "Aus Import: {{filename}}",
+      "tooltip": "Importiert aus {{filename}}. Klicken zum Öffnen.",
+      "loading": "Quelle wird geladen...",
+      "missing": "Quelle entfernt"
     }
   }
 }

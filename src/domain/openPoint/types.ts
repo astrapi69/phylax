@@ -32,4 +32,9 @@ export interface OpenPoint extends DomainEntity {
   timeHorizon?: string;
   /** Optional additional details or sub-items */
   details?: string;
+
+  /**
+   * Import provenance (IMP-05). Same semantics as on `Observation`.
+   */
+  sourceDocumentId?: string;
 }

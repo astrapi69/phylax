@@ -220,6 +220,35 @@ describe('commitDrafts', () => {
     expect(result.openPoints.succeeded).toBe(1);
   });
 
+  it('counts lab-value + supplement + open-point per-write failures independently', async () => {
+    const { LabValueRepository, SupplementRepository, OpenPointRepository } =
+      await import('../../db/repositories');
+    await ensureProfile();
+    const drafts = fullDrafts();
+    const failingLabVal = new LabValueRepository();
+    failingLabVal.create = async () => {
+      throw new Error('lab-value write failed');
+    };
+    const failingSupp = new SupplementRepository();
+    failingSupp.create = async () => {
+      throw new Error('supplement write failed');
+    };
+    const failingOp = new OpenPointRepository();
+    failingOp.create = async () => {
+      throw new Error('open-point write failed');
+    };
+    const result = await commitDrafts(drafts, ALL_SELECTED, {
+      ...COMMIT_OPTS,
+      repos: { labValue: failingLabVal, supplement: failingSupp, openPoint: failingOp },
+    });
+    // Lab report synthesis succeeded, but all N values failed.
+    expect(result.labValues).toEqual({ attempted: 2, succeeded: 0, failed: 2 });
+    expect(result.supplements).toEqual({ attempted: 1, succeeded: 0, failed: 1 });
+    expect(result.openPoints).toEqual({ attempted: 1, succeeded: 0, failed: 1 });
+    // Observations still succeeded (no failing repo for that type).
+    expect(result.observations.succeeded).toBe(1);
+  });
+
   it('counts every selected lab value as failed when synthetic LabReport write fails', async () => {
     await ensureProfile();
     const labValueRepo = new LabValueRepository();
@@ -262,6 +291,150 @@ describe('commitDrafts', () => {
     expect(totalCommitted(result)).toBe(0);
     expect(result.labReportId).toBeNull();
   });
+
+  describe('source Document (IMP-05)', () => {
+    it('reports sourceDocument: not-applicable when no File supplied', async () => {
+      await ensureProfile();
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, COMMIT_OPTS);
+      expect(result.sourceDocument).toEqual({ kind: 'not-applicable' });
+    });
+
+    it('saves a Document when sourceFile is supplied and sets sourceDocumentId on every entity', async () => {
+      const profileId = await ensureProfile();
+      const file = new File(['hello'], 'lab-2026.txt', { type: 'text/plain' });
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: file,
+        documentDescription: 'Importiert: Laborbefund',
+      });
+
+      expect(result.sourceDocument.kind).toBe('saved');
+      if (result.sourceDocument.kind !== 'saved') throw new Error('expected saved');
+      expect(result.sourceDocument.filename).toBe('lab-2026.txt');
+      const docId = result.sourceDocument.documentId;
+
+      const { DocumentRepository } = await import('../../db/repositories');
+      const docRepo = new DocumentRepository();
+      const doc = await docRepo.getById(docId);
+      expect(doc?.filename).toBe('lab-2026.txt');
+      expect(doc?.description).toBe('Importiert: Laborbefund');
+      expect(doc?.profileId).toBe(profileId);
+
+      // Every committed entity carries sourceDocumentId == docId.
+      const obsRepo = new ObservationRepository();
+      const obs = await obsRepo.listByProfile(profileId);
+      expect(obs.every((o) => o.sourceDocumentId === docId)).toBe(true);
+      const valRepo = new LabValueRepository();
+      const vals = await valRepo.listByProfile(profileId);
+      expect(vals.every((v) => v.sourceDocumentId === docId)).toBe(true);
+      const rptRepo = new LabReportRepository(valRepo);
+      const rpts = await rptRepo.listByProfile(profileId);
+      expect(rpts.every((r) => r.sourceDocumentId === docId)).toBe(true);
+    });
+
+    it('defaults description to "Importiert" when not provided', async () => {
+      await ensureProfile();
+      const file = new File(['x'], 'note.txt', { type: 'text/plain' });
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: file,
+      });
+      if (result.sourceDocument.kind !== 'saved') throw new Error('expected saved');
+      const { DocumentRepository } = await import('../../db/repositories');
+      const doc = await new DocumentRepository().getById(result.sourceDocument.documentId);
+      expect(doc?.description).toBe('Importiert');
+    });
+
+    it('reports sourceDocument: skipped(size-limit) when file exceeds cap + entities still commit', async () => {
+      const profileId = await ensureProfile();
+      // Stub DocumentRepository to throw DocumentSizeLimitError on create.
+      const { DocumentRepository, DocumentSizeLimitError } = await import('../../db/repositories');
+      const stubDoc = new DocumentRepository();
+      stubDoc.create = async () => {
+        throw new DocumentSizeLimitError(20 * 1024 * 1024);
+      };
+      const file = new File(['x'], 'giant.pdf', { type: 'application/pdf' });
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: file,
+        repos: { document: stubDoc },
+      });
+
+      expect(result.sourceDocument).toEqual({ kind: 'skipped', reason: 'size-limit' });
+      expect(totalCommitted(result)).toBe(5);
+      // Entities committed without sourceDocumentId.
+      const obs = await new ObservationRepository().listByProfile(profileId);
+      expect(obs.every((o) => o.sourceDocumentId === undefined)).toBe(true);
+    });
+
+    it('classifies quota exceptions as quota', async () => {
+      await ensureProfile();
+      const { DocumentRepository } = await import('../../db/repositories');
+      const stub = new DocumentRepository();
+      stub.create = async () => {
+        throw new DOMException('quota', 'QuotaExceededError');
+      };
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: new File(['x'], 'note.txt', { type: 'text/plain' }),
+        repos: { document: stub },
+      });
+      expect(result.sourceDocument).toEqual({ kind: 'skipped', reason: 'quota' });
+    });
+
+    it('classifies DataCloneError as encryption-failed', async () => {
+      await ensureProfile();
+      const { DocumentRepository } = await import('../../db/repositories');
+      const stub = new DocumentRepository();
+      stub.create = async () => {
+        throw new DOMException('encrypt', 'DataCloneError');
+      };
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: new File(['x'], 'note.txt', { type: 'text/plain' }),
+        repos: { document: stub },
+      });
+      expect(result.sourceDocument).toEqual({ kind: 'skipped', reason: 'encryption-failed' });
+    });
+
+    it('falls back to unknown for unrecognized errors', async () => {
+      await ensureProfile();
+      const { DocumentRepository } = await import('../../db/repositories');
+      const stub = new DocumentRepository();
+      stub.create = async () => {
+        throw new Error('boom');
+      };
+      const result = await commitDrafts(fullDrafts(), ALL_SELECTED, {
+        ...COMMIT_OPTS,
+        sourceFile: new File(['x'], 'note.txt', { type: 'text/plain' }),
+        repos: { document: stub },
+      });
+      expect(result.sourceDocument).toEqual({ kind: 'skipped', reason: 'unknown' });
+    });
+
+    it('deletes the orphan Document when zero entities commit (cleanup-if-zero)', async () => {
+      await ensureProfile();
+      const file = new File(['x'], 'nothing-to-extract.txt', { type: 'text/plain' });
+      const empty: DraftSelection = {
+        observations: [],
+        labValues: [],
+        supplements: [],
+        openPoints: [],
+      };
+      const result = await commitDrafts(fullDrafts(), empty, {
+        ...COMMIT_OPTS,
+        sourceFile: file,
+      });
+      expect(totalCommitted(result)).toBe(0);
+      // After cleanup, sourceDocument flips to skipped/unknown and the
+      // Document row is gone.
+      expect(result.sourceDocument).toEqual({ kind: 'skipped', reason: 'unknown' });
+      const { DocumentRepository } = await import('../../db/repositories');
+      const docRepo = new DocumentRepository();
+      const allDocs = await docRepo.listAll();
+      expect(allDocs).toHaveLength(0);
+    });
+  });
 });
 
 describe('isSelectionEmpty', () => {
@@ -297,6 +470,7 @@ describe('totalCommitted', () => {
         supplements: { attempted: 1, succeeded: 1, failed: 0 },
         openPoints: { attempted: 1, succeeded: 0, failed: 1 },
         labReportId: 'r',
+        sourceDocument: { kind: 'not-applicable' },
         abortError: null,
       }),
     ).toBe(5);

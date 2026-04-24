@@ -60,6 +60,7 @@ function fakePipeline() {
       openPoints: { attempted: 0, succeeded: 0, failed: 0 },
       labReportId: null,
       abortError: null,
+      sourceDocument: { kind: 'not-applicable' },
     })),
   };
 }

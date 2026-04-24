@@ -45,4 +45,15 @@ export class OpenPointRepository extends EncryptedRepository<OpenPoint> {
   async markResolved(id: string): Promise<OpenPoint> {
     return this.update(id, { resolved: true });
   }
+
+  /**
+   * List open points whose `sourceDocumentId` matches the given
+   * document id. IMP-05 reverse lookup for provenance surfacing and
+   * D-08 cascade cleanup.
+   */
+  async listBySourceDocument(documentId: string): Promise<OpenPoint[]> {
+    const rows = await this.table.toArray();
+    const decrypted = await Promise.all(rows.map((row) => this.deserialize(row)));
+    return decrypted.filter((e) => e.sourceDocumentId === documentId);
+  }
 }

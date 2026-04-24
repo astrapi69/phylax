@@ -35,4 +35,15 @@ export class LabValueRepository extends EncryptedRepository<LabValue> {
     const all = await this.listByProfile(profileId);
     return all.filter((v) => v.parameter === parameter).sort((a, b) => a.createdAt - b.createdAt);
   }
+
+  /**
+   * List lab values whose `sourceDocumentId` matches the given
+   * document id. IMP-05 reverse lookup for provenance surfacing and
+   * D-08 cascade cleanup.
+   */
+  async listBySourceDocument(documentId: string): Promise<LabValue[]> {
+    const rows = await this.table.toArray();
+    const decrypted = await Promise.all(rows.map((row) => this.deserialize(row)));
+    return decrypted.filter((e) => e.sourceDocumentId === documentId);
+  }
 }

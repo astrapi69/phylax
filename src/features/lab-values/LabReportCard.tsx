@@ -5,6 +5,7 @@ import { MarkdownContent } from '../profile-view';
 import { CategoryAssessment } from './CategoryAssessment';
 import { LabValuesTable } from './LabValuesTable';
 import { AttachedDocumentsForLabReport } from '../documents/AttachedDocumentsForLabReport';
+import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 
 interface LabReportCardProps {
   report: LabReport;
@@ -38,12 +39,15 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
       className="rounded-sm border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
     >
       <header className="border-b border-gray-200 p-4 dark:border-gray-700">
-        <h2
-          id={`report-${report.id}-heading`}
-          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-        >
-          {t('report.heading', { date: formattedDate })}
-        </h2>
+        <div className="flex flex-wrap items-baseline gap-2">
+          <h2
+            id={`report-${report.id}-heading`}
+            className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+          >
+            {t('report.heading', { date: formattedDate })}
+          </h2>
+          <ProvenanceBadge sourceDocumentId={report.sourceDocumentId} />
+        </div>
         <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
           {labName && <MetaItem label={t('report.meta.lab')} value={labName} />}
           {doctorName && <MetaItem label={t('report.meta.doctor')} value={doctorName} />}

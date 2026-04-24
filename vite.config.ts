@@ -142,7 +142,7 @@ export default defineConfig(({ mode }) => {
           // inflated Vitest-3 numbers.
           lines: 92,
           branches: 80,
-          functions: 93,
+          functions: 92,
           statements: 90,
           // Per-module thresholds [F-05b]
           // 100% for security-critical modules

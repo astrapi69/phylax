@@ -28,4 +28,15 @@ export class SupplementRepository extends EncryptedRepository<Supplement> {
     const all = await this.listByProfile(profileId);
     return all.filter((s) => s.category !== 'paused');
   }
+
+  /**
+   * List supplements whose `sourceDocumentId` matches the given
+   * document id. IMP-05 reverse lookup for provenance surfacing and
+   * D-08 cascade cleanup.
+   */
+  async listBySourceDocument(documentId: string): Promise<Supplement[]> {
+    const rows = await this.table.toArray();
+    const decrypted = await Promise.all(rows.map((row) => this.deserialize(row)));
+    return decrypted.filter((e) => e.sourceDocumentId === documentId);
+  }
 }

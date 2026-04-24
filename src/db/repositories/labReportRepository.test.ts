@@ -26,6 +26,7 @@ function makeReportData(
     categoryAssessments: overrides.categoryAssessments ?? {},
     overallAssessment: overrides.overallAssessment,
     relevanceNotes: overrides.relevanceNotes,
+    sourceDocumentId: overrides.sourceDocumentId,
   };
 }
 
@@ -231,5 +232,22 @@ describe('LabReportRepository', () => {
     const result = await repo.listByProfile(profileId);
     expect(result).toHaveLength(2);
     lock();
+  });
+
+  describe('sourceDocumentId (IMP-05)', () => {
+    it('round-trips when set', async () => {
+      const r = await repo.create(makeReportData({ sourceDocumentId: 'doc-1' }));
+      expect((await repo.getById(r.id))?.sourceDocumentId).toBe('doc-1');
+    });
+
+    it('listBySourceDocument filters correctly', async () => {
+      await repo.create(makeReportData({ reportDate: '2026-01-01', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeReportData({ reportDate: '2026-02-01', sourceDocumentId: 'doc-2' }));
+      await repo.create(makeReportData({ reportDate: '2026-03-01' }));
+
+      const matched = await repo.listBySourceDocument('doc-1');
+      expect(matched).toHaveLength(1);
+      expect(matched[0]?.reportDate).toBe('2026-01-01');
+    });
   });
 });

@@ -25,6 +25,7 @@ function makeObsData(
     medicalFinding: overrides.medicalFinding,
     relevanceNotes: overrides.relevanceNotes,
     extraSections: overrides.extraSections ?? {},
+    sourceDocumentId: overrides.sourceDocumentId,
   };
 }
 
@@ -297,6 +298,44 @@ describe('ObservationRepository', () => {
       const results = await repo.listByProfile(profileId);
       expect(results).toHaveLength(2);
       lock();
+    });
+  });
+
+  describe('sourceDocumentId (IMP-05)', () => {
+    it('round-trips when set on create', async () => {
+      const obs = await repo.create(makeObsData({ sourceDocumentId: 'doc-abc' }));
+      const fetched = await repo.getById(obs.id);
+      expect(fetched?.sourceDocumentId).toBe('doc-abc');
+    });
+
+    it('survives round-trip as undefined when omitted', async () => {
+      const obs = await repo.create(makeObsData({}));
+      const fetched = await repo.getById(obs.id);
+      expect(fetched?.sourceDocumentId).toBeUndefined();
+    });
+
+    it('listBySourceDocument returns matching observations only', async () => {
+      await repo.create(makeObsData({ theme: 'A', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeObsData({ theme: 'B', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeObsData({ theme: 'C', sourceDocumentId: 'doc-2' }));
+      await repo.create(makeObsData({ theme: 'D' })); // no source
+
+      const matched = await repo.listBySourceDocument('doc-1');
+      expect(matched).toHaveLength(2);
+      expect(matched.map((o) => o.theme).sort()).toEqual(['A', 'B']);
+    });
+
+    it('listBySourceDocument returns empty when no matches', async () => {
+      await repo.create(makeObsData({ sourceDocumentId: 'doc-x' }));
+      const matched = await repo.listBySourceDocument('doc-other');
+      expect(matched).toEqual([]);
+    });
+
+    it('update can clear sourceDocumentId to undefined (cascade path)', async () => {
+      const obs = await repo.create(makeObsData({ sourceDocumentId: 'doc-1' }));
+      await repo.update(obs.id, { sourceDocumentId: undefined });
+      const fetched = await repo.getById(obs.id);
+      expect(fetched?.sourceDocumentId).toBeUndefined();
     });
   });
 });

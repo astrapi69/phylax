@@ -121,7 +121,20 @@ export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFl
                 type="button"
                 disabled={commitCount === 0}
                 onClick={() => {
-                  void session.commit({ sourceFileName: initialFile.name });
+                  // Build a localized description for the Document row
+                  // saved by IMP-05. Format: "Importiert: Laborbefund".
+                  // Classification is always present by reviewing state.
+                  const docType =
+                    session.state.kind === 'reviewing'
+                      ? session.state.classification.type
+                      : 'generic-medical-document';
+                  const typeLabel = t(`import.document-type.${docType}`);
+                  const prefix = t('import.source-document.description-prefix');
+                  void session.commit({
+                    sourceFileName: initialFile.name,
+                    sourceFile: initialFile,
+                    documentDescription: `${prefix}: ${typeLabel}`,
+                  });
                 }}
                 aria-disabled={commitCount === 0}
                 className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600"
@@ -337,6 +350,16 @@ function DoneSummary({ t, result }: { t: TFunction<'document-import'>; result: C
       <p className="font-semibold text-green-700 dark:text-green-400">{t('import.done.title')}</p>
       <p>{t('import.done.summary', { succeeded })}</p>
       {result.labReportId ? <p>{t('import.done.lab-report')}</p> : null}
+      {result.sourceDocument.kind === 'saved' ? (
+        <p data-testid="import-flow-source-saved">
+          {t('import.done.source-saved', { filename: result.sourceDocument.filename })}
+        </p>
+      ) : null}
+      {result.sourceDocument.kind === 'skipped' ? (
+        <p data-testid="import-flow-source-skipped" className="text-amber-700 dark:text-amber-300">
+          {t(`import.done.source-skipped.${result.sourceDocument.reason}`)}
+        </p>
+      ) : null}
       {failed > 0 ? (
         <p className="text-amber-700 dark:text-amber-300">
           {t('import.done.partial-failures', { failed })}

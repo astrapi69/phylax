@@ -22,6 +22,7 @@ function makeData(
     priority: overrides.priority,
     timeHorizon: overrides.timeHorizon,
     details: overrides.details,
+    sourceDocumentId: overrides.sourceDocumentId,
   };
 }
 
@@ -161,5 +162,20 @@ describe('OpenPointRepository', () => {
     const result = await repo.listByProfile(profileId);
     expect(result).toHaveLength(1);
     lock();
+  });
+
+  describe('sourceDocumentId (IMP-05)', () => {
+    it('round-trips when set', async () => {
+      const p = await repo.create(makeData({ sourceDocumentId: 'doc-1' }));
+      expect((await repo.getById(p.id))?.sourceDocumentId).toBe('doc-1');
+    });
+
+    it('listBySourceDocument filters correctly', async () => {
+      await repo.create(makeData({ text: 'X', sourceDocumentId: 'doc-1' }));
+      await repo.create(makeData({ text: 'Y', sourceDocumentId: 'doc-2' }));
+      await repo.create(makeData({ text: 'Z' }));
+      const matched = await repo.listBySourceDocument('doc-1');
+      expect(matched.map((p) => p.text)).toEqual(['X']);
+    });
   });
 });

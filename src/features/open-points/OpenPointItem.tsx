@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { OpenPoint } from '../../domain';
 import { MarkdownContent } from '../profile-view';
+import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 
 interface OpenPointItemProps {
   point: OpenPoint;
@@ -51,6 +52,7 @@ export function OpenPointItem({ point }: OpenPointItemProps) {
                 {t('item.resolved-badge')}
               </span>
             )}
+            <ProvenanceBadge sourceDocumentId={point.sourceDocumentId} />
           </div>
           {details && details.trim() !== '' && (
             <div className="mt-2 pl-0">
