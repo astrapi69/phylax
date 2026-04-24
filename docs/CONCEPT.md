@@ -250,16 +250,17 @@ Alle Datensätze (ausser meta) tragen ein `profileId`-Feld. Im MVP existiert gen
 
 ## Phasenplan
 
-| Phase       | Scope                | Deliverable                                                                                 |
-| ----------- | -------------------- | ------------------------------------------------------------------------------------------- |
-| 1           | Foundation           | Vite-Setup, PWA-Config, Dexie-Schema, Crypto-Layer, Master-Passwort-Flow, Auto-Lock         |
-| 2           | Profil               | Profilstruktur, Beobachtungs-CRUD nach Themen, Profil-Versionierung, Markdown-Rendering     |
-| 3           | KI-gestützte Eingabe | API-Key-Verwaltung (verschlüsselt), Prompt-Vertrag, geführte Sitzung, Paste-in-Modus        |
-| 4           | Dokumente            | Upload (PDF/Bild), verschlüsselte Blob-Speicherung, Viewer, Verknüpfung mit Profilbereichen |
-| 5           | Export               | PDF-/Markdown-Export des Profils, CSV-Export der Laborwerte, Datumsbereich-Filter           |
-| 6           | Backup               | Verschlüsselte Backup-Datei, Restore-Import                                                 |
-| 7           | Polish               | Mobile-First, Onboarding, i18n DE/EN, Dark Mode, Accessibility                              |
-| 8 (Zukunft) | Multi-Profil         | Stellvertreterprofil-Unterstützung, Profil-Wechsel                                          |
+| Phase       | Scope                | Deliverable                                                                                                                     |
+| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1           | Foundation           | Vite-Setup, PWA-Config, Dexie-Schema, Crypto-Layer, Master-Passwort-Flow, Auto-Lock                                             |
+| 2           | Profil               | Profilstruktur, Beobachtungs-CRUD nach Themen, Profil-Versionierung, Markdown-Rendering                                         |
+| 3           | KI-gestützte Eingabe | API-Key-Verwaltung (verschlüsselt), Prompt-Vertrag, geführte Sitzung, Paste-in-Modus                                            |
+| 4           | Dokumente            | Upload (PDF/Bild), verschlüsselte Blob-Speicherung, Viewer, Verknüpfung mit Profilbereichen                                     |
+| 4b          | ePA-Import           | Manueller Import von Krankenkassen-App-Exports, Bildern, PDFs; AI-gestützte Klassifikation und Extraktion in das lebende Profil |
+| 5           | Export               | PDF-/Markdown-Export des Profils, CSV-Export der Laborwerte, Datumsbereich-Filter                                               |
+| 6           | Backup               | Verschlüsselte Backup-Datei, Restore-Import                                                                                     |
+| 7           | Polish               | Mobile-First, Onboarding, i18n DE/EN, Dark Mode, Accessibility                                                                  |
+| 8 (Zukunft) | Multi-Profil         | Stellvertreterprofil-Unterstützung, Profil-Wechsel                                                                              |
 
 ## Nicht-Ziele (explizit)
 
@@ -270,7 +271,7 @@ Alle Datensätze (ausser meta) tragen ein `profileId`-Feld. Im MVP existiert gen
 - Keine Diagnosefunktion
 - Keine Telemedizin-Integration
 - Keine Wearable-Integration im MVP
-- Keine ePA-Anbindung im MVP
+- Keine direkte ePA-API-Integration (Datenfluss via Phase 4b: manueller Export aus der Kassen-App, AI-gestützte Klassifikation)
 - Multi-Profil nicht im MVP (aber Datenmodell vorbereitet)
 
 ## Lizenz und Distribution

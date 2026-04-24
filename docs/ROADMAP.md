@@ -5,12 +5,17 @@
 
 This document is the source of truth for what to build next. Tasks are grouped by phase. Each task has an ID. When a task is finished, check its box and update the commit reference.
 
+## Note on file order
+
+Phases in this file are numbered for reference and discovery, not for build order. Execution sequence is driven by per-task authorization and user priority. Historical numbering and cross-references in ADRs, audits, and explorations are preserved; new phases slot in as named insertions (e.g. `2b`, `2c`, `2d`, `ONB`, `4b`) without renumbering the existing phases.
+
 Task ID prefixes:
 
 - **F** Foundation
 - **O** Observations / Profile (core profile structure and CRUD)
 - **AI** AI-guided input (prompt contract, guided session, paste-in)
 - **D** Documents (file upload and storage)
+- **IMP** ePA Import (multi-format document import + AI extraction)
 - **X** eXport (PDF, Markdown, CSV)
 - **B** Backup and restore
 - **P** Polish (UI, i18n, accessibility)
@@ -200,6 +205,40 @@ Goal: upload PDFs and images, store them encrypted, view them, link them to prof
 - [x] **D-08** Delete document with cascade check (warn if linked): viewer-only `DeleteDocumentButton` — inline two-step confirm (idle -> confirming -> deleting), no modal dialog system required, no native `confirm()` (forbidden). Confirmation message renders the filename verbatim ("Delete 'scan.pdf' permanently?") and appends a linked-entity warning when the document is linked ("This document is linked to a {{kind}}. The {{kind}} itself will remain."). Focus moves to the Cancel button on idle -> confirming transition so keyboard users entering confirm via Enter do not immediately activate the destructive confirm. Escape cancels (scoped to the component via `onKeyDown`, no window listener). `min-h-[44px]` on both confirm/cancel buttons for WCAG 2.5.5 touch target. Post-delete `useNavigate('/documents', { replace: true })` so browser Back does not land on the dead viewer URL. Orphan state (metadata-without-blob) deletes silently via the idempotent two-row atomic `delete`. Confirm state resets on unmount automatically.
 - [x] **D-09** Storage quota indicator (used vs available): `useStorageQuota` hook reads `navigator.storage.estimate()` on mount + `versionKey` bump (shared with `useDocuments` so uploads/deletes trigger re-read). Four states: `loading` / `loaded` / `unavailable` / `error`. Module-level `console.warn` guard fires once per page load for the unavailable path — quiet for 99% of users whose browser supports the API, single breadcrumb for devs debugging odd environments. `StorageQuotaIndicator` renders a custom `<div role="progressbar">` with aria-label + aria-valuenow/min/max/valuetext below the documents list; inner filled div is `aria-hidden` to avoid screen-reader double-announcement. Color tiers: green <70% / amber 70–89% / red ≥90%. Two separate warning messages at the amber and red tiers (informational then actionable), each `role="status"` for announcement on transition. Percent uses `Math.min(99, Math.floor(raw))` so "100%" only surfaces when the user is truly at quota — surfacing 100% with 5 MB still free is confusing. Binary units throughout (1 MB = 1,048,576 bytes) so numbers match dev-tools and OS storage views. `error` state renders nothing (same as `unavailable`); detail stays in hook for dev tooling. Component and hook cover the full surface including the warn-once guard across remounts.
 - [x] **D-10** Request persistent storage via `navigator.storage.persist()` on first upload: `usePersistentStorage` hook exposes 5-state machine (`unknown` / `persisted` / `transient` / `denied` / `unavailable`) + fire-and-forget `requestPersistence()`. `useDocumentUpload` calls it after every successful upload whose state is still transient (non-blocking; upload success propagates first). Module-level session guard prevents re-requesting within the same page load after a denial; re-probe opportunity on next page load so a manual browser-permission grant (site settings, PWA install) takes effect. `PersistentStorageBanner` renders only on `denied` — amber (degraded state, not red error), `role="alert"`, dismissible via an X button with a per-profile localStorage key (`phylax.persistence.dismissed.${profileId}`) so a multi-profile world (future Phase 8) does not suppress the banner across profiles. Localized message includes the "add to home screen" tip for iOS Safari users. Placed above the upload button so denial is seen before more content is added that could be evicted.
+
+---
+
+## Phase 4b: ePA Import
+
+Goal: users bring existing health documents into Phylax in any practical format — manual export from insurer apps (Krankenkassen-App), photos of paper documents, scans of doctor letters, existing PDFs. AI-powered classification and structured-entry extraction into the living profile.
+
+Dependencies: Phase 3 AI-Guided Input must ship first (multimodal AI providers + API key management). Phase 4 Documents provides the encrypted blob storage and link primitives that imported originals reuse.
+
+- [ ] **IMP-01** Import framework: generic `ImportSource` interface and registry (analog to the AI-provider registry from Phase 3). Each source declares accepted MIME types, max file size, and a `prepare(file): Promise<PreparedInput>` method. Separation of input preparation (IMP-02) from processing (IMP-03) so new sources can be added without touching the AI extraction layer.
+- [ ] **IMP-02** Multi-format input pipeline. Processing paths per MIME:
+  - PDF with text layer → local extraction via `pdf.js` (dynamic import, lazy chunk), text routed to AI as text input
+  - PDF without text layer → page-wise rasterization to multimodal AI (user consent required because pages leave the device as image data)
+  - JPG / PNG / WebP → direct upload to multimodal AI (includes camera-capture flow via PWA camera API)
+  - HEIC → conversion strategy decided in IMP-02 open question (rely on user pre-conversion vs. include `heic2any` ~100 KB lazy chunk; if the latter, separate ADR for the bundle delta)
+  - TXT / MD → direct text-mode AI call, no rasterization
+- [ ] **IMP-03** AI-powered classification and extraction. Reuses Phase 3 multimodal providers — no local OCR library, no separate AI provider tier. Document classifier picks one of: lab report, doctor letter, prescription, imaging report, insurer-app export, generic medical document. Per-class extractor produces draft entries mapped onto Phylax domain types (observations, lab values, medications, appointments). Plausibility checks only; no diagnostic interpretation per the structure-never-diagnose principle.
+- [ ] **IMP-04** User review and commit flow. Drafts surface in a review UI scoped to the import session — not yet persisted to the profile. User can edit, discard, or accept extracted entries individually or in bulk. Commit lands the accepted entries via the existing repository layer (encrypts on write per project policy). Discarded drafts never reach IndexedDB.
+- [ ] **IMP-05** Link imported originals to extracted entries. Reuses D-07 linking primitives: imported PDFs and images become Documents in Phylax storage (Phase 4 encrypted blob path), and accepted draft entries get auto-linked back to their source document during the IMP-04 commit step. Provenance shows up in the documents list-view link indicator (D-04 + D-07).
+- [ ] **IMP-06** Source-specific prompts and handlers. Small library of prompt templates tuned to specific document classes — insurer-app PDFs (layouts vary by Krankenkasse — TK, AOK, Barmer, etc.), lab-result scans (parameter / unit / reference-range extraction), doctor-letter-style narratives (diagnosis / recommendation / follow-up extraction). Extensible registry so future sources (Apple Health export, CSV from third-party apps) can be added without touching the IMP-03 core.
+
+### Open questions (carry forward to implementation)
+
+- **HEIC support**: rely on user-side conversion to JPG before upload, or include client-side `heic2any` (~100 KB minified+gzipped, worth a separate ADR for the bundle-budget impact)?
+- **Batch limits**: hard cap at 20 documents per batch to keep AI provider rate-limits and cost bounded? Sequential processing with a per-document progress indicator?
+- **Offline / local extraction**: WebGPU-based local multimodal models are tracked as a long-term observation, not Phase 4b scope. Revisit when local model size + quality + WebGPU support reach parity with hosted multimodal APIs.
+
+### Explicit non-goals for Phase 4b
+
+- Direct ePA-FdV gematik certification (not feasible for client-side PWA per prior analysis; see `docs/CONCEPT.md` non-goals).
+- Automatic pull-sync from external systems (insurer APIs, hospital portals).
+- Medical interpretation of extracted data (plausibility checks yes, diagnosis or treatment recommendations no).
+- DiGA integration / certification.
+- Post-import editing of original documents (annotation, redaction).
 
 ---
 
