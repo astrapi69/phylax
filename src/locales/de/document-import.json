@@ -1,0 +1,21 @@
+{
+  "error": {
+    "unsupported-type": "Dateityp \"{{mimeType}}\" wird nicht unterstützt.",
+    "heic-not-supported": "HEIC- und HEIF-Bilder werden nicht direkt unterstützt. Bitte vor dem Upload als JPEG exportieren — die iOS-Teilen-Funktion macht das in den meisten Apps automatisch.",
+    "size-too-large": "Datei zu groß ({{sizeMb}} MB). Maximum: {{limitMb}} MB.",
+    "pdf-page-limit": "PDF zu lang ({{actualPages}} Seiten). Maximum: {{limitPages}} Seiten. Bitte das Dokument vor dem Upload teilen.",
+    "image-dimension-limit": "Bild zu groß ({{width}}×{{height}} px). Maximum: {{limitPx}} px pro Kante.",
+    "pdf-unreadable": "PDF konnte nicht gelesen werden. Möglicherweise beschädigt oder verschlüsselt.",
+    "generic": "Datei konnte nicht verarbeitet werden. Bitte erneut versuchen."
+  },
+  "consent": {
+    "pdf-rasterization": {
+      "title": "PDF wird als Bilder hochgeladen",
+      "explanation": "Dieses PDF enthält keinen extrahierbaren Text. Phylax muss die Seiten als Bilder an den AI-Anbieter senden, damit der Inhalt klassifiziert werden kann.",
+      "consequence": "Die Bilddaten verlassen dein Gerät und werden vom AI-Anbieter verarbeitet.",
+      "remember-checkbox": "Für diese Sitzung merken (bis zum nächsten Browser-Neustart)",
+      "confirm-button": "Verarbeiten",
+      "cancel-button": "Abbrechen"
+    }
+  }
+}

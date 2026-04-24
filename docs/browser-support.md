@@ -55,6 +55,49 @@ The PDF iframe uses `sandbox="allow-scripts"`.
 - Trade-off: PDFs whose form logic makes same-origin requests (rare
   in medical documents) will have degraded form behavior. Accepted.
 
+## Image capture (Phase 4b IMP-02)
+
+Image uploads use the native OS file picker. When the import UI
+lands (IMP-04), the file input will carry
+`capture="environment"` so mobile browsers expose "take photo" as
+an option alongside "choose from library". Desktop browsers ignore
+the attribute and offer the standard file picker.
+
+No custom in-browser camera viewfinder is implemented. Building a
+viewfinder requires `navigator.mediaDevices.getUserMedia` + a
+live-video preview + capture-to-canvas plumbing, all for minimal UX
+gain over what the OS already delivers. Revisit if real user
+feedback surfaces a gap.
+
+## PDF import (Phase 4b IMP-02)
+
+PDF imports use `pdfjs-dist` dynamically-imported on first use. The
+pdf.js worker ships as a bundled chunk (Vite `?worker`), not a CDN
+fetch, per Phylax's no-runtime-third-party-network-calls posture.
+
+- PDFs with an extractable text layer (≥100 chars per page on
+  average) are processed locally. Only the extracted text goes to
+  the AI provider; page image data stays on device.
+- PDFs without a usable text layer (scans, photos saved as PDF)
+  require explicit user consent because pages must be rasterized
+  to images and uploaded to a multimodal AI provider. The consent
+  dialog includes a "remember for this session" opt-in checkbox;
+  persistent consent is deliberately not offered (surprise data
+  egress avoidance).
+- Page cap: 20 per PDF. Larger PDFs surface a localized error and
+  require the user to split before upload.
+- Rasterization DPI: 150 (legible body text without bloating
+  uploads).
+
+## HEIC / HEIF images
+
+Rejected at the `prepare` layer with a targeted "convert to JPEG
+before upload" message. iOS share-sheet auto-converts HEIC → JPEG
+in most apps, so the reject-with-guidance path covers 95% of
+real-world uploads without bundling a decoder. `heic2any`
+(~100 KB gzip) was considered and deferred to a future task if
+real-user friction surfaces.
+
 ## Image viewer (D-06)
 
 Images are rendered in a native `<img>` element with zoom controlled

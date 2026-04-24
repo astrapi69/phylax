@@ -61,8 +61,56 @@ export interface PreparedInputImage {
 export interface PreparedInputMultimodal {
   mode: 'multimodal';
   textContent: string;
-  imageData: ArrayBuffer;
+  /**
+   * One or more rasterized images. PDF rasterization (IMP-02)
+   * produces one entry per page; the array carries page order
+   * implicitly via index. Single-image cases use
+   * `PreparedInputImage`; this mode is reserved for inputs that
+   * combine text with N images (currently only PDF rasterization).
+   */
+  imageData: ArrayBuffer[];
   sourceFile: SourceFileMetadata;
+}
+
+/**
+ * Result of `prepare(file)` (IMP-02 onward). Discriminated by
+ * `kind`:
+ * - `ready`: prepared input is available, no further user action
+ *   needed before passing to IMP-03 classification.
+ * - `consent-required`: input cannot be prepared without explicit
+ *   user consent (currently: PDFs without text layer that need
+ *   page-wise rasterization + image upload to a multimodal AI
+ *   provider). Caller (IMP-04 UI) renders a consent dialog and
+ *   re-enters via `prepareWithConsent(file, options)`.
+ *
+ * Separation of concerns: `prepare` is the orchestrator;
+ * consent UX lives in the UI layer. This contract lets `prepare`
+ * be called from non-UI contexts (batch import, tests) without
+ * coupling to dialog rendering.
+ */
+export type PrepareResult =
+  | { kind: 'ready'; input: PreparedInput }
+  | { kind: 'consent-required'; reason: ConsentRequiredReason; file: File };
+
+export type ConsentRequiredReason = 'pdf-rasterization';
+
+/**
+ * Result of `prepareWithConsent(file, options)` after a
+ * `consent-required` round trip.
+ */
+export type PrepareWithConsentResult =
+  | { kind: 'ready'; input: PreparedInput }
+  | { kind: 'consent-declined' };
+
+export interface PrepareWithConsentOptions {
+  /**
+   * When true, the per-file consent decision is remembered in
+   * module-level session state so subsequent imports of the same
+   * `reason` proceed without re-prompting until page reload.
+   * Default false: consent is per-file unless the user explicitly
+   * opts in via the dialog checkbox.
+   */
+  rememberForSession?: boolean;
 }
 
 /**

@@ -50,3 +50,22 @@ export type TextMimeType = (typeof TEXT_MIME_TYPES)[number];
 export function isTextMimeType(mime: string): mime is TextMimeType {
   return (TEXT_MIME_TYPES as readonly string[]).includes(mime);
 }
+
+/**
+ * HEIC / HEIF MIME types. Recognized for purposes of producing a
+ * specific localized error message during import (instead of the
+ * generic "unsupported file type"), but NOT in the accepted set —
+ * Phylax does not bundle a HEIC decoder (per ADR-0017 and the IMP-02
+ * decision rationale: ~100 KB lazy chunk for an edge case where the
+ * iOS share-sheet auto-converts to JPEG anyway). Users who manually
+ * upload `.heic` files see the targeted error and can re-export as
+ * JPEG.
+ */
+export const HEIC_MIME_TYPE = 'image/heic' as const;
+export const HEIF_MIME_TYPE = 'image/heif' as const;
+export const HEIC_HEIF_MIME_TYPES = [HEIC_MIME_TYPE, HEIF_MIME_TYPE] as const;
+export type HeicHeifMimeType = (typeof HEIC_HEIF_MIME_TYPES)[number];
+
+export function isHeicHeifMimeType(mime: string): mime is HeicHeifMimeType {
+  return (HEIC_HEIF_MIME_TYPES as readonly string[]).includes(mime);
+}
