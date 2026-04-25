@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { PasswordVisibilityToggle } from '../../ui';
 import { useBackupExport, type BackupExportError, MIN_PASSWORD_LENGTH } from './useBackupExport';
 
 function renderError(error: BackupExportError, t: TFunction<'backup-export'>): string {
@@ -33,6 +34,7 @@ function renderError(error: BackupExportError, t: TFunction<'backup-export'>): s
 export function BackupExportSection() {
   const { t } = useTranslation('backup-export');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const { state, runExport, reset } = useBackupExport();
 
   const working =
@@ -100,15 +102,24 @@ export function BackupExportSection() {
             >
               {t('form.password-label')}
             </label>
-            <input
-              id="backup-export-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={working}
-              autoComplete="current-password"
-              className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-            />
+            <div className="relative">
+              <input
+                id="backup-export-password"
+                type={passwordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={working}
+                autoComplete="current-password"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-12 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              />
+              <PasswordVisibilityToggle
+                visible={passwordVisible}
+                onToggle={() => setPasswordVisible((v) => !v)}
+                labelShow={t('common:password-toggle.password-show')}
+                labelHide={t('common:password-toggle.password-hide')}
+                disabled={working}
+              />
+            </div>
             <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
               {t('form.password-help', { min: MIN_PASSWORD_LENGTH })}
             </p>

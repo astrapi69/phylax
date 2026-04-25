@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { PasswordVisibilityToggle } from '../../ui';
 import { unlockWithKey } from '../../crypto';
 import { decryptBackup, type DecryptError } from './decryptBackup';
 import { populateVault, type PopulateError } from './populateVault';
@@ -47,6 +48,7 @@ export function BackupImportUnlockView() {
   const state = (location.state as LocationStateShape | null) ?? null;
 
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [status, setStatus] = useState<ImportStatus>('idle');
   const [error, setError] = useState<ImportError | null>(null);
   const [remainingLockoutMs, setRemainingLockoutMs] = useState(() =>
@@ -142,19 +144,28 @@ export function BackupImportUnlockView() {
             >
               {t('unlock.password.label')}
             </label>
-            <input
-              ref={inputRef}
-              id="backup-import-password"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (error) setError(null);
-              }}
-              disabled={isLocked || status === 'deriving' || status === 'populating'}
-              className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
-              autoComplete="current-password"
-            />
+            <div className="relative">
+              <input
+                ref={inputRef}
+                id="backup-import-password"
+                type={passwordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
+                disabled={isLocked || status === 'deriving' || status === 'populating'}
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-12 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
+                autoComplete="current-password"
+              />
+              <PasswordVisibilityToggle
+                visible={passwordVisible}
+                onToggle={() => setPasswordVisible((v) => !v)}
+                labelShow={t('common:password-toggle.password-show')}
+                labelHide={t('common:password-toggle.password-hide')}
+                disabled={isLocked || status === 'deriving' || status === 'populating'}
+              />
+            </div>
           </div>
 
           {error && (

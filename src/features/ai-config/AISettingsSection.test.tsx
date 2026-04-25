@@ -211,4 +211,43 @@ describe('AISettingsSection', () => {
     expect(dialog).toHaveAttribute('aria-labelledby', 'privacy-info-title');
     expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
+
+  it('unconfigured form: API key visibility toggle uses api-key labels and flips type', async () => {
+    const user = userEvent.setup();
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument());
+    const input = screen.getByLabelText('API-Schlüssel') as HTMLInputElement;
+    const toggle = screen.getByTestId('password-visibility-toggle');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(toggle).toHaveAttribute('aria-label', 'API-Key anzeigen');
+
+    await user.click(toggle);
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-label', 'API-Key verbergen');
+  });
+
+  it('configured form: change-key flow exposes API key visibility toggle', async () => {
+    await saveAIConfig({
+      provider: 'anthropic',
+      apiKey: 'sk-ant-abcdefghijklmnop-ABCD',
+      model: 'claude-sonnet-4-6',
+    });
+    const user = userEvent.setup();
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Ändern' })).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Ändern' }));
+
+    const input = screen.getByLabelText('API-Schlüssel') as HTMLInputElement;
+    const toggle = screen.getByTestId('password-visibility-toggle');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(toggle).toHaveAttribute('aria-label', 'API-Key anzeigen');
+
+    await user.click(toggle);
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-label', 'API-Key verbergen');
+  });
 });

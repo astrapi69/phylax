@@ -5,6 +5,7 @@ import {
   DEFAULT_ANTHROPIC_MODEL,
   type AIProviderConfig,
 } from '../../db/aiConfig';
+import { PasswordVisibilityToggle } from '../../ui';
 import { useAIConfig } from './useAIConfig';
 import { AIDisclaimer } from './AIDisclaimer';
 import { PrivacyInfoPopover } from './PrivacyInfoPopover';
@@ -170,6 +171,7 @@ function UnconfiguredForm({
   onActivate,
 }: UnconfiguredFormProps) {
   const { t } = useTranslation('ai-config');
+  const [keyVisible, setKeyVisible] = useState(false);
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -185,16 +187,24 @@ function UnconfiguredForm({
         >
           {t('settings-section.api-key-label')}
         </label>
-        <input
-          id="ai-api-key"
-          type="password"
-          value={apiKey}
-          onChange={(e) => onApiKeyChange(e.target.value)}
-          autoComplete="off"
-          spellCheck={false}
-          placeholder="sk-ant-..."
-          className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-        />
+        <div className="relative">
+          <input
+            id="ai-api-key"
+            type={keyVisible ? 'text' : 'password'}
+            value={apiKey}
+            onChange={(e) => onApiKeyChange(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="sk-ant-..."
+            className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          />
+          <PasswordVisibilityToggle
+            visible={keyVisible}
+            onToggle={() => setKeyVisible((v) => !v)}
+            labelShow={t('common:password-toggle.api-key-show')}
+            labelHide={t('common:password-toggle.api-key-hide')}
+          />
+        </div>
         {suspicious && (
           <p className="mt-1 text-xs text-amber-700 dark:text-amber-400" role="alert">
             {t('settings-section.suspicious-warning')}
@@ -305,6 +315,7 @@ function ConfiguredForm({
   onDelete,
 }: ConfiguredFormProps) {
   const { t } = useTranslation('ai-config');
+  const [newKeyVisible, setNewKeyVisible] = useState(false);
   return (
     <div className="space-y-4">
       <p className="text-sm text-green-700 dark:text-green-400">
@@ -322,16 +333,24 @@ function ConfiguredForm({
         </label>
         {isEntering ? (
           <div className="space-y-2">
-            <input
-              id="ai-api-key-masked"
-              type="password"
-              value={newKey}
-              onChange={(e) => onNewKeyChange(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-              placeholder="sk-ant-..."
-              className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-            />
+            <div className="relative">
+              <input
+                id="ai-api-key-masked"
+                type={newKeyVisible ? 'text' : 'password'}
+                value={newKey}
+                onChange={(e) => onNewKeyChange(e.target.value)}
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="sk-ant-..."
+                className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              />
+              <PasswordVisibilityToggle
+                visible={newKeyVisible}
+                onToggle={() => setNewKeyVisible((v) => !v)}
+                labelShow={t('common:password-toggle.api-key-show')}
+                labelHide={t('common:password-toggle.api-key-hide')}
+              />
+            </div>
             {suspicious && (
               <p className="text-xs text-amber-700 dark:text-amber-400" role="alert">
                 {t('settings-section.suspicious-warning')}

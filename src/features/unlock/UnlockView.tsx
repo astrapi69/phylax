@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getSafeReturnTo } from '../../router/returnTo';
+import { PasswordVisibilityToggle } from '../../ui';
 import { useUnlock } from './useUnlock';
 import { ResetDialog } from '../reset';
 
@@ -53,6 +54,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
   const hook = useUnlock(handleUnlocked);
   const inputRef = useRef<HTMLInputElement>(null);
   const [resetOpen, setResetOpen] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -90,17 +92,26 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
               >
                 {t('password.label')}
               </label>
-              <input
-                ref={inputRef}
-                id="unlock-password"
-                type="password"
-                value={hook.password}
-                onChange={(e) => hook.setPassword(e.target.value)}
-                disabled={isLocked}
-                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
-                autoComplete="current-password"
-                aria-describedby={hook.error ? 'unlock-error' : undefined}
-              />
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  id="unlock-password"
+                  type={passwordVisible ? 'text' : 'password'}
+                  value={hook.password}
+                  onChange={(e) => hook.setPassword(e.target.value)}
+                  disabled={isLocked}
+                  className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-12 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
+                  autoComplete="current-password"
+                  aria-describedby={hook.error ? 'unlock-error' : undefined}
+                />
+                <PasswordVisibilityToggle
+                  visible={passwordVisible}
+                  onToggle={() => setPasswordVisible((v) => !v)}
+                  labelShow={t('common:password-toggle.password-show')}
+                  labelHide={t('common:password-toggle.password-hide')}
+                  disabled={isLocked}
+                />
+              </div>
             </div>
 
             {hook.error && (

@@ -111,4 +111,20 @@ describe('BackupExportSection', () => {
     expect(screen.getByRole('button', { name: 'Create backup' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
   });
+
+  it('password visibility toggle flips input type and aria-label', async () => {
+    await setupWithProfile();
+    const user = userEvent.setup();
+    render(<BackupExportSection />);
+    const input = screen.getByLabelText('Passwort') as HTMLInputElement;
+    const toggle = screen.getByTestId('password-visibility-toggle');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort anzeigen');
+
+    await user.click(toggle);
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort verbergen');
+  });
 });

@@ -132,4 +132,33 @@ describe('UnlockView', () => {
     expect(screen.queryByTestId('reset-dialog')).not.toBeInTheDocument();
     expect(screen.getByTestId('unlock-forgotten-password-link')).toBeInTheDocument();
   });
+
+  it('password visibility toggle flips input type and aria-label', async () => {
+    const user = userEvent.setup();
+    renderUnlock();
+    const input = screen.getByLabelText('Master-Passwort') as HTMLInputElement;
+    const toggle = screen.getByTestId('password-visibility-toggle');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort anzeigen');
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(toggle);
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort verbergen');
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('password visibility toggle is disabled during rate-limit lockout', async () => {
+    // Push the rate limiter past its threshold so the input + toggle disable.
+    for (let i = 0; i < 5; i++) {
+      recordFailedAttempt();
+    }
+    renderUnlock();
+    const toggle = screen.getByTestId('password-visibility-toggle');
+    expect(toggle).toBeDisabled();
+    const input = screen.getByLabelText('Master-Passwort') as HTMLInputElement;
+    expect(input).toBeDisabled();
+  });
 });

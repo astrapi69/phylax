@@ -141,4 +141,20 @@ describe('BackupImportUnlockView', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Unlock backup' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
   });
+
+  it('password visibility toggle flips input type and aria-label', async () => {
+    const user = userEvent.setup();
+    const parsed = await makeBackup('correct-password');
+    renderView(parsed);
+    const input = screen.getByLabelText('Backup-Passwort') as HTMLInputElement;
+    const toggle = screen.getByTestId('password-visibility-toggle');
+
+    expect(input).toHaveAttribute('type', 'password');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort anzeigen');
+
+    await user.click(toggle);
+
+    expect(input).toHaveAttribute('type', 'text');
+    expect(toggle).toHaveAttribute('aria-label', 'Passwort verbergen');
+  });
 });
