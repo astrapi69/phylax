@@ -77,7 +77,7 @@ Goal: the living medical profile as core artifact. Observation CRUD grouped by t
 - [ ] **O-17** In-memory search across decrypted observations (theme, fact, pattern)
 - [ ] **O-18** Date range filter for observations and lab values
 - [ ] **O-19** Empty states and loading skeletons
-- [ ] **O-20** Edit and delete confirmations via modal, no `confirm()`
+- [x] **O-20** Shared modal-dialog system in `src/ui/Modal/`. Headless `<Modal>` primitive + sub-components (`ModalHeader`, `ModalBody`, `ModalFooter`) + `<ConfirmDialog>` convenience wrapper for the title+body+cancel/confirm pattern. Three extracted hooks (`useFocusTrap`, `useReturnFocus`, `useBodyScrollLock`) own the cross-cutting concerns; each tested in isolation. **Decisions per Q1-Q4:** `Modal` primitive defaults to first-focusable on mount (HTML5 native dialog semantics); `ConfirmDialog` defaults to cancel-focused regardless of variant (matches Phylax precedent: 5 of 8 existing dialogs default to cancel for consent + confirmation flows). `closeOnBackdropClick` defaults to **false** (Phylax convention: mid-flow dialogs avoid accidental dismissal); callers opt in via prop. `role` is caller-decided (default `dialog`); `<ConfirmDialog variant="destructive">` automatically sets `role="alertdialog"` so screen readers announce content immediately. Full sweep of the 6 other existing modals deferred to TD-12 (mechanical refactor, behaviour-invariant; better reviewed in isolation when their features get touched). **Constraints honored:** `useBodyScrollLock` counter is module-level (not per-hook-instance) so simultaneously-mounted modals don't release the lock prematurely; `useReturnFocus` falls back to `document.body` when the trigger element disappears mid-modal; portal target configurable via `portalTarget` prop (default `document.body`); focus-trap selector skips `disabled`, `[hidden]`, and `[aria-hidden="true"]` to match standard focus-trap hygiene; `zIndex` documented as caller-supplied convention (z-50 base, +10 per nested level), no automatic stacking magic. **Migrations in this commit:** `ResetDialog` (P-17 closed — focus trap + backdrop now provided by primitive) and `DeleteDocumentButton`'s inline two-step confirm → `<ConfirmDialog variant="destructive">` (D-08's bespoke pattern retired in favor of shared primitive). **Bundle delta:** +2.54 KB main JS gzip (255.48 KB / 350 KB budget) for primitive + two migrations; trends down as TD-12 sweeps the 6 deferred modals.
 
 ---
 
@@ -293,8 +293,8 @@ Goal: production-quality UX, mobile-ready, accessible, internationalized.
 - [ ] **P-13** Image viewer: evaluate GPU-accelerated `transform: scale()` zoom + explicitly sized overflow wrapper if large-image (~20 MB medical scan) zoom CPU cost becomes noticeable. Current D-06 implementation uses width/height attribute resize because `transform: scale()` alone does not drive `overflow: auto` scrollbars; switching requires computing wrapper dimensions from scale factor. Marker only, no commitment.
 - [ ] **P-14** Image viewer: pinch-to-zoom on touch devices (PointerEvents + gesture composition + `touch-action` config). D-06 ships mobile with zoom buttons + native scrollbar pan.
 - [ ] **P-15** Document link picker: evaluate a searchable combobox (e.g. custom native-datalist or a dedicated small component) when observation / lab-value counts per profile exceed ~30. D-07 ships a native `<select>` which is keyboard-accessible and zero-bundle but becomes scroll-heavy at larger counts. Marker only, no commitment.
-- [ ] **P-16** Inline list-row delete affordance for documents, pending a shared modal-dialog system for the app. D-08 ships viewer-only two-step confirm; list-row delete would need focus-trapped confirmation and is a modal concern, not a feature-local one.
-- [ ] **P-17** Migrate `ResetDialog` (full-data reset) to the shared modal-dialog system (O-20) once it ships. Currently inline in `src/features/reset/ResetDialog.tsx` with `role="alertdialog"` + `aria-modal="true"` but no focus trap or backdrop. Same migration class as P-16.
+- [ ] **P-16** Inline list-row delete affordance for documents. **Unblocked by O-20** — a list-row delete button can now consume `<ConfirmDialog variant="destructive">` to get focus-trapped confirmation. Pending only the actual `DocumentList` row-affordance + wiring.
+- [x] **P-17** ResetDialog migrated to the shared modal-dialog system (O-20). Now uses `<Modal role="alertdialog">` + `ModalHeader` + `ModalBody` + `ModalFooter`. Focus trap + backdrop + portal mounting + body scroll lock all provided by the primitive; type-challenge gating + cancel-default focus + Escape-suppressed-while-in-flight preserved.
 
 ---
 
@@ -438,6 +438,7 @@ When a phase is complete:
 ## Technical Debt
 
 - [ ] **TD-01** Bump GitHub Actions from @v4 to @v5 when released (Node.js 20 deprecation, June 2026 deadline)
+- [ ] **TD-12** Modal-system sweep. Migrate the 6 remaining ad-hoc dialogs to the O-20 shared primitive: `CommitPreviewModal` (ai-chat), `ImportFlow` modal shell (document-import), `ConsentDialog` (document-import), `ConfirmDialog` (profile-import — likely the smallest migration since shape already matches), `AIDisclaimer` (ai-config), `ExportDialog` (export — natural fit when Phase 5 lands), `PrivacyInfoPopover` (verify popover-vs-modal first; may use a different primitive). Mechanical refactor — behaviour-invariant — best reviewed in isolation. Estimated cleanup: ~600 lines of duplicated focus-trap + Escape boilerplate eliminated.
 
 ## Out of scope (do not propose)
 

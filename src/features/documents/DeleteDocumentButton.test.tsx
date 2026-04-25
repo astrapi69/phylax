@@ -144,8 +144,10 @@ describe('DeleteDocumentButton', () => {
     await act(async () => {
       fireEvent.click(screen.getByTestId('delete-document-btn'));
     });
+    // O-20 migration: Modal listens at document level via the
+    // shared primitive's keydown handler.
     await act(async () => {
-      fireEvent.keyDown(screen.getByTestId('delete-region'), { key: 'Escape' });
+      fireEvent.keyDown(document, { key: 'Escape' });
     });
 
     expect(screen.getByTestId('delete-document-btn')).toBeInTheDocument();

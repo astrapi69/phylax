@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from '../../ui';
 import { useResetAllData } from './useResetAllData';
+
+const TITLE_ID = 'reset-dialog-title';
+const DESCRIPTION_ID = 'reset-dialog-warning';
+const INPUT_ID = 'reset-challenge-input';
 
 export interface ResetDialogProps {
   /** Closes the dialog without resetting. */
@@ -18,6 +23,11 @@ const CHALLENGE_STRING = 'RESET';
 /**
  * Type-challenge confirmation panel for the full data reset.
  *
+ * O-20 migration: previously an inline section with `aria-modal="true"`
+ * but no focus trap, no backdrop, no portal. Now wrapped in the shared
+ * `<Modal>` primitive (P-17 closed). Type-challenge gating + destructive
+ * styling stay the same.
+ *
  * Design (D-08 destructive-flow a11y patterns + tighter guard):
  * - Confirm button stays disabled until the input EXACTLY matches
  *   `RESET` (case-sensitive, no whitespace, no locale variants).
@@ -25,17 +35,13 @@ const CHALLENGE_STRING = 'RESET';
  *   actions (GitHub repo deletion, Stripe account deletion).
  * - Cancel button is focused on mount — keyboard users entering this
  *   dialog should not have the destructive Confirm pre-focused.
- * - Escape cancels (scoped via `onKeyDown`, no global window listener).
+ * - Escape cancels (now via Modal primitive; suppressed while reset
+ *   is in flight).
  * - No master-password guard. The most common reset trigger is
  *   forgotten password, so requiring the password to wipe data after
  *   forgetting it would be paradoxical.
  * - Wipe orchestration delegated to `useResetAllData` — this
  *   component is presentation only.
- *
- * Polish backlog (P-17 candidate): when O-20 ships the modal-dialog
- * system, this inline panel migrates to the shared modal with focus
- * trap and backdrop. Same migration pattern as D-08's delete
- * confirmation.
  */
 export function ResetDialog({ onCancel }: ResetDialogProps) {
   const { t } = useTranslation('reset');
@@ -46,98 +52,84 @@ export function ResetDialog({ onCancel }: ResetDialogProps) {
   const matches = challengeInput === CHALLENGE_STRING;
   const canConfirm = matches && !reset.inProgress;
 
-  useEffect(() => {
-    cancelButtonRef.current?.focus();
-  }, []);
-
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Escape' && !reset.inProgress) {
-        e.preventDefault();
-        onCancel();
-      }
-    },
-    [reset.inProgress, onCancel],
-  );
-
   const onConfirm = useCallback(() => {
     if (!canConfirm) return;
     void reset.reset();
   }, [canConfirm, reset]);
 
   return (
-    <section
+    <Modal
+      open
+      onClose={onCancel}
+      titleId={TITLE_ID}
+      descriptionId={DESCRIPTION_ID}
       role="alertdialog"
-      aria-modal="true"
-      aria-labelledby="reset-dialog-title"
-      aria-describedby="reset-dialog-warning"
-      className="rounded-md border border-red-300 bg-red-50 p-4 text-sm dark:border-red-700 dark:bg-red-950/30"
-      data-testid="reset-dialog"
-      onKeyDown={onKeyDown}
+      closeOnEscape={!reset.inProgress}
+      closeOnBackdropClick={false}
+      initialFocusRef={cancelButtonRef}
+      size="md"
+      testId="reset-dialog"
     >
-      <h2
-        id="reset-dialog-title"
-        className="mb-2 text-base font-semibold text-red-900 dark:text-red-200"
-        data-testid="reset-dialog-title"
-      >
+      <ModalHeader titleId={TITLE_ID} titleTestId={TITLE_ID}>
         {t('dialog.title')}
-      </h2>
-      <p
-        id="reset-dialog-warning"
-        className="mb-3 text-red-900 dark:text-red-200"
-        data-testid="reset-dialog-warning"
-      >
-        {t('dialog.warning')}
-      </p>
-
-      <label htmlFor="reset-challenge-input" className="mb-1 block text-red-900 dark:text-red-200">
-        {t('dialog.challenge-prompt', { challenge: CHALLENGE_STRING })}
-      </label>
-      <input
-        id="reset-challenge-input"
-        type="text"
-        value={challengeInput}
-        onChange={(e) => setChallengeInput(e.target.value)}
-        disabled={reset.inProgress}
-        autoComplete="off"
-        spellCheck={false}
-        placeholder={t('dialog.challenge-placeholder', { challenge: CHALLENGE_STRING })}
-        className="w-full rounded-sm border border-red-300 bg-white px-3 py-2 font-mono text-gray-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-red-700 dark:bg-gray-900 dark:text-gray-100"
-        data-testid="reset-challenge-input"
-      />
-
-      {reset.blocked && (
+      </ModalHeader>
+      <ModalBody>
         <p
-          role="alert"
-          className="mt-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-          data-testid="reset-blocked-message"
+          id={DESCRIPTION_ID}
+          className="text-red-900 dark:text-red-200"
+          data-testid="reset-dialog-warning"
         >
-          {t('dialog.blocked')}
+          {t('dialog.warning')}
         </p>
-      )}
 
-      {reset.result && !reset.result.fullySucceeded && (
-        <p
-          role="alert"
-          className="mt-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-          data-testid="reset-partial-failure"
-        >
-          {t('dialog.partial-failure')}
-        </p>
-      )}
+        <label htmlFor={INPUT_ID} className="mt-3 mb-1 block text-red-900 dark:text-red-200">
+          {t('dialog.challenge-prompt', { challenge: CHALLENGE_STRING })}
+        </label>
+        <input
+          id={INPUT_ID}
+          type="text"
+          value={challengeInput}
+          onChange={(e) => setChallengeInput(e.target.value)}
+          disabled={reset.inProgress}
+          autoComplete="off"
+          spellCheck={false}
+          placeholder={t('dialog.challenge-placeholder', { challenge: CHALLENGE_STRING })}
+          className="w-full rounded-sm border border-red-300 bg-white px-3 py-2 font-mono text-gray-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-red-700 dark:bg-gray-900 dark:text-gray-100"
+          data-testid="reset-challenge-input"
+        />
 
-      {reset.inProgress && (
-        <p
-          role="status"
-          aria-live="polite"
-          className="mt-3 text-red-900 dark:text-red-200"
-          data-testid="reset-progress"
-        >
-          {t('dialog.progress')}
-        </p>
-      )}
+        {reset.blocked && (
+          <p
+            role="alert"
+            className="mt-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
+            data-testid="reset-blocked-message"
+          >
+            {t('dialog.blocked')}
+          </p>
+        )}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+        {reset.result && !reset.result.fullySucceeded && (
+          <p
+            role="alert"
+            className="mt-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
+            data-testid="reset-partial-failure"
+          >
+            {t('dialog.partial-failure')}
+          </p>
+        )}
+
+        {reset.inProgress && (
+          <p
+            role="status"
+            aria-live="polite"
+            className="mt-3 text-red-900 dark:text-red-200"
+            data-testid="reset-progress"
+          >
+            {t('dialog.progress')}
+          </p>
+        )}
+      </ModalBody>
+      <ModalFooter>
         <button
           ref={cancelButtonRef}
           type="button"
@@ -157,7 +149,7 @@ export function ResetDialog({ onCancel }: ResetDialogProps) {
         >
           {t('dialog.confirm-button')}
         </button>
-      </div>
-    </section>
+      </ModalFooter>
+    </Modal>
   );
 }

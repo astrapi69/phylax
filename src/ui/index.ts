@@ -1,1 +1,20 @@
 export { WarningCallout, type WarningSeverity } from './WarningCallout';
+export {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ConfirmDialog,
+  useModalTitleId,
+  useFocusTrap,
+  useReturnFocus,
+  useBodyScrollLock,
+  type ModalProps,
+  type ModalRole,
+  type ModalSize,
+  type ModalHeaderProps,
+  type ModalBodyProps,
+  type ModalFooterProps,
+  type ConfirmDialogProps,
+  type ConfirmDialogVariant,
+} from './Modal';

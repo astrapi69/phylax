@@ -1,0 +1,13 @@
+export { Modal, useModalTitleId } from './Modal';
+export type { ModalProps, ModalRole, ModalSize } from './Modal';
+export { ModalHeader } from './ModalHeader';
+export type { ModalHeaderProps } from './ModalHeader';
+export { ModalBody } from './ModalBody';
+export type { ModalBodyProps } from './ModalBody';
+export { ModalFooter } from './ModalFooter';
+export type { ModalFooterProps } from './ModalFooter';
+export { ConfirmDialog } from './ConfirmDialog';
+export type { ConfirmDialogProps, ConfirmDialogVariant } from './ConfirmDialog';
+export { useFocusTrap } from './useFocusTrap';
+export { useReturnFocus } from './useReturnFocus';
+export { useBodyScrollLock, __resetForTest as __resetScrollLockForTest } from './useBodyScrollLock';
