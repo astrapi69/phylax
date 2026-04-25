@@ -7,18 +7,27 @@ import { LabValuesTable } from './LabValuesTable';
 import { AttachedDocumentsForLabReport } from '../documents/AttachedDocumentsForLabReport';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 import { LabReportActions } from './LabReportActions';
+import { AddLabValueButton } from './AddLabValueButton';
 import type { UseLabReportFormResult } from './useLabReportForm';
+import type { UseLabValueFormResult } from './useLabValueForm';
 
 interface LabReportCardProps {
   report: LabReport;
   valuesByCategory: Map<string, LabValue[]>;
   /**
-   * Optional form-state hook result. When omitted, no edit/delete
+   * Optional report-form hook result. When omitted, no edit/delete
    * actions render — keeps the card usable in read-only contexts
    * (e.g., profile-view summary panes) without requiring a form
    * provider in the surrounding tree.
    */
   form?: UseLabReportFormResult;
+  /**
+   * Optional value-form hook result. When supplied, each row in the
+   * values table exposes edit/delete actions and the card footer
+   * shows an "Add value" button bound to this report. O-12b parity
+   * with the report-level `form` prop.
+   */
+  valueForm?: UseLabValueFormResult;
 }
 
 /**
@@ -30,7 +39,7 @@ interface LabReportCardProps {
  * header-only with a "Keine Werte erfasst" placeholder so the
  * report shell is visible while users add values incrementally.
  */
-export function LabReportCard({ report, valuesByCategory, form }: LabReportCardProps) {
+export function LabReportCard({ report, valuesByCategory, form, valueForm }: LabReportCardProps) {
   const { t } = useTranslation('lab-values');
   const {
     reportDate,
@@ -88,7 +97,7 @@ export function LabReportCard({ report, valuesByCategory, form }: LabReportCardP
               <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
                 {category}
               </h3>
-              <LabValuesTable category={category} values={values} />
+              <LabValuesTable category={category} values={values} valueForm={valueForm} />
               <CategoryAssessment category={category} assessment={categoryAssessments[category]} />
             </div>
           ))
@@ -99,6 +108,15 @@ export function LabReportCard({ report, valuesByCategory, form }: LabReportCardP
           >
             {t('report.no-values')}
           </p>
+        )}
+
+        {valueForm && (
+          <div
+            className="flex justify-end border-t border-gray-200 pt-4 dark:border-gray-700"
+            data-testid={`lab-report-${report.id}-add-value-footer`}
+          >
+            <AddLabValueButton reportId={report.id} form={valueForm} />
+          </div>
         )}
 
         {overallAssessment && overallAssessment.trim() !== '' && (

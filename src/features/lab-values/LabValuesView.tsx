@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { LabReportCard } from './LabReportCard';
 import { useLabValues } from './useLabValues';
 import { useLabReportForm } from './useLabReportForm';
+import { useLabValueForm } from './useLabValueForm';
 import { LabReportForm } from './LabReportForm';
 import { LabReportDeleteDialog } from './LabReportDeleteDialog';
+import { LabValueForm } from './LabValueForm';
+import { LabValueDeleteDialog } from './LabValueDeleteDialog';
 import { AddLabReportButton } from './AddLabReportButton';
 
 /**
@@ -19,6 +22,7 @@ export function LabValuesView() {
   const { t } = useTranslation('lab-values');
   const { state, refetch } = useLabValues();
   const form = useLabReportForm({ onCommitted: refetch });
+  const valueForm = useLabValueForm({ onCommitted: refetch });
 
   if (state.kind === 'loading') {
     return (
@@ -61,6 +65,7 @@ export function LabValuesView() {
               report={report}
               valuesByCategory={valuesByCategory}
               form={form}
+              valueForm={valueForm}
             />
           ))}
         </div>
@@ -68,6 +73,8 @@ export function LabValuesView() {
 
       <LabReportForm form={form} />
       <LabReportDeleteDialog form={form} />
+      <LabValueForm form={valueForm} />
+      <LabValueDeleteDialog form={valueForm} />
     </article>
   );
 }

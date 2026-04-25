@@ -122,6 +122,49 @@ describe('LabValuesView', () => {
     expect(screen.getByTestId('lab-report-form-title')).toHaveTextContent('Neuer Befund');
   });
 
+  it('renders add-value footer on each report when reports exist', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    const report: LabReport = {
+      id: 'lr1',
+      profileId: 'p1',
+      createdAt: 1,
+      updatedAt: 1,
+      reportDate: '2026-02-27',
+      categoryAssessments: {},
+    };
+    vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([
+      report,
+    ]);
+    vi.spyOn(LabValueRepository.prototype, 'listByReport').mockResolvedValue([]);
+
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-lab-value-btn-lr1')).toBeInTheDocument());
+  });
+
+  it('clicking add-value opens the value form in create mode', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    const report: LabReport = {
+      id: 'lr1',
+      profileId: 'p1',
+      createdAt: 1,
+      updatedAt: 1,
+      reportDate: '2026-02-27',
+      categoryAssessments: {},
+    };
+    vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([
+      report,
+    ]);
+    vi.spyOn(LabValueRepository.prototype, 'listByReport').mockResolvedValue([]);
+    vi.spyOn(LabValueRepository.prototype, 'listParameters').mockResolvedValue([]);
+
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-lab-value-btn-lr1')).toBeInTheDocument());
+    await user.click(screen.getByTestId('add-lab-value-btn-lr1'));
+    await waitFor(() => expect(screen.getByTestId('lab-value-form-title')).toBeInTheDocument());
+    expect(screen.getByTestId('lab-value-form-title')).toHaveTextContent('Neuer Wert');
+  });
+
   it('renders multiple reports in order', async () => {
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
     vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([

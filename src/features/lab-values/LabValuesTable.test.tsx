@@ -1,7 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { LabValuesTable } from './LabValuesTable';
+import type { UseLabValueFormResult } from './useLabValueForm';
 import { makeLabValue } from './test-helpers';
+
+function makeValueFormStub(overrides: Partial<UseLabValueFormResult> = {}): UseLabValueFormResult {
+  return {
+    state: { kind: 'closed' },
+    openCreate: vi.fn(async () => {}),
+    openEdit: vi.fn(async () => {}),
+    openDelete: vi.fn(),
+    setField: vi.fn(),
+    submit: vi.fn(async () => {}),
+    confirmDelete: vi.fn(async () => {}),
+    close: vi.fn(),
+    ...overrides,
+  };
+}
 
 describe('LabValuesTable', () => {
   it('renders table with column headers', () => {
@@ -65,5 +80,28 @@ describe('LabValuesTable', () => {
     );
     const cell = screen.getByText('leicht erhoht');
     expect(cell.className).toMatch(/amber/);
+  });
+
+  it('omits action column when no valueForm prop is supplied (read-only mode)', () => {
+    render(<LabValuesTable category="Blutbild" values={[makeLabValue()]} />);
+    expect(screen.queryByTestId('lab-value-actions')).toBeNull();
+    // Header row should still have only 5 columns.
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers).toHaveLength(5);
+  });
+
+  it('renders action column with edit + delete per row when valueForm supplied', () => {
+    const values = [
+      makeLabValue({ id: 'v1', parameter: 'Hb' }),
+      makeLabValue({ id: 'v2', parameter: 'Leukozyten' }),
+    ];
+    render(<LabValuesTable category="Blutbild" values={values} valueForm={makeValueFormStub()} />);
+    expect(screen.getByTestId('lab-value-edit-btn-v1')).toBeInTheDocument();
+    expect(screen.getByTestId('lab-value-delete-btn-v1')).toBeInTheDocument();
+    expect(screen.getByTestId('lab-value-edit-btn-v2')).toBeInTheDocument();
+    expect(screen.getByTestId('lab-value-delete-btn-v2')).toBeInTheDocument();
+    // Header row gets a sixth column for actions.
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers).toHaveLength(6);
   });
 });

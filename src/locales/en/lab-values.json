@@ -25,15 +25,19 @@
     "result": "Result",
     "unit": "Unit",
     "reference": "Reference",
-    "assessment": "Assessment"
+    "assessment": "Assessment",
+    "actions": "Actions"
   },
   "error": {
     "load-failed": "Lab values could not be loaded."
   },
   "actions": {
     "add-report": "New report",
+    "add-value": "Add value",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "edit-value": "Edit {{parameter}}",
+    "delete-value": "Delete {{parameter}}"
   },
   "form-report": {
     "title": {
@@ -60,6 +64,47 @@
       "busy": "Saving..."
     },
     "save-error": "Save failed: {{detail}}"
+  },
+  "form-value": {
+    "title": {
+      "create": "New value",
+      "edit": "Edit value"
+    },
+    "field": {
+      "category": "Category",
+      "category-placeholder": "e.g. Blood count, Kidney values",
+      "category-required": "Category is required",
+      "parameter": "Parameter",
+      "parameter-placeholder": "e.g. Hemoglobin, Creatinine",
+      "parameter-required": "Parameter is required",
+      "result": "Result",
+      "result-placeholder": "e.g. 14.2, negative, >100",
+      "result-required": "Result is required",
+      "unit": "Unit",
+      "unit-placeholder": "e.g. mg/dl, g/l",
+      "reference-range": "Reference range",
+      "reference-range-placeholder": "e.g. 13.5-17.5",
+      "assessment": "Assessment",
+      "assessment-placeholder": "e.g. normal, elevated"
+    },
+    "cancel": "Cancel",
+    "save": {
+      "create": "Save",
+      "edit": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
+  },
+  "delete-value": {
+    "title": "Delete value",
+    "body": {
+      "with-unit": "{{parameter}} = {{result}} {{unit}} will be deleted.",
+      "no-unit": "{{parameter}} = {{result}} will be deleted."
+    },
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "busy": "Deleting...",
+    "error": "Delete failed."
   },
   "delete-report": {
     "title": "Delete report",

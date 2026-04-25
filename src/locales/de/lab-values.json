@@ -25,15 +25,19 @@
     "result": "Ergebnis",
     "unit": "Einheit",
     "reference": "Referenz",
-    "assessment": "Bewertung"
+    "assessment": "Bewertung",
+    "actions": "Aktionen"
   },
   "error": {
     "load-failed": "Laborwerte konnten nicht geladen werden."
   },
   "actions": {
     "add-report": "Neuer Befund",
+    "add-value": "Wert hinzufügen",
     "edit": "Bearbeiten",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "edit-value": "{{parameter}} bearbeiten",
+    "delete-value": "{{parameter}} löschen"
   },
   "form-report": {
     "title": {
@@ -60,6 +64,47 @@
       "busy": "Wird gespeichert..."
     },
     "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "form-value": {
+    "title": {
+      "create": "Neuer Wert",
+      "edit": "Wert bearbeiten"
+    },
+    "field": {
+      "category": "Kategorie",
+      "category-placeholder": "z.B. Blutbild, Nierenwerte",
+      "category-required": "Kategorie ist erforderlich",
+      "parameter": "Parameter",
+      "parameter-placeholder": "z.B. Hämoglobin, Kreatinin",
+      "parameter-required": "Parameter ist erforderlich",
+      "result": "Ergebnis",
+      "result-placeholder": "z.B. 14.2, negativ, >100",
+      "result-required": "Ergebnis ist erforderlich",
+      "unit": "Einheit",
+      "unit-placeholder": "z.B. mg/dl, g/l",
+      "reference-range": "Referenzbereich",
+      "reference-range-placeholder": "z.B. 13.5-17.5",
+      "assessment": "Bewertung",
+      "assessment-placeholder": "z.B. normal, erhöht"
+    },
+    "cancel": "Abbrechen",
+    "save": {
+      "create": "Speichern",
+      "edit": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "delete-value": {
+    "title": "Wert löschen",
+    "body": {
+      "with-unit": "{{parameter}} = {{result}} {{unit}} wird gelöscht.",
+      "no-unit": "{{parameter}} = {{result}} wird gelöscht."
+    },
+    "confirm": "Löschen",
+    "cancel": "Abbrechen",
+    "busy": "Wird gelöscht...",
+    "error": "Löschen fehlgeschlagen."
   },
   "delete-report": {
     "title": "Befund löschen",

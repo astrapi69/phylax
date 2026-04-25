@@ -206,6 +206,34 @@ describe('LabValueRepository', () => {
     lock();
   });
 
+  describe('listParameters', () => {
+    it('returns deduped parameter names for the profile', async () => {
+      await repo.create(makeValueData({ parameter: 'Haemoglobin' }));
+      await repo.create(makeValueData({ parameter: 'Kreatinin' }));
+      await repo.create(makeValueData({ parameter: 'Haemoglobin' }));
+      await repo.create(makeValueData({ parameter: 'TSH' }));
+
+      const result = await repo.listParameters(profileId);
+      expect([...result].sort()).toEqual(['Haemoglobin', 'Kreatinin', 'TSH']);
+      lock();
+    });
+
+    it('returns empty when profile has no values', async () => {
+      const result = await repo.listParameters(profileId);
+      expect(result).toEqual([]);
+      lock();
+    });
+
+    it('isolates results by profileId', async () => {
+      await repo.create(makeValueData({ profileId, parameter: 'Kreatinin' }));
+      await repo.create(makeValueData({ profileId: 'other-profile', parameter: 'TSH' }));
+
+      const result = await repo.listParameters(profileId);
+      expect(result).toEqual(['Kreatinin']);
+      lock();
+    });
+  });
+
   describe('sourceDocumentId (IMP-05)', () => {
     it('round-trips when set', async () => {
       const v = await repo.create(makeValueData({ sourceDocumentId: 'doc-1' }));

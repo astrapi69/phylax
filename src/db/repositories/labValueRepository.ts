@@ -46,4 +46,15 @@ export class LabValueRepository extends EncryptedRepository<LabValue> {
     const decrypted = await Promise.all(rows.map((row) => this.deserialize(row)));
     return decrypted.filter((e) => e.sourceDocumentId === documentId);
   }
+
+  /**
+   * List distinct parameter names across all values for a profile.
+   * Drives the parameter datalist in the O-12b lab-value form so users
+   * get suggestions from previously-entered parameters across all
+   * reports. Caller sorts (German collation) before display.
+   */
+  async listParameters(profileId: string): Promise<string[]> {
+    const all = await this.listByProfile(profileId);
+    return [...new Set(all.map((v) => v.parameter))];
+  }
 }

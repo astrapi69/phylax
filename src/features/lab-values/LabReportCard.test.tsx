@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LabReportCard } from './LabReportCard';
 import type { UseLabReportFormResult } from './useLabReportForm';
+import type { UseLabValueFormResult } from './useLabValueForm';
 import { makeLabReport, makeLabValue } from './test-helpers';
 
 function makeFormStub(overrides: Partial<UseLabReportFormResult> = {}): UseLabReportFormResult {
@@ -11,6 +12,20 @@ function makeFormStub(overrides: Partial<UseLabReportFormResult> = {}): UseLabRe
     openCreate: vi.fn(),
     openEdit: vi.fn(),
     openDelete: vi.fn(async () => {}),
+    setField: vi.fn(),
+    submit: vi.fn(async () => {}),
+    confirmDelete: vi.fn(async () => {}),
+    close: vi.fn(),
+    ...overrides,
+  };
+}
+
+function makeValueFormStub(overrides: Partial<UseLabValueFormResult> = {}): UseLabValueFormResult {
+  return {
+    state: { kind: 'closed' },
+    openCreate: vi.fn(async () => {}),
+    openEdit: vi.fn(async () => {}),
+    openDelete: vi.fn(),
     setField: vi.fn(),
     submit: vi.fn(async () => {}),
     confirmDelete: vi.fn(async () => {}),
@@ -140,6 +155,49 @@ describe('LabReportCard', () => {
     const report = makeLabReport({ id: 'with-values' });
     render(<LabReportCard report={report} valuesByCategory={values} />);
     expect(screen.queryByTestId('lab-report-with-values-no-values')).toBeNull();
+  });
+
+  it('omits add-value footer when no valueForm prop is supplied', () => {
+    const report = makeLabReport({ id: 'no-vf' });
+    render(<LabReportCard report={report} valuesByCategory={new Map()} />);
+    expect(screen.queryByTestId('lab-report-no-vf-add-value-footer')).toBeNull();
+  });
+
+  it('renders add-value footer when valueForm prop is supplied', () => {
+    const report = makeLabReport({ id: 'with-vf' });
+    render(
+      <LabReportCard
+        report={report}
+        valuesByCategory={new Map()}
+        valueForm={makeValueFormStub()}
+      />,
+    );
+    expect(screen.getByTestId('lab-report-with-vf-add-value-footer')).toBeInTheDocument();
+    expect(screen.getByTestId('add-lab-value-btn-with-vf')).toBeInTheDocument();
+  });
+
+  it('clicking add-value opens the value form bound to this report', async () => {
+    const user = userEvent.setup();
+    const openCreate = vi.fn(async () => {});
+    const report = makeLabReport({ id: 'lr-add' });
+    render(
+      <LabReportCard
+        report={report}
+        valuesByCategory={new Map()}
+        valueForm={makeValueFormStub({ openCreate })}
+      />,
+    );
+    await user.click(screen.getByTestId('add-lab-value-btn-lr-add'));
+    expect(openCreate).toHaveBeenCalledWith('lr-add');
+  });
+
+  it('passes valueForm into LabValuesTable so per-row actions render', () => {
+    const values = makeValues([{ category: 'Blutbild', parameter: 'Hb' }]);
+    const report = makeLabReport({ id: 'lr-rows' });
+    render(
+      <LabReportCard report={report} valuesByCategory={values} valueForm={makeValueFormStub()} />,
+    );
+    expect(screen.getByTestId('lab-value-actions')).toBeInTheDocument();
   });
 
   it('hides optional sections when not present', () => {
