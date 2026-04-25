@@ -89,7 +89,28 @@ describe('useResetAllData', () => {
     await waitFor(() => expect(result.current.step).toBe('done'));
     expect(result.current.result?.fullySucceeded).toBe(true);
     expect(result.current.result?.errors).toEqual([]);
-    expect(replace).toHaveBeenCalledWith('/');
+    // Navigation target is BASE_URL (app root) so that subpath
+    // deployments (GitHub Pages: `/phylax/`) stay inside React Router
+    // scope. In the Vitest environment BASE_URL === '/' which matches
+    // dev mode; the indirection is the structural defense.
+    expect(replace).toHaveBeenCalledWith(import.meta.env.BASE_URL);
+  });
+
+  it('redirect target follows BASE_URL — subpath regression guard', async () => {
+    // Stub BASE_URL to the GitHub Pages production value so a future
+    // refactor that hardcodes `/` again would fail this test
+    // independently of which env Vitest happens to run under.
+    vi.stubEnv('BASE_URL', '/phylax/');
+    installDeleteDbStub('success');
+    const { replace } = stubLocation();
+
+    const { result } = renderHook(() => useResetAllData());
+    await act(async () => {
+      await result.current.reset();
+    });
+
+    expect(replace).toHaveBeenCalledWith('/phylax/');
+    vi.unstubAllEnvs();
   });
 
   it('calls indexedDB.deleteDatabase with the Phylax DB name', async () => {

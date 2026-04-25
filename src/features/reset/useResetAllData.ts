@@ -54,7 +54,9 @@ export interface UseResetAllDataResult {
   /**
    * Run the full wipe sequence. Best-effort: every step runs even if
    * a prior one threw; per-step errors collected into `result.errors`.
-   * On full success, navigates to `/` via `location.replace` (history-clean).
+   * On full success, navigates to `import.meta.env.BASE_URL` (the app
+   * root, accounting for subpath deployments like GitHub Pages) via
+   * `location.replace` (history-clean).
    */
   reset: () => Promise<void>;
 }
@@ -73,9 +75,12 @@ export interface UseResetAllDataResult {
  *    matching the Phylax prefix convention.
  * 5. Iterate `caches.keys()` and delete each.
  * 6. `navigator.serviceWorker.getRegistration()?.unregister()`.
- * 7. `window.location.replace('/')` for clean fresh-start navigation
- *    (NOT `.reload()` — we want history cleared so back-button does
- *    not return to a dead viewer URL).
+ * 7. `window.location.replace(import.meta.env.BASE_URL)` for clean
+ *    fresh-start navigation (NOT `.reload()` — we want history cleared
+ *    so back-button does not return to a dead viewer URL).
+ *    `BASE_URL` resolves to `/` in dev and `/phylax/` in production
+ *    builds (GitHub Pages subpath); hardcoded `/` would exit the
+ *    React Router scope on subpath deployments.
  *
  * Failures are caught and logged into `result.errors`. The orchestrator
  * never throws; the caller distinguishes full vs partial success via
@@ -139,8 +144,10 @@ export function useResetAllData(): UseResetAllDataResult {
     // Navigate after state is settled so the parent component can
     // observe `result` for telemetry-free logging if it wants.
     // history-clean navigation: replace, not reload, so back-button
-    // does not return to a dead URL.
-    window.location.replace('/');
+    // does not return to a dead URL. `BASE_URL` keeps the redirect
+    // inside the React Router scope on subpath deployments (e.g.,
+    // `/phylax/` on GitHub Pages); hardcoded `/` would exit it.
+    window.location.replace(import.meta.env.BASE_URL);
   }, []);
 
   return { step, inProgress, result, blocked, reset };

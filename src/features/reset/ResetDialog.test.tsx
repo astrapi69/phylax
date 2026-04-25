@@ -127,7 +127,7 @@ describe('ResetDialog', () => {
       fireEvent.click(screen.getByTestId('reset-confirm-btn'));
     });
 
-    await waitFor(() => expect(replace).toHaveBeenCalledWith('/'));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith(import.meta.env.BASE_URL));
   });
 
   it('dialog has role=alertdialog and aria-modal=true', () => {
