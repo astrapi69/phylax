@@ -18,6 +18,25 @@
       "acknowledge": "Ich verstehe, dass die Daten überschrieben werden."
     }
   },
+  "section": {
+    "heading": "Backup wiederherstellen",
+    "description": "Stelle ein zuvor exportiertes verschlüsseltes Phylax-Backup (.phylax) wieder her. Die aktuellen Daten werden vollständig durch die Inhalte des Backups ersetzt.",
+    "file-picker-label": "Backup-Datei auswählen",
+    "acknowledge-checkbox": "Ich verstehe, dass die aktuellen Daten überschrieben werden.",
+    "password-label": "Backup-Passwort",
+    "password-help": "Gib das Passwort ein, mit dem dieses Backup erstellt wurde.",
+    "submit-label": "Wiederherstellen",
+    "submit-busy": "Wird wiederhergestellt...",
+    "status-success": "Backup vom {{date}} erfolgreich wiederhergestellt. Du wirst zu deinem Profil weitergeleitet.",
+    "confirm-dialog": {
+      "title": "Backup wiederherstellen",
+      "body-with-date": "Aktuelle Daten werden durch das Backup vom {{date}} ersetzt. Diese Aktion kann nicht rückgängig gemacht werden, sofern keine andere Sicherung vorliegt.",
+      "body-no-date": "Aktuelle Daten werden durch das Backup ersetzt. Diese Aktion kann nicht rückgängig gemacht werden, sofern keine andere Sicherung vorliegt.",
+      "confirm": "Wiederherstellen",
+      "cancel": "Abbrechen",
+      "busy": "Wird wiederhergestellt..."
+    }
+  },
   "unlock": {
     "heading": "Backup entsperren",
     "description": "Gib das Passwort ein, mit dem dieses Backup erstellt wurde. Nach dem Import wird dieses Passwort dein Master-Passwort.",

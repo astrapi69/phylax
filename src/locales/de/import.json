@@ -22,6 +22,10 @@
       "placeholder": "# Medizinisches Profil...",
       "char-count": "{{chars}} Zeichen (mindestens {{min}})",
       "source-label": "Eingefügter Text"
+    },
+    "backup-hint": {
+      "prefix": "Verschlüsselte Backup-Datei (.phylax) wiederherstellen?",
+      "link": "→ Einstellungen"
     }
   },
   "selection": {

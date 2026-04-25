@@ -3,21 +3,10 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { PasswordVisibilityToggle } from '../../ui';
-import { unlockWithKey } from '../../crypto';
-import { decryptBackup, type DecryptError } from './decryptBackup';
-import { populateVault, type PopulateError } from './populateVault';
 import type { ParsedPhylaxFile } from './parseBackupFile';
-import { createRateLimiter, BACKUP_IMPORT_STORAGE_KEY } from '../unlock/rateLimit';
+import { useBackupImport, type BackupImportError } from './useBackupImport';
 
-type ImportStatus = 'idle' | 'deriving' | 'populating' | 'done' | 'error';
-
-type ImportError = DecryptError | PopulateError | { kind: 'rate-limited'; remainingMs: number };
-
-const TICK_INTERVAL_MS = 250;
-
-const limiter = createRateLimiter(BACKUP_IMPORT_STORAGE_KEY);
-
-function renderImportError(error: ImportError, t: TFunction<'backup-import'>): string {
+function renderImportError(error: BackupImportError, t: TFunction<'backup-import'>): string {
   switch (error.kind) {
     case 'wrong-password':
       return t('error.wrong-password');
@@ -47,30 +36,15 @@ export function BackupImportUnlockView() {
   const location = useLocation();
   const state = (location.state as LocationStateShape | null) ?? null;
 
+  const importer = useBackupImport();
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [status, setStatus] = useState<ImportStatus>('idle');
-  const [error, setError] = useState<ImportError | null>(null);
-  const [remainingLockoutMs, setRemainingLockoutMs] = useState(() =>
-    limiter.getRemainingLockoutMs(),
-  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    if (remainingLockoutMs <= 0) return undefined;
-    const id = setInterval(() => {
-      const next = limiter.getRemainingLockoutMs();
-      setRemainingLockoutMs(next);
-      if (next <= 0) clearInterval(id);
-    }, TICK_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [remainingLockoutMs]);
-
-  const isLocked = remainingLockoutMs > 0;
   const parsed = state?.parsed;
   const fileName = state?.fileName;
 
@@ -78,52 +52,24 @@ export function BackupImportUnlockView() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!parsed || password.length === 0) return;
-      if (limiter.getRemainingLockoutMs() > 0) return;
-
-      setStatus('deriving');
-      setError(null);
-
-      const decryptResult = await decryptBackup(parsed, password);
-      if (!decryptResult.ok) {
-        if (decryptResult.error.kind === 'wrong-password') {
-          const next = limiter.recordFailedAttempt();
-          setRemainingLockoutMs(next.lockedUntil !== null ? limiter.getRemainingLockoutMs() : 0);
-        }
-        setError(decryptResult.error);
-        setStatus('error');
+      const result = await importer.run(parsed, password);
+      if (result.ok) {
+        navigate(result.hasProfile ? '/profile' : '/profile/create', { replace: true });
+      } else {
         setPassword('');
-        return;
       }
-
-      setStatus('populating');
-
-      const populateResult = await populateVault(
-        decryptResult.dump,
-        decryptResult.key,
-        decryptResult.saltBytes,
-      );
-      if (!populateResult.ok) {
-        setError(populateResult.error);
-        setStatus('error');
-        return;
-      }
-
-      unlockWithKey(decryptResult.key);
-      limiter.recordSuccessfulAttempt();
-      setStatus('done');
-
-      const hasProfile = decryptResult.dump.rows.profiles.length > 0;
-      navigate(hasProfile ? '/profile' : '/profile/create', { replace: true });
     },
-    [parsed, password, navigate],
+    [parsed, password, importer, navigate],
   );
 
   if (!parsed || !fileName) {
     return <Navigate to="/backup/import/select" replace />;
   }
 
+  const { status, error, isLocked, remainingLockoutMs } = importer;
   const submitEnabled =
     password.length > 0 && status !== 'deriving' && status !== 'populating' && !isLocked;
+  const inputDisabled = isLocked || status === 'deriving' || status === 'populating';
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-950">
@@ -152,9 +98,9 @@ export function BackupImportUnlockView() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  if (error) setError(null);
+                  importer.clearError();
                 }}
-                disabled={isLocked || status === 'deriving' || status === 'populating'}
+                disabled={inputDisabled}
                 className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-12 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:disabled:bg-gray-800/50"
                 autoComplete="current-password"
               />
@@ -163,7 +109,7 @@ export function BackupImportUnlockView() {
                 onToggle={() => setPasswordVisible((v) => !v)}
                 labelShow={t('common:password-toggle.password-show')}
                 labelHide={t('common:password-toggle.password-hide')}
-                disabled={isLocked || status === 'deriving' || status === 'populating'}
+                disabled={inputDisabled}
               />
             </div>
           </div>

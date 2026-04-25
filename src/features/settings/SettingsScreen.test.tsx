@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { ThemeProvider } from '../theme';
 import { SettingsScreen } from './SettingsScreen';
@@ -24,9 +25,11 @@ beforeEach(async () => {
 describe('SettingsScreen', () => {
   it('renders the Einstellungen heading plus Theme, Language, AI-Config, Data-management, and Donation sections', () => {
     render(
-      <ThemeProvider>
-        <SettingsScreen />
-      </ThemeProvider>,
+      <MemoryRouter>
+        <ThemeProvider>
+          <SettingsScreen />
+        </ThemeProvider>
+      </MemoryRouter>,
     );
     expect(screen.getByRole('heading', { level: 1, name: 'Einstellungen' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Darstellung' })).toBeInTheDocument();
@@ -50,9 +53,11 @@ describe('SettingsScreen', () => {
   it('exposes the current theme as the checked radio', () => {
     window.localStorage.setItem('phylax-theme', 'dark');
     render(
-      <ThemeProvider>
-        <SettingsScreen />
-      </ThemeProvider>,
+      <MemoryRouter>
+        <ThemeProvider>
+          <SettingsScreen />
+        </ThemeProvider>
+      </MemoryRouter>,
     );
     expect(screen.getByRole('radio', { name: /Dunkel/ })).toBeChecked();
   });

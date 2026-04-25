@@ -6,6 +6,7 @@ import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
 import { ExportButton } from '../export';
 import { BackupExportSection } from '../backup-export';
+import { BackupImportSection } from '../backup-import';
 
 /**
  * Settings screen. Hosts the theme picker, the language switcher, the
@@ -42,6 +43,7 @@ export function SettingsScreen() {
           </ExportButton>
         </section>
         <BackupExportSection />
+        <BackupImportSection />
       </section>
       <DonationSettingsSection />
       <DangerZoneSection />

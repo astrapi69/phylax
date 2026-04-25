@@ -22,6 +22,10 @@
       "placeholder": "# Medical profile...",
       "char-count": "{{chars}} characters (minimum {{min}})",
       "source-label": "Pasted text"
+    },
+    "backup-hint": {
+      "prefix": "Restore an encrypted backup file (.phylax)?",
+      "link": "→ Settings"
     }
   },
   "selection": {

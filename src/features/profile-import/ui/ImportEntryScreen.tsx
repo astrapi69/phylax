@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -140,6 +141,19 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
           {t('common:action.cancel')}
         </button>
       </div>
+
+      <p
+        className="mt-6 text-xs text-gray-500 dark:text-gray-400"
+        data-testid="import-entry-backup-hint"
+      >
+        {t('entry.backup-hint.prefix')}{' '}
+        <Link
+          to="/settings"
+          className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          {t('entry.backup-hint.link')}
+        </Link>
+      </p>
     </div>
   );
 }

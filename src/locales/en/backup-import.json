@@ -18,6 +18,25 @@
       "acknowledge": "I understand that the data will be overwritten."
     }
   },
+  "section": {
+    "heading": "Restore backup",
+    "description": "Restore a previously exported encrypted Phylax backup (.phylax). Current data will be fully replaced by the contents of the backup.",
+    "file-picker-label": "Choose backup file",
+    "acknowledge-checkbox": "I understand that current data will be overwritten.",
+    "password-label": "Backup password",
+    "password-help": "Enter the password this backup was created with.",
+    "submit-label": "Restore",
+    "submit-busy": "Restoring...",
+    "status-success": "Backup from {{date}} restored successfully. You will be redirected to your profile.",
+    "confirm-dialog": {
+      "title": "Restore backup",
+      "body-with-date": "Current data will be replaced by the backup from {{date}}. This action cannot be undone unless another backup exists.",
+      "body-no-date": "Current data will be replaced by the backup. This action cannot be undone unless another backup exists.",
+      "confirm": "Restore",
+      "cancel": "Cancel",
+      "busy": "Restoring..."
+    }
+  },
   "unlock": {
     "heading": "Unlock backup",
     "description": "Enter the password this backup was created with. After import, this password becomes your master password.",
