@@ -1,4 +1,5 @@
 {
+  "button": "Import profile",
   "flow": {
     "parsing": "Processing Markdown...",
     "importing": "Importing data...",

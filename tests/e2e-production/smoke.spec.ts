@@ -75,7 +75,7 @@ async function setupAuthenticatedState(page: Page, theme: ThemeMode, sysPref: Sy
 
 async function importFixture(page: Page) {
   const content = readFileSync(FIXTURE_PATH, 'utf-8');
-  await page.getByRole('link', { name: 'Import' }).click();
+  await page.getByRole('link', { name: 'Import', exact: true }).click();
   await page.getByLabel(/markdown-text einfügen/i).fill(content);
   await page.getByRole('button', { name: 'Weiter' }).click();
   await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
@@ -155,7 +155,7 @@ matrixTests('Smoke: profile view populated', 'profile-view', async (page, { them
 
 matrixTests('Smoke: import entry', 'import-entry', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
-  await page.getByRole('link', { name: 'Import' }).click();
+  await page.getByRole('link', { name: 'Import', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Import aus Markdown' })).toBeVisible();
 });
 
@@ -165,7 +165,7 @@ matrixTests(
   async (page, { theme, sysPref }) => {
     await setupAuthenticatedState(page, theme, sysPref);
     const content = readFileSync(FIXTURE_PATH, 'utf-8');
-    await page.getByRole('link', { name: 'Import' }).click();
+    await page.getByRole('link', { name: 'Import', exact: true }).click();
     await page.getByLabel(/markdown-text einfügen/i).fill(content);
     await page.getByRole('button', { name: 'Weiter' }).click();
     await expect(
@@ -177,7 +177,7 @@ matrixTests(
 matrixTests('Smoke: import preview', 'import-preview', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   const content = readFileSync(FIXTURE_PATH, 'utf-8');
-  await page.getByRole('link', { name: 'Import' }).click();
+  await page.getByRole('link', { name: 'Import', exact: true }).click();
   await page.getByLabel(/markdown-text einfügen/i).fill(content);
   await page.getByRole('button', { name: 'Weiter' }).click();
   await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();

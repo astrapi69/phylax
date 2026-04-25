@@ -1,4 +1,5 @@
 {
+  "button": "Profil importieren",
   "flow": {
     "parsing": "Markdown wird verarbeitet...",
     "importing": "Daten werden importiert...",

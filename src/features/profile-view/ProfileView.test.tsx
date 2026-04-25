@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -29,14 +30,22 @@ afterEach(() => {
 
 async function renderWithProfile(profile: Profile) {
   const spy = vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(profile);
-  const utils = render(<ProfileView />);
+  const utils = render(
+    <MemoryRouter>
+      <ProfileView />
+    </MemoryRouter>,
+  );
   await waitFor(() => expect(screen.queryByRole('status')).toBeNull());
   return { ...utils, spy };
 }
 
 describe('ProfileView', () => {
   it('shows a loading indicator initially', () => {
-    render(<ProfileView />);
+    render(
+      <MemoryRouter>
+        <ProfileView />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
@@ -151,7 +160,11 @@ describe('ProfileView', () => {
   });
 
   it('shows error message when no profile exists', async () => {
-    render(<ProfileView />);
+    render(
+      <MemoryRouter>
+        <ProfileView />
+      </MemoryRouter>,
+    );
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
     expect(screen.getByRole('alert').textContent).toMatch(/Kein Profil/);
   });

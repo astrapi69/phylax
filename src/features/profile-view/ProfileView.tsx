@@ -4,6 +4,7 @@ import { getDisplayName } from '../../domain';
 import type { Profile } from '../../domain';
 import { DonationOnboardingCard, DonationReminderBanner, readDonationState } from '../donation';
 import { ExportButton } from '../export';
+import { ImportProfileLinkButton } from '../profile-import/ui';
 import { BaseDataSection, ProfileTypeBadge } from './BaseDataSection';
 import { DoctorCard } from './DoctorCard';
 import { WarningSignsSection } from './WarningSignsSection';
@@ -72,7 +73,10 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
           </div>
         </div>
         <div className="flex flex-col items-start gap-3 text-sm text-gray-600 md:items-end md:text-right dark:text-gray-400">
-          <ExportButton />
+          <div className="flex flex-wrap gap-2">
+            <ImportProfileLinkButton />
+            <ExportButton />
+          </div>
           <div>
             <p>
               {t('header.version-label')}{' '}
