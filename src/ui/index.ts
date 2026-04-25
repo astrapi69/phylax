@@ -1,5 +1,9 @@
 export { WarningCallout, type WarningSeverity } from './WarningCallout';
 export {
+  PasswordVisibilityToggle,
+  type PasswordVisibilityToggleProps,
+} from './PasswordVisibilityToggle';
+export {
   Modal,
   ModalHeader,
   ModalBody,

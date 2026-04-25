@@ -21,5 +21,11 @@
     "fallback-self": "Mein Profil",
     "fallback-proxy": "Stellvertreterprofil",
     "fallback-proxy-for": "Profil von {{name}}"
+  },
+  "password-toggle": {
+    "password-show": "Passwort anzeigen",
+    "password-hide": "Passwort verbergen",
+    "api-key-show": "API-Key anzeigen",
+    "api-key-hide": "API-Key verbergen"
   }
 }

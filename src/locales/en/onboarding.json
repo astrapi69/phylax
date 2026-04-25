@@ -46,11 +46,7 @@
     "intro": "This password encrypts all your data. Without the password there is no access, no recovery, and no support.",
     "password": {
       "label": "Master password",
-      "confirm-label": "Repeat password",
-      "toggleVisibility": {
-        "show": "Show password",
-        "hide": "Hide password"
-      }
+      "confirm-label": "Repeat password"
     },
     "strength": {
       "weak": "Weak",

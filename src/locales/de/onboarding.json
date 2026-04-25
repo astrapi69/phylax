@@ -46,11 +46,7 @@
     "intro": "Dieses Passwort verschlüsselt alle deine Daten. Ohne das Passwort gibt es keinen Zugang, keine Wiederherstellung und keinen Support.",
     "password": {
       "label": "Master-Passwort",
-      "confirm-label": "Passwort wiederholen",
-      "toggleVisibility": {
-        "show": "Passwort anzeigen",
-        "hide": "Passwort verbergen"
-      }
+      "confirm-label": "Passwort wiederholen"
     },
     "strength": {
       "weak": "Schwach",

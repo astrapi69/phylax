@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { WarningCallout } from '../../ui';
+import { PasswordVisibilityToggle, WarningCallout } from '../../ui';
 import { useSetupVault } from './useSetupVault';
 import { useLazyZxcvbn } from './useLazyZxcvbn';
 import {
@@ -37,48 +37,6 @@ const STRENGTH_ARIA_VALUE: Record<PasswordStrength, number> = {
   fair: 66,
   strong: 100,
 };
-
-function VisibilityToggle({
-  visible,
-  onToggle,
-  labelShow,
-  labelHide,
-  disabled,
-}: {
-  visible: boolean;
-  onToggle: () => void;
-  labelShow: string;
-  labelHide: string;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      disabled={disabled}
-      aria-label={visible ? labelHide : labelShow}
-      aria-pressed={visible}
-      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200 dark:focus:text-gray-200 dark:focus-visible:ring-offset-gray-900"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-      >
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-        <circle cx="12" cy="12" r="3" />
-        {visible && <line x1="4" y1="4" x2="20" y2="20" />}
-      </svg>
-    </button>
-  );
-}
 
 function renderSetupError(error: SetupValidationError, t: TFunction<'onboarding'>): string {
   switch (error.kind) {
@@ -182,11 +140,11 @@ export function SetupView() {
                 aria-describedby={passwordErrorVisible ? 'password-error' : undefined}
                 disabled={status === 'deriving' || status === 'done'}
               />
-              <VisibilityToggle
+              <PasswordVisibilityToggle
                 visible={passwordVisible}
                 onToggle={() => setPasswordVisible((v) => !v)}
-                labelShow={t('setup.password.toggleVisibility.show')}
-                labelHide={t('setup.password.toggleVisibility.hide')}
+                labelShow={t('common:password-toggle.password-show')}
+                labelHide={t('common:password-toggle.password-hide')}
                 disabled={status === 'deriving' || status === 'done'}
               />
             </div>
@@ -240,11 +198,11 @@ export function SetupView() {
                 autoComplete="new-password"
                 disabled={status === 'deriving' || status === 'done'}
               />
-              <VisibilityToggle
+              <PasswordVisibilityToggle
                 visible={confirmVisible}
                 onToggle={() => setConfirmVisible((v) => !v)}
-                labelShow={t('setup.password.toggleVisibility.show')}
-                labelHide={t('setup.password.toggleVisibility.hide')}
+                labelShow={t('common:password-toggle.password-show')}
+                labelHide={t('common:password-toggle.password-hide')}
                 disabled={status === 'deriving' || status === 'done'}
               />
             </div>
