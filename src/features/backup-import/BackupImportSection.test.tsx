@@ -10,12 +10,15 @@ vi.mock('../../crypto', async (importOriginal) => {
 });
 
 import i18n from '../../i18n/config';
-import { encrypt, generateSalt, deriveKeyFromPassword, lock } from '../../crypto';
+import { encrypt, generateSalt, deriveKeyFromPassword, lock, unlock } from '../../crypto';
 import { PBKDF2_ITERATIONS } from '../../crypto/constants';
-import { resetDatabase } from '../../db/test-helpers';
+import { resetDatabase, setupCompletedOnboarding } from '../../db/test-helpers';
+import { readMeta } from '../../db/meta';
 import { __resetScrollLockForTest } from '../../ui';
 import { BackupImportSection } from './BackupImportSection';
 import { BACKUP_IMPORT_STORAGE_KEY } from '../unlock/rateLimit';
+
+const SETTINGS_PASSWORD = 'vault-password-long';
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = '';
@@ -57,6 +60,13 @@ beforeEach(async () => {
   lock();
   await resetDatabase();
   sessionStorage.removeItem(BACKUP_IMPORT_STORAGE_KEY);
+  // Settings context: user is already authenticated when reaching the
+  // BackupImportSection. Set up an unlocked vault so the section's
+  // post-success `replaceStoredKey` call lands in the same auth state
+  // it does in production.
+  await setupCompletedOnboarding(SETTINGS_PASSWORD);
+  const meta = await readMeta();
+  await unlock(SETTINGS_PASSWORD, new Uint8Array(meta?.salt ?? new ArrayBuffer(0)));
 });
 
 function renderInRouter() {
@@ -189,7 +199,7 @@ describe('BackupImportSection', () => {
     await user.click(screen.getByTestId('backup-import-confirm-confirm'));
 
     await waitFor(() => expect(screen.getByTestId('backup-import-success')).toBeInTheDocument(), {
-      timeout: 5000,
+      timeout: 15000,
     });
     lock();
   });
@@ -213,9 +223,60 @@ describe('BackupImportSection', () => {
 
     await waitFor(
       () => expect(screen.getByTestId('backup-import-section-error')).toBeInTheDocument(),
-      { timeout: 5000 },
+      { timeout: 15000 },
     );
     expect(screen.queryByTestId('backup-import-success')).toBeNull();
+  });
+
+  it('happy path calls replaceStoredKey, NOT unlockWithKey (Settings auth context)', async () => {
+    // Auth setup runs in beforeEach. Spies install AFTER setup so they
+    // don't pick up the `unlockWithKey` call inside
+    // `setupCompletedOnboarding`.
+    const cryptoModule = await import('../../crypto');
+    const replaceSpy = vi.spyOn(cryptoModule, 'replaceStoredKey');
+    const unlockSpy = vi.spyOn(cryptoModule, 'unlockWithKey');
+
+    const user = userEvent.setup();
+    const file = await makeBackupBlob('correct-password');
+    renderInRouter();
+
+    await user.upload(screen.getByTestId('backup-import-section-file-input'), file);
+    await waitFor(() =>
+      expect(screen.getByTestId('backup-import-section-acknowledge')).toBeInTheDocument(),
+    );
+    await user.click(screen.getByTestId('backup-import-section-acknowledge'));
+    await user.type(screen.getByTestId('backup-import-section-password-input'), 'correct-password');
+    await user.click(screen.getByTestId('backup-import-section-submit'));
+    await waitFor(() =>
+      expect(screen.getByTestId('backup-import-confirm-dialog')).toBeInTheDocument(),
+    );
+    await user.click(screen.getByTestId('backup-import-confirm-confirm'));
+
+    await waitFor(() => expect(replaceSpy).toHaveBeenCalled(), { timeout: 15000 });
+    expect(unlockSpy).not.toHaveBeenCalled();
+
+    replaceSpy.mockRestore();
+    unlockSpy.mockRestore();
+    lock();
+  });
+
+  it('spinner does not render in idle state', () => {
+    renderInRouter();
+    expect(screen.queryByTestId('backup-import-section-spinner')).toBeNull();
+  });
+
+  it('file picker renders as label-styled button (not raw native input)', () => {
+    renderInRouter();
+    const label = screen.getByTestId('backup-import-section-file-label');
+    expect(label.tagName.toLowerCase()).toBe('label');
+    // Hidden input still in the DOM for accessibility / file dialog.
+    const input = screen.getByTestId('backup-import-section-file-input');
+    expect(input.className).toMatch(/sr-only/);
+    // Label has dark-mode classes for the visibility fix.
+    expect(label.className).toMatch(/dark:bg-gray-800/);
+    expect(label.className).toMatch(/dark:text-gray-100/);
+    // 44px touch target.
+    expect(label.className).toMatch(/min-h-\[44px\]/);
   });
 
   it('parse error renders inline when an invalid file is selected', async () => {

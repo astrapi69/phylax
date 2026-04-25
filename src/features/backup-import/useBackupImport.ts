@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { unlockWithKey } from '../../crypto';
 import { decryptBackup, type DecryptError } from './decryptBackup';
 import { populateVault, type PopulateError } from './populateVault';
 import type { ParsedPhylaxFile } from './parseBackupFile';
@@ -20,22 +19,31 @@ export interface UseBackupImportResult {
   remainingLockoutMs: number;
   isLocked: boolean;
   /**
-   * Drive the decrypt → populate → unlockWithKey pipeline. Returns
-   * `{ ok: true, hasProfile }` on success so the caller can route
-   * appropriately, or `{ ok: false }` when the run failed (error +
-   * status are populated on the hook state for UI rendering).
+   * Drive the decrypt + populate pipeline. Returns the
+   * backup-derived `key` plus `hasProfile` on success so the caller
+   * can complete the auth-state transition appropriate to its
+   * context, or `{ ok: false }` when the run failed (error + status
+   * are populated on the hook state for UI rendering).
    *
-   * Both consumers (full-screen `/backup/import/unlock` route and
-   * the post-auth Settings section) share this same pipeline,
-   * including the rate-limiter (`BACKUP_IMPORT_STORAGE_KEY`) — so
-   * brute-force attempts across both surfaces share one lockout
-   * budget. Independent limiters would let an attacker double their
-   * attempts by alternating surfaces.
+   * The hook deliberately does NOT call `unlockWithKey` /
+   * `replaceStoredKey` itself — auth-state transitions are
+   * context-dependent: the pre-auth `/backup/import/unlock` route
+   * is locked at the time of run and calls `unlockWithKey(key)`
+   * after success; the post-auth Settings section is already
+   * unlocked under the user's prior master key and calls
+   * `replaceStoredKey(key)` to swap without firing lock listeners
+   * (which would otherwise unmount the section via ProtectedRoute's
+   * locked-state redirect).
+   *
+   * Both consumers share this pipeline including the rate-limiter
+   * (`BACKUP_IMPORT_STORAGE_KEY`) — brute-force attempts across both
+   * surfaces share one lockout budget. Independent limiters would
+   * let an attacker double their attempts by alternating surfaces.
    */
   run: (
     parsed: ParsedPhylaxFile,
     password: string,
-  ) => Promise<{ ok: true; hasProfile: boolean } | { ok: false }>;
+  ) => Promise<{ ok: true; key: CryptoKey; hasProfile: boolean } | { ok: false }>;
   /** Reset error/status back to idle. Caller calls this on retry. */
   reset: () => void;
   /** Clear error inline (e.g. on input change). */
@@ -44,9 +52,8 @@ export interface UseBackupImportResult {
 
 /**
  * State machine for `.phylax` backup restoration. Drives the
- * decrypt → populate → unlockWithKey sequence, owns the shared
- * rate-limiter budget, and exposes a typed error/status surface
- * for inline rendering.
+ * decrypt + populate sequence, owns the shared rate-limiter budget,
+ * and exposes a typed error/status surface for inline rendering.
  *
  * Extracted from `BackupImportUnlockView` so both consumers (the
  * pre-auth full-screen route and the new post-auth Settings section)
@@ -55,9 +62,11 @@ export interface UseBackupImportResult {
  * messages, rate-limit countdowns, and schema-version mismatches read
  * identically across surfaces.
  *
- * Navigation is the caller's responsibility — the hook returns
- * `hasProfile` on success so the caller can route to `/profile` vs
- * `/profile/create` (or stay in place, in the Settings case).
+ * Auth-state transition + navigation are the caller's responsibility
+ * — the hook returns `key` and `hasProfile` on success so the
+ * caller can call `unlockWithKey` (pre-auth) or `replaceStoredKey`
+ * (Settings) and route to `/profile` vs `/profile/create`
+ * accordingly.
  */
 export function useBackupImport(): UseBackupImportResult {
   const limiter = useMemo(() => createRateLimiter(BACKUP_IMPORT_STORAGE_KEY), []);
@@ -121,12 +130,13 @@ export function useBackupImport(): UseBackupImportResult {
         return { ok: false };
       }
 
-      unlockWithKey(decryptResult.key);
+      // Auth-state transition is the caller's responsibility — see
+      // the run() doc comment above for the rationale.
       limiter.recordSuccessfulAttempt();
       setStatus('done');
 
       const hasProfile = decryptResult.dump.rows.profiles.length > 0;
-      return { ok: true, hasProfile };
+      return { ok: true, key: decryptResult.key, hasProfile };
     },
     [limiter],
   );

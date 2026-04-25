@@ -6,6 +6,7 @@ export {
   getLockState,
   unlock,
   unlockWithKey,
+  replaceStoredKey,
   lock,
   encryptWithStoredKey,
   decryptWithStoredKey,

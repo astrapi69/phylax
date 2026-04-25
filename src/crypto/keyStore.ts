@@ -74,6 +74,31 @@ export function unlockWithKey(key: CryptoKey): void {
 }
 
 /**
+ * Swap the currently-stored key with a new one without transitioning
+ * the lock state. Used by the Settings backup-restore flow where the
+ * user is already unlocked but the vault has been re-encrypted under
+ * a backup-derived key — the in-memory key must update to match the
+ * new on-disk encryption, and the user remains authenticated.
+ *
+ * Asserts the store is currently unlocked; throws otherwise.
+ *
+ * Does NOT fire lock-state listeners. State stays 'unlocked'; no
+ * locked↔unlocked transition is observable to subscribers (e.g.,
+ * ProtectedRoute would otherwise see a momentary 'locked' if this
+ * were implemented as `lock(); unlockWithKey(newKey)` and would
+ * redirect mid-flow).
+ *
+ * @param newKey - the new pre-derived AES-GCM CryptoKey
+ */
+export function replaceStoredKey(newKey: CryptoKey): void {
+  if (currentKey === null) {
+    throw new Error('Cannot replace key: store is locked');
+  }
+
+  currentKey = newKey;
+}
+
+/**
  * Clear the in-memory key. Safe to call when already locked (no-op).
  * Listeners are only notified on actual transition from unlocked to locked.
  */

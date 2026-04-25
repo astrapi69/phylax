@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { ConfirmDialog, PasswordVisibilityToggle } from '../../ui';
+import { replaceStoredKey } from '../../crypto';
 import {
   parseBackupFile,
   type BackupMetadata,
@@ -130,7 +131,15 @@ export function BackupImportSection() {
     if (!parsed) return;
     const result = await importer.run(parsed, password);
     setConfirmOpen(false);
-    if (!result.ok) {
+    if (result.ok) {
+      // Settings context: user is already unlocked under the prior
+      // master key. The vault has been re-encrypted under the
+      // backup-derived key inside populateVault; swap the in-memory
+      // key to match. `replaceStoredKey` does NOT fire lock-state
+      // listeners, so ProtectedRoute does not see a transient
+      // 'locked' state and won't redirect to /unlock mid-flow.
+      replaceStoredKey(result.key);
+    } else {
       setPassword('');
     }
   }, [importer, parsed, password]);
@@ -179,9 +188,12 @@ export function BackupImportSection() {
           <div>
             <label
               htmlFor="backup-import-section-file"
-              className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+              className={`inline-flex min-h-[44px] items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 ${
+                isWorking ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+              }`}
+              data-testid="backup-import-section-file-label"
             >
-              {t('section.file-picker-label')}
+              {metadata?.fileName ?? t('section.file-picker-label')}
             </label>
             <input
               id="backup-import-section-file"
@@ -189,7 +201,7 @@ export function BackupImportSection() {
               accept=".phylax,application/json,application/x-phylax-backup"
               onChange={(e) => void handleFile(e)}
               disabled={isWorking}
-              className="block w-full text-sm text-gray-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-gray-400"
+              className="sr-only"
               data-testid="backup-import-section-file-input"
             />
           </div>
@@ -311,9 +323,10 @@ export function BackupImportSection() {
             type="button"
             onClick={handleSubmitClick}
             disabled={submitDisabled}
-            className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
             data-testid="backup-import-section-submit"
           >
+            {isWorking && <RestoreSpinner />}
             {isWorking ? t('section.submit-busy') : t('section.submit-label')}
           </button>
         </div>
@@ -341,5 +354,31 @@ export function BackupImportSection() {
         confirmTestId="backup-import-confirm-confirm"
       />
     </section>
+  );
+}
+
+/**
+ * Inline spinner shown next to the "Wird wiederhergestellt..." button
+ * label during the populating phase. Uses Tailwind's `animate-spin`
+ * with currentColor so it inherits the button's text color (white,
+ * or gray when disabled). Matches the SVG pattern in `UnlockView`'s
+ * `LoadingSpinner` component.
+ */
+function RestoreSpinner() {
+  return (
+    <svg
+      aria-hidden
+      data-testid="backup-import-section-spinner"
+      className="h-4 w-4 animate-spin"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
+    </svg>
   );
 }

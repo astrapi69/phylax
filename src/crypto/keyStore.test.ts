@@ -58,6 +58,50 @@ describe('key store', () => {
       keyStore.lock();
       expect(keyStore.getLockState()).toBe('locked');
     });
+
+    it('replaceStoredKey when locked throws', async () => {
+      const { deriveKeyFromPassword } = await import('./keyDerivation');
+      const key = await deriveKeyFromPassword('password', salt);
+      expect(() => keyStore.replaceStoredKey(key)).toThrow('Cannot replace key: store is locked');
+    });
+
+    it('replaceStoredKey when unlocked swaps the key, stays unlocked', async () => {
+      const { deriveKeyFromPassword } = await import('./keyDerivation');
+      const initialKey = await deriveKeyFromPassword('initial-password', salt);
+      const otherSalt = new Uint8Array(salt.length);
+      otherSalt[0] = (salt[0] ?? 0) ^ 0xff;
+      const replacementKey = await deriveKeyFromPassword('other-password', otherSalt);
+
+      keyStore.unlockWithKey(initialKey);
+      expect(keyStore.getLockState()).toBe('unlocked');
+
+      keyStore.replaceStoredKey(replacementKey);
+      expect(keyStore.getLockState()).toBe('unlocked');
+
+      // Verify the replacement key actually drives crypto operations.
+      // Encrypt-decrypt round-trip must succeed under the new key,
+      // proving the swap is in effect (not a no-op).
+      const plaintext = new TextEncoder().encode('test');
+      const encrypted = await keyStore.encryptWithStoredKey(plaintext);
+      const decrypted = await keyStore.decryptWithStoredKey(encrypted);
+      expect(new TextDecoder().decode(decrypted)).toBe('test');
+    });
+
+    it('replaceStoredKey does NOT fire lock-state listeners (no transition observable)', async () => {
+      const { deriveKeyFromPassword } = await import('./keyDerivation');
+      const initialKey = await deriveKeyFromPassword('a', salt);
+      const replacementKey = await deriveKeyFromPassword('b', salt);
+
+      keyStore.unlockWithKey(initialKey);
+
+      const listener = vi.fn();
+      const unsub = keyStore.onLockStateChange(listener);
+
+      keyStore.replaceStoredKey(replacementKey);
+
+      expect(listener).not.toHaveBeenCalled();
+      unsub();
+    });
   });
 
   describe('encrypt/decrypt gating', () => {

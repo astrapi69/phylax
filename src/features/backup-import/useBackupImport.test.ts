@@ -61,19 +61,41 @@ describe('useBackupImport', () => {
     expect(result.current.isLocked).toBe(false);
   });
 
-  it('happy path: decrypts and populates, returns ok with hasProfile', async () => {
+  it('happy path: decrypts and populates, returns ok with key + hasProfile', async () => {
     const parsed = await makeBackup('correct-password');
     const { result } = renderHook(() => useBackupImport());
 
-    let runResult: { ok: boolean; hasProfile?: boolean } = { ok: false };
+    let runResult: { ok: boolean; hasProfile?: boolean; key?: CryptoKey } = { ok: false };
     await act(async () => {
       runResult = await result.current.run(parsed, 'correct-password');
     });
 
     expect(runResult.ok).toBe(true);
-    expect(runResult.ok && runResult.hasProfile).toBe(true);
+    if (runResult.ok) {
+      expect(runResult.hasProfile).toBe(true);
+      // The key must come back so the caller can complete the
+      // auth-state transition (unlockWithKey or replaceStoredKey
+      // depending on context).
+      expect(runResult.key).toBeDefined();
+      expect(runResult.key).toBeInstanceOf(CryptoKey);
+    }
     expect(result.current.status).toBe('done');
     expect(result.current.error).toBeNull();
+    lock();
+  });
+
+  it('does NOT call unlockWithKey internally — caller owns auth-state transition', async () => {
+    const cryptoModule = await import('../../crypto');
+    const spy = vi.spyOn(cryptoModule, 'unlockWithKey');
+    const parsed = await makeBackup('correct-password');
+    const { result } = renderHook(() => useBackupImport());
+
+    await act(async () => {
+      await result.current.run(parsed, 'correct-password');
+    });
+
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
     lock();
   });
 

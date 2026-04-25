@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { PasswordVisibilityToggle } from '../../ui';
+import { unlockWithKey } from '../../crypto';
 import type { ParsedPhylaxFile } from './parseBackupFile';
 import { useBackupImport, type BackupImportError } from './useBackupImport';
 
@@ -54,6 +55,11 @@ export function BackupImportUnlockView() {
       if (!parsed || password.length === 0) return;
       const result = await importer.run(parsed, password);
       if (result.ok) {
+        // Pre-auth context: keystore is currently locked. Transition
+        // to unlocked synchronously before navigation so route guards
+        // observe the unlocked state. No async gap between run resolve
+        // and unlockWithKey.
+        unlockWithKey(result.key);
         navigate(result.hasProfile ? '/profile' : '/profile/create', { replace: true });
       } else {
         setPassword('');
