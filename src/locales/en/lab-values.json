@@ -17,7 +17,8 @@
       "overall": "Overall assessment",
       "relevance": "Relevance"
     },
-    "category-assessment": "Assessment {{category}}"
+    "category-assessment": "Assessment {{category}}",
+    "no-values": "No values recorded."
   },
   "table": {
     "parameter": "Parameter",
@@ -28,5 +29,53 @@
   },
   "error": {
     "load-failed": "Lab values could not be loaded."
+  },
+  "actions": {
+    "add-report": "New report",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "form-report": {
+    "title": {
+      "create": "New report",
+      "edit": "Edit report"
+    },
+    "field": {
+      "date": "Date",
+      "date-required": "Date is required",
+      "lab": "Lab",
+      "lab-placeholder": "e.g. Synlab, Amedes",
+      "doctor": "Doctor",
+      "doctor-placeholder": "e.g. Dr. Smith",
+      "report-number": "Report no.",
+      "context-note": "Context",
+      "overall-assessment": "Overall assessment",
+      "relevance-notes": "Relevance"
+    },
+    "optional-disclosure": "More fields",
+    "cancel": "Cancel",
+    "save": {
+      "create": "Save",
+      "edit": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
+  },
+  "delete-report": {
+    "title": "Delete report",
+    "body": {
+      "with-lab-and-values_one": "Report from {{date}} ({{lab}}) and {{count}} value will be deleted.",
+      "with-lab-and-values_other": "Report from {{date}} ({{lab}}) and {{count}} values will be deleted.",
+      "with-lab": "Report from {{date}} ({{lab}}) will be deleted.",
+      "no-lab-and-values_one": "Report from {{date}} and {{count}} value will be deleted.",
+      "no-lab-and-values_other": "Report from {{date}} and {{count}} values will be deleted.",
+      "no-lab": "Report from {{date}} will be deleted.",
+      "with-lab-count-unknown": "Report from {{date}} ({{lab}}) and all associated values will be deleted.",
+      "no-lab-count-unknown": "Report from {{date}} and all associated values will be deleted."
+    },
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "busy": "Deleting...",
+    "error": "Delete failed."
   }
 }

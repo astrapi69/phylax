@@ -17,7 +17,8 @@
       "overall": "Gesamteinschätzung",
       "relevance": "Relevanz"
     },
-    "category-assessment": "Einschätzung {{category}}"
+    "category-assessment": "Einschätzung {{category}}",
+    "no-values": "Keine Werte erfasst."
   },
   "table": {
     "parameter": "Parameter",
@@ -28,5 +29,53 @@
   },
   "error": {
     "load-failed": "Laborwerte konnten nicht geladen werden."
+  },
+  "actions": {
+    "add-report": "Neuer Befund",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "form-report": {
+    "title": {
+      "create": "Neuer Befund",
+      "edit": "Befund bearbeiten"
+    },
+    "field": {
+      "date": "Datum",
+      "date-required": "Datum ist erforderlich",
+      "lab": "Labor",
+      "lab-placeholder": "z.B. Synlab, Amedes",
+      "doctor": "Arzt",
+      "doctor-placeholder": "z.B. Dr. Mustermann",
+      "report-number": "Bericht-Nr.",
+      "context-note": "Kontext",
+      "overall-assessment": "Gesamteinschätzung",
+      "relevance-notes": "Relevanz"
+    },
+    "optional-disclosure": "Weitere Felder",
+    "cancel": "Abbrechen",
+    "save": {
+      "create": "Speichern",
+      "edit": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "delete-report": {
+    "title": "Befund löschen",
+    "body": {
+      "with-lab-and-values_one": "Befund vom {{date}} ({{lab}}) und {{count}} Wert werden gelöscht.",
+      "with-lab-and-values_other": "Befund vom {{date}} ({{lab}}) und {{count}} Werte werden gelöscht.",
+      "with-lab": "Befund vom {{date}} ({{lab}}) wird gelöscht.",
+      "no-lab-and-values_one": "Befund vom {{date}} und {{count}} Wert werden gelöscht.",
+      "no-lab-and-values_other": "Befund vom {{date}} und {{count}} Werte werden gelöscht.",
+      "no-lab": "Befund vom {{date}} wird gelöscht.",
+      "with-lab-count-unknown": "Befund vom {{date}} ({{lab}}) und alle zugehörigen Werte werden gelöscht.",
+      "no-lab-count-unknown": "Befund vom {{date}} und alle zugehörigen Werte werden gelöscht."
+    },
+    "confirm": "Löschen",
+    "cancel": "Abbrechen",
+    "busy": "Wird gelöscht...",
+    "error": "Löschen fehlgeschlagen."
   }
 }

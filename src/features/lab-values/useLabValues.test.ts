@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -125,6 +125,30 @@ describe('useLabValues', () => {
       expect(dates[0]).toBe('2026-06-15');
       expect(dates[2]).toBe('2024-01-01');
     }
+  });
+
+  it('refetch reloads after a write without remount', async () => {
+    const profile = await createProfile();
+    const reportRepo = new LabReportRepository(new LabValueRepository());
+
+    const { result } = renderHook(() => useLabValues());
+    await waitFor(() => expect(result.current.state.kind).toBe('loaded'));
+    if (result.current.state.kind === 'loaded') {
+      expect(result.current.state.reports).toHaveLength(0);
+    }
+
+    await reportRepo.create({
+      profileId: profile.id,
+      reportDate: '2026-04-15',
+      categoryAssessments: {},
+    });
+
+    act(() => result.current.refetch());
+
+    await waitFor(() => {
+      if (result.current.state.kind !== 'loaded') return false;
+      return result.current.state.reports.length === 1;
+    });
   });
 
   it('transitions to error when repository throws', async () => {

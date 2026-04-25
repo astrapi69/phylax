@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { __resetScrollLockForTest } from '../../ui';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -20,6 +22,7 @@ beforeEach(async () => {
   lock();
   await setupCompletedOnboarding(TEST_PASSWORD);
   await unlockSession();
+  __resetScrollLockForTest();
 });
 
 afterEach(() => {
@@ -100,6 +103,23 @@ describe('LabValuesView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/Laborwerte konnten nicht geladen/);
     expect(consoleSpy).toHaveBeenCalledWith('[LabValuesView]', 'boom');
     consoleSpy.mockRestore();
+  });
+
+  it('renders the AddLabReportButton in the header even on empty state', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-lab-report-btn')).toBeInTheDocument());
+  });
+
+  it('clicking AddLabReportButton opens the create form', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-lab-report-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('add-lab-report-btn'));
+    expect(screen.getByTestId('lab-report-form-title')).toHaveTextContent('Neuer Befund');
   });
 
   it('renders multiple reports in order', async () => {

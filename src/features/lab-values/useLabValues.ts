@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { LabReport, LabValue } from '../../domain';
 import { LabReportRepository, LabValueRepository, ProfileRepository } from '../../db/repositories';
 
@@ -16,6 +16,12 @@ export type LabValuesState =
 
 export interface UseLabValuesResult {
   state: LabValuesState;
+  /**
+   * Re-run the load. Used by O-12a form/delete success paths to refresh
+   * the list without a full route navigation. Direct call (not pub/sub)
+   * for traceability — mirrors the O-10 pattern on `useObservations`.
+   */
+  refetch: () => void;
 }
 
 /**
@@ -25,6 +31,9 @@ export interface UseLabValuesResult {
  */
 export function useLabValues(): UseLabValuesResult {
   const [state, setState] = useState<LabValuesState>({ kind: 'loading' });
+  const [version, setVersion] = useState(0);
+
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,9 +76,9 @@ export function useLabValues(): UseLabValuesResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
-  return { state };
+  return { state, refetch };
 }
 
 function groupByCategory(values: LabValue[]): Map<string, LabValue[]> {

@@ -1,7 +1,23 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { LabReportCard } from './LabReportCard';
+import type { UseLabReportFormResult } from './useLabReportForm';
 import { makeLabReport, makeLabValue } from './test-helpers';
+
+function makeFormStub(overrides: Partial<UseLabReportFormResult> = {}): UseLabReportFormResult {
+  return {
+    state: { kind: 'closed' },
+    openCreate: vi.fn(),
+    openEdit: vi.fn(),
+    openDelete: vi.fn(async () => {}),
+    setField: vi.fn(),
+    submit: vi.fn(async () => {}),
+    confirmDelete: vi.fn(async () => {}),
+    close: vi.fn(),
+    ...overrides,
+  };
+}
 
 function makeValues(
   entries: Array<{ category: string; parameter: string }>,
@@ -82,6 +98,48 @@ describe('LabReportCard', () => {
       screen.getByRole('heading', { level: 3, name: 'Gesamteinschätzung' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Insgesamt unauffaellig.')).toBeInTheDocument();
+  });
+
+  it('omits action cluster when no form prop is supplied (read-only mode)', () => {
+    render(<LabReportCard report={makeLabReport()} valuesByCategory={new Map()} />);
+    expect(screen.queryByTestId('lab-report-actions')).toBeNull();
+  });
+
+  it('renders action cluster when form prop is supplied', () => {
+    render(
+      <LabReportCard report={makeLabReport()} valuesByCategory={new Map()} form={makeFormStub()} />,
+    );
+    expect(screen.getByTestId('lab-report-actions')).toBeInTheDocument();
+  });
+
+  it('clicking edit action opens form in edit mode for the report', async () => {
+    const user = userEvent.setup();
+    const openEdit = vi.fn();
+    const report = makeLabReport({ id: 'lr-edit' });
+    render(
+      <LabReportCard
+        report={report}
+        valuesByCategory={new Map()}
+        form={makeFormStub({ openEdit })}
+      />,
+    );
+    await user.click(screen.getByTestId('lab-report-edit-btn'));
+    expect(openEdit).toHaveBeenCalledWith(report);
+  });
+
+  it('renders no-values placeholder when valuesByCategory is empty', () => {
+    const report = makeLabReport({ id: 'empty-report' });
+    render(<LabReportCard report={report} valuesByCategory={new Map()} />);
+    expect(screen.getByTestId('lab-report-empty-report-no-values')).toHaveTextContent(
+      'Keine Werte erfasst.',
+    );
+  });
+
+  it('omits no-values placeholder when values exist', () => {
+    const values = makeValues([{ category: 'Blutbild', parameter: 'Hb' }]);
+    const report = makeLabReport({ id: 'with-values' });
+    render(<LabReportCard report={report} valuesByCategory={values} />);
+    expect(screen.queryByTestId('lab-report-with-values-no-values')).toBeNull();
   });
 
   it('hides optional sections when not present', () => {

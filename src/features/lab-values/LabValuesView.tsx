@@ -2,14 +2,23 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LabReportCard } from './LabReportCard';
 import { useLabValues } from './useLabValues';
+import { useLabReportForm } from './useLabReportForm';
+import { LabReportForm } from './LabReportForm';
+import { LabReportDeleteDialog } from './LabReportDeleteDialog';
+import { AddLabReportButton } from './AddLabReportButton';
 
 /**
  * Read-only lab values page at /lab-values. Shows lab reports
  * newest-first, each with its values table grouped by category.
+ *
+ * O-12a adds manual create/edit/delete of lab reports via the O-20
+ * modal primitive. Empty reports (no values yet) render header-only,
+ * surfacing the report shell users build incrementally.
  */
 export function LabValuesView() {
   const { t } = useTranslation('lab-values');
-  const { state } = useLabValues();
+  const { state, refetch } = useLabValues();
+  const form = useLabReportForm({ onCommitted: refetch });
 
   if (state.kind === 'loading') {
     return (
@@ -37,8 +46,9 @@ export function LabValuesView() {
 
   return (
     <article className="space-y-6">
-      <header className="border-b border-gray-200 pb-4 dark:border-gray-700">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
+        <AddLabReportButton form={form} />
       </header>
 
       {state.reports.length === 0 ? (
@@ -46,10 +56,18 @@ export function LabValuesView() {
       ) : (
         <div className="space-y-6">
           {state.reports.map(({ report, valuesByCategory }) => (
-            <LabReportCard key={report.id} report={report} valuesByCategory={valuesByCategory} />
+            <LabReportCard
+              key={report.id}
+              report={report}
+              valuesByCategory={valuesByCategory}
+              form={form}
+            />
           ))}
         </div>
       )}
+
+      <LabReportForm form={form} />
+      <LabReportDeleteDialog form={form} />
     </article>
   );
 }

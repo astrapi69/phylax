@@ -6,17 +6,31 @@ import { CategoryAssessment } from './CategoryAssessment';
 import { LabValuesTable } from './LabValuesTable';
 import { AttachedDocumentsForLabReport } from '../documents/AttachedDocumentsForLabReport';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
+import { LabReportActions } from './LabReportActions';
+import type { UseLabReportFormResult } from './useLabReportForm';
 
 interface LabReportCardProps {
   report: LabReport;
   valuesByCategory: Map<string, LabValue[]>;
+  /**
+   * Optional form-state hook result. When omitted, no edit/delete
+   * actions render — keeps the card usable in read-only contexts
+   * (e.g., profile-view summary panes) without requiring a form
+   * provider in the surrounding tree.
+   */
+  form?: UseLabReportFormResult;
 }
 
 /**
  * Single lab report card: header metadata, per-category values
  * tables with assessments, overall assessment, and relevance notes.
+ *
+ * O-12a: when a `form` prop is supplied, the header shows the
+ * edit/delete actions cluster. Empty reports (no values yet) render
+ * header-only with a "Keine Werte erfasst" placeholder so the
+ * report shell is visible while users add values incrementally.
  */
-export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) {
+export function LabReportCard({ report, valuesByCategory, form }: LabReportCardProps) {
   const { t } = useTranslation('lab-values');
   const {
     reportDate,
@@ -31,6 +45,7 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
 
   const formattedDate = formatGermanDate(reportDate);
   const categories = Array.from(valuesByCategory.entries());
+  const hasValues = categories.length > 0;
   const allValues = useMemo(() => Array.from(valuesByCategory.values()).flat(), [valuesByCategory]);
 
   return (
@@ -38,21 +53,26 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
       aria-labelledby={`report-${report.id}-heading`}
       className="rounded-sm border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
     >
-      <header className="border-b border-gray-200 p-4 dark:border-gray-700">
-        <div className="flex flex-wrap items-baseline gap-2">
-          <h2
-            id={`report-${report.id}-heading`}
-            className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-          >
-            {t('report.heading', { date: formattedDate })}
-          </h2>
-          <ProvenanceBadge sourceDocumentId={report.sourceDocumentId} />
+      <header className="flex items-start justify-between gap-2 border-b border-gray-200 p-4 dark:border-gray-700">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-2">
+            <h2
+              id={`report-${report.id}-heading`}
+              className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            >
+              {t('report.heading', { date: formattedDate })}
+            </h2>
+            <ProvenanceBadge sourceDocumentId={report.sourceDocumentId} />
+          </div>
+          <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
+            {labName && <MetaItem label={t('report.meta.lab')} value={labName} />}
+            {doctorName && <MetaItem label={t('report.meta.doctor')} value={doctorName} />}
+            {reportNumber && (
+              <MetaItem label={t('report.meta.report-number')} value={reportNumber} />
+            )}
+          </dl>
         </div>
-        <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-          {labName && <MetaItem label={t('report.meta.lab')} value={labName} />}
-          {doctorName && <MetaItem label={t('report.meta.doctor')} value={doctorName} />}
-          {reportNumber && <MetaItem label={t('report.meta.report-number')} value={reportNumber} />}
-        </dl>
+        {form ? <LabReportActions report={report} form={form} /> : null}
       </header>
 
       {contextNote && (
@@ -62,15 +82,24 @@ export function LabReportCard({ report, valuesByCategory }: LabReportCardProps) 
       )}
 
       <div className="space-y-6 p-4">
-        {categories.map(([category, values]) => (
-          <div key={category}>
-            <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-              {category}
-            </h3>
-            <LabValuesTable category={category} values={values} />
-            <CategoryAssessment category={category} assessment={categoryAssessments[category]} />
-          </div>
-        ))}
+        {hasValues ? (
+          categories.map(([category, values]) => (
+            <div key={category}>
+              <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
+                {category}
+              </h3>
+              <LabValuesTable category={category} values={values} />
+              <CategoryAssessment category={category} assessment={categoryAssessments[category]} />
+            </div>
+          ))
+        ) : (
+          <p
+            className="text-sm text-gray-500 italic dark:text-gray-400"
+            data-testid={`lab-report-${report.id}-no-values`}
+          >
+            {t('report.no-values')}
+          </p>
+        )}
 
         {overallAssessment && overallAssessment.trim() !== '' && (
           <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
