@@ -6,6 +6,10 @@ import { useObservations } from './useObservations';
 import { ObservationsSortToggle } from './ObservationsSortToggle';
 import { useSortPreference } from './useSortPreference';
 import { sortObservations, type ObservationSection } from './sorting';
+import { useObservationForm } from './useObservationForm';
+import { ObservationForm } from './ObservationForm';
+import { ObservationDeleteDialog } from './ObservationDeleteDialog';
+import { AddObservationButton } from './AddObservationButton';
 
 /** Window (ms) for treating an observation as "just committed" on mount. */
 const HIGHLIGHT_WINDOW_MS = 5000;
@@ -29,8 +33,9 @@ const HIGHLIGHT_FADE_MS = 2000;
  */
 export function ObservationsView() {
   const { t } = useTranslation('observations');
-  const { state } = useObservations();
+  const { state, refetch } = useObservations();
   const [mode, setMode] = useSortPreference('observations');
+  const form = useObservationForm({ onCommitted: refetch });
 
   // Capture mount time ONCE. Used both to decide the initial highlight
   // set and to key the fade-out timer. Re-mounts (navigation away + back)
@@ -86,7 +91,10 @@ export function ObservationsView() {
     <article className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('heading')}</h1>
-        {state.groups.length > 0 && <ObservationsSortToggle mode={mode} onChange={setMode} />}
+        <div className="flex flex-wrap items-center gap-3">
+          {state.groups.length > 0 && <ObservationsSortToggle mode={mode} onChange={setMode} />}
+          <AddObservationButton form={form} />
+        </div>
       </header>
 
       {state.groups.length === 0 ? (
@@ -98,10 +106,14 @@ export function ObservationsView() {
               key={section.label ?? 'single'}
               section={section}
               highlightedIds={highlightedIds}
+              form={form}
             />
           ))}
         </div>
       )}
+
+      <ObservationForm form={form} />
+      <ObservationDeleteDialog form={form} />
     </article>
   );
 }
@@ -109,9 +121,11 @@ export function ObservationsView() {
 function Section({
   section,
   highlightedIds,
+  form,
 }: {
   section: ObservationSection;
   highlightedIds: ReadonlySet<string>;
+  form: ReturnType<typeof useObservationForm>;
 }) {
   const { t } = useTranslation('observations');
   const hasLabel = section.label !== null;
@@ -134,6 +148,7 @@ function Section({
           theme={group.theme}
           observations={group.observations}
           highlightedIds={highlightedIds}
+          form={form}
         />
       ))}
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Observation } from '../../domain';
 import { ObservationRepository, ProfileRepository } from '../../db/repositories';
 
@@ -16,6 +16,12 @@ export type ObservationsState =
 
 export interface UseObservationsResult {
   state: ObservationsState;
+  /**
+   * Re-run the load. Used by O-10 form/delete success paths to refresh
+   * the list without a full route navigation. Direct call (not pub/sub)
+   * for traceability.
+   */
+  refetch: () => void;
 }
 
 /**
@@ -26,6 +32,9 @@ export interface UseObservationsResult {
  */
 export function useObservations(): UseObservationsResult {
   const [state, setState] = useState<ObservationsState>({ kind: 'loading' });
+  const [version, setVersion] = useState(0);
+
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,9 +69,9 @@ export function useObservations(): UseObservationsResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
-  return { state };
+  return { state, refetch };
 }
 
 function groupByTheme(observations: Observation[]): ThemeGroup[] {

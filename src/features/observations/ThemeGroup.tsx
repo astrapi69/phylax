@@ -1,5 +1,6 @@
 import type { Observation } from '../../domain';
 import { ObservationCard } from './ObservationCard';
+import type { UseObservationFormResult } from './useObservationForm';
 
 interface ThemeGroupProps {
   theme: string;
@@ -9,6 +10,8 @@ interface ThemeGroupProps {
    * highlight. Passed through to ObservationCard unchanged.
    */
   highlightedIds?: ReadonlySet<string>;
+  /** O-10 form hook for edit/delete actions; threaded to each card. */
+  form?: UseObservationFormResult;
 }
 
 /**
@@ -17,7 +20,7 @@ interface ThemeGroupProps {
  * A single-observation group auto-expands its card: a collapse-then-expand
  * interaction for a one-item group is friction without benefit.
  */
-export function ThemeGroup({ theme, observations, highlightedIds }: ThemeGroupProps) {
+export function ThemeGroup({ theme, observations, highlightedIds, form }: ThemeGroupProps) {
   const headingId = `theme-${slugify(theme)}-heading`;
   const autoExpand = observations.length === 1;
 
@@ -39,6 +42,7 @@ export function ThemeGroup({ theme, observations, highlightedIds }: ThemeGroupPr
               observation={obs}
               defaultOpen={autoExpand}
               highlighted={highlightedIds?.has(obs.id) ?? false}
+              form={form}
             />
           </li>
         ))}

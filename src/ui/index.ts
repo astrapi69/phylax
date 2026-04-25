@@ -9,6 +9,7 @@ export {
   useFocusTrap,
   useReturnFocus,
   useBodyScrollLock,
+  __resetScrollLockForTest,
   type ModalProps,
   type ModalRole,
   type ModalSize,

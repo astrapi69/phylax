@@ -36,5 +36,45 @@
   },
   "error": {
     "load-failed": "Observations could not be loaded."
+  },
+  "actions": {
+    "add": "New observation",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "form": {
+    "title": {
+      "create": "New observation",
+      "edit": "Edit observation"
+    },
+    "field": {
+      "theme": "Theme",
+      "theme-placeholder": "e.g. Shoulder, Blood pressure, Diet",
+      "theme-required": "Theme cannot be empty",
+      "fact": "Observation",
+      "pattern": "Pattern",
+      "self-regulation": "Self-regulation",
+      "status": "Status",
+      "status-placeholder": "e.g. stable, improving, acute",
+      "medical-finding": "Medical finding",
+      "relevance-notes": "Cross-references"
+    },
+    "optional-disclosure": "More fields",
+    "cancel": "Cancel",
+    "save": {
+      "create": "Save",
+      "edit": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
+  },
+  "delete": {
+    "title": "Delete observation",
+    "body": "Delete observation \"{{theme}}\"?",
+    "body-with-fact": "Delete observation \"{{theme}}: {{fact}}\"?",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "busy": "Deleting...",
+    "error": "Delete failed."
   }
 }

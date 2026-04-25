@@ -36,5 +36,45 @@
   },
   "error": {
     "load-failed": "Beobachtungen konnten nicht geladen werden."
+  },
+  "actions": {
+    "add": "Neue Beobachtung",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "form": {
+    "title": {
+      "create": "Neue Beobachtung",
+      "edit": "Beobachtung bearbeiten"
+    },
+    "field": {
+      "theme": "Thema",
+      "theme-placeholder": "z.B. Schulter, Blutdruck, Ernährung",
+      "theme-required": "Thema darf nicht leer sein",
+      "fact": "Beobachtung",
+      "pattern": "Muster",
+      "self-regulation": "Selbstregulation",
+      "status": "Status",
+      "status-placeholder": "z.B. stabil, in Besserung, akut",
+      "medical-finding": "Ärztlicher Befund",
+      "relevance-notes": "Querverweise"
+    },
+    "optional-disclosure": "Weitere Felder",
+    "cancel": "Abbrechen",
+    "save": {
+      "create": "Speichern",
+      "edit": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "delete": {
+    "title": "Beobachtung löschen",
+    "body": "Beobachtung „{{theme}}\" wirklich löschen?",
+    "body-with-fact": "Beobachtung „{{theme}}: {{fact}}\" wirklich löschen?",
+    "confirm": "Löschen",
+    "cancel": "Abbrechen",
+    "busy": "Wird gelöscht...",
+    "error": "Löschen fehlgeschlagen."
   }
 }
