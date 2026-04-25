@@ -21,5 +21,50 @@
   },
   "error": {
     "load-failed": "Supplements could not be loaded."
+  },
+  "actions": {
+    "add": "New supplement",
+    "edit": "Edit",
+    "delete": "Delete",
+    "edit-supplement": "Edit {{name}}",
+    "delete-supplement": "Delete {{name}}"
+  },
+  "form": {
+    "title": {
+      "create": "New supplement",
+      "edit": "Edit supplement"
+    },
+    "field": {
+      "name": "Name",
+      "name-placeholder": "e.g. Vitamin D3 2000 IU",
+      "name-required": "Name is required",
+      "brand": "Brand",
+      "brand-placeholder": "e.g. tetesept",
+      "category": "Category",
+      "category-placeholder": "Choose category...",
+      "category-required": "Category is required",
+      "recommendation": "Recommendation",
+      "recommendation-placeholder": "e.g. Morning with breakfast",
+      "rationale": "Rationale",
+      "rationale-placeholder": "e.g. Recommended after blood test December 2024"
+    },
+    "cancel": "Cancel",
+    "save": {
+      "create": "Save",
+      "edit": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
+  },
+  "delete": {
+    "title": "Delete supplement",
+    "body": {
+      "with-brand": "{{name}} ({{brand}}) will be deleted.",
+      "no-brand": "{{name}} will be deleted."
+    },
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "busy": "Deleting...",
+    "error": "Delete failed."
   }
 }

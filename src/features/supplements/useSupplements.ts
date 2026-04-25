@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Supplement, SupplementCategory } from '../../domain';
 import { ProfileRepository, SupplementRepository } from '../../db/repositories';
 
@@ -16,6 +16,12 @@ export type SupplementsState =
 
 export interface UseSupplementsResult {
   state: SupplementsState;
+  /**
+   * Re-run the load. Used by O-14 form/delete success paths to refresh
+   * the list without a full route navigation. Direct call (not pub/sub)
+   * for traceability — mirrors the O-10/O-12a pattern.
+   */
+  refetch: () => void;
 }
 
 const CATEGORY_ORDER: readonly SupplementCategory[] = [
@@ -33,6 +39,9 @@ const CATEGORY_ORDER: readonly SupplementCategory[] = [
  */
 export function useSupplements(): UseSupplementsResult {
   const [state, setState] = useState<SupplementsState>({ kind: 'loading' });
+  const [version, setVersion] = useState(0);
+
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,9 +76,9 @@ export function useSupplements(): UseSupplementsResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
-  return { state };
+  return { state, refetch };
 }
 
 function buildGroups(supplements: Supplement[]): SupplementGroup[] {

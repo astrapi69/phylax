@@ -1,10 +1,13 @@
 import type { Supplement, SupplementCategory } from '../../domain';
 import { SupplementCard } from './SupplementCard';
+import type { UseSupplementFormResult } from './useSupplementForm';
 
 interface SupplementCategoryGroupProps {
   category: SupplementCategory;
   label: string;
   supplements: Supplement[];
+  /** Threaded through to each `SupplementCard`. */
+  form?: UseSupplementFormResult;
 }
 
 /**
@@ -15,6 +18,7 @@ export function SupplementCategoryGroup({
   category,
   label,
   supplements,
+  form,
 }: SupplementCategoryGroupProps) {
   if (supplements.length === 0) return null;
 
@@ -35,7 +39,7 @@ export function SupplementCategoryGroup({
       <ul className="space-y-2">
         {supplements.map((s) => (
           <li key={s.id}>
-            <SupplementCard supplement={s} muted={muted} />
+            <SupplementCard supplement={s} muted={muted} form={form} />
           </li>
         ))}
       </ul>

@@ -1,18 +1,29 @@
 import { useTranslation } from 'react-i18next';
 import type { Supplement } from '../../domain';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
+import { SupplementActions } from './SupplementActions';
+import type { UseSupplementFormResult } from './useSupplementForm';
 
 interface SupplementCardProps {
   supplement: Supplement;
   muted?: boolean;
+  /**
+   * Optional form-state hook result. When omitted, no edit/delete
+   * actions render — keeps the card usable in read-only contexts
+   * (e.g., profile-view summary panes, export previews).
+   */
+  form?: UseSupplementFormResult;
 }
 
 /**
  * Single supplement card. When `muted` is true (paused supplements),
  * the card is visually de-emphasized but remains fully readable by
  * screen readers.
+ *
+ * O-14: when a `form` prop is supplied, the title row gets a trailing
+ * edit + delete actions cluster.
  */
-export function SupplementCard({ supplement, muted = false }: SupplementCardProps) {
+export function SupplementCard({ supplement, muted = false, form }: SupplementCardProps) {
   const { t } = useTranslation('supplements');
   const { name, brand, recommendation, rationale } = supplement;
   // Muted variant uses a subtle gray background tint and shows a
@@ -25,15 +36,18 @@ export function SupplementCard({ supplement, muted = false }: SupplementCardProp
 
   return (
     <div className={containerClass}>
-      <div className="flex flex-wrap items-baseline gap-2">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{name}</h3>
-        {brand && <span className="text-xs text-gray-500 dark:text-gray-400">{brand}</span>}
-        {muted && (
-          <span className="rounded-sm bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-            {t('card.paused-badge')}
-          </span>
-        )}
-        <ProvenanceBadge sourceDocumentId={supplement.sourceDocumentId} />
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-2">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{name}</h3>
+          {brand && <span className="text-xs text-gray-500 dark:text-gray-400">{brand}</span>}
+          {muted && (
+            <span className="rounded-sm bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+              {t('card.paused-badge')}
+            </span>
+          )}
+          <ProvenanceBadge sourceDocumentId={supplement.sourceDocumentId} />
+        </div>
+        {form ? <SupplementActions supplement={supplement} form={form} /> : null}
       </div>
       {recommendation && (
         <FieldLine label={t('card.field.recommendation')} value={recommendation} />

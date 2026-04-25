@@ -21,5 +21,50 @@
   },
   "error": {
     "load-failed": "Supplemente konnten nicht geladen werden."
+  },
+  "actions": {
+    "add": "Neues Supplement",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "edit-supplement": "{{name}} bearbeiten",
+    "delete-supplement": "{{name}} löschen"
+  },
+  "form": {
+    "title": {
+      "create": "Neues Supplement",
+      "edit": "Supplement bearbeiten"
+    },
+    "field": {
+      "name": "Name",
+      "name-placeholder": "z.B. Vitamin D3 2000 IE",
+      "name-required": "Name ist erforderlich",
+      "brand": "Marke",
+      "brand-placeholder": "z.B. tetesept",
+      "category": "Kategorie",
+      "category-placeholder": "Kategorie wählen...",
+      "category-required": "Kategorie ist erforderlich",
+      "recommendation": "Empfehlung",
+      "recommendation-placeholder": "z.B. Morgens mit Frühstück",
+      "rationale": "Begründung",
+      "rationale-placeholder": "z.B. Empfohlen nach Bluttest Dezember 2024"
+    },
+    "cancel": "Abbrechen",
+    "save": {
+      "create": "Speichern",
+      "edit": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "delete": {
+    "title": "Supplement löschen",
+    "body": {
+      "with-brand": "{{name}} ({{brand}}) wird gelöscht.",
+      "no-brand": "{{name}} wird gelöscht."
+    },
+    "confirm": "Löschen",
+    "cancel": "Abbrechen",
+    "busy": "Wird gelöscht...",
+    "error": "Löschen fehlgeschlagen."
   }
 }

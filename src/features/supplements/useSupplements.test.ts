@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -131,5 +131,26 @@ describe('useSupplements', () => {
       throw new Error('expected generic error');
     }
     spy.mockRestore();
+  });
+
+  it('refetch reruns the load and picks up new supplements', async () => {
+    const profile = await createProfile();
+    await seedSupplement(profile.id, 'A', 'daily');
+
+    const { result } = renderHook(() => useSupplements());
+    await waitFor(() => expect(result.current.state.kind).toBe('loaded'));
+    if (result.current.state.kind === 'loaded') {
+      expect(result.current.state.groups[0]?.supplements).toHaveLength(1);
+    }
+
+    // Insert another supplement out-of-band, then refetch.
+    await seedSupplement(profile.id, 'B', 'daily');
+    await act(async () => {
+      result.current.refetch();
+    });
+    await waitFor(() => {
+      if (result.current.state.kind !== 'loaded') return false;
+      return result.current.state.groups[0]?.supplements.length === 2;
+    });
   });
 });

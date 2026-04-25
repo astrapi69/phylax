@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
@@ -7,6 +8,7 @@ import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { ProfileRepository, SupplementRepository } from '../../db/repositories';
 import type { Profile, Supplement, SupplementCategory } from '../../domain';
+import { __resetScrollLockForTest } from '../../ui';
 import { SupplementsView } from './SupplementsView';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -20,6 +22,7 @@ beforeEach(async () => {
   lock();
   await setupCompletedOnboarding(TEST_PASSWORD);
   await unlockSession();
+  __resetScrollLockForTest();
 });
 
 afterEach(() => {
@@ -107,6 +110,32 @@ describe('SupplementsView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/Supplemente konnten nicht geladen/);
     expect(consoleSpy).toHaveBeenCalledWith('[SupplementsView]', 'boom');
     consoleSpy.mockRestore();
+  });
+
+  it('renders the AddSupplementButton in the header even on empty state', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-supplement-btn')).toBeInTheDocument());
+  });
+
+  it('clicking AddSupplementButton opens the create form', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-supplement-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('add-supplement-btn'));
+    expect(screen.getByTestId('supplement-form-title')).toHaveTextContent('Neues Supplement');
+  });
+
+  it('renders per-card actions on each supplement when populated', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([
+      mockSupplement('Vitamin D', 'daily'),
+    ]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('supplement-actions')).toBeInTheDocument());
   });
 
   it('renders paused group after active groups', async () => {
