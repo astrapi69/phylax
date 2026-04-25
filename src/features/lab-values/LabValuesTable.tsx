@@ -80,6 +80,9 @@ export function LabValuesTable({ category, values, valueForm }: LabValuesTablePr
 function assessmentStyle(assessment: string | undefined): string {
   if (!assessment) return 'text-gray-600 dark:text-gray-400';
   const lower = assessment.toLowerCase();
+  if (lower.includes('kritisch')) {
+    return 'text-red-700 dark:text-red-300 font-medium';
+  }
   if (lower.includes('erniedrigt') || lower.includes('erhoht') || lower.includes('erhöht')) {
     return 'text-amber-700 dark:text-amber-300 font-medium';
   }

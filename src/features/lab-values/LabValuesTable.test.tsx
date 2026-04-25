@@ -82,6 +82,51 @@ describe('LabValuesTable', () => {
     expect(cell.className).toMatch(/amber/);
   });
 
+  it('applies accent styling for "erhöht" (Unicode umlaut) assessment', () => {
+    render(
+      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'erhöht' })]} />,
+    );
+    expect(screen.getByText('erhöht').className).toMatch(/amber/);
+  });
+
+  it('applies accent styling for "erniedrigt" assessment', () => {
+    render(
+      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'erniedrigt' })]} />,
+    );
+    expect(screen.getByText('erniedrigt').className).toMatch(/amber/);
+  });
+
+  it('applies destructive red styling for "kritisch" assessment (O-13)', () => {
+    render(
+      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'kritisch' })]} />,
+    );
+    const cell = screen.getByText('kritisch');
+    expect(cell.className).toMatch(/text-red-700/);
+    expect(cell.className).toMatch(/dark:text-red-300/);
+    expect(cell.className).toMatch(/font-medium/);
+    expect(cell.className).not.toMatch(/amber/);
+  });
+
+  it('kritisch wins over erhöht when both terms appear (severity precedence)', () => {
+    render(
+      <LabValuesTable
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'KRITISCH erhöht' })]}
+      />,
+    );
+    expect(screen.getByText('KRITISCH erhöht').className).toMatch(/text-red-700/);
+  });
+
+  it('falls through to neutral styling for unrecognized assessment values', () => {
+    render(
+      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'unklar' })]} />,
+    );
+    const cell = screen.getByText('unklar');
+    expect(cell.className).not.toMatch(/amber/);
+    expect(cell.className).not.toMatch(/red/);
+    expect(cell.className).toMatch(/text-gray-600/);
+  });
+
   it('omits action column when no valueForm prop is supplied (read-only mode)', () => {
     render(<LabValuesTable category="Blutbild" values={[makeLabValue()]} />);
     expect(screen.queryByTestId('lab-value-actions')).toBeNull();
