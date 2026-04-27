@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
@@ -133,5 +133,36 @@ describe('useOpenPoints', () => {
       throw new Error('expected generic error');
     }
     spy.mockRestore();
+  });
+
+  it('refetch reruns the load and picks up new points', async () => {
+    const profile = await createProfile();
+    const repo = new OpenPointRepository();
+    await repo.create({
+      profileId: profile.id,
+      text: 'A',
+      context: 'Hausarzt',
+      resolved: false,
+    });
+
+    const { result } = renderHook(() => useOpenPoints());
+    await waitFor(() => expect(result.current.state.kind).toBe('loaded'));
+    if (result.current.state.kind === 'loaded') {
+      expect(result.current.state.groups[0]?.items).toHaveLength(1);
+    }
+
+    await repo.create({
+      profileId: profile.id,
+      text: 'B',
+      context: 'Hausarzt',
+      resolved: false,
+    });
+    await act(async () => {
+      result.current.refetch();
+    });
+    await waitFor(() => {
+      if (result.current.state.kind !== 'loaded') return false;
+      return result.current.state.groups[0]?.items.length === 2;
+    });
   });
 });

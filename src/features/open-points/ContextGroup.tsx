@@ -1,16 +1,19 @@
 import type { OpenPoint } from '../../domain';
 import { OpenPointItem } from './OpenPointItem';
+import type { UseOpenPointFormResult } from './useOpenPointForm';
 
 interface ContextGroupProps {
   context: string;
   items: OpenPoint[];
+  /** Threaded through to each `OpenPointItem`. */
+  form?: UseOpenPointFormResult;
 }
 
 /**
  * Section heading with count plus a list of open point items.
  * Renders nothing when the items list is empty.
  */
-export function ContextGroup({ context, items }: ContextGroupProps) {
+export function ContextGroup({ context, items, form }: ContextGroupProps) {
   if (items.length === 0) return null;
 
   const headingId = `context-${slugify(context)}-heading`;
@@ -29,7 +32,7 @@ export function ContextGroup({ context, items }: ContextGroupProps) {
       <ul className="space-y-2">
         {items.map((p) => (
           <li key={p.id}>
-            <OpenPointItem point={p} />
+            <OpenPointItem point={p} form={form} />
           </li>
         ))}
       </ul>

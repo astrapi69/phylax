@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { OpenPoint } from '../../domain';
 import { OpenPointRepository, ProfileRepository } from '../../db/repositories';
 
@@ -16,6 +16,12 @@ export type OpenPointsState =
 
 export interface UseOpenPointsResult {
   state: OpenPointsState;
+  /**
+   * Re-run the load. Used by O-15 form/toggle/delete success paths to
+   * refresh the list without a full route navigation. Mirrors the
+   * O-10/O-12a/O-14 pattern.
+   */
+  refetch: () => void;
 }
 
 /**
@@ -25,6 +31,9 @@ export interface UseOpenPointsResult {
  */
 export function useOpenPoints(): UseOpenPointsResult {
   const [state, setState] = useState<OpenPointsState>({ kind: 'loading' });
+  const [version, setVersion] = useState(0);
+
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,9 +68,9 @@ export function useOpenPoints(): UseOpenPointsResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
-  return { state };
+  return { state, refetch };
 }
 
 function buildGroups(points: OpenPoint[]): ContextGroup[] {

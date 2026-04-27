@@ -10,5 +10,54 @@
   },
   "error": {
     "load-failed": "Offene Punkte konnten nicht geladen werden."
+  },
+  "actions": {
+    "add": "Neuer Punkt",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "edit-point": "{{text}} bearbeiten",
+    "delete-point": "{{text}} löschen"
+  },
+  "form": {
+    "title": {
+      "create": "Neuer offener Punkt",
+      "edit": "Offenen Punkt bearbeiten"
+    },
+    "field": {
+      "text": "Text",
+      "text-placeholder": "z.B. Wiederholungs-Blutabnahme im Mai",
+      "text-required": "Text ist erforderlich",
+      "context": "Kontext",
+      "context-placeholder": "z.B. Beim nächsten Arztbesuch",
+      "context-required": "Kontext ist erforderlich",
+      "priority": "Priorität",
+      "priority-placeholder": "z.B. hoch, niedrig",
+      "time-horizon": "Zeithorizont",
+      "time-horizon-placeholder": "z.B. Innerhalb 3 Monate",
+      "details": "Details",
+      "details-placeholder": "Optionale Notizen oder Unterpunkte (Markdown)"
+    },
+    "optional-disclosure": "Weitere Felder",
+    "cancel": "Abbrechen",
+    "save": {
+      "create": "Speichern",
+      "edit": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
+  "delete": {
+    "title": "Offenen Punkt löschen",
+    "body": {
+      "with-context": "\"{{text}}\" (Kontext: {{context}}) wird gelöscht.",
+      "no-context": "\"{{text}}\" wird gelöscht."
+    },
+    "confirm": "Löschen",
+    "cancel": "Abbrechen",
+    "busy": "Wird gelöscht...",
+    "error": "Löschen fehlgeschlagen."
+  },
+  "toggle": {
+    "error": "Status konnte nicht geändert werden: {{detail}}"
   }
 }

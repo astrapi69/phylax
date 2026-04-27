@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
@@ -20,6 +21,8 @@ beforeEach(async () => {
   lock();
   await setupCompletedOnboarding(TEST_PASSWORD);
   await unlockSession();
+  const { __resetScrollLockForTest } = await import('../../ui');
+  __resetScrollLockForTest();
 });
 
 afterEach(() => {
@@ -102,5 +105,35 @@ describe('OpenPointsView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/Offene Punkte konnten nicht geladen/);
     expect(consoleSpy).toHaveBeenCalledWith('[OpenPointsView]', 'boom');
     consoleSpy.mockRestore();
+  });
+
+  it('renders AddOpenPointButton in header even on empty state', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(OpenPointRepository.prototype, 'listByProfile').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-open-point-btn')).toBeInTheDocument());
+  });
+
+  it('clicking AddOpenPointButton opens the create form', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(OpenPointRepository.prototype, 'listByProfile').mockResolvedValue([]);
+    vi.spyOn(OpenPointRepository.prototype, 'listContexts').mockResolvedValue([]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('add-open-point-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('add-open-point-btn'));
+    await waitFor(() => expect(screen.getByTestId('open-point-form-title')).toBeInTheDocument());
+    expect(screen.getByTestId('open-point-form-title')).toHaveTextContent('Neuer offener Punkt');
+  });
+
+  it('renders interactive checkbox + actions cluster on each point when populated', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+    vi.spyOn(OpenPointRepository.prototype, 'listByProfile').mockResolvedValue([
+      mockPoint('A', 'Arztbesuch', 'pt-a'),
+    ]);
+    renderView();
+    await waitFor(() => expect(screen.getByTestId('open-point-toggle-pt-a')).toBeInTheDocument());
+    expect(screen.getByTestId('open-point-toggle-pt-a')).not.toBeDisabled();
+    expect(screen.getByTestId('open-point-actions')).toBeInTheDocument();
   });
 });

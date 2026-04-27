@@ -10,5 +10,54 @@
   },
   "error": {
     "load-failed": "Open points could not be loaded."
+  },
+  "actions": {
+    "add": "New point",
+    "edit": "Edit",
+    "delete": "Delete",
+    "edit-point": "Edit {{text}}",
+    "delete-point": "Delete {{text}}"
+  },
+  "form": {
+    "title": {
+      "create": "New open point",
+      "edit": "Edit open point"
+    },
+    "field": {
+      "text": "Text",
+      "text-placeholder": "e.g. Repeat blood test in May",
+      "text-required": "Text is required",
+      "context": "Context",
+      "context-placeholder": "e.g. Next doctor visit",
+      "context-required": "Context is required",
+      "priority": "Priority",
+      "priority-placeholder": "e.g. high, low",
+      "time-horizon": "Time horizon",
+      "time-horizon-placeholder": "e.g. Within 3 months",
+      "details": "Details",
+      "details-placeholder": "Optional notes or sub-items (Markdown)"
+    },
+    "optional-disclosure": "More fields",
+    "cancel": "Cancel",
+    "save": {
+      "create": "Save",
+      "edit": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
+  },
+  "delete": {
+    "title": "Delete open point",
+    "body": {
+      "with-context": "\"{{text}}\" (context: {{context}}) will be deleted.",
+      "no-context": "\"{{text}}\" will be deleted."
+    },
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "busy": "Deleting...",
+    "error": "Delete failed."
+  },
+  "toggle": {
+    "error": "Status could not be changed: {{detail}}"
   }
 }
