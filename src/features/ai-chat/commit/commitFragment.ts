@@ -10,7 +10,14 @@ import {
 } from '../../../db/repositories';
 import { generateId } from '../../../crypto';
 import type { Observation, OpenPoint, Profile, ProfileVersion, Supplement } from '../../../domain';
+import { bumpVersion } from '../../../domain/profileVersion/bumpVersion';
 import type { ProfileDiff } from './computeDiff';
+
+// `bumpVersion` lives in `src/domain/profileVersion/` so the manual
+// base-data-edit path (O-16) shares it with this AI-chat commit path
+// without a cross-feature import. Re-exported here for backward
+// compatibility with existing public-API consumers (commit/index.ts).
+export { bumpVersion };
 
 export interface CommitOptions {
   diff: ProfileDiff;
@@ -199,24 +206,9 @@ export function commitSummaryText(t: TFunction<'ai-chat'>, result: CommitResult)
   return t('commit-summary.with-parts', { parts: parts.join(', '), version: result.newVersion });
 }
 
-/**
- * Increment the last numeric component of a dotted version, e.g.
- * 1.3.1 -> 1.3.2 or 1.0 -> 1.1. For anything that is not a dotted
- * number sequence, append or increment a "-aiN" suffix so the version
- * stays monotonically increasing without corrupting the original.
- */
-export function bumpVersion(version: string): string {
-  const trimmed = version.trim();
-  const dotted = /^(\d+(?:\.\d+)*)\.(\d+)$/.exec(trimmed);
-  if (dotted) {
-    return `${dotted[1]}.${Number(dotted[2]) + 1}`;
-  }
-  const aiSuffix = /^(.+)-ai(\d+)$/.exec(trimmed);
-  if (aiSuffix) {
-    return `${aiSuffix[1]}-ai${Number(aiSuffix[2]) + 1}`;
-  }
-  return `${trimmed || '0'}-ai1`;
-}
+// `bumpVersion` was extracted to `src/domain/profileVersion/` and is
+// re-exported from this module's import block above to keep the public
+// API at `commit/index.ts` stable.
 
 function formatIsoDate(timestamp: number): string {
   const d = new Date(timestamp);
