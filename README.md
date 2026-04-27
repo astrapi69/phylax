@@ -4,7 +4,7 @@ Your local-first, zero-knowledge living health profile.
 
 **Live demo**: https://astrapi69.github.io/phylax/ (install as a PWA via your browser's address bar)
 
-**User documentation**: https://astrapi69.github.io/phylax-docs/ (Iteration 1 underway; tooling and placeholder navigation live, full content rolling out)
+**User documentation**: https://astrapi69.github.io/phylax-docs/ (Iteration 1 complete; DE+EN parallel content covering Getting Started, Daily Use, Backup, FAQ and Background)
 
 [![CI](https://github.com/astrapi69/phylax/actions/workflows/ci.yml/badge.svg)](https://github.com/astrapi69/phylax/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
