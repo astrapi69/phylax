@@ -1,9 +1,19 @@
 import { useTranslation } from 'react-i18next';
-import type { BaseData } from '../../domain';
+import type { BaseData, Profile } from '../../domain';
 import { MarkdownContent } from './MarkdownContent';
+import { EditBaseDataButton } from './EditBaseDataButton';
+import type { UseProfileBaseDataFormResult } from './useProfileBaseDataForm';
 
 interface BaseDataSectionProps {
   baseData: BaseData;
+  /**
+   * Optional full Profile + edit-form hook. When both supplied, the
+   * section header gains an inline "Bearbeiten" button that opens
+   * the O-16 base-data edit modal. Read-only consumers (omit
+   * `profile` / `form`) see the legacy display-only layout.
+   */
+  profile?: Profile;
+  form?: UseProfileBaseDataFormResult;
 }
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('de-DE', {
@@ -29,8 +39,9 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export function BaseDataSection({ baseData }: BaseDataSectionProps) {
+export function BaseDataSection({ baseData, profile, form }: BaseDataSectionProps) {
   const { t } = useTranslation('profile-view');
+  const showEditButton = profile !== undefined && form !== undefined;
   const rows: React.ReactNode[] = [];
   if (baseData.birthDate) {
     rows.push(
@@ -69,16 +80,24 @@ export function BaseDataSection({ baseData }: BaseDataSectionProps) {
 
   const hasNotes = typeof baseData.contextNotes === 'string' && baseData.contextNotes.trim() !== '';
 
-  if (rows.length === 0 && !hasNotes) return null;
+  // O-16: keep section visible when only the edit button is present —
+  // the user needs an entry point even on a profile with no scalar
+  // fields populated yet.
+  if (rows.length === 0 && !hasNotes && !showEditButton) return null;
 
   return (
     <section aria-labelledby="basisdaten-heading">
-      <h2
-        id="basisdaten-heading"
-        className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100"
-      >
-        {t('basedata.heading')}
-      </h2>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2
+          id="basisdaten-heading"
+          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+        >
+          {t('basedata.heading')}
+        </h2>
+        {showEditButton && profile && form ? (
+          <EditBaseDataButton profile={profile} form={form} />
+        ) : null}
+      </div>
       {rows.length > 0 && <dl className="space-y-2">{rows}</dl>}
       {hasNotes && (
         <div className="mt-4">

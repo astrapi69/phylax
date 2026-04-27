@@ -3,6 +3,7 @@ export {
   PasswordVisibilityToggle,
   type PasswordVisibilityToggleProps,
 } from './PasswordVisibilityToggle';
+export { ArrayFieldEditor, type ArrayFieldEditorProps } from './ArrayFieldEditor';
 export {
   Modal,
   ModalHeader,

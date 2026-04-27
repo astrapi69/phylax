@@ -14,6 +14,7 @@
   },
   "basedata": {
     "heading": "Basisdaten",
+    "edit-button": "Bearbeiten",
     "field-birth-date": "Geburtsdatum",
     "field-age": "Alter",
     "age-value": "{{age}} Jahre",
@@ -23,6 +24,38 @@
     "weight-value": "{{weight}} kg",
     "weight-target": " (Ziel: {{target}} kg)",
     "context-notes-heading": "Kontextnotizen"
+  },
+  "edit-form": {
+    "title": "Basisdaten bearbeiten",
+    "field": {
+      "name": "Name",
+      "name-placeholder": "z.B. Anna Schmidt",
+      "name-required": "Name ist erforderlich",
+      "birth-date": "Geburtsdatum",
+      "birth-date-invalid": "Bitte gib ein gültiges Datum ein.",
+      "birth-date-legacy-age-hint": "Bisher (wird durch Geburtsdatum ersetzt): {{age}} Jahre",
+      "diagnoses": "Bekannte Diagnosen",
+      "diagnoses-placeholder": "z.B. Hypertonie",
+      "diagnoses-add": "Diagnose hinzufügen",
+      "diagnoses-remove-aria": "Diagnose Zeile {{row}} entfernen",
+      "medications": "Aktuelle Medikamente",
+      "medications-placeholder": "z.B. Ramipril 5 mg morgens",
+      "medications-add": "Medikament hinzufügen",
+      "medications-remove-aria": "Medikament Zeile {{row}} entfernen",
+      "limitations": "Relevante Einschränkungen",
+      "limitations-placeholder": "z.B. Schulterbeweglichkeit links",
+      "limitations-add": "Einschränkung hinzufügen",
+      "limitations-remove-aria": "Einschränkung Zeile {{row}} entfernen",
+      "last-update-reason": "Beschreibung der Änderung",
+      "last-update-reason-placeholder": "z.B. Neue Diagnose ergänzt",
+      "last-update-reason-help": "Optional. Wird in der Versionshistorie gespeichert. Leer = \"Manuelle Bearbeitung\"."
+    },
+    "cancel": "Abbrechen",
+    "save": {
+      "label": "Änderungen speichern",
+      "busy": "Wird gespeichert..."
+    },
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
   },
   "section": {
     "doctor": "Hausarzt",

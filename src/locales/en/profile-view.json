@@ -14,6 +14,7 @@
   },
   "basedata": {
     "heading": "Base data",
+    "edit-button": "Edit",
     "field-birth-date": "Date of birth",
     "field-age": "Age",
     "age-value": "{{age}} years",
@@ -23,6 +24,38 @@
     "weight-value": "{{weight}} kg",
     "weight-target": " (target: {{target}} kg)",
     "context-notes-heading": "Context notes"
+  },
+  "edit-form": {
+    "title": "Edit base data",
+    "field": {
+      "name": "Name",
+      "name-placeholder": "e.g. Anna Schmidt",
+      "name-required": "Name is required",
+      "birth-date": "Date of birth",
+      "birth-date-invalid": "Please enter a valid date.",
+      "birth-date-legacy-age-hint": "Previously (will be replaced by date of birth): {{age}} years",
+      "diagnoses": "Known diagnoses",
+      "diagnoses-placeholder": "e.g. Hypertension",
+      "diagnoses-add": "Add diagnosis",
+      "diagnoses-remove-aria": "Remove diagnosis row {{row}}",
+      "medications": "Current medications",
+      "medications-placeholder": "e.g. Ramipril 5 mg morning",
+      "medications-add": "Add medication",
+      "medications-remove-aria": "Remove medication row {{row}}",
+      "limitations": "Relevant limitations",
+      "limitations-placeholder": "e.g. Left shoulder mobility",
+      "limitations-add": "Add limitation",
+      "limitations-remove-aria": "Remove limitation row {{row}}",
+      "last-update-reason": "Change description",
+      "last-update-reason-placeholder": "e.g. Added new diagnosis",
+      "last-update-reason-help": "Optional. Stored in version history. Empty = \"Manual edit\"."
+    },
+    "cancel": "Cancel",
+    "save": {
+      "label": "Save changes",
+      "busy": "Saving..."
+    },
+    "save-error": "Save failed: {{detail}}"
   },
   "section": {
     "doctor": "Primary care physician",

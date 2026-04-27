@@ -9,16 +9,20 @@ import { BaseDataSection, ProfileTypeBadge } from './BaseDataSection';
 import { DoctorCard } from './DoctorCard';
 import { WarningSignsSection } from './WarningSignsSection';
 import { useProfileView } from './useProfileView';
+import { useProfileBaseDataForm } from './useProfileBaseDataForm';
+import { ProfileBaseDataForm } from './ProfileBaseDataForm';
 
 /**
- * Read-only overview of the current profile. Landing page after login.
- *
- * Empty sections are hidden rather than shown with placeholders. A
- * profile with no diagnoses simply has no "Bekannte Diagnosen" heading.
+ * Profile overview at /profile. Landing page after login. Renders
+ * read-only sections; an inline "Bearbeiten" button inside
+ * BaseDataSection opens the O-16 edit modal scoped to the five
+ * literal fields named in the ROADMAP (name, birthDate, three
+ * string arrays).
  */
 export function ProfileView() {
   const { t } = useTranslation('profile-view');
-  const { state } = useProfileView();
+  const { state, refetch } = useProfileView();
+  const form = useProfileBaseDataForm({ onCommitted: refetch });
 
   if (state.kind === 'loading') {
     return (
@@ -45,10 +49,21 @@ export function ProfileView() {
     );
   }
 
-  return <ProfileViewContent profile={state.profile} />;
+  return (
+    <>
+      <ProfileViewContent profile={state.profile} form={form} />
+      <ProfileBaseDataForm form={form} />
+    </>
+  );
 }
 
-function ProfileViewContent({ profile }: { profile: Profile }) {
+function ProfileViewContent({
+  profile,
+  form,
+}: {
+  profile: Profile;
+  form: ReturnType<typeof useProfileBaseDataForm>;
+}) {
   const { t } = useTranslation('profile-view');
   const { baseData, warningSigns, externalReferences, version, lastUpdateReason } = profile;
   const name = getDisplayName(profile);
@@ -91,7 +106,7 @@ function ProfileViewContent({ profile }: { profile: Profile }) {
         </div>
       </header>
 
-      <BaseDataSection baseData={baseData} />
+      <BaseDataSection baseData={baseData} profile={profile} form={form} />
 
       {baseData.primaryDoctor && (
         <section aria-labelledby="hausarzt-heading">

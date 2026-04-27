@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Profile } from '../../domain';
 import { ProfileRepository } from '../../db/repositories';
 
@@ -18,18 +18,25 @@ export type ProfileViewState =
 
 export interface UseProfileViewResult {
   state: ProfileViewState;
+  /**
+   * Re-run the load. Used by the O-16 base-data edit form's
+   * `onCommitted` to refresh the rendered profile after save without
+   * a route re-mount. Mirrors the O-10/O-12a/O-14/O-15 pattern.
+   */
+  refetch: () => void;
 }
 
 /**
- * Load the current profile once on mount. Caches for the component
- * lifetime. Route re-navigation re-triggers the hook for a fresh read;
- * reactive updates are deferred to a later task.
- *
- * RequireProfile guards the route, so a null profile is a defensive
- * error branch rather than a normal state.
+ * Load the current profile. Re-runs on `refetch()` so edit flows can
+ * surface the saved state immediately. RequireProfile guards the
+ * route, so a null profile is a defensive error branch rather than a
+ * normal state.
  */
 export function useProfileView(): UseProfileViewResult {
   const [state, setState] = useState<ProfileViewState>({ kind: 'loading' });
+  const [version, setVersion] = useState(0);
+
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +65,7 @@ export function useProfileView(): UseProfileViewResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
-  return { state };
+  return { state, refetch };
 }
