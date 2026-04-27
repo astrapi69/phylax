@@ -420,11 +420,16 @@ https://astrapi69.github.io/phylax/ once the `Deploy to GitHub Pages`
 workflow completes for this commit, then update repo `homepageUrl` and
 edit the v1.0.0 release notes to link the live URL.
 
+Phase 2 manual-entry CRUD (O-10..O-15) and the shared modal primitive
+(O-20) are complete. Remaining Phase 2 tasks: O-16 (profile base data
+editor), O-17 (in-memory observation search), O-18 (date range filter),
+O-19 (empty states and loading skeletons).
+
 Open backlog (deferred; not part of v1.0.0):
 
 - **F-06b**: cross-browser Playwright (Firefox, WebKit)
-- **O-10 through O-20**: editing forms (observation, lab value,
-  supplement, open-point, base-data). Currently only read-only views exist.
+- **O-16 through O-19**: remaining Phase 2 manual-entry forms (base-data
+  editor, in-memory search, date range filter, empty states)
 - **IM-04**: auto-create a "Imported from file" profile version entry on
   successful import, land directly on the imported profile
 - **IM-05**: import conflict handling beyond replace-all (selective merge)
