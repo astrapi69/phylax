@@ -37,6 +37,13 @@
   "error": {
     "load-failed": "Beobachtungen konnten nicht geladen werden."
   },
+  "search": {
+    "placeholder": "Beobachtungen durchsuchen...",
+    "aria-label": "Beobachtungen durchsuchen",
+    "clear": "Suche zurücksetzen",
+    "match-count": "{{count}} von {{total}} Beobachtungen",
+    "no-matches": "Keine Treffer für „{{query}}\"."
+  },
   "actions": {
     "add": "Neue Beobachtung",
     "edit": "Bearbeiten",

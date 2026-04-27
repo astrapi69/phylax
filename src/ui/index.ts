@@ -4,6 +4,7 @@ export {
   type PasswordVisibilityToggleProps,
 } from './PasswordVisibilityToggle';
 export { ArrayFieldEditor, type ArrayFieldEditorProps } from './ArrayFieldEditor';
+export { SearchInput, type SearchInputProps } from './SearchInput';
 export {
   Modal,
   ModalHeader,

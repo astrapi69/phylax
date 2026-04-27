@@ -1,1 +1,1 @@
-export {};
+export { normalizeForSearch } from './normalizeForSearch';

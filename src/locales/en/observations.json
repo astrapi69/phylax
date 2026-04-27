@@ -37,6 +37,13 @@
   "error": {
     "load-failed": "Observations could not be loaded."
   },
+  "search": {
+    "placeholder": "Search observations...",
+    "aria-label": "Search observations",
+    "clear": "Clear search",
+    "match-count": "{{count}} of {{total}} observations",
+    "no-matches": "No matches for \"{{query}}\"."
+  },
   "actions": {
     "add": "New observation",
     "edit": "Edit",

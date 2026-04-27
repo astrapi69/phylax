@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SearchInput } from '../../ui';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
 import { ObservationsSortToggle } from './ObservationsSortToggle';
@@ -10,6 +11,7 @@ import { useObservationForm } from './useObservationForm';
 import { ObservationForm } from './ObservationForm';
 import { ObservationDeleteDialog } from './ObservationDeleteDialog';
 import { AddObservationButton } from './AddObservationButton';
+import { filterObservations } from './filterObservations';
 
 /** Window (ms) for treating an observation as "just committed" on mount. */
 const HIGHLIGHT_WINDOW_MS = 5000;
@@ -36,6 +38,26 @@ export function ObservationsView() {
   const { state, refetch } = useObservations();
   const [mode, setMode] = useSortPreference('observations');
   const form = useObservationForm({ onCommitted: refetch });
+
+  // Search query persists in the URL as `?q=<term>` so back/forward and
+  // a stale shared link both restore the filtered view. The input writes
+  // to the URL on every keystroke (replace, not push, to avoid history
+  // spam); useDeferredValue defers the actual filter computation by one
+  // render so typing stays responsive on large lists.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') ?? '';
+  const deferredQuery = useDeferredValue(query);
+  const setQuery = (next: string) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (next === '') params.delete('q');
+        else params.set('q', next);
+        return params;
+      },
+      { replace: true },
+    );
+  };
 
   // Capture mount time ONCE. Used both to decide the initial highlight
   // set and to key the fade-out timer. Re-mounts (navigation away + back)
@@ -85,7 +107,9 @@ export function ObservationsView() {
     );
   }
 
-  const sections = sortObservations(state.groups, mode);
+  const filterResult = filterObservations(state.groups, deferredQuery);
+  const isFiltering = deferredQuery.trim() !== '';
+  const sections = sortObservations(filterResult.groups, mode);
 
   return (
     <article className="space-y-6">
@@ -100,21 +124,63 @@ export function ObservationsView() {
       {state.groups.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="space-y-10">
-          {sections.map((section) => (
-            <Section
-              key={section.label ?? 'single'}
-              section={section}
-              highlightedIds={highlightedIds}
-              form={form}
+        <>
+          <div className="flex flex-wrap items-center gap-3">
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder={t('search.placeholder')}
+              ariaLabel={t('search.aria-label')}
+              clearLabel={t('search.clear')}
             />
-          ))}
-        </div>
+            {isFiltering && (
+              <p
+                role="status"
+                aria-live="polite"
+                data-testid="search-match-count"
+                className="text-xs text-gray-600 dark:text-gray-400"
+              >
+                {t('search.match-count', {
+                  count: filterResult.matchCount,
+                  total: filterResult.totalCount,
+                })}
+              </p>
+            )}
+          </div>
+
+          {isFiltering && filterResult.matchCount === 0 ? (
+            <NoMatchesState query={deferredQuery} />
+          ) : (
+            <div className="space-y-10">
+              {sections.map((section) => (
+                <Section
+                  key={section.label ?? 'single'}
+                  section={section}
+                  highlightedIds={highlightedIds}
+                  form={form}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       <ObservationForm form={form} />
       <ObservationDeleteDialog form={form} />
     </article>
+  );
+}
+
+function NoMatchesState({ query }: { query: string }) {
+  const { t } = useTranslation('observations');
+  return (
+    <div
+      role="status"
+      data-testid="search-no-matches"
+      className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
+    >
+      {t('search.no-matches', { query: query.trim() })}
+    </div>
   );
 }
 

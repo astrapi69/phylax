@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
@@ -230,6 +231,93 @@ describe('ObservationsView', () => {
         expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument(),
       );
       expect(document.querySelectorAll('details[data-highlighted="true"]')).toHaveLength(0);
+    });
+  });
+
+  describe('search (O-17)', () => {
+    it('does NOT render the search input when there are zero observations', async () => {
+      await mockLoadedState([]);
+      renderView();
+      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen/)).toBeInTheDocument());
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    });
+
+    it('renders the search input when observations exist', async () => {
+      await mockLoadedState([
+        { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
+      ]);
+      renderView();
+      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
+      // Match-count is hidden when query is empty.
+      expect(screen.queryByTestId('search-match-count')).not.toBeInTheDocument();
+    });
+
+    it('filters by theme + fact + pattern, hides non-matching groups, shows match count', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 's1', theme: 'Schulter', fact: 'stechender Schmerz' }),
+            makeObservation({ id: 's2', theme: 'Schulter', fact: 'dumpfer Druck' }),
+          ],
+        },
+        {
+          theme: 'Knie',
+          observations: [makeObservation({ id: 'k1', theme: 'Knie', fact: 'kein Treffer' })],
+        },
+      ]);
+      renderView();
+      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
+
+      const user = userEvent.setup();
+      await user.type(screen.getByRole('searchbox'), 'stechend');
+
+      await waitFor(() => {
+        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 3 Beobachtungen');
+      });
+      // Knie group hidden, Schulter present but only the matching observation.
+      expect(screen.queryByRole('heading', { level: 2, name: /Knie/ })).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument();
+    });
+
+    it('shows the no-matches message when query has zero hits', async () => {
+      await mockLoadedState([
+        { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
+      ]);
+      renderView();
+      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
+
+      const user = userEvent.setup();
+      await user.type(screen.getByRole('searchbox'), 'xyz');
+
+      await waitFor(() => {
+        expect(screen.getByTestId('search-no-matches')).toHaveTextContent(/xyz/);
+      });
+      expect(screen.queryByRole('heading', { level: 2, name: /Schulter/ })).not.toBeInTheDocument();
+    });
+
+    it('seeds the search input from a `?q=` URL param', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [makeObservation({ id: '1', theme: 'Schulter', fact: 'schmerz' })],
+        },
+        {
+          theme: 'Knie',
+          observations: [makeObservation({ id: '2', theme: 'Knie', fact: 'andere' })],
+        },
+      ]);
+      render(
+        <MemoryRouter initialEntries={['/?q=schmerz']}>
+          <ObservationsView />
+        </MemoryRouter>,
+      );
+      await waitFor(() => {
+        expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('schmerz');
+      });
+      await waitFor(() => {
+        expect(screen.queryByRole('heading', { level: 2, name: /Knie/ })).not.toBeInTheDocument();
+      });
     });
   });
 });
