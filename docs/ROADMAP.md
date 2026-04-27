@@ -410,6 +410,21 @@ Sustainability work. Makes donations discoverable without interrupting the core 
 
 ---
 
+## Phase Doc: User Documentation
+
+User-facing documentation in a separate `phylax-docs` repository, hosted at https://astrapi69.github.io/phylax-docs/. Bibliogon's MkDocs setup (`mkdocs.yml` + `docs/help/<lang>/` layout, mkdocs-material + mkdocs-static-i18n + git-revision-date-localized) is the template. Cross-repo discipline documented in `docs/MAINTENANCE.md`. Source of truth for terminology stays at `docs/i18n-glossary.md` in this repo; doc-site glossary mirrors via review-checklist convention, not code coupling. See `docs/explorations/exploration-user-documentation.md` for the full scoping document.
+
+- [ ] **DOC-01** Iteration 1: minimum viable user documentation
+  - [ ] **DOC-01a** Tooling setup: clone Bibliogon-shape MkDocs scaffold into the new `phylax-docs` repo (mkdocs.yml at root, `docs_dir: docs/help`, `docs/help/de/` + `docs/help/en/` placeholders, `_meta.yaml` nav source, `scripts/generate_mkdocs_nav.py`, GitHub Pages CI workflow). Theme: Material indigo (Bibliogon default; brand decision deferred). Empty content pages, structured navigation. Verify deploy to https://astrapi69.github.io/phylax-docs/ succeeds and Phylax-PWA deploy pipeline stays unaffected.
+  - [ ] **DOC-01b** Getting Started topics: A.1 "What is Phylax" (freshly written narrative) + A.3 "First Steps" (step-by-step setup tutorial). DE+EN parallel.
+  - [ ] **DOC-01c** Daily Use topics (5 pages): B.1 Recording observations, B.2 Entering lab values, B.3 Managing supplements, B.4 Tracking open points, B.5 Maintaining profile base data. DE+EN parallel.
+  - [ ] **DOC-01d** Backup + FAQ + Background: C.4 Creating and restoring backups (critical, single page covering both directions), F Background (linking page to Medium articles + threat model + roadmap), G.1 FAQ (5-10 entries to start). DE+EN parallel.
+  - [ ] **DOC-01e** Iteration 1 close: ROADMAP tick on DOC-01, manual smoke pass on the deployed site, README in this repo updated to point to the live doc URL (no longer "in progress").
+
+Iteration 2 (in-app help links + opt-in onboarding tour) and Iteration 3 (full build-out + community contribution path) are scoped in the exploration document and tracked separately when Iteration 1 is closed.
+
+---
+
 ## Next Steps
 
 Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
