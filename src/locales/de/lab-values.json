@@ -122,5 +122,11 @@
     "cancel": "Abbrechen",
     "busy": "Wird gelöscht...",
     "error": "Löschen fehlgeschlagen."
+  },
+  "date-range": {
+    "from": "Von",
+    "to": "Bis",
+    "aria-label": "Zeitraum filtern",
+    "no-matches": "Keine Befunde im gewählten Zeitraum."
   }
 }

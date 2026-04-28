@@ -1,8 +1,15 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { findMatchRanges, splitQuery, type MatchRange } from '../../lib';
-import { SearchInput } from '../../ui';
+import {
+  findMatchRanges,
+  isDateRangeActive,
+  parseDateRange,
+  splitQuery,
+  type DateRange,
+  type MatchRange,
+} from '../../lib';
+import { DateRangeFilter, SearchInput } from '../../ui';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
 import { ObservationsSortToggle } from './ObservationsSortToggle';
@@ -75,6 +82,26 @@ export function ObservationsView() {
   const deferredQuery = useDeferredValue(query);
   const setQuery = useSearchQueryUrl(query, setSearchParams);
 
+  // Date range filter (O-18) lives in the URL alongside ?q. Each
+  // change replaces the URL entry rather than pushing a new history
+  // step: date inputs are typically used in a "session" where the
+  // user picks from-date, then to-date, then maybe revises one
+  // before settling. Pushing per change would spam history.
+  const fromParam = searchParams.get('from') ?? '';
+  const toParam = searchParams.get('to') ?? '';
+  const dateRange: DateRange = useMemo(() => parseDateRange(searchParams), [searchParams]);
+  const setDateParam = (key: 'from' | 'to', value: string) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (value === '') params.delete(key);
+        else params.set(key, value);
+        return params;
+      },
+      { replace: true },
+    );
+  };
+
   // Capture mount time ONCE. Used both to decide the initial highlight
   // set and to key the fade-out timer. Re-mounts (navigation away + back)
   // reset it, which is correct: each visit gets its own highlight window.
@@ -101,10 +128,10 @@ export function ObservationsView() {
 
   const filterResult = useMemo(() => {
     if (state.kind !== 'loaded') return null;
-    return filterObservations(state.groups, deferredQuery);
-  }, [state, deferredQuery]);
+    return filterObservations(state.groups, { query: deferredQuery, dateRange });
+  }, [state, deferredQuery, dateRange]);
 
-  const isFiltering = deferredQuery.trim() !== '';
+  const isFiltering = deferredQuery.trim() !== '' || isDateRangeActive(dateRange);
   const sections = useMemo(
     () => (filterResult ? sortObservations(filterResult.groups, mode) : []),
     [filterResult, mode],
@@ -220,6 +247,15 @@ export function ObservationsView() {
               clearLabel={t('search.clear')}
               onEnter={next}
               onShiftEnter={prev}
+            />
+            <DateRangeFilter
+              from={fromParam}
+              to={toParam}
+              onFromChange={(v) => setDateParam('from', v)}
+              onToChange={(v) => setDateParam('to', v)}
+              fromLabel={t('date-range.from')}
+              toLabel={t('date-range.to')}
+              groupAriaLabel={t('date-range.aria-label')}
             />
             {isFiltering && totalMatches > 0 && (
               <p

@@ -1,5 +1,13 @@
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import {
+  isDateRangeActive,
+  isInDateRangeIso,
+  parseDateRange,
+  type DateRange,
+} from '../../lib';
+import { DateRangeFilter } from '../../ui';
 import { LabReportCard } from './LabReportCard';
 import { useLabValues } from './useLabValues';
 import { useLabReportForm } from './useLabReportForm';
@@ -17,12 +25,36 @@ import { AddLabReportButton } from './AddLabReportButton';
  * O-12a adds manual create/edit/delete of lab reports via the O-20
  * modal primitive. Empty reports (no values yet) render header-only,
  * surfacing the report shell users build incrementally.
+ *
+ * O-18 introduces the date-range filter. URL params `?from=YYYY-MM-DD`
+ * and `?to=YYYY-MM-DD` (either or both, validated) narrow the report
+ * list by `reportDate`. Filtering happens at view level on the
+ * already-decrypted data, mirroring the O-17 pattern in
+ * ObservationsView. The sticky bar matches P-19's pattern from
+ * observations so the filter inputs stay reachable while scrolling
+ * through long report lists.
  */
 export function LabValuesView() {
   const { t } = useTranslation('lab-values');
   const { state, refetch } = useLabValues();
   const form = useLabReportForm({ onCommitted: refetch });
   const valueForm = useLabValueForm({ onCommitted: refetch });
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const fromParam = searchParams.get('from') ?? '';
+  const toParam = searchParams.get('to') ?? '';
+  const dateRange: DateRange = useMemo(() => parseDateRange(searchParams), [searchParams]);
+  const setDateParam = (key: 'from' | 'to', value: string) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (value === '') params.delete(key);
+        else params.set(key, value);
+        return params;
+      },
+      { replace: true },
+    );
+  };
 
   if (state.kind === 'loading') {
     return (
@@ -48,6 +80,11 @@ export function LabValuesView() {
     );
   }
 
+  const isFiltering = isDateRangeActive(dateRange);
+  const filteredReports = isFiltering
+    ? state.reports.filter(({ report }) => isInDateRangeIso(report.reportDate, dateRange))
+    : state.reports;
+
   return (
     <article className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-700">
@@ -58,17 +95,34 @@ export function LabValuesView() {
       {state.reports.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="space-y-6">
-          {state.reports.map(({ report, valuesByCategory }) => (
-            <LabReportCard
-              key={report.id}
-              report={report}
-              valuesByCategory={valuesByCategory}
-              form={form}
-              valueForm={valueForm}
+        <>
+          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
+            <DateRangeFilter
+              from={fromParam}
+              to={toParam}
+              onFromChange={(v) => setDateParam('from', v)}
+              onToChange={(v) => setDateParam('to', v)}
+              fromLabel={t('date-range.from')}
+              toLabel={t('date-range.to')}
+              groupAriaLabel={t('date-range.aria-label')}
             />
-          ))}
-        </div>
+          </div>
+          {isFiltering && filteredReports.length === 0 ? (
+            <NoMatchesState />
+          ) : (
+            <div className="space-y-6">
+              {filteredReports.map(({ report, valuesByCategory }) => (
+                <LabReportCard
+                  key={report.id}
+                  report={report}
+                  valuesByCategory={valuesByCategory}
+                  form={form}
+                  valueForm={valueForm}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       <LabReportForm form={form} />
@@ -76,6 +130,19 @@ export function LabValuesView() {
       <LabValueForm form={valueForm} />
       <LabValueDeleteDialog form={valueForm} />
     </article>
+  );
+}
+
+function NoMatchesState() {
+  const { t } = useTranslation('lab-values');
+  return (
+    <div
+      role="status"
+      data-testid="lab-values-no-matches-in-range"
+      className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
+    >
+      {t('date-range.no-matches')}
+    </div>
   );
 }
 

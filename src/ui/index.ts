@@ -6,6 +6,7 @@ export {
 export { ArrayFieldEditor, type ArrayFieldEditorProps } from './ArrayFieldEditor';
 export { SearchInput, type SearchInputProps } from './SearchInput';
 export { HighlightedText, type HighlightedTextProps } from './HighlightedText';
+export { DateRangeFilter, type DateRangeFilterProps } from './DateRangeFilter';
 export {
   Modal,
   ModalHeader,

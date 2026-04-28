@@ -48,6 +48,11 @@
     "prev-match": "Previous match",
     "no-matches": "No matches for \"{{query}}\"."
   },
+  "date-range": {
+    "from": "From",
+    "to": "To",
+    "aria-label": "Filter by date range"
+  },
   "actions": {
     "add": "New observation",
     "edit": "Edit",

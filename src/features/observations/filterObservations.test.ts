@@ -131,6 +131,44 @@ describe('filterObservations', () => {
     expect(result.totalCount).toBe(1);
   });
 
+  it('respects an active date range alone (no query)', () => {
+    const groups = [
+      group(
+        'Schulter',
+        { id: 'a', fact: 'old', createdAt: Date.parse('2024-01-15T12:00:00Z') },
+        { id: 'b', fact: 'mid', createdAt: Date.parse('2024-06-15T12:00:00Z') },
+        { id: 'c', fact: 'new', createdAt: Date.parse('2024-12-15T12:00:00Z') },
+      ),
+    ];
+    const result = filterObservations(groups, {
+      dateRange: { from: '2024-06-01', to: '2024-06-30' },
+    });
+    expect(result.matchCount).toBe(1);
+    expect(result.groups[0]?.observations[0]?.id).toBe('b');
+  });
+
+  it('combines query AND date range', () => {
+    const groups = [
+      group(
+        'Schulter',
+        { id: 'a', fact: 'schmerz', createdAt: Date.parse('2024-01-15T12:00:00Z') },
+        { id: 'b', fact: 'schmerz', createdAt: Date.parse('2024-06-15T12:00:00Z') },
+        { id: 'c', fact: 'andere', createdAt: Date.parse('2024-06-15T12:00:00Z') },
+      ),
+    ];
+    const result = filterObservations(groups, {
+      query: 'schmerz',
+      dateRange: { from: '2024-06-01', to: '2024-06-30' },
+    });
+    expect(result.matchCount).toBe(1);
+  });
+
+  it('preserves the legacy string-only call shape', () => {
+    const groups = [group('Schulter', { fact: 'schmerz' })];
+    expect(filterObservations(groups, 'schmerz').matchCount).toBe(1);
+    expect(filterObservations(groups, '').matchCount).toBe(1);
+  });
+
   it('handles 100+ observations without breaking', () => {
     const observations: Partial<Observation>[] = Array.from({ length: 150 }, (_, i) => ({
       fact: i % 3 === 0 ? 'gesucht' : 'andere',

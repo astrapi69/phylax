@@ -48,6 +48,11 @@
     "prev-match": "Vorheriger Treffer",
     "no-matches": "Keine Treffer für „{{query}}\"."
   },
+  "date-range": {
+    "from": "Von",
+    "to": "Bis",
+    "aria-label": "Zeitraum filtern"
+  },
   "actions": {
     "add": "Neue Beobachtung",
     "edit": "Bearbeiten",
