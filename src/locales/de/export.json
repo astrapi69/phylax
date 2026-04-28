@@ -28,6 +28,23 @@
     "label": "Themen einschränken",
     "hint": "Alle Themen werden exportiert, wenn keines abgewählt ist."
   },
+  "appendix": {
+    "toggle": {
+      "label": "Verlinkte Dokumente als Anhang einschließen",
+      "hint": "Alle verlinkten Dokumente werden aufgeführt, unabhängig vom Datums- oder Themenfilter."
+    },
+    "unnamed": "(Datei ohne Name)",
+    "mime": {
+      "pdf": "PDF",
+      "image": "Bild",
+      "other": "Dokument"
+    },
+    "link": {
+      "observation": "verlinkt mit Beobachtung „{{theme}}\"",
+      "lab-value": "verlinkt mit Laborwert {{parameter}} vom {{date}}",
+      "unknown": "unbekannte Verknüpfung"
+    }
+  },
   "pdf": {
     "metadata": {
       "title": "Phylax Gesundheits-Profil von {{name}}"
@@ -42,7 +59,8 @@
       "lab-values": "Laborwerte",
       "observations": "Beobachtungen",
       "supplements": "Supplemente",
-      "open-points": "Offene Punkte"
+      "open-points": "Offene Punkte",
+      "appendix": "Anhang: Verlinkte Dokumente"
     },
     "field": {
       "birth-date": "Geburtsdatum",

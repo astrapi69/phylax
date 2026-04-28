@@ -1,6 +1,7 @@
 import type { TFunction } from 'i18next';
 import type { jsPDF as JsPdfType } from 'jspdf';
 import type {
+  Document,
   LabReport,
   LabValue,
   Observation,
@@ -9,6 +10,12 @@ import type {
   Supplement,
 } from '../../domain';
 import { getDisplayName } from '../../domain';
+import {
+  classifyMime,
+  formatBytes,
+  pickLinkedDocuments,
+  resolveLinkTargets,
+} from './appendix';
 import type { ExportOptions } from './exportOptions';
 import { stripMarkdown } from './markdownStripper';
 
@@ -60,6 +67,18 @@ export interface PdfExportInput {
    * consistency.
    */
   themes?: ExportOptions['themes'];
+  /**
+   * Documents available for the X-05 linked-documents appendix. Always
+   * supplied (eager load in `useExportData`); the `includeLinkedDocuments`
+   * flag controls whether the appendix renders.
+   */
+  documents?: readonly Document[];
+  /**
+   * X-05 opt-in. When true, the appendix renders at the end of the
+   * document with one bullet per linked document. Independent of
+   * `dateRange` and `themes` filters by design (see appendix.ts).
+   */
+  includeLinkedDocuments?: boolean;
   /** Override for tests; defaults to `new Date()`. */
   now?: Date;
 }
@@ -114,6 +133,8 @@ function generate(
     locale,
     dateRange,
     themes,
+    documents,
+    includeLinkedDocuments,
   } = input;
   // X-03 date-range filter + X-04 theme filter. Supplements and open
   // points have no theme/date-comparable field; both filters skip them.
@@ -170,7 +191,21 @@ function generate(
     y = renderOpenPoints(doc, y, openPoints, t);
   }
 
-  // 7. Footer on every page (after total page count is known).
+  // 7. Section heading key reused: `pdf.section.appendix`.
+  // 7. Appendix (X-05): linked documents. Independent of dateRange +
+  // themes filters; rendered when the user opts in via
+  // `includeLinkedDocuments` and at least one linked document exists.
+  if (includeLinkedDocuments && documents && documents.length > 0) {
+    const linked = pickLinkedDocuments(documents);
+    if (linked.length > 0) {
+      y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY * 4);
+      // Pass the unfiltered observation/labValue arrays so link-target
+      // resolution still works when the body filters excluded them.
+      y = renderAppendix(doc, y, linked, rawObservations, labValues, rawLabReports, t);
+    }
+  }
+
+  // 8. Footer on every page (after total page count is known).
   renderFooters(doc, t, locale, now);
 
   return doc.output('blob');
@@ -410,6 +445,70 @@ function renderOpenPoints(
     y += 1;
   }
   return y;
+}
+
+function renderAppendix(
+  doc: JsPdfDoc,
+  yIn: number,
+  linked: readonly Document[],
+  observations: readonly Observation[],
+  labValues: readonly LabValue[],
+  labReports: readonly LabReport[],
+  t: TFunction<'export'>,
+): number {
+  let y = sectionHeading(doc, yIn, t('pdf.section.appendix'));
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(FONT_BODY);
+  for (const docMeta of linked) {
+    const filename = docMeta.filename || t('appendix.unnamed');
+    const size = formatBytes(docMeta.sizeBytes);
+    const mimeLabel = pdfMimeLabel(docMeta.mimeType, t);
+    const targetText = pdfRenderLinkTargets(docMeta, observations, labValues, labReports, t);
+    const headline = `- ${filename} (${size}, ${mimeLabel})${targetText ? ' - ' + targetText : ''}`;
+    const wrapped = doc.splitTextToSize(headline, CONTENT_WIDTH_MM);
+    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * wrapped.length);
+    doc.text(wrapped, MARGIN_MM, y);
+    y += LINE_HEIGHT_BODY * wrapped.length;
+    if (docMeta.description && docMeta.description.trim() !== '') {
+      const desc = doc.splitTextToSize(`  ${stripMarkdown(docMeta.description)}`, CONTENT_WIDTH_MM);
+      y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * desc.length);
+      doc.text(desc, MARGIN_MM, y);
+      y += LINE_HEIGHT_BODY * desc.length;
+    }
+  }
+  return y + LINE_HEIGHT_BODY;
+}
+
+function pdfMimeLabel(mimeType: string, t: TFunction<'export'>): string {
+  switch (classifyMime(mimeType)) {
+    case 'pdf':
+      return t('appendix.mime.pdf');
+    case 'image':
+      return t('appendix.mime.image');
+    default:
+      return t('appendix.mime.other');
+  }
+}
+
+function pdfRenderLinkTargets(
+  docMeta: Document,
+  observations: readonly Observation[],
+  labValues: readonly LabValue[],
+  labReports: readonly LabReport[],
+  t: TFunction<'export'>,
+): string {
+  const targets = resolveLinkTargets(docMeta, observations, labValues, labReports);
+  return targets
+    .map((tgt) => {
+      if (tgt.kind === 'observation') {
+        return t('appendix.link.observation', { theme: tgt.theme });
+      }
+      if (tgt.kind === 'lab-value') {
+        return t('appendix.link.lab-value', { parameter: tgt.parameter, date: tgt.date });
+      }
+      return t('appendix.link.unknown');
+    })
+    .join(' · ');
 }
 
 function renderFooters(

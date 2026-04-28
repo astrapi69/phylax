@@ -7,8 +7,16 @@ import type {
   OpenPoint,
   TimelineEntry,
   SupplementCategory,
+  Document,
 } from '../../domain';
 import { getDisplayName } from '../../domain';
+import {
+  classifyMime,
+  formatBytes,
+  pickLinkedDocuments,
+  resolveLinkTargets,
+  type LinkTarget,
+} from './appendix';
 import type { ExportOptions } from './exportOptions';
 
 /**
@@ -35,6 +43,7 @@ export function exportProfileAsMarkdown(
   openPoints: readonly OpenPoint[],
   timelineEntries: readonly TimelineEntry[],
   options: ExportOptions = {},
+  documents: readonly Document[] = [],
 ): string {
   const { baseData, warningSigns, externalReferences, version, lastUpdateReason } = profile;
 
@@ -81,6 +90,18 @@ export function exportProfileAsMarkdown(
   if (timelineBlock) sections.push(timelineBlock);
   const openBlock = buildOffenePunkte(openPoints);
   if (openBlock) sections.push(openBlock);
+  // X-05 appendix: independent of dateRange + themes filters by design.
+  // Empty selection (no linked documents OR option not set) skips
+  // entirely so opt-in is never visually punishing.
+  if (options.includeLinkedDocuments) {
+    const appendix = buildVerlinkteDokumenteAppendix(
+      documents,
+      observations,
+      labValues,
+      labReports,
+    );
+    if (appendix) sections.push(appendix);
+  }
   sections.push(buildFooter(version, lastUpdateReason));
 
   return sections.join('\n\n') + '\n';
@@ -265,6 +286,58 @@ function buildOffenePunkte(points: readonly OpenPoint[]): string | null {
     }
   }
   return lines.join('\n');
+}
+
+function buildVerlinkteDokumenteAppendix(
+  documents: readonly Document[],
+  observations: readonly Observation[],
+  labValues: readonly LabValue[],
+  labReports: readonly LabReport[],
+): string {
+  const linked = pickLinkedDocuments(documents);
+  if (linked.length === 0) return '';
+  const lines = ['## Anhang: Verlinkte Dokumente', ''];
+  for (const doc of linked) {
+    const filename = doc.filename || '(Datei ohne Name)';
+    const size = formatBytes(doc.sizeBytes);
+    const mimeLabel = mimeKindToGerman(doc.mimeType);
+    const targetText = renderLinkTargetsGerman(doc, observations, labValues, labReports);
+    lines.push(`- **${filename}** (${size}, ${mimeLabel})${targetText}`);
+    if (doc.description && doc.description.trim() !== '') {
+      lines.push(`  ${doc.description.trim()}`);
+    }
+  }
+  return lines.join('\n');
+}
+
+function mimeKindToGerman(mimeType: string): string {
+  switch (classifyMime(mimeType)) {
+    case 'pdf':
+      return 'PDF';
+    case 'image':
+      return 'Bild';
+    default:
+      return 'Dokument';
+  }
+}
+
+function renderLinkTargetsGerman(
+  doc: Document,
+  observations: readonly Observation[],
+  labValues: readonly LabValue[],
+  labReports: readonly LabReport[],
+): string {
+  const targets = resolveLinkTargets(doc, observations, labValues, labReports);
+  if (targets.length === 0) return '';
+  const parts = targets.map((t: LinkTarget) => {
+    if (t.kind === 'observation') return `verlinkt mit Beobachtung „${t.theme}"`;
+    if (t.kind === 'lab-value') {
+      const dateSuffix = t.date ? ` vom ${t.date}` : '';
+      return `verlinkt mit Laborwert ${t.parameter}${dateSuffix}`;
+    }
+    return 'unbekannte Verknüpfung';
+  });
+  return ` — ${parts.join(' · ')}`;
 }
 
 function buildFooter(version: string, lastUpdateReason: string | undefined): string {

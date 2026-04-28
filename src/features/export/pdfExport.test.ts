@@ -85,6 +85,52 @@ describe('exportProfileAsPdf', () => {
     expect(blob.size).toBeGreaterThan(0);
   });
 
+  it('renders the linked-documents appendix when includeLinkedDocuments is set', async () => {
+    const blob = await exportProfileAsPdf({
+      profile: makeProfile(),
+      observations: [makeObservation({ id: 'obs1', theme: 'Schulter' })],
+      labReports: [],
+      labValues: [],
+      supplements: [],
+      openPoints: [],
+      documents: [
+        {
+          id: 'd1',
+          profileId: 'p1',
+          createdAt: 0,
+          updatedAt: 0,
+          filename: 'befund.pdf',
+          mimeType: 'application/pdf',
+          sizeBytes: 200_000,
+          linkedObservationId: 'obs1',
+        },
+      ],
+      includeLinkedDocuments: true,
+      t: tFake,
+      locale: 'de',
+      now: new Date('2026-04-28T12:00:00Z'),
+    });
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it('skips the appendix entirely when no linked documents exist', async () => {
+    const blob = await exportProfileAsPdf({
+      profile: makeProfile(),
+      observations: [],
+      labReports: [],
+      labValues: [],
+      supplements: [],
+      openPoints: [],
+      documents: [],
+      includeLinkedDocuments: true,
+      t: tFake,
+      locale: 'de',
+      now: new Date('2026-04-28T12:00:00Z'),
+    });
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
   it('honors the themes filter on observations', async () => {
     const blob = await exportProfileAsPdf({
       profile: makeProfile(),

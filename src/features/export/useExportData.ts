@@ -7,6 +7,7 @@ import type {
   Supplement,
   OpenPoint,
   TimelineEntry,
+  Document,
 } from '../../domain';
 import {
   ProfileRepository,
@@ -16,6 +17,7 @@ import {
   SupplementRepository,
   OpenPointRepository,
   TimelineEntryRepository,
+  DocumentRepository,
 } from '../../db/repositories';
 
 export interface ExportData {
@@ -26,6 +28,8 @@ export interface ExportData {
   supplements: Supplement[];
   openPoints: OpenPoint[];
   timelineEntries: TimelineEntry[];
+  /** Document metadata (no blob content) for the X-05 appendix. */
+  documents: Document[];
 }
 
 export type LoadExportDataResult =
@@ -56,13 +60,14 @@ export function useExportData(): UseExportDataHook {
       if (!profile) return { kind: 'no-profile' };
 
       const labValueRepo = new LabValueRepository();
-      const [observations, labReports, supplements, openPoints, timelineEntries] =
+      const [observations, labReports, supplements, openPoints, timelineEntries, documents] =
         await Promise.all([
           new ObservationRepository().listByProfile(profile.id),
           new LabReportRepository(labValueRepo).listByProfileDateDescending(profile.id),
           new SupplementRepository().listByProfile(profile.id),
           new OpenPointRepository().listByProfile(profile.id),
           new TimelineEntryRepository().listByProfile(profile.id),
+          new DocumentRepository().listByProfile(profile.id),
         ]);
 
       const labValues = (
@@ -79,6 +84,7 @@ export function useExportData(): UseExportDataHook {
           supplements,
           openPoints,
           timelineEntries,
+          documents,
         },
       };
     } catch (err) {

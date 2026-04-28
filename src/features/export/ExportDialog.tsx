@@ -43,6 +43,10 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   // diverging would create a per-format surprise.
   const { themes: availableThemes } = useThemes();
   const [excludedThemes, setExcludedThemes] = useState<readonly string[]>([]);
+  // X-05 linked-documents appendix opt-in. Independent of dateRange +
+  // themes filters by design (helper text under the checkbox, code
+  // comment in `appendix.ts`). Default: unchecked.
+  const [includeLinkedDocuments, setIncludeLinkedDocuments] = useState(false);
   const toggleTheme = (theme: string) => {
     setExcludedThemes((prev) =>
       prev.includes(theme) ? prev.filter((t) => t !== theme) : [...prev, theme],
@@ -82,8 +86,18 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     ) {
       opts.themes = selectedThemes;
     }
+    if (includeLinkedDocuments) {
+      opts.includeLinkedDocuments = true;
+    }
     return opts;
-  }, [fromIso, toIso, availableThemes, excludedThemes, selectedThemes]);
+  }, [
+    fromIso,
+    toIso,
+    availableThemes,
+    excludedThemes,
+    selectedThemes,
+    includeLinkedDocuments,
+  ]);
 
   useEffect(() => {
     if (open) {
@@ -147,6 +161,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
       supplements,
       openPoints,
       timelineEntries,
+      documents,
     } = result.data;
     const markdown = exportProfileAsMarkdown(
       profile,
@@ -157,6 +172,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
       openPoints,
       timelineEntries,
       exportOptions,
+      documents,
     );
     const filename = generateMarkdownFilename();
     triggerDownload(markdown, filename, 'text/markdown;charset=utf-8');
@@ -184,7 +200,15 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     }
     try {
       const { exportProfileAsPdf } = await import('./pdfExport');
-      const { profile, observations, labReports, labValues, supplements, openPoints } = result.data;
+      const {
+        profile,
+        observations,
+        labReports,
+        labValues,
+        supplements,
+        openPoints,
+        documents,
+      } = result.data;
       const blob = await exportProfileAsPdf({
         profile,
         observations,
@@ -192,10 +216,12 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         labValues,
         supplements,
         openPoints,
+        documents,
         t,
         locale: i18n.language,
         dateRange: exportOptions.dateRange,
         themes: exportOptions.themes,
+        includeLinkedDocuments: exportOptions.includeLinkedDocuments,
       });
       triggerDownload(blob, generatePdfFilename(), 'application/pdf');
       setStatus({ kind: 'idle' });
@@ -280,6 +306,25 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
               </div>
             </fieldset>
           )}
+
+          <label
+            data-testid="export-appendix-toggle"
+            className="flex min-h-[44px] cursor-pointer items-start gap-2 rounded-sm px-1 py-1 text-sm text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800"
+          >
+            <input
+              type="checkbox"
+              checked={includeLinkedDocuments}
+              onChange={(e) => setIncludeLinkedDocuments(e.target.checked)}
+              data-testid="export-appendix-checkbox"
+              className="mt-0.5 h-4 w-4"
+            />
+            <span className="flex flex-col">
+              <span>{t('appendix.toggle.label')}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {t('appendix.toggle.hint')}
+              </span>
+            </span>
+          </label>
 
           <button
             type="button"

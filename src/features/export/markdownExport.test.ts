@@ -7,6 +7,7 @@ import type {
   Supplement,
   OpenPoint,
   TimelineEntry,
+  Document,
 } from '../../domain';
 import { parseProfile } from '../profile-import/parser/parseProfile';
 import { exportProfileAsMarkdown } from './markdownExport';
@@ -482,5 +483,122 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).toContain('- Akute Brustschmerzen');
     expect(md).toContain('## 9. Externe Referenzen');
     expect(md).toContain('- https://example.com/befund');
+  });
+
+  describe('linked-documents appendix (X-05)', () => {
+    function makeDoc(overrides: Partial<Document> = {}): Document {
+      return {
+        id: 'd1',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        filename: 'befund.pdf',
+        mimeType: 'application/pdf',
+        sizeBytes: 200_000,
+        ...overrides,
+      };
+    }
+
+    it('omits the appendix when the option is not set', () => {
+      const profile = makeProfile();
+      const md = exportProfileAsMarkdown(
+        profile,
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        {},
+        [makeDoc({ linkedObservationId: 'obs-Schulter' })],
+      );
+      expect(md).not.toContain('## Anhang');
+    });
+
+    it('renders the appendix with linked documents only when option is set', () => {
+      const profile = makeProfile();
+      const obs = makeObservation('Schulter', { id: 'obs-Schulter' });
+      const docs: Document[] = [
+        makeDoc({
+          id: 'd1',
+          filename: 'befund.pdf',
+          linkedObservationId: 'obs-Schulter',
+          sizeBytes: 524_288,
+        }),
+        makeDoc({ id: 'd2', filename: 'unlinked.pdf' }),
+      ];
+      const md = exportProfileAsMarkdown(
+        profile,
+        [obs],
+        [],
+        [],
+        [],
+        [],
+        [],
+        { includeLinkedDocuments: true },
+        docs,
+      );
+      expect(md).toContain('## Anhang: Verlinkte Dokumente');
+      expect(md).toContain('**befund.pdf** (512.0 KB, PDF)');
+      expect(md).toContain('verlinkt mit Beobachtung „Schulter"');
+      expect(md).not.toContain('unlinked.pdf');
+    });
+
+    it('renders fallback for stale links', () => {
+      const profile = makeProfile();
+      const md = exportProfileAsMarkdown(
+        profile,
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        { includeLinkedDocuments: true },
+        [makeDoc({ linkedObservationId: 'gone' })],
+      );
+      expect(md).toContain('unbekannte Verknüpfung');
+    });
+
+    it('appendix is independent of dateRange + themes filters', () => {
+      const profile = makeProfile();
+      const obs = makeObservation('Schulter', { id: 'obs-Schulter' });
+      const docs: Document[] = [makeDoc({ linkedObservationId: 'obs-Schulter' })];
+      const md = exportProfileAsMarkdown(
+        profile,
+        [obs],
+        [],
+        [],
+        [],
+        [],
+        [],
+        {
+          includeLinkedDocuments: true,
+          dateRange: { from: new Date('2099-01-01'), to: new Date('2099-12-31') },
+          themes: ['Knie'],
+        },
+        docs,
+      );
+      // Body Beobachtungen filtered out, but appendix still has the doc.
+      expect(md).toContain('## Anhang: Verlinkte Dokumente');
+      expect(md).toContain('verlinkt mit Beobachtung „Schulter"');
+    });
+
+    it('renders description on a follow-up line', () => {
+      const profile = makeProfile();
+      const obs = makeObservation('Schulter', { id: 'obs-Schulter' });
+      const md = exportProfileAsMarkdown(
+        profile,
+        [obs],
+        [],
+        [],
+        [],
+        [],
+        [],
+        { includeLinkedDocuments: true },
+        [makeDoc({ linkedObservationId: 'obs-Schulter', description: 'MRT vom 2026' })],
+      );
+      expect(md).toContain('MRT vom 2026');
+    });
   });
 });

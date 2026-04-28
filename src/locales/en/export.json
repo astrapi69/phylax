@@ -28,6 +28,23 @@
     "label": "Limit themes",
     "hint": "All themes are exported when none are unchecked."
   },
+  "appendix": {
+    "toggle": {
+      "label": "Include linked documents as appendix",
+      "hint": "All linked documents are listed regardless of date or theme filter."
+    },
+    "unnamed": "(unnamed file)",
+    "mime": {
+      "pdf": "PDF",
+      "image": "Image",
+      "other": "Document"
+    },
+    "link": {
+      "observation": "linked to observation \"{{theme}}\"",
+      "lab-value": "linked to lab value {{parameter}} from {{date}}",
+      "unknown": "unknown link"
+    }
+  },
   "pdf": {
     "metadata": {
       "title": "Phylax health profile of {{name}}"
@@ -42,7 +59,8 @@
       "lab-values": "Lab values",
       "observations": "Observations",
       "supplements": "Supplements",
-      "open-points": "Open points"
+      "open-points": "Open points",
+      "appendix": "Appendix: Linked documents"
     },
     "field": {
       "birth-date": "Date of birth",

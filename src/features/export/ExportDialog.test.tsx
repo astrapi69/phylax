@@ -192,4 +192,37 @@ describe('ExportDialog', () => {
       await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
     });
   });
+
+  describe('linked-documents appendix toggle (X-05)', () => {
+    it('renders the appendix checkbox unchecked by default', async () => {
+      await seedProfile();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-markdown-button')).toBeInTheDocument());
+      const checkbox = screen.getByTestId('export-appendix-checkbox') as HTMLInputElement;
+      expect(checkbox.checked).toBe(false);
+    });
+
+    it('toggling the checkbox flips the include-linked-documents state', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument());
+      const checkbox = screen.getByTestId('export-appendix-checkbox') as HTMLInputElement;
+      await user.click(checkbox);
+      expect(checkbox.checked).toBe(true);
+      await user.click(checkbox);
+      expect(checkbox.checked).toBe(false);
+    });
+
+    it('export still works when the checkbox is on (no documents present)', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument());
+
+      await user.click(screen.getByTestId('export-appendix-checkbox'));
+      await user.click(screen.getByTestId('export-markdown-button'));
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
+    });
+  });
 });
