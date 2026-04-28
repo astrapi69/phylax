@@ -24,6 +24,10 @@
     "to": "To",
     "aria-label": "Filter by date range"
   },
+  "themes": {
+    "label": "Limit themes",
+    "hint": "All themes are exported when none are unchecked."
+  },
   "pdf": {
     "metadata": {
       "title": "Phylax health profile of {{name}}"

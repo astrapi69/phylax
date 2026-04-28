@@ -5,7 +5,7 @@ import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
-import { ProfileRepository } from '../../db/repositories';
+import { ObservationRepository, ProfileRepository } from '../../db/repositories';
 import { ExportDialog } from './ExportDialog';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -137,6 +137,59 @@ describe('ExportDialog', () => {
       await waitFor(() => {
         expect(URL.createObjectURL).toHaveBeenCalledOnce();
       });
+    });
+  });
+
+  describe('themes filter (X-04)', () => {
+    it('hides the theme filter section when the profile has no observations', async () => {
+      await seedProfile();
+      vi.spyOn(ObservationRepository.prototype, 'listThemes').mockResolvedValue([]);
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-markdown-button')).toBeInTheDocument());
+      expect(screen.queryByTestId('export-themes-filter')).not.toBeInTheDocument();
+    });
+
+    it('renders a checkbox for each available theme, all checked by default', async () => {
+      await seedProfile();
+      vi.spyOn(ObservationRepository.prototype, 'listThemes').mockResolvedValue([
+        'Schulter',
+        'Knie',
+      ]);
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-themes-filter')).toBeInTheDocument());
+      const schulter = screen.getByTestId('export-themes-checkbox-Schulter') as HTMLInputElement;
+      const knie = screen.getByTestId('export-themes-checkbox-Knie') as HTMLInputElement;
+      expect(schulter.checked).toBe(true);
+      expect(knie.checked).toBe(true);
+    });
+
+    it('toggling a checkbox unchecks the theme', async () => {
+      await seedProfile();
+      vi.spyOn(ObservationRepository.prototype, 'listThemes').mockResolvedValue(['Schulter']);
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-themes-filter')).toBeInTheDocument());
+
+      const checkbox = screen.getByTestId('export-themes-checkbox-Schulter') as HTMLInputElement;
+      expect(checkbox.checked).toBe(true);
+      await user.click(checkbox);
+      expect(checkbox.checked).toBe(false);
+    });
+
+    it('exports the selected subset when at least one theme is unchecked', async () => {
+      await seedProfile();
+      vi.spyOn(ObservationRepository.prototype, 'listThemes').mockResolvedValue([
+        'Schulter',
+        'Knie',
+      ]);
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('export-themes-filter')).toBeInTheDocument());
+
+      await user.click(screen.getByTestId('export-themes-checkbox-Knie'));
+      await user.click(screen.getByTestId('export-markdown-button'));
+
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
     });
   });
 });

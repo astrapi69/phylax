@@ -52,6 +52,14 @@ export interface PdfExportInput {
    * semantic from O-18.
    */
   dateRange?: ExportOptions['dateRange'];
+  /**
+   * Optional theme whitelist (X-04). When present and non-empty,
+   * observations whose `theme` is not in the list are excluded.
+   * Empty array OR `undefined` mean "no filter active" - matches the
+   * `filterByThemes` contract in markdownExport for cross-format
+   * consistency.
+   */
+  themes?: ExportOptions['themes'];
   /** Override for tests; defaults to `new Date()`. */
   now?: Date;
 }
@@ -105,10 +113,12 @@ function generate(
     t,
     locale,
     dateRange,
+    themes,
   } = input;
-  // X-03 date-range filter. Supplements + open points have no comparable
-  // date and are always included regardless of the bounds.
-  const observations = filterObservationsByDateRange(rawObservations, dateRange);
+  // X-03 date-range filter + X-04 theme filter. Supplements and open
+  // points have no theme/date-comparable field; both filters skip them.
+  const dateFiltered = filterObservationsByDateRange(rawObservations, dateRange);
+  const observations = filterObservationsByThemes(dateFiltered, themes);
   const labReports = filterLabReportsByDateRange(rawLabReports, dateRange);
   const now = input.now ?? new Date();
   const name = getDisplayName(profile);
@@ -466,6 +476,15 @@ function filterObservationsByDateRange(
     if (toMs !== undefined && o.createdAt > toMs) return false;
     return true;
   });
+}
+
+function filterObservationsByThemes(
+  observations: readonly Observation[],
+  themes: ExportOptions['themes'],
+): readonly Observation[] {
+  if (!themes || themes.length === 0) return observations;
+  const whitelist = new Set(themes);
+  return observations.filter((o) => whitelist.has(o.theme));
 }
 
 function filterLabReportsByDateRange(

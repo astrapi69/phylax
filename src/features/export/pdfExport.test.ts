@@ -85,6 +85,43 @@ describe('exportProfileAsPdf', () => {
     expect(blob.size).toBeGreaterThan(0);
   });
 
+  it('honors the themes filter on observations', async () => {
+    const blob = await exportProfileAsPdf({
+      profile: makeProfile(),
+      observations: [
+        makeObservation({ id: 'a', theme: 'Schulter', fact: 'A' }),
+        makeObservation({ id: 'b', theme: 'Knie', fact: 'B' }),
+        makeObservation({ id: 'c', theme: 'Schulter', fact: 'C' }),
+      ],
+      labReports: [],
+      labValues: [],
+      supplements: [],
+      openPoints: [],
+      t: tFake,
+      locale: 'de',
+      themes: ['Schulter'],
+      now: new Date('2026-04-28T12:00:00Z'),
+    });
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it('empty themes array is treated as no filter', async () => {
+    const blob = await exportProfileAsPdf({
+      profile: makeProfile(),
+      observations: [makeObservation({ id: 'a', theme: 'Schulter' })],
+      labReports: [],
+      labValues: [],
+      supplements: [],
+      openPoints: [],
+      t: tFake,
+      locale: 'de',
+      themes: [],
+      now: new Date('2026-04-28T12:00:00Z'),
+    });
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
   it('honors the date-range filter on lab reports and observations', async () => {
     const oldReport: LabReport = {
       id: 'r-old',

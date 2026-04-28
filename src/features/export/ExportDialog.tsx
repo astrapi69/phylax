@@ -6,6 +6,7 @@ import { triggerDownload } from './download';
 import type { ExportOptions } from './exportOptions';
 import { generateMarkdownFilename, generatePdfFilename } from './filenames';
 import { useExportData } from './useExportData';
+import { useThemes } from './useThemes';
 
 interface ExportDialogProps {
   open: boolean;
@@ -35,23 +36,54 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   // these on dialog close — no explicit clearing logic.
   const [fromIso, setFromIso] = useState('');
   const [toIso, setToIso] = useState('');
+  // X-04 theme filter. Themes load on dialog mount via `useThemes`
+  // (concern-separated from useExportData). Default state: all themes
+  // selected. Empty selection is treated as no-filter to match the
+  // existing `filterByThemes` contract across markdown and PDF -
+  // diverging would create a per-format surprise.
+  const { themes: availableThemes } = useThemes();
+  const [excludedThemes, setExcludedThemes] = useState<readonly string[]>([]);
+  const toggleTheme = (theme: string) => {
+    setExcludedThemes((prev) =>
+      prev.includes(theme) ? prev.filter((t) => t !== theme) : [...prev, theme],
+    );
+  };
+  const selectedThemes = useMemo(
+    () => availableThemes.filter((t) => !excludedThemes.includes(t)),
+    [availableThemes, excludedThemes],
+  );
+
   const exportOptions = useMemo<ExportOptions>(() => {
-    if (fromIso === '' && toIso === '') return {};
-    const dateRange: ExportOptions['dateRange'] = {};
-    if (fromIso !== '') {
-      // Lower bound: start-of-day UTC so a `from` date includes that
-      // entire day's observations / lab reports.
-      const ms = Date.parse(`${fromIso}T00:00:00.000Z`);
-      if (!Number.isNaN(ms)) dateRange.from = new Date(ms);
+    const opts: ExportOptions = {};
+    if (fromIso !== '' || toIso !== '') {
+      const dateRange: ExportOptions['dateRange'] = {};
+      if (fromIso !== '') {
+        // Lower bound: start-of-day UTC so a `from` date includes that
+        // entire day's observations / lab reports.
+        const ms = Date.parse(`${fromIso}T00:00:00.000Z`);
+        if (!Number.isNaN(ms)) dateRange.from = new Date(ms);
+      }
+      if (toIso !== '') {
+        // Upper bound: end-of-day UTC so a `to` date includes that day.
+        const ms = Date.parse(`${toIso}T23:59:59.999Z`);
+        if (!Number.isNaN(ms)) dateRange.to = new Date(ms);
+      }
+      if (dateRange.from !== undefined || dateRange.to !== undefined) {
+        opts.dateRange = dateRange;
+      }
     }
-    if (toIso !== '') {
-      // Upper bound: end-of-day UTC so a `to` date includes that day.
-      const ms = Date.parse(`${toIso}T23:59:59.999Z`);
-      if (!Number.isNaN(ms)) dateRange.to = new Date(ms);
+    // Pass `themes` only when user has actively excluded at least one.
+    // Per Q3 lock, empty selection is treated as no filter - so we only
+    // populate the option when the selection is a strict subset.
+    if (
+      availableThemes.length > 0 &&
+      excludedThemes.length > 0 &&
+      selectedThemes.length > 0
+    ) {
+      opts.themes = selectedThemes;
     }
-    if (dateRange.from === undefined && dateRange.to === undefined) return {};
-    return { dateRange };
-  }, [fromIso, toIso]);
+    return opts;
+  }, [fromIso, toIso, availableThemes, excludedThemes, selectedThemes]);
 
   useEffect(() => {
     if (open) {
@@ -163,6 +195,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         t,
         locale: i18n.language,
         dateRange: exportOptions.dateRange,
+        themes: exportOptions.themes,
       });
       triggerDownload(blob, generatePdfFilename(), 'application/pdf');
       setStatus({ kind: 'idle' });
@@ -213,6 +246,40 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             groupAriaLabel={t('date-range.aria-label')}
             testId="export-date-range"
           />
+
+          {availableThemes.length > 0 && (
+            <fieldset
+              data-testid="export-themes-filter"
+              className="m-0 flex flex-col gap-1.5 border-0 p-0"
+            >
+              <legend className="mb-1 text-xs font-semibold text-gray-700 dark:text-gray-300">
+                {t('themes.label')}
+              </legend>
+              <p className="mb-1 text-xs text-gray-600 dark:text-gray-400">
+                {t('themes.hint')}
+              </p>
+              <div className="flex flex-col gap-1">
+                {availableThemes.map((theme) => {
+                  const checked = !excludedThemes.includes(theme);
+                  return (
+                    <label
+                      key={theme}
+                      className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-sm px-1 py-1 text-sm text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleTheme(theme)}
+                        data-testid={`export-themes-checkbox-${theme}`}
+                        className="h-4 w-4"
+                      />
+                      <span className="break-words">{theme}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          )}
 
           <button
             type="button"
