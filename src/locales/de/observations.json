@@ -43,6 +43,7 @@
     "clear": "Suche zurücksetzen",
     "match-count": "{{count}} von {{total}} Beobachtungen",
     "match-count-treffer": "{{count}} von {{total}} Treffer",
+    "single-match": "1 Treffer",
     "next-match": "Nächster Treffer",
     "prev-match": "Vorheriger Treffer",
     "no-matches": "Keine Treffer für „{{query}}\"."

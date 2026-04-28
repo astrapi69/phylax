@@ -43,6 +43,7 @@
     "clear": "Clear search",
     "match-count": "{{count}} of {{total}} observations",
     "match-count-treffer": "{{count}} of {{total}} matches",
+    "single-match": "1 result",
     "next-match": "Next match",
     "prev-match": "Previous match",
     "no-matches": "No matches for \"{{query}}\"."

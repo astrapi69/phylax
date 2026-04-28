@@ -273,14 +273,39 @@ describe('ObservationsView', () => {
       await user.type(screen.getByRole('searchbox'), 'stechend');
 
       await waitFor(() => {
-        // P-19 changed the header counter from observation-count to
-        // match-count. "stechend" matches once (in s1.fact), so total
-        // matches is 1 and the active match is 1.
-        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 1 Treffer');
+        // P-19 + sticky-bar refinement: at exactly 1 match, the
+        // counter shows the singular "1 Treffer" form (no "von Y").
+        // Up/Down nav buttons are hidden under 2 matches.
+        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 Treffer');
       });
+      expect(screen.queryByTestId('search-prev')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('search-next')).not.toBeInTheDocument();
       // Knie group hidden, Schulter present but only the matching observation.
       expect(screen.queryByRole('heading', { level: 2, name: /Knie/ })).not.toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument();
+    });
+
+    it('renders Up/Down nav buttons only when match count is 2 or more', async () => {
+      await mockLoadedState([
+        {
+          theme: 'Schulter',
+          observations: [
+            makeObservation({ id: 's1', theme: 'Schulter', fact: 'schmerz schmerz' }),
+            makeObservation({ id: 's2', theme: 'Schulter', fact: 'schmerz' }),
+          ],
+        },
+      ]);
+      renderView();
+      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
+
+      const user = userEvent.setup();
+      await user.type(screen.getByRole('searchbox'), 'schmerz');
+
+      await waitFor(() => {
+        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 3 Treffer');
+      });
+      expect(screen.getByTestId('search-prev')).toBeInTheDocument();
+      expect(screen.getByTestId('search-next')).toBeInTheDocument();
     });
 
     it('shows the no-matches message when query has zero hits', async () => {

@@ -201,7 +201,17 @@ export function ObservationsView() {
         <EmptyState />
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Sticky search bar: stays in view while user scrolls the
+           *  filtered list so the input, counter and nav buttons remain
+           *  reachable. `top-14` clears the fixed AppShell Header
+           *  (h-14, z-40); `z-30` sits above scrolling content but
+           *  below modals (z-50+). Background matches the AppShell
+           *  body color so the sticky region reads as continuous with
+           *  the page surface but visibly opaque against scrolling
+           *  content beneath. `-mx-4 px-4` extends the opaque region
+           *  to the parent's padding so observations do not bleed
+           *  through the gutters. */}
+          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
             <SearchInput
               value={query}
               onChange={setQuery}
@@ -212,18 +222,22 @@ export function ObservationsView() {
               onShiftEnter={prev}
             />
             {isFiltering && totalMatches > 0 && (
+              <p
+                role="status"
+                aria-live="polite"
+                data-testid="search-match-count"
+                className="text-xs text-gray-600 dark:text-gray-400"
+              >
+                {totalMatches === 1
+                  ? t('search.single-match')
+                  : t('search.match-count-treffer', {
+                      count: activeIndex,
+                      total: totalMatches,
+                    })}
+              </p>
+            )}
+            {isFiltering && totalMatches >= 2 && (
               <>
-                <p
-                  role="status"
-                  aria-live="polite"
-                  data-testid="search-match-count"
-                  className="text-xs text-gray-600 dark:text-gray-400"
-                >
-                  {t('search.match-count-treffer', {
-                    count: activeIndex,
-                    total: totalMatches,
-                  })}
-                </p>
                 <NavButton
                   onClick={prev}
                   ariaLabel={t('search.prev-match')}
