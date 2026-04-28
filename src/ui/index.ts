@@ -5,6 +5,7 @@ export {
 } from './PasswordVisibilityToggle';
 export { ArrayFieldEditor, type ArrayFieldEditorProps } from './ArrayFieldEditor';
 export { SearchInput, type SearchInputProps } from './SearchInput';
+export { HighlightedText, type HighlightedTextProps } from './HighlightedText';
 export {
   Modal,
   ModalHeader,

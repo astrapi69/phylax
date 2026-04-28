@@ -33,6 +33,10 @@ export interface SearchInputProps {
   clearLabel: string;
   /** Optional test id passthrough; defaults to `search-input`. */
   testId?: string;
+  /** Called on Enter (no modifier). Used by P-19 for "next match". */
+  onEnter?: () => void;
+  /** Called on Shift+Enter. Used by P-19 for "previous match". */
+  onShiftEnter?: () => void;
 }
 
 export function SearchInput({
@@ -42,6 +46,8 @@ export function SearchInput({
   ariaLabel,
   clearLabel,
   testId = 'search-input',
+  onEnter,
+  onShiftEnter,
 }: SearchInputProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -56,9 +62,15 @@ export function SearchInput({
       if (event.key === 'Escape' && value !== '') {
         event.preventDefault();
         clear();
+        return;
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (event.shiftKey) onShiftEnter?.();
+        else onEnter?.();
       }
     },
-    [clear, value],
+    [clear, value, onEnter, onShiftEnter],
   );
 
   return (

@@ -6,6 +6,7 @@ import { AttachedDocumentsForObservation } from '../documents/AttachedDocumentsL
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 import { ObservationActions } from './ObservationActions';
 import type { UseObservationFormResult } from './useObservationForm';
+import type { MatchPlan } from './ObservationsView';
 
 interface ObservationCardProps {
   observation: Observation;
@@ -25,6 +26,16 @@ interface ObservationCardProps {
    * opt out.
    */
   form?: UseObservationFormResult;
+  /**
+   * P-19: active search query. When non-empty, fact and pattern
+   * fields render with `<mark>` highlights via MarkdownContent's
+   * rehype plugin.
+   */
+  query?: string;
+  /** P-19: per-field match plan keyed by `<observationId>:fact` / `:pattern`. */
+  matchPlan?: MatchPlan;
+  /** P-19: global match index of the currently active mark. */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -44,6 +55,9 @@ export function ObservationCard({
   defaultOpen = false,
   highlighted = false,
   form,
+  query,
+  matchPlan,
+  activeMatchIndex,
 }: ObservationCardProps) {
   const { t } = useTranslation('observations');
   const {
@@ -102,8 +116,20 @@ export function ObservationCard({
         </summary>
 
         <div className="space-y-4 border-t border-gray-200 px-3 pt-3 pb-4 dark:border-gray-700">
-          <Field label={t('card.field.fact')} content={fact} />
-          <Field label={t('card.field.pattern')} content={pattern} />
+          <Field
+            label={t('card.field.fact')}
+            content={fact}
+            highlightQuery={query}
+            matchInfo={matchPlan?.get(`${observation.id}:fact`)}
+            activeMatchIndex={activeMatchIndex}
+          />
+          <Field
+            label={t('card.field.pattern')}
+            content={pattern}
+            highlightQuery={query}
+            matchInfo={matchPlan?.get(`${observation.id}:pattern`)}
+            activeMatchIndex={activeMatchIndex}
+          />
           <Field label={t('card.field.self-regulation')} content={selfRegulation} />
           {medicalFinding && (
             <Field label={t('card.field.medical-finding')} content={medicalFinding} />
@@ -119,14 +145,37 @@ export function ObservationCard({
   );
 }
 
-function Field({ label, content }: { label: string; content: string }) {
+interface FieldMatchInfoProp {
+  ranges: { start: number; end: number }[];
+  startIndex: number;
+}
+
+function Field({
+  label,
+  content,
+  highlightQuery,
+  matchInfo,
+  activeMatchIndex,
+}: {
+  label: string;
+  content: string;
+  highlightQuery?: string;
+  matchInfo?: FieldMatchInfoProp;
+  activeMatchIndex?: number | null;
+}) {
   if (!content || content.trim() === '') return null;
   return (
     <div>
       <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
         {label}
       </h4>
-      <MarkdownContent>{content}</MarkdownContent>
+      <MarkdownContent
+        highlightQuery={highlightQuery}
+        startMatchIndex={matchInfo?.startIndex}
+        activeMatchIndex={activeMatchIndex}
+      >
+        {content}
+      </MarkdownContent>
     </div>
   );
 }

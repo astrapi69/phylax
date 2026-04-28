@@ -273,7 +273,10 @@ describe('ObservationsView', () => {
       await user.type(screen.getByRole('searchbox'), 'stechend');
 
       await waitFor(() => {
-        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 3 Beobachtungen');
+        // P-19 changed the header counter from observation-count to
+        // match-count. "stechend" matches once (in s1.fact), so total
+        // matches is 1 and the active match is 1.
+        expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 1 Treffer');
       });
       // Knie group hidden, Schulter present but only the matching observation.
       expect(screen.queryByRole('heading', { level: 2, name: /Knie/ })).not.toBeInTheDocument();

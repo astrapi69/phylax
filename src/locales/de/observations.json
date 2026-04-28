@@ -42,6 +42,9 @@
     "aria-label": "Beobachtungen durchsuchen",
     "clear": "Suche zurücksetzen",
     "match-count": "{{count}} von {{total}} Beobachtungen",
+    "match-count-treffer": "{{count}} von {{total}} Treffer",
+    "next-match": "Nächster Treffer",
+    "prev-match": "Vorheriger Treffer",
     "no-matches": "Keine Treffer für „{{query}}\"."
   },
   "actions": {

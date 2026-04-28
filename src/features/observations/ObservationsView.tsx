@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { findMatchRanges, splitQuery, type MatchRange } from '../../lib';
 import { SearchInput } from '../../ui';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
@@ -13,12 +14,25 @@ import { ObservationDeleteDialog } from './ObservationDeleteDialog';
 import { AddObservationButton } from './AddObservationButton';
 import { filterObservations } from './filterObservations';
 import { useSearchQueryUrl } from './useSearchQueryUrl';
+import { useActiveMatch } from './useActiveMatch';
 
 /** Window (ms) for treating an observation as "just committed" on mount. */
 const HIGHLIGHT_WINDOW_MS = 5000;
 
 /** How long the highlight stays visible before it fades back to normal. */
 const HIGHLIGHT_FADE_MS = 2000;
+
+/**
+ * Per-field match metadata used to assign a sequential global index
+ * to every visible mark. Keys: `theme:<theme>` for theme headings,
+ * `<observationId>:fact` and `<observationId>:pattern` for the two
+ * Markdown-rendered observation fields.
+ */
+interface FieldMatch {
+  ranges: MatchRange[];
+  startIndex: number;
+}
+export type MatchPlan = ReadonlyMap<string, FieldMatch>;
 
 /**
  * Read-only observations page at /observations.
@@ -33,6 +47,14 @@ const HIGHLIGHT_FADE_MS = 2000;
  * neutral after HIGHLIGHT_FADE_MS. This is the subtle "it landed"
  * signal after an AI commit: no auto-scroll, no banner, just a hint
  * the eye can follow.
+ *
+ * P-19 search: SearchInput at the top filters the visible list (O-17)
+ * and the rendered theme / fact / pattern text gets `<mark>` highlights
+ * around each match. A sequential global match index lets the user
+ * navigate via Up / Down buttons or Enter / Shift+Enter; the active
+ * match scrolls into view and gets a distinct orange/red highlight.
+ * Observation cards force open while a query is active so matches
+ * inside the disclosure body are visible.
  */
 export function ObservationsView() {
   const { t } = useTranslation('observations');
@@ -77,6 +99,68 @@ export function ObservationsView() {
     return ids;
   }, [state, highlightVisible]);
 
+  const filterResult = useMemo(() => {
+    if (state.kind !== 'loaded') return null;
+    return filterObservations(state.groups, deferredQuery);
+  }, [state, deferredQuery]);
+
+  const isFiltering = deferredQuery.trim() !== '';
+  const sections = useMemo(
+    () => (filterResult ? sortObservations(filterResult.groups, mode) : []),
+    [filterResult, mode],
+  );
+
+  // Build the per-field match plan in display order so each rendered
+  // mark gets a sequential 1-based global index. Total match count
+  // here drives the navigation counter; filter-level matchCount is
+  // observation count which we no longer surface in the header while
+  // P-19 navigation is active.
+  const { matchPlan, totalMatches } = useMemo(() => {
+    const plan = new Map<string, FieldMatch>();
+    if (!isFiltering) return { matchPlan: plan as MatchPlan, totalMatches: 0 };
+    const terms = splitQuery(deferredQuery);
+    if (terms.length === 0) return { matchPlan: plan as MatchPlan, totalMatches: 0 };
+    let cursor = 1;
+    for (const section of sections) {
+      for (const group of section.themeGroups) {
+        const themeRanges = findMatchRanges(group.theme, terms);
+        if (themeRanges.length > 0) {
+          plan.set(`theme:${group.theme}`, { ranges: themeRanges, startIndex: cursor });
+          cursor += themeRanges.length;
+        }
+        for (const obs of group.observations) {
+          const factRanges = findMatchRanges(obs.fact, terms);
+          if (factRanges.length > 0) {
+            plan.set(`${obs.id}:fact`, { ranges: factRanges, startIndex: cursor });
+            cursor += factRanges.length;
+          }
+          const patternRanges = findMatchRanges(obs.pattern, terms);
+          if (patternRanges.length > 0) {
+            plan.set(`${obs.id}:pattern`, { ranges: patternRanges, startIndex: cursor });
+            cursor += patternRanges.length;
+          }
+        }
+      }
+    }
+    return { matchPlan: plan as MatchPlan, totalMatches: cursor - 1 };
+  }, [sections, isFiltering, deferredQuery]);
+
+  const { activeIndex, scrollSignal, next, prev } = useActiveMatch(deferredQuery, totalMatches);
+
+  // When the user explicitly navigates (next / prev), scroll the now-
+  // active mark into view. The mark element carries data-match-index
+  // matching the activeIndex; if it is missing (e.g., source-level
+  // count over-counted because a match sat inside a Markdown syntax
+  // marker), the lookup returns null and we no-op silently.
+  useEffect(() => {
+    if (scrollSignal === 0) return;
+    if (activeIndex === 0) return;
+    const target = document.querySelector(`mark[data-match-index="${activeIndex}"]`);
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [scrollSignal, activeIndex]);
+
   if (state.kind === 'loading') {
     return (
       <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
@@ -101,9 +185,7 @@ export function ObservationsView() {
     );
   }
 
-  const filterResult = filterObservations(state.groups, deferredQuery);
-  const isFiltering = deferredQuery.trim() !== '';
-  const sections = sortObservations(filterResult.groups, mode);
+  if (!filterResult) return null;
 
   return (
     <article className="space-y-6">
@@ -126,19 +208,35 @@ export function ObservationsView() {
               placeholder={t('search.placeholder')}
               ariaLabel={t('search.aria-label')}
               clearLabel={t('search.clear')}
+              onEnter={next}
+              onShiftEnter={prev}
             />
-            {isFiltering && (
-              <p
-                role="status"
-                aria-live="polite"
-                data-testid="search-match-count"
-                className="text-xs text-gray-600 dark:text-gray-400"
-              >
-                {t('search.match-count', {
-                  count: filterResult.matchCount,
-                  total: filterResult.totalCount,
-                })}
-              </p>
+            {isFiltering && totalMatches > 0 && (
+              <>
+                <p
+                  role="status"
+                  aria-live="polite"
+                  data-testid="search-match-count"
+                  className="text-xs text-gray-600 dark:text-gray-400"
+                >
+                  {t('search.match-count-treffer', {
+                    count: activeIndex,
+                    total: totalMatches,
+                  })}
+                </p>
+                <NavButton
+                  onClick={prev}
+                  ariaLabel={t('search.prev-match')}
+                  testId="search-prev"
+                  iconRotation="up"
+                />
+                <NavButton
+                  onClick={next}
+                  ariaLabel={t('search.next-match')}
+                  testId="search-next"
+                  iconRotation="down"
+                />
+              </>
             )}
           </div>
 
@@ -152,6 +250,10 @@ export function ObservationsView() {
                   section={section}
                   highlightedIds={highlightedIds}
                   form={form}
+                  query={deferredQuery}
+                  matchPlan={matchPlan}
+                  activeMatchIndex={isFiltering ? activeIndex : null}
+                  forceOpen={isFiltering}
                 />
               ))}
             </div>
@@ -162,6 +264,40 @@ export function ObservationsView() {
       <ObservationForm form={form} />
       <ObservationDeleteDialog form={form} />
     </article>
+  );
+}
+
+function NavButton({
+  onClick,
+  ariaLabel,
+  testId,
+  iconRotation,
+}: {
+  onClick: () => void;
+  ariaLabel: string;
+  testId: string;
+  iconRotation: 'up' | 'down';
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      title={ariaLabel}
+      data-testid={testId}
+      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+    >
+      <svg
+        viewBox="0 0 16 16"
+        width="14"
+        height="14"
+        fill="currentColor"
+        aria-hidden="true"
+        style={{ transform: iconRotation === 'up' ? 'rotate(180deg)' : undefined }}
+      >
+        <path d="M3.204 5h9.592L8 10.481zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
+      </svg>
+    </button>
   );
 }
 
@@ -182,16 +318,22 @@ function Section({
   section,
   highlightedIds,
   form,
+  query,
+  matchPlan,
+  activeMatchIndex,
+  forceOpen,
 }: {
   section: ObservationSection;
   highlightedIds: ReadonlySet<string>;
   form: ReturnType<typeof useObservationForm>;
+  query: string;
+  matchPlan: MatchPlan;
+  activeMatchIndex: number | null;
+  forceOpen: boolean;
 }) {
   const { t } = useTranslation('observations');
   const hasLabel = section.label !== null;
   const headingText = section.label ? t(`section.${section.label}`) : '';
-  // Rendered as a styled <p>, not a heading, so the theme <h2>s stay
-  // the top-level content headings inside each section.
   return (
     <div className="space-y-8">
       {hasLabel && (
@@ -209,6 +351,10 @@ function Section({
           observations={group.observations}
           highlightedIds={highlightedIds}
           form={form}
+          query={query}
+          matchPlan={matchPlan}
+          activeMatchIndex={activeMatchIndex}
+          forceOpen={forceOpen}
         />
       ))}
     </div>

@@ -58,4 +58,72 @@ describe('MarkdownContent', () => {
     expect(wrapper?.className).toContain('prose');
     expect(wrapper?.className).toContain('custom-class');
   });
+
+  describe('search highlighting (P-19)', () => {
+    it('renders no marks when highlightQuery is empty', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="">stechender Schmerz</MarkdownContent>,
+      );
+      expect(container.querySelectorAll('mark')).toHaveLength(0);
+    });
+
+    it('wraps each occurrence of the query in a mark element', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="schmerz" startMatchIndex={1}>
+          Schmerz hier und Schmerz dort
+        </MarkdownContent>,
+      );
+      const marks = container.querySelectorAll('mark');
+      expect(marks).toHaveLength(2);
+      expect(marks[0]?.textContent).toBe('Schmerz');
+      expect(marks[1]?.textContent).toBe('Schmerz');
+    });
+
+    it('assigns sequential data-match-index starting at startMatchIndex', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="x" startMatchIndex={7}>
+          x x x
+        </MarkdownContent>,
+      );
+      const marks = container.querySelectorAll('mark');
+      expect(marks[0]?.getAttribute('data-match-index')).toBe('7');
+      expect(marks[1]?.getAttribute('data-match-index')).toBe('8');
+      expect(marks[2]?.getAttribute('data-match-index')).toBe('9');
+    });
+
+    it('marks the active index with data-active and aria-current', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="x" startMatchIndex={1} activeMatchIndex={2}>
+          x x x
+        </MarkdownContent>,
+      );
+      const marks = container.querySelectorAll('mark');
+      expect(marks[0]?.getAttribute('data-active')).toBeNull();
+      expect(marks[1]?.getAttribute('data-active')).toBe('true');
+      expect(marks[1]?.getAttribute('aria-current')).toBe('true');
+      expect(marks[2]?.getAttribute('data-active')).toBeNull();
+    });
+
+    it('preserves Markdown formatting (strong) around marks', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="wichtig" startMatchIndex={1}>
+          Ein **wichtiger** Hinweis
+        </MarkdownContent>,
+      );
+      const strong = container.querySelector('strong');
+      expect(strong).not.toBeNull();
+      const mark = strong?.querySelector('mark');
+      expect(mark?.textContent).toBe('wichtig');
+    });
+
+    it('is case- and diacritics-insensitive', () => {
+      const { container } = render(
+        <MarkdownContent highlightQuery="muller" startMatchIndex={1}>
+          Müller hier
+        </MarkdownContent>,
+      );
+      const mark = container.querySelector('mark');
+      expect(mark?.textContent).toBe('Müller');
+    });
+  });
 });
