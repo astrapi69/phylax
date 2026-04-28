@@ -324,6 +324,55 @@ describe('ObservationsView', () => {
       expect(screen.queryByRole('heading', { level: 2, name: /Schulter/ })).not.toBeInTheDocument();
     });
 
+    it('renders the date range filter when observations exist', async () => {
+      await mockLoadedState([
+        { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
+      ]);
+      renderView();
+      await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
+    });
+
+    it('filters by `?from=` URL param applied to createdAt', async () => {
+      const NOW = Date.now();
+      const TEN_DAYS = 10 * 24 * 60 * 60 * 1000;
+      const FAR_PAST = Date.parse('2020-01-01T12:00:00Z');
+      await mockLoadedState([
+        {
+          theme: 'Recent',
+          observations: [
+            makeObservation({ id: 'r1', theme: 'Recent', updatedAt: NOW, createdAt: NOW - TEN_DAYS }),
+          ],
+        },
+        {
+          theme: 'Old',
+          observations: [
+            makeObservation({ id: 'o1', theme: 'Old', updatedAt: FAR_PAST, createdAt: FAR_PAST }),
+          ],
+        },
+      ]);
+      render(
+        <MemoryRouter initialEntries={['/?from=2024-01-01']}>
+          <ObservationsView />
+        </MemoryRouter>,
+      );
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Recent/ })).toBeInTheDocument(),
+      );
+      expect(screen.queryByRole('heading', { level: 2, name: /Old/ })).not.toBeInTheDocument();
+    });
+
+    it('updates the URL when the user picks a date filter input', async () => {
+      await mockLoadedState([
+        { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
+      ]);
+      const user = userEvent.setup();
+      renderView();
+      await waitFor(() => expect(screen.getByTestId('date-range-filter-from')).toBeInTheDocument());
+      const fromInput = screen.getByTestId('date-range-filter-from') as HTMLInputElement;
+      await user.type(fromInput, '2024-01-01');
+      await waitFor(() => expect(fromInput.value).toBe('2024-01-01'));
+    });
+
     it('seeds the search input from a `?q=` URL param', async () => {
       await mockLoadedState([
         {

@@ -165,6 +165,102 @@ describe('LabValuesView', () => {
     expect(screen.getByTestId('lab-value-form-title')).toHaveTextContent('Neuer Wert');
   });
 
+  describe('date range filter (O-18)', () => {
+    function mockTwoReports() {
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+      vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([
+        {
+          id: 'lr1',
+          profileId: 'p1',
+          createdAt: 1,
+          updatedAt: 1,
+          reportDate: '2026-06-15',
+          categoryAssessments: {},
+        },
+        {
+          id: 'lr2',
+          profileId: 'p1',
+          createdAt: 2,
+          updatedAt: 2,
+          reportDate: '2024-01-01',
+          categoryAssessments: {},
+        },
+      ]);
+      vi.spyOn(LabValueRepository.prototype, 'listByReport').mockResolvedValue([]);
+    }
+
+    it('renders the date range filter when reports exist', async () => {
+      mockTwoReports();
+      renderView();
+      await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
+      expect(screen.getByTestId('date-range-filter-from')).toBeInTheDocument();
+      expect(screen.getByTestId('date-range-filter-to')).toBeInTheDocument();
+    });
+
+    it('does NOT render the date range filter when there are zero reports', async () => {
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+      vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
+
+      renderView();
+      await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte/)).toBeInTheDocument());
+      expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
+    });
+
+    it('filters reports by `?from=` URL param', async () => {
+      mockTwoReports();
+      render(
+        <MemoryRouter initialEntries={['/?from=2026-01-01']}>
+          <LabValuesView />
+        </MemoryRouter>,
+      );
+      await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
+      // Only the 2026 report passes the lower bound; the 2024 one is hidden.
+      const headings = screen.getAllByRole('heading', { level: 2 });
+      expect(headings).toHaveLength(1);
+      expect(headings[0]?.textContent).toMatch(/15\.06\.2026/);
+    });
+
+    it('filters reports by `?to=` URL param', async () => {
+      mockTwoReports();
+      render(
+        <MemoryRouter initialEntries={['/?to=2025-01-01']}>
+          <LabValuesView />
+        </MemoryRouter>,
+      );
+      await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
+      const headings = screen.getAllByRole('heading', { level: 2 });
+      expect(headings).toHaveLength(1);
+      expect(headings[0]?.textContent).toMatch(/01\.01\.2024/);
+    });
+
+    it('shows the no-matches state when the date range excludes every report', async () => {
+      mockTwoReports();
+      render(
+        <MemoryRouter initialEntries={['/?from=2030-01-01&to=2030-12-31']}>
+          <LabValuesView />
+        </MemoryRouter>,
+      );
+      await waitFor(() =>
+        expect(screen.getByTestId('lab-values-no-matches-in-range')).toBeInTheDocument(),
+      );
+      expect(screen.queryAllByRole('heading', { level: 2 })).toHaveLength(0);
+    });
+
+    it('updates the URL when the user picks a from date', async () => {
+      mockTwoReports();
+      const user = userEvent.setup();
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByTestId('date-range-filter-from')).toBeInTheDocument(),
+      );
+      const fromInput = screen.getByTestId('date-range-filter-from') as HTMLInputElement;
+      // jsdom does not implement showPicker; userEvent.type writes the
+      // value directly which fires the controlled onChange.
+      await user.type(fromInput, '2026-01-01');
+      await waitFor(() => expect(fromInput.value).toBe('2026-01-01'));
+    });
+  });
+
   it('renders multiple reports in order', async () => {
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
     vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([
