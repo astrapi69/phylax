@@ -18,7 +18,10 @@ test.describe('Navigation', () => {
 
     await page.getByRole('link', { name: 'Beobachtungen' }).click();
     await expect(page).toHaveURL(/\/observations/);
-    await expect(page.getByRole('heading', { name: 'Beobachtungen' })).toBeVisible();
+    // O-19 added an empty-state h2 ("Noch keine Beobachtungen") that
+    // also satisfies the substring-match name lookup, so pin to the
+    // page-level h1 explicitly.
+    await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
 
     await page.getByRole('link', { name: 'Laborwerte' }).click();
     await expect(page).toHaveURL(/\/lab-values/);
