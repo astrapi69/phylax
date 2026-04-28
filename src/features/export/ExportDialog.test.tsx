@@ -193,6 +193,28 @@ describe('ExportDialog', () => {
     });
   });
 
+  describe('CSV export (X-06)', () => {
+    it('renders the CSV format button', async () => {
+      await seedProfile();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() =>
+        expect(screen.getByTestId('export-csv-button')).toBeInTheDocument(),
+      );
+    });
+
+    it('clicking CSV triggers a download', async () => {
+      await seedProfile();
+      const onClose = vi.fn();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={onClose} />);
+
+      await user.click(screen.getByTestId('export-csv-button'));
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
+      expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
   describe('linked-documents appendix toggle (X-05)', () => {
     it('renders the appendix checkbox unchecked by default', async () => {
       await seedProfile();

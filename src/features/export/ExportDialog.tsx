@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateRangeFilter } from '../../ui';
+import { exportLabValuesAsCsv } from './csvExport';
 import { exportProfileAsMarkdown } from './markdownExport';
 import { triggerDownload } from './download';
 import type { ExportOptions } from './exportOptions';
-import { generateMarkdownFilename, generatePdfFilename } from './filenames';
+import { generateCsvFilename, generateMarkdownFilename, generatePdfFilename } from './filenames';
 import { useExportData } from './useExportData';
 import { useThemes } from './useThemes';
 
@@ -180,6 +181,37 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     onClose();
   }
 
+  async function handleCsvExport(): Promise<void> {
+    setStatus({ kind: 'working' });
+    const result = await loadExportData();
+    if (result.kind === 'no-profile') {
+      setStatus({ kind: 'error', message: t('error.no-profile') });
+      return;
+    }
+    if (result.kind === 'locked') {
+      setStatus({ kind: 'error', message: t('error.locked') });
+      return;
+    }
+    if (result.kind === 'error') {
+      setStatus({
+        kind: 'error',
+        message: t('error.load-failed', { detail: result.message }),
+      });
+      return;
+    }
+    const { labReports, labValues } = result.data;
+    const csv = exportLabValuesAsCsv({
+      labReports,
+      labValues,
+      t,
+      locale: i18n.language,
+      options: exportOptions,
+    });
+    triggerDownload(csv, generateCsvFilename(), 'text/csv;charset=utf-8');
+    setStatus({ kind: 'idle' });
+    onClose();
+  }
+
   async function handlePdfExport(): Promise<void> {
     setStatus({ kind: 'working' });
     const result = await loadExportData();
@@ -351,6 +383,20 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             <br />
             <span className="text-xs text-gray-600 dark:text-gray-400">
               {t('dialog.pdf.description')}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => void handleCsvExport()}
+            disabled={working}
+            data-testid="export-csv-button"
+            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="font-semibold">{t('dialog.csv.title')}</span>
+            <br />
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {t('dialog.csv.description')}
             </span>
           </button>
 

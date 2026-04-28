@@ -11,6 +11,10 @@
     "pdf": {
       "title": "PDF (.pdf)",
       "description": "Druckbares Profil für den Arztbesuch; Laborwerte als Tabelle."
+    },
+    "csv": {
+      "title": "CSV (.csv)",
+      "description": "Nur Laborwerte als Tabelle für Excel oder Datenanalyse."
     }
   },
   "error": {
@@ -27,6 +31,17 @@
   "themes": {
     "label": "Themen einschränken",
     "hint": "Alle Themen werden exportiert, wenn keines abgewählt ist."
+  },
+  "csv": {
+    "col": {
+      "date": "Datum",
+      "category": "Kategorie",
+      "parameter": "Parameter",
+      "result": "Ergebnis",
+      "unit": "Einheit",
+      "reference": "Referenz",
+      "assessment": "Bewertung"
+    }
   },
   "appendix": {
     "toggle": {

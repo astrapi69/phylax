@@ -11,6 +11,10 @@
     "pdf": {
       "title": "PDF (.pdf)",
       "description": "Printable profile for a doctor's visit; lab values as a table."
+    },
+    "csv": {
+      "title": "CSV (.csv)",
+      "description": "Lab values only, as a table for Excel or data analysis."
     }
   },
   "error": {
@@ -27,6 +31,17 @@
   "themes": {
     "label": "Limit themes",
     "hint": "All themes are exported when none are unchecked."
+  },
+  "csv": {
+    "col": {
+      "date": "Date",
+      "category": "Category",
+      "parameter": "Parameter",
+      "result": "Result",
+      "unit": "Unit",
+      "reference": "Reference",
+      "assessment": "Assessment"
+    }
   },
   "appendix": {
     "toggle": {
