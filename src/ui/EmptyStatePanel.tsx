@@ -49,7 +49,7 @@ export function EmptyStatePanel({
       </span>
       <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
       <div className="max-w-prose text-sm text-gray-700 dark:text-gray-300">{body}</div>
-      {cta && <div className="mt-1">{cta}</div>}
+      {cta && <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">{cta}</div>}
     </section>
   );
 }
