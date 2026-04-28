@@ -1,7 +1,10 @@
 {
-  "loading": "Loading timeline...",
+  "loading": {
+    "aria-label": "Loading timeline"
+  },
   "heading": "Timeline",
   "empty": {
+    "title": "No entries yet",
     "body": "No timeline entries recorded yet.",
     "cta": "Import a profile with timeline entries",
     "suffix": " to see them here."

@@ -78,7 +78,7 @@ describe('ObservationsView', () => {
   it('shows the empty state with an import link when no observations exist', async () => {
     await mockLoadedState([]);
     renderView();
-    await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
   });
@@ -188,7 +188,7 @@ describe('ObservationsView', () => {
     it('hides the sort toggle when there are no observations', async () => {
       await mockLoadedState([]);
       renderView();
-      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen/)).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
       expect(screen.queryByRole('combobox', { name: 'Sortierung' })).not.toBeInTheDocument();
     });
   });
@@ -238,7 +238,7 @@ describe('ObservationsView', () => {
     it('does NOT render the search input when there are zero observations', async () => {
       await mockLoadedState([]);
       renderView();
-      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen/)).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
     });
 

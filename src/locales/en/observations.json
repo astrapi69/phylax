@@ -1,11 +1,14 @@
 {
-  "loading": "Loading observations...",
+  "loading": {
+    "aria-label": "Loading observations"
+  },
   "heading": "Observations",
   "section": {
     "recent": "Recently updated",
     "all": "All themes"
   },
   "empty": {
+    "title": "No observations yet",
     "body": "No observations recorded yet.",
     "cta": "Import a profile",
     "suffix": " to record observations."

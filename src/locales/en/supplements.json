@@ -1,7 +1,10 @@
 {
-  "loading": "Loading supplements...",
+  "loading": {
+    "aria-label": "Loading supplements"
+  },
   "heading": "Supplements",
   "empty": {
+    "title": "No supplements yet",
     "body": "No supplements recorded yet.",
     "cta": "Import a profile with a supplement plan",
     "suffix": " to see them here."

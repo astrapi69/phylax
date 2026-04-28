@@ -1,6 +1,9 @@
 {
-  "loading": "Offene Punkte werden geladen...",
+  "loading": {
+    "aria-label": "Offene Punkte werden geladen"
+  },
   "empty": {
+    "title": "Noch keine offenen Punkte",
     "body": "Keine offenen Punkte erfasst.",
     "cta": "Importiere ein Profil mit offenen Punkten",
     "suffix": ", um sie hier zu sehen."

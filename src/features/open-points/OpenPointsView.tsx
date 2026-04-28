@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { EmptyStatePanel, ListSkeleton } from '../../ui';
 import { ContextGroup } from './ContextGroup';
 import { useOpenPoints } from './useOpenPoints';
 import { useOpenPointForm } from './useOpenPointForm';
@@ -21,11 +22,7 @@ export function OpenPointsView() {
   const form = useOpenPointForm({ onCommitted: refetch });
 
   if (state.kind === 'loading') {
-    return (
-      <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
-        {t('loading')}
-      </div>
-    );
+    return <ListSkeleton variant="card" count={4} ariaLabel={t('loading.aria-label')} />;
   }
 
   if (state.kind === 'error') {
@@ -87,17 +84,20 @@ export function OpenPointsView() {
 function EmptyState() {
   const { t } = useTranslation('open-points');
   return (
-    <div className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
-      <p>{t('empty.body')}</p>
-      <p className="mt-2">
-        <Link
-          to="/import"
-          className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-        >
-          {t('empty.cta')}
-        </Link>
-        {t('empty.suffix')}
-      </p>
-    </div>
+    <EmptyStatePanel
+      title={t('empty.title')}
+      body={t('empty.body')}
+      cta={
+        <p>
+          <Link
+            to="/import"
+            className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            {t('empty.cta')}
+          </Link>
+          {t('empty.suffix')}
+        </p>
+      }
+    />
   );
 }

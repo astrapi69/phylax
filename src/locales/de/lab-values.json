@@ -1,7 +1,10 @@
 {
-  "loading": "Laborwerte werden geladen...",
+  "loading": {
+    "aria-label": "Laborwerte werden geladen"
+  },
   "heading": "Laborwerte",
   "empty": {
+    "title": "Noch keine Laborwerte",
     "body": "Noch keine Laborwerte erfasst.",
     "cta": "Importiere ein Profil mit Blutwerten",
     "suffix": ", um sie hier zu sehen."

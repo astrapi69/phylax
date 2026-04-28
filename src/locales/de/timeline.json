@@ -1,7 +1,10 @@
 {
-  "loading": "Verlauf wird geladen...",
+  "loading": {
+    "aria-label": "Verlauf wird geladen"
+  },
   "heading": "Verlauf",
   "empty": {
+    "title": "Noch keine Einträge",
     "body": "Noch keine Verlaufseinträge erfasst.",
     "cta": "Importiere ein Profil mit Verlaufsnotizen",
     "suffix": ", um sie hier zu sehen."

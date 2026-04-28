@@ -90,7 +90,7 @@ describe('LabValuesView', () => {
     vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
 
     renderView();
-    await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument());
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
   });
@@ -202,7 +202,7 @@ describe('LabValuesView', () => {
       vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
 
       renderView();
-      await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte/)).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument());
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 

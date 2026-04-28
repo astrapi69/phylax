@@ -1,7 +1,10 @@
 {
-  "loading": "Loading lab values...",
+  "loading": {
+    "aria-label": "Loading lab values"
+  },
   "heading": "Lab values",
   "empty": {
+    "title": "No lab values yet",
     "body": "No lab values recorded yet.",
     "cta": "Import a profile with lab values",
     "suffix": " to see them here."

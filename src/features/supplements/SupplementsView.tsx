@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { EmptyStatePanel, ListSkeleton } from '../../ui';
 import { SupplementCategoryGroup } from './SupplementCategoryGroup';
 import { useSupplements } from './useSupplements';
 import { useSupplementForm } from './useSupplementForm';
@@ -22,11 +23,7 @@ export function SupplementsView() {
   const form = useSupplementForm({ onCommitted: refetch });
 
   if (state.kind === 'loading') {
-    return (
-      <div role="status" aria-live="polite" className="text-sm text-gray-600 dark:text-gray-400">
-        {t('loading')}
-      </div>
-    );
+    return <ListSkeleton variant="row" count={6} ariaLabel={t('loading.aria-label')} />;
   }
 
   if (state.kind === 'error') {
@@ -77,17 +74,20 @@ export function SupplementsView() {
 function EmptyState() {
   const { t } = useTranslation('supplements');
   return (
-    <div className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
-      <p>{t('empty.body')}</p>
-      <p className="mt-2">
-        <Link
-          to="/import"
-          className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-        >
-          {t('empty.cta')}
-        </Link>
-        {t('empty.suffix')}
-      </p>
-    </div>
+    <EmptyStatePanel
+      title={t('empty.title')}
+      body={t('empty.body')}
+      cta={
+        <p>
+          <Link
+            to="/import"
+            className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            {t('empty.cta')}
+          </Link>
+          {t('empty.suffix')}
+        </p>
+      }
+    />
   );
 }

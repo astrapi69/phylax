@@ -1,6 +1,9 @@
 {
-  "loading": "Loading open points...",
+  "loading": {
+    "aria-label": "Loading open points"
+  },
   "empty": {
+    "title": "No open points yet",
     "body": "No open points recorded.",
     "cta": "Import a profile with open points",
     "suffix": " to see them here."

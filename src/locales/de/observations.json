@@ -1,11 +1,14 @@
 {
-  "loading": "Beobachtungen werden geladen...",
+  "loading": {
+    "aria-label": "Beobachtungen werden geladen"
+  },
   "heading": "Beobachtungen",
   "section": {
     "recent": "Kürzlich aktualisiert",
     "all": "Alle Themen"
   },
   "empty": {
+    "title": "Noch keine Beobachtungen",
     "body": "Noch keine Beobachtungen erfasst.",
     "cta": "Importiere ein Profil",
     "suffix": ", um Beobachtungen zu erfassen."

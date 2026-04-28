@@ -1,7 +1,10 @@
 {
-  "loading": "Supplemente werden geladen...",
+  "loading": {
+    "aria-label": "Supplemente werden geladen"
+  },
   "heading": "Supplemente",
   "empty": {
+    "title": "Noch keine Supplemente",
     "body": "Noch keine Supplemente erfasst.",
     "cta": "Importiere ein Profil mit Ergänzungsplan",
     "suffix": ", um sie hier zu sehen."

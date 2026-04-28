@@ -97,7 +97,9 @@ describe('SupplementsView', () => {
     vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
     vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([]);
     renderView();
-    await waitFor(() => expect(screen.getByText(/Noch keine Supplemente/)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/Noch keine Supplemente erfasst/)).toBeInTheDocument(),
+    );
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
   });
