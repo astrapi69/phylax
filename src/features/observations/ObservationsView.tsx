@@ -12,6 +12,7 @@ import { ObservationForm } from './ObservationForm';
 import { ObservationDeleteDialog } from './ObservationDeleteDialog';
 import { AddObservationButton } from './AddObservationButton';
 import { filterObservations } from './filterObservations';
+import { useSearchQueryUrl } from './useSearchQueryUrl';
 
 /** Window (ms) for treating an observation as "just committed" on mount. */
 const HIGHLIGHT_WINDOW_MS = 5000;
@@ -39,25 +40,18 @@ export function ObservationsView() {
   const [mode, setMode] = useSortPreference('observations');
   const form = useObservationForm({ onCommitted: refetch });
 
-  // Search query persists in the URL as `?q=<term>` so back/forward and
-  // a stale shared link both restore the filtered view. The input writes
-  // to the URL on every keystroke (replace, not push, to avoid history
-  // spam); useDeferredValue defers the actual filter computation by one
-  // render so typing stays responsive on large lists.
+  // Search query persists in the URL as `?q=<term>` so back/forward,
+  // refresh and a shared link all restore the filtered view.
+  // `useSearchQueryUrl` owns the push-vs-replace decision (settle-flag
+  // pattern: first keystroke after 500ms idle commits a history entry,
+  // subsequent keystrokes replace) so rapid typing does not spam
+  // history while completed searches stay navigable via Back/Forward.
+  // `useDeferredValue` defers the filter computation by one render so
+  // typing stays responsive on large lists.
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
   const deferredQuery = useDeferredValue(query);
-  const setQuery = (next: string) => {
-    setSearchParams(
-      (prev) => {
-        const params = new URLSearchParams(prev);
-        if (next === '') params.delete('q');
-        else params.set('q', next);
-        return params;
-      },
-      { replace: true },
-    );
-  };
+  const setQuery = useSearchQueryUrl(query, setSearchParams);
 
   // Capture mount time ONCE. Used both to decide the initial highlight
   // set and to key the fade-out timer. Re-mounts (navigation away + back)
