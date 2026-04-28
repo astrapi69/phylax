@@ -239,7 +239,7 @@ matrixTests('Smoke: observations empty', 'observations-empty', async (page, { th
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Beobachtungen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
-  await expect(page.getByText(/Noch keine Beobachtungen/)).toBeVisible();
+  await expect(page.getByText(/Noch keine Beobachtungen erfasst/)).toBeVisible();
 });
 
 matrixTests(
@@ -260,7 +260,7 @@ matrixTests('Smoke: lab values empty', 'lab-values-empty', async (page, { theme,
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Laborwerte' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Laborwerte' })).toBeVisible();
-  await expect(page.getByText(/Noch keine Laborwerte/)).toBeVisible();
+  await expect(page.getByText(/Noch keine Laborwerte erfasst/)).toBeVisible();
 });
 
 matrixTests(
@@ -280,7 +280,7 @@ matrixTests('Smoke: supplements empty', 'supplements-empty', async (page, { them
   await setupAuthenticatedState(page, theme, sysPref);
   await page.getByRole('link', { name: 'Supplemente' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Supplemente' })).toBeVisible();
-  await expect(page.getByText(/Noch keine Supplemente/)).toBeVisible();
+  await expect(page.getByText(/Noch keine Supplemente erfasst/)).toBeVisible();
 });
 
 matrixTests(
