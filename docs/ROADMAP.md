@@ -252,13 +252,13 @@ Dependencies: Phase 3 AI-Guided Input must ship first (multimodal AI providers +
 Goal: export the profile as PDF for doctor visits, as markdown for archiving, as CSV for lab values.
 
 - [x] **X-01** Markdown export: pure export function round-trip compatible with IM-01 parser, download trigger, filename convention, ExportOptions contract (dateRange + themes) for future filter UIs, useExportData hook, ExportDialog + ExportButton wired into ProfileView header and Settings (commits `4d2bdc4` budget bump ADR-0012, `a7b5e21` feature)
-- [ ] **X-02** PDF export with `jsPDF`: header, base data, observations by theme, lab values, supplements, open points
+- [x] **X-02** PDF export with `jsPDF`: header, base data, observations by theme, lab values, supplements, open points (commit `3fe6e16`). **Lazy-load via dynamic `import('jspdf')` + `import('jspdf-autotable')`** — initial bundle unchanged. Direct jsPDF API for general layout; AutoTable plugin for the lab values table only. **Section order optimized for doctor-visit** (header, base data, lab values on own page, observations by theme, supplements, open points, per-page footer). **Markdown stripped to plain text** via new `markdownStripper` lib (regex-based; bold / italic / strike / inline code / fenced blocks / headings / blockquotes / links / images / bullets / numbered / HR / blank-line collapse). Rich-text PDF rendering registered as **P-21** polish. **i18n via current locale** (DE+EN); dates via `Intl.DateTimeFormat`. **Empty sections skipped**; base data shown with "keine" placeholder for missing array fields. **Footer:** "Phylax · {date} · Seite {N} / {total}" with bullet separators (no "vertraulich"). **PDF metadata:** title + author + creator. **Reuses X-01 infrastructure:** ExportDialog gets a second format button; `useExportData` + `triggerDownload` + `generatePdfFilename` unchanged. **Bundle delta:** main JS 273.98 -> 274.32 KB gzip (+0.34); new lazy chunk `jsPDF chunk` 135.89 KB / 140 KB budget. Pre-flight estimated 100-120 KB; actual reflects jsPDF v4 single-file core + AutoTable. **Tests:** 16 unit on markdownStripper, 2 smoke on pdfExport (empty profile, populated profile with markdown content + lab values + supplements + open points).
 - [ ] **X-03** Date range selector for export
 - [ ] **X-04** Theme filter for export (include only selected observation themes)
 - [ ] **X-05** Include linked documents as appendix (or list them by name)
 - [ ] **X-06** CSV export for lab values (date, parameter, result, reference, assessment)
 - [ ] **X-07** Export preview before download
-- [ ] **X-08** Filename convention: `phylax-profil-YYYY-MM-DD.pdf` / `.md` / `.csv`
+- [x] **X-08** Filename convention: `phylax-profil-YYYY-MM-DD.pdf` / `.md` / `.csv` (closed inline with X-02). `.md` shipped with X-01 (`generateMarkdownFilename`); `.pdf` shipped with X-02 (`generatePdfFilename`). `.csv` will be wired by X-06 (`generateCsvFilename` already exists in `filenames.ts`, awaits CSV export consumer).
 
 ---
 
