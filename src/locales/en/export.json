@@ -32,6 +32,20 @@
     "label": "Limit themes",
     "hint": "All themes are exported when none are unchecked."
   },
+  "preview": {
+    "button": "Preview",
+    "close": "Close",
+    "download": "Download",
+    "title": {
+      "markdown": "Markdown preview",
+      "pdf": "PDF preview",
+      "csv": "CSV preview"
+    },
+    "empty": {
+      "markdown": "Preview is empty. Profile has no exportable content with the current filters.",
+      "csv": "No lab values with the current filters."
+    }
+  },
   "csv": {
     "col": {
       "date": "Date",

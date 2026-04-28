@@ -32,6 +32,20 @@
     "label": "Themen einschränken",
     "hint": "Alle Themen werden exportiert, wenn keines abgewählt ist."
   },
+  "preview": {
+    "button": "Vorschau",
+    "close": "Schließen",
+    "download": "Herunterladen",
+    "title": {
+      "markdown": "Markdown-Vorschau",
+      "pdf": "PDF-Vorschau",
+      "csv": "CSV-Vorschau"
+    },
+    "empty": {
+      "markdown": "Vorschau ist leer. Profil enthält keine exportierbaren Inhalte mit den aktuellen Filtern.",
+      "csv": "Keine Laborwerte mit den aktuellen Filtern."
+    }
+  },
   "csv": {
     "col": {
       "date": "Datum",

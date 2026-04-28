@@ -193,6 +193,73 @@ describe('ExportDialog', () => {
     });
   });
 
+  describe('preview workflow (X-07)', () => {
+    it('renders three preview buttons (one per format)', async () => {
+      await seedProfile();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      await waitFor(() =>
+        expect(screen.getByTestId('export-markdown-preview')).toBeInTheDocument(),
+      );
+      expect(screen.getByTestId('export-pdf-preview')).toBeInTheDocument();
+      expect(screen.getByTestId('export-csv-preview')).toBeInTheDocument();
+    });
+
+    it('clicking Markdown Preview opens the preview modal with rendered content', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-markdown-preview'));
+      await waitFor(() =>
+        expect(screen.getByTestId('export-preview-markdown')).toBeInTheDocument(),
+      );
+      expect(screen.getByTestId('export-preview-download')).toBeInTheDocument();
+      expect(screen.getByTestId('export-preview-close')).toBeInTheDocument();
+    });
+
+    it('clicking CSV Preview opens the preview modal with the empty placeholder when no labs', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-csv-preview'));
+      await waitFor(() =>
+        expect(screen.getByTestId('export-preview-empty')).toBeInTheDocument(),
+      );
+    });
+
+    it('Close from inside preview returns to the dialog without downloading', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-markdown-preview'));
+      await waitFor(() =>
+        expect(screen.getByTestId('export-preview-markdown')).toBeInTheDocument(),
+      );
+      await user.click(screen.getByTestId('export-preview-close'));
+      await waitFor(() =>
+        expect(screen.queryByTestId('export-preview-markdown')).not.toBeInTheDocument(),
+      );
+      expect(URL.createObjectURL).not.toHaveBeenCalled();
+    });
+
+    it('Download from inside preview triggers the download and closes the dialog', async () => {
+      await seedProfile();
+      const onClose = vi.fn();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={onClose} />);
+
+      await user.click(screen.getByTestId('export-markdown-preview'));
+      await waitFor(() =>
+        expect(screen.getByTestId('export-preview-download')).toBeInTheDocument(),
+      );
+      await user.click(screen.getByTestId('export-preview-download'));
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
   describe('CSV export (X-06)', () => {
     it('renders the CSV format button', async () => {
       await seedProfile();

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateRangeFilter } from '../../ui';
-import { exportLabValuesAsCsv } from './csvExport';
+import { buildLabRows, exportLabValuesAsCsv } from './csvExport';
+import { ExportPreview, type PreviewContent } from './ExportPreview';
 import { exportProfileAsMarkdown } from './markdownExport';
 import { triggerDownload } from './download';
 import type { ExportOptions } from './exportOptions';
@@ -48,6 +49,15 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   // themes filters by design (helper text under the checkbox, code
   // comment in `appendix.ts`). Default: unchecked.
   const [includeLinkedDocuments, setIncludeLinkedDocuments] = useState(false);
+  // X-07 export preview. The dialog generates the same artifact the
+  // download path produces and hands it to <ExportPreview>; the
+  // preview's Download button then triggers the existing download
+  // path with the cached artifact (no regeneration).
+  const [preview, setPreview] = useState<{
+    content: PreviewContent;
+    filename: string;
+    mimeType: string;
+  } | null>(null);
   const toggleTheme = (theme: string) => {
     setExcludedThemes((prev) =>
       prev.includes(theme) ? prev.filter((t) => t !== theme) : [...prev, theme],
@@ -212,6 +222,151 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     onClose();
   }
 
+  async function loadDataOrError(): Promise<
+    | {
+        ok: true;
+        data: NonNullable<Awaited<ReturnType<typeof loadExportData>> & { kind: 'ok' }>['data'];
+      }
+    | { ok: false }
+  > {
+    setStatus({ kind: 'working' });
+    const result = await loadExportData();
+    if (result.kind === 'no-profile') {
+      setStatus({ kind: 'error', message: t('error.no-profile') });
+      return { ok: false };
+    }
+    if (result.kind === 'locked') {
+      setStatus({ kind: 'error', message: t('error.locked') });
+      return { ok: false };
+    }
+    if (result.kind === 'error') {
+      setStatus({
+        kind: 'error',
+        message: t('error.load-failed', { detail: result.message }),
+      });
+      return { ok: false };
+    }
+    return { ok: true, data: result.data };
+  }
+
+  async function handleMarkdownPreview(): Promise<void> {
+    const loaded = await loadDataOrError();
+    if (!loaded.ok) return;
+    const {
+      profile,
+      observations,
+      labReports,
+      labValues,
+      supplements,
+      openPoints,
+      timelineEntries,
+      documents,
+    } = loaded.data;
+    const text = exportProfileAsMarkdown(
+      profile,
+      observations,
+      labReports,
+      labValues,
+      supplements,
+      openPoints,
+      timelineEntries,
+      exportOptions,
+      documents,
+    );
+    setPreview({
+      content: { kind: 'markdown', text },
+      filename: generateMarkdownFilename(),
+      mimeType: 'text/markdown;charset=utf-8',
+    });
+    setStatus({ kind: 'idle' });
+  }
+
+  async function handleCsvPreview(): Promise<void> {
+    const loaded = await loadDataOrError();
+    if (!loaded.ok) return;
+    const { labReports, labValues } = loaded.data;
+    const { headers, rows } = buildLabRows({
+      labReports,
+      labValues,
+      t,
+      options: exportOptions,
+    });
+    setPreview({
+      content: { kind: 'csv', headers, rows },
+      filename: generateCsvFilename(),
+      mimeType: 'text/csv;charset=utf-8',
+    });
+    setStatus({ kind: 'idle' });
+  }
+
+  async function handlePdfPreview(): Promise<void> {
+    const loaded = await loadDataOrError();
+    if (!loaded.ok) return;
+    try {
+      const { exportProfileAsPdf } = await import('./pdfExport');
+      const {
+        profile,
+        observations,
+        labReports,
+        labValues,
+        supplements,
+        openPoints,
+        documents,
+      } = loaded.data;
+      const blob = await exportProfileAsPdf({
+        profile,
+        observations,
+        labReports,
+        labValues,
+        supplements,
+        openPoints,
+        documents,
+        t,
+        locale: i18n.language,
+        dateRange: exportOptions.dateRange,
+        themes: exportOptions.themes,
+        includeLinkedDocuments: exportOptions.includeLinkedDocuments,
+      });
+      setPreview({
+        content: { kind: 'pdf', blob },
+        filename: generatePdfFilename(),
+        mimeType: 'application/pdf',
+      });
+      setStatus({ kind: 'idle' });
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setStatus({ kind: 'error', message: t('error.pdf-failed', { detail }) });
+    }
+  }
+
+  async function handlePreviewDownload(): Promise<void> {
+    if (!preview) return;
+    const { content, filename, mimeType } = preview;
+    if (content.kind === 'pdf') {
+      triggerDownload(content.blob, filename, mimeType);
+    } else if (content.kind === 'markdown') {
+      triggerDownload(content.text, filename, mimeType);
+    } else {
+      // CSV: re-serialize from the same rows the preview rendered.
+      // The data is small; avoid stashing two parallel
+      // representations on the preview state object.
+      const loaded = await loadDataOrError();
+      if (!loaded.ok) return;
+      const { labReports, labValues } = loaded.data;
+      const csv = exportLabValuesAsCsv({
+        labReports,
+        labValues,
+        t,
+        locale: i18n.language,
+        options: exportOptions,
+      });
+      triggerDownload(csv, filename, mimeType);
+    }
+    setPreview(null);
+    setStatus({ kind: 'idle' });
+    onClose();
+  }
+
   async function handlePdfExport(): Promise<void> {
     setStatus({ kind: 'working' });
     const result = await loadExportData();
@@ -358,47 +513,38 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             </span>
           </label>
 
-          <button
-            type="button"
-            onClick={() => void handleMarkdownExport()}
+          <FormatRow
+            primaryTestId="export-markdown-button"
+            previewTestId="export-markdown-preview"
+            title={t('dialog.markdown.title')}
+            description={t('dialog.markdown.description')}
+            previewLabel={t('preview.button')}
             disabled={working}
-            data-testid="export-markdown-button"
-            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
-          >
-            <span className="font-semibold">{t('dialog.markdown.title')}</span>
-            <br />
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {t('dialog.markdown.description')}
-            </span>
-          </button>
+            onExport={() => void handleMarkdownExport()}
+            onPreview={() => void handleMarkdownPreview()}
+          />
 
-          <button
-            type="button"
-            onClick={() => void handlePdfExport()}
+          <FormatRow
+            primaryTestId="export-pdf-button"
+            previewTestId="export-pdf-preview"
+            title={t('dialog.pdf.title')}
+            description={t('dialog.pdf.description')}
+            previewLabel={t('preview.button')}
             disabled={working}
-            data-testid="export-pdf-button"
-            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
-          >
-            <span className="font-semibold">{t('dialog.pdf.title')}</span>
-            <br />
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {t('dialog.pdf.description')}
-            </span>
-          </button>
+            onExport={() => void handlePdfExport()}
+            onPreview={() => void handlePdfPreview()}
+          />
 
-          <button
-            type="button"
-            onClick={() => void handleCsvExport()}
+          <FormatRow
+            primaryTestId="export-csv-button"
+            previewTestId="export-csv-preview"
+            title={t('dialog.csv.title')}
+            description={t('dialog.csv.description')}
+            previewLabel={t('preview.button')}
             disabled={working}
-            data-testid="export-csv-button"
-            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
-          >
-            <span className="font-semibold">{t('dialog.csv.title')}</span>
-            <br />
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {t('dialog.csv.description')}
-            </span>
-          </button>
+            onExport={() => void handleCsvExport()}
+            onPreview={() => void handleCsvPreview()}
+          />
 
           {status.kind === 'error' && (
             <p
@@ -434,6 +580,60 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
           </button>
         </footer>
       </div>
+
+      <ExportPreview
+        open={preview !== null}
+        onClose={() => setPreview(null)}
+        content={preview?.content ?? null}
+        onDownload={() => void handlePreviewDownload()}
+      />
+    </div>
+  );
+}
+
+interface FormatRowProps {
+  primaryTestId: string;
+  previewTestId: string;
+  title: string;
+  description: string;
+  previewLabel: string;
+  disabled: boolean;
+  onExport: () => void;
+  onPreview: () => void;
+}
+
+function FormatRow({
+  primaryTestId,
+  previewTestId,
+  title,
+  description,
+  previewLabel,
+  disabled,
+  onExport,
+  onPreview,
+}: FormatRowProps) {
+  return (
+    <div className="flex items-stretch gap-2">
+      <button
+        type="button"
+        onClick={onExport}
+        disabled={disabled}
+        data-testid={primaryTestId}
+        className="flex-1 rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+      >
+        <span className="font-semibold">{title}</span>
+        <br />
+        <span className="text-xs text-gray-600 dark:text-gray-400">{description}</span>
+      </button>
+      <button
+        type="button"
+        onClick={onPreview}
+        disabled={disabled}
+        data-testid={previewTestId}
+        className="rounded-sm border border-gray-300 px-3 py-3 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+      >
+        {previewLabel}
+      </button>
     </div>
   );
 }

@@ -43,6 +43,12 @@ import { serializeCsv, type CsvSeparator } from './csvSerializer';
  *
  * Empty profile: returns header-only CSV (just the BOM + column row).
  * No error, no special UI. Standard CSV convention.
+ *
+ * X-07 refactor: row construction lives in `buildLabRows()` so the
+ * CSV string serialization (download) and the HTML table preview
+ * share a single source of truth for column definitions, filtering,
+ * and sort order. The CSV path adds the BOM + separator handling on
+ * top; the preview path consumes `headers` + `rows` directly.
  */
 export interface CsvExportInput {
   labReports: readonly LabReport[];
@@ -54,11 +60,32 @@ export interface CsvExportInput {
   options?: ExportOptions;
 }
 
+export interface LabRowsInput {
+  labReports: readonly LabReport[];
+  labValues: readonly LabValue[];
+  t: TFunction<'export'>;
+  /** Optional date-range filter; only `dateRange` is consulted. */
+  options?: ExportOptions;
+}
+
+export interface LabRows {
+  /** Localized header row (7 cells). */
+  headers: readonly string[];
+  /** Data rows (7 cells each); already filtered + sorted. */
+  rows: readonly (readonly string[])[];
+}
+
 const BOM = '\uFEFF';
 
-export function exportLabValuesAsCsv(input: CsvExportInput): string {
-  const { labReports, labValues, t, locale, options = {} } = input;
-  const separator = pickSeparator(locale);
+/**
+ * Build the column headers + data rows for the lab-values export.
+ * Pure transform: takes domain entities + locale, returns a tabular
+ * shape suitable both for CSV string serialization and HTML table
+ * rendering. Filtering + sort live here so both paths produce the
+ * same content.
+ */
+export function buildLabRows(input: LabRowsInput): LabRows {
+  const { labReports, labValues, t, options = {} } = input;
 
   // Filter parent reports by date range, then keep values whose
   // reportId survives. Defensive: orphan values (reportId pointing
@@ -77,7 +104,7 @@ export function exportLabValuesAsCsv(input: CsvExportInput): string {
       return a.id.localeCompare(b.id);
     });
 
-  const header: readonly string[] = [
+  const headers: string[] = [
     t('csv.col.date'),
     t('csv.col.category'),
     t('csv.col.parameter'),
@@ -86,10 +113,9 @@ export function exportLabValuesAsCsv(input: CsvExportInput): string {
     t('csv.col.reference'),
     t('csv.col.assessment'),
   ];
-  const rows: (string | undefined)[][] = [header.slice()];
-  for (const v of filteredValues) {
+  const rows: string[][] = filteredValues.map((v) => {
     const report = reportById.get(v.reportId);
-    rows.push([
+    return [
       report?.reportDate ?? '',
       v.category,
       v.parameter,
@@ -97,10 +123,18 @@ export function exportLabValuesAsCsv(input: CsvExportInput): string {
       v.unit ?? '',
       v.referenceRange ?? '',
       v.assessment ?? '',
-    ]);
-  }
+    ];
+  });
 
-  return BOM + serializeCsv(rows, separator);
+  return { headers, rows };
+}
+
+export function exportLabValuesAsCsv(input: CsvExportInput): string {
+  const { labReports, labValues, t, locale, options } = input;
+  const separator = pickSeparator(locale);
+  const { headers, rows } = buildLabRows({ labReports, labValues, t, options });
+  const allRows: (readonly string[])[] = [headers, ...rows];
+  return BOM + serializeCsv(allRows, separator);
 }
 
 function pickSeparator(locale: string): CsvSeparator {

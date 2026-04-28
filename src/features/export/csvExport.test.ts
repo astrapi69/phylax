@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { TFunction } from 'i18next';
 import type { LabReport, LabValue } from '../../domain';
-import { exportLabValuesAsCsv } from './csvExport';
+import { buildLabRows, exportLabValuesAsCsv } from './csvExport';
 
 const tFake: TFunction<'export'> = ((key: string) => {
   const map: Record<string, string> = {
@@ -178,6 +178,49 @@ describe('exportLabValuesAsCsv', () => {
     });
     expect(csv).toContain('OK');
     expect(csv).not.toContain('ORPHAN');
+  });
+
+  it('buildLabRows returns localized headers and filtered+sorted rows', () => {
+    const result = buildLabRows({
+      labReports: [
+        makeReport({ id: 'r-old', reportDate: '2024-01-15' }),
+        makeReport({ id: 'r-new', reportDate: '2026-04-15' }),
+      ],
+      labValues: [
+        makeValue({ id: 'v-old', reportId: 'r-old', parameter: 'OLD' }),
+        makeValue({ id: 'v-new', reportId: 'r-new', parameter: 'NEW' }),
+      ],
+      t: tFake,
+    });
+    expect(result.headers).toEqual([
+      'Datum',
+      'Kategorie',
+      'Parameter',
+      'Ergebnis',
+      'Einheit',
+      'Referenz',
+      'Bewertung',
+    ]);
+    // Newest first.
+    expect(result.rows[0]?.[2]).toBe('NEW');
+    expect(result.rows[1]?.[2]).toBe('OLD');
+  });
+
+  it('buildLabRows honours dateRange filter on parent reports', () => {
+    const result = buildLabRows({
+      labReports: [
+        makeReport({ id: 'r-old', reportDate: '2020-01-15' }),
+        makeReport({ id: 'r-new', reportDate: '2026-04-15' }),
+      ],
+      labValues: [
+        makeValue({ id: 'v-old', reportId: 'r-old' }),
+        makeValue({ id: 'v-new', reportId: 'r-new' }),
+      ],
+      t: tFake,
+      options: { dateRange: { from: new Date('2025-01-01T00:00:00Z') } },
+    });
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]?.[0]).toBe('2026-04-15');
   });
 
   it('preserves stored assessment values verbatim', () => {
