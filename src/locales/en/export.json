@@ -7,11 +7,70 @@
     "markdown": {
       "title": "Markdown (.md)",
       "description": "Full profile in Living Health format; importable back into Phylax."
+    },
+    "pdf": {
+      "title": "PDF (.pdf)",
+      "description": "Printable profile for a doctor's visit; lab values as a table."
     }
   },
   "error": {
     "no-profile": "No profile to export found.",
     "locked": "The app is locked. Please unlock it and try again.",
-    "load-failed": "Error loading: {{detail}}"
+    "load-failed": "Error loading: {{detail}}",
+    "pdf-failed": "PDF generation failed: {{detail}}"
+  },
+  "pdf": {
+    "metadata": {
+      "title": "Phylax health profile of {{name}}"
+    },
+    "header": {
+      "title": "Phylax · Health profile of {{name}}",
+      "generated": "Generated on {{date}}"
+    },
+    "footer": "Phylax · {{date}} · Page {{page}} / {{total}}",
+    "section": {
+      "base-data": "Base data",
+      "lab-values": "Lab values",
+      "observations": "Observations",
+      "supplements": "Supplements",
+      "open-points": "Open points"
+    },
+    "field": {
+      "birth-date": "Date of birth",
+      "age": "Age",
+      "diagnoses": "Known diagnoses",
+      "medications": "Current medications",
+      "limitations": "Relevant limitations",
+      "fact": "Observation",
+      "pattern": "Pattern",
+      "self-regulation": "Self-regulation",
+      "status": "Status",
+      "medical-finding": "Medical finding",
+      "relevance-notes": "Cross-references",
+      "recommendation": "Recommendation",
+      "rationale": "Rationale"
+    },
+    "lab": {
+      "col": {
+        "date": "Date",
+        "category": "Category",
+        "parameter": "Parameter",
+        "result": "Result",
+        "unit": "Unit",
+        "reference": "Reference",
+        "assessment": "Assessment"
+      }
+    },
+    "supplement": {
+      "category": {
+        "daily": "daily",
+        "regular": "regular",
+        "on-demand": "on demand",
+        "paused": "paused"
+      }
+    },
+    "empty": {
+      "none": "none"
+    }
   }
 }

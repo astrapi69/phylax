@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportProfileAsMarkdown } from './markdownExport';
 import { triggerDownload } from './download';
-import { generateMarkdownFilename } from './filenames';
+import { generateMarkdownFilename, generatePdfFilename } from './filenames';
 import { useExportData } from './useExportData';
 
 interface ExportDialogProps {
@@ -19,7 +19,7 @@ type ExportStatus = { kind: 'idle' } | { kind: 'working' } | { kind: 'error'; me
  * component stays a simple opener.
  */
 export function ExportDialog({ open, onClose }: ExportDialogProps) {
-  const { t } = useTranslation('export');
+  const { t, i18n } = useTranslation('export');
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
@@ -103,6 +103,46 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     onClose();
   }
 
+  async function handlePdfExport(): Promise<void> {
+    setStatus({ kind: 'working' });
+    const result = await loadExportData();
+    if (result.kind === 'no-profile') {
+      setStatus({ kind: 'error', message: t('error.no-profile') });
+      return;
+    }
+    if (result.kind === 'locked') {
+      setStatus({ kind: 'error', message: t('error.locked') });
+      return;
+    }
+    if (result.kind === 'error') {
+      setStatus({
+        kind: 'error',
+        message: t('error.load-failed', { detail: result.message }),
+      });
+      return;
+    }
+    try {
+      const { exportProfileAsPdf } = await import('./pdfExport');
+      const { profile, observations, labReports, labValues, supplements, openPoints } = result.data;
+      const blob = await exportProfileAsPdf({
+        profile,
+        observations,
+        labReports,
+        labValues,
+        supplements,
+        openPoints,
+        t,
+        locale: i18n.language,
+      });
+      triggerDownload(blob, generatePdfFilename(), 'application/pdf');
+      setStatus({ kind: 'idle' });
+      onClose();
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setStatus({ kind: 'error', message: t('error.pdf-failed', { detail }) });
+    }
+  }
+
   if (!open) return null;
 
   const working = status.kind === 'working';
@@ -144,6 +184,20 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             <br />
             <span className="text-xs text-gray-600 dark:text-gray-400">
               {t('dialog.markdown.description')}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => void handlePdfExport()}
+            disabled={working}
+            data-testid="export-pdf-button"
+            className="rounded-sm border border-gray-300 px-4 py-3 text-left text-sm text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="font-semibold">{t('dialog.pdf.title')}</span>
+            <br />
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {t('dialog.pdf.description')}
             </span>
           </button>
 

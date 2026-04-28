@@ -7,11 +7,70 @@
     "markdown": {
       "title": "Markdown (.md)",
       "description": "Vollständiges Profil im Lebende-Gesundheit-Format; importierbar zurück nach Phylax."
+    },
+    "pdf": {
+      "title": "PDF (.pdf)",
+      "description": "Druckbares Profil für den Arztbesuch; Laborwerte als Tabelle."
     }
   },
   "error": {
     "no-profile": "Kein Profil zum Exportieren gefunden.",
     "locked": "App ist gesperrt. Bitte entsperre sie und versuche erneut.",
-    "load-failed": "Fehler beim Laden: {{detail}}"
+    "load-failed": "Fehler beim Laden: {{detail}}",
+    "pdf-failed": "PDF-Erzeugung fehlgeschlagen: {{detail}}"
+  },
+  "pdf": {
+    "metadata": {
+      "title": "Phylax Gesundheits-Profil von {{name}}"
+    },
+    "header": {
+      "title": "Phylax · Gesundheits-Profil von {{name}}",
+      "generated": "Erzeugt am {{date}}"
+    },
+    "footer": "Phylax · {{date}} · Seite {{page}} / {{total}}",
+    "section": {
+      "base-data": "Basisdaten",
+      "lab-values": "Laborwerte",
+      "observations": "Beobachtungen",
+      "supplements": "Supplemente",
+      "open-points": "Offene Punkte"
+    },
+    "field": {
+      "birth-date": "Geburtsdatum",
+      "age": "Alter",
+      "diagnoses": "Bekannte Diagnosen",
+      "medications": "Aktuelle Medikamente",
+      "limitations": "Relevante Einschränkungen",
+      "fact": "Beobachtung",
+      "pattern": "Muster",
+      "self-regulation": "Selbstregulation",
+      "status": "Status",
+      "medical-finding": "Ärztlicher Befund",
+      "relevance-notes": "Querverweise",
+      "recommendation": "Empfehlung",
+      "rationale": "Begründung"
+    },
+    "lab": {
+      "col": {
+        "date": "Datum",
+        "category": "Kategorie",
+        "parameter": "Parameter",
+        "result": "Ergebnis",
+        "unit": "Einheit",
+        "reference": "Referenz",
+        "assessment": "Bewertung"
+      }
+    },
+    "supplement": {
+      "category": {
+        "daily": "täglich",
+        "regular": "regelmäßig",
+        "on-demand": "bei Bedarf",
+        "paused": "pausiert"
+      }
+    },
+    "empty": {
+      "none": "keine"
+    }
   }
 }

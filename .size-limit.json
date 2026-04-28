@@ -40,5 +40,12 @@
     "limit": "130 KB",
     "gzip": true,
     "running": false
+  },
+  {
+    "name": "jsPDF chunk (lazy)",
+    "path": "dist/assets/jspdf*.js",
+    "limit": "140 KB",
+    "gzip": true,
+    "running": false
   }
 ]
