@@ -20,4 +20,21 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  /*
+    Native `<input type="date">` calendar picker indicator (Chromium)
+    defaults to a near-black icon that has no contrast against the
+    dark theme background. Invert + brightness brings it to a legible
+    light icon; opacity matches the muted-but-clear visual register
+    of other dark-mode UI affordances. Scoped to `.dark` ancestor so
+    the light-mode icon stays unchanged. Firefox renders the input
+    differently (no separate indicator pseudo-element) so this rule
+    has no effect there; the input still works via keyboard and the
+    icon-less affordance is acceptable.
+  */
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.5);
+    cursor: pointer;
+    opacity: 0.7;
+  }
 }
