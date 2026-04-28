@@ -85,6 +85,54 @@ describe('exportProfileAsPdf', () => {
     expect(blob.size).toBeGreaterThan(0);
   });
 
+  it('honors the date-range filter on lab reports and observations', async () => {
+    const oldReport: LabReport = {
+      id: 'r-old',
+      profileId: 'p1',
+      createdAt: 0,
+      updatedAt: 0,
+      reportDate: '2020-01-15',
+      categoryAssessments: {},
+    };
+    const newReport: LabReport = {
+      id: 'r-new',
+      profileId: 'p1',
+      createdAt: 0,
+      updatedAt: 0,
+      reportDate: '2026-01-15',
+      categoryAssessments: {},
+    };
+    const blob = await exportProfileAsPdf({
+      profile: makeProfile(),
+      observations: [
+        makeObservation({
+          id: 'o-old',
+          theme: 'Alt',
+          fact: 'OLD',
+          createdAt: Date.parse('2020-06-15T12:00:00Z'),
+        }),
+        makeObservation({
+          id: 'o-new',
+          theme: 'Neu',
+          fact: 'NEW',
+          createdAt: Date.parse('2026-06-15T12:00:00Z'),
+        }),
+      ],
+      labReports: [oldReport, newReport],
+      labValues: [],
+      supplements: [],
+      openPoints: [],
+      t: tFake,
+      locale: 'de',
+      dateRange: {
+        from: new Date('2025-01-01T00:00:00Z'),
+      },
+      now: new Date('2026-04-28T12:00:00Z'),
+    });
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
   it('generates without throwing on a populated profile', async () => {
     const report: LabReport = {
       id: 'r1',

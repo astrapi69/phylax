@@ -19,6 +19,11 @@
     "load-failed": "Error loading: {{detail}}",
     "pdf-failed": "PDF generation failed: {{detail}}"
   },
+  "date-range": {
+    "from": "From",
+    "to": "To",
+    "aria-label": "Filter by date range"
+  },
   "pdf": {
     "metadata": {
       "title": "Phylax health profile of {{name}}"

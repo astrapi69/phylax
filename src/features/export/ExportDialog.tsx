@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateRangeFilter } from '../../ui';
 import { exportProfileAsMarkdown } from './markdownExport';
 import { triggerDownload } from './download';
+import type { ExportOptions } from './exportOptions';
 import { generateMarkdownFilename, generatePdfFilename } from './filenames';
 import { useExportData } from './useExportData';
 
@@ -24,6 +26,32 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
   const { loadExportData } = useExportData();
+
+  // X-03 date-range filter. ISO strings in dialog state; converted to
+  // Date objects only at the export boundary so the dialog UI matches
+  // the O-18 `<DateRangeFilter>` semantic. Both bounds are optional;
+  // empty inputs mean "no bound on that side". Dialog returns null
+  // while closed (see below), so React's natural lifecycle resets
+  // these on dialog close — no explicit clearing logic.
+  const [fromIso, setFromIso] = useState('');
+  const [toIso, setToIso] = useState('');
+  const exportOptions = useMemo<ExportOptions>(() => {
+    if (fromIso === '' && toIso === '') return {};
+    const dateRange: ExportOptions['dateRange'] = {};
+    if (fromIso !== '') {
+      // Lower bound: start-of-day UTC so a `from` date includes that
+      // entire day's observations / lab reports.
+      const ms = Date.parse(`${fromIso}T00:00:00.000Z`);
+      if (!Number.isNaN(ms)) dateRange.from = new Date(ms);
+    }
+    if (toIso !== '') {
+      // Upper bound: end-of-day UTC so a `to` date includes that day.
+      const ms = Date.parse(`${toIso}T23:59:59.999Z`);
+      if (!Number.isNaN(ms)) dateRange.to = new Date(ms);
+    }
+    if (dateRange.from === undefined && dateRange.to === undefined) return {};
+    return { dateRange };
+  }, [fromIso, toIso]);
 
   useEffect(() => {
     if (open) {
@@ -96,6 +124,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
       supplements,
       openPoints,
       timelineEntries,
+      exportOptions,
     );
     const filename = generateMarkdownFilename();
     triggerDownload(markdown, filename, 'text/markdown;charset=utf-8');
@@ -133,6 +162,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         openPoints,
         t,
         locale: i18n.language,
+        dateRange: exportOptions.dateRange,
       });
       triggerDownload(blob, generatePdfFilename(), 'application/pdf');
       setStatus({ kind: 'idle' });
@@ -173,6 +203,17 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         </header>
 
         <div className="flex flex-col gap-3 px-6 py-4">
+          <DateRangeFilter
+            from={fromIso}
+            to={toIso}
+            onFromChange={setFromIso}
+            onToChange={setToIso}
+            fromLabel={t('date-range.from')}
+            toLabel={t('date-range.to')}
+            groupAriaLabel={t('date-range.aria-label')}
+            testId="export-date-range"
+          />
+
           <button
             type="button"
             onClick={() => void handleMarkdownExport()}

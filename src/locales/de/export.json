@@ -19,6 +19,11 @@
     "load-failed": "Fehler beim Laden: {{detail}}",
     "pdf-failed": "PDF-Erzeugung fehlgeschlagen: {{detail}}"
   },
+  "date-range": {
+    "from": "Von",
+    "to": "Bis",
+    "aria-label": "Zeitraum filtern"
+  },
   "pdf": {
     "metadata": {
       "title": "Phylax Gesundheits-Profil von {{name}}"

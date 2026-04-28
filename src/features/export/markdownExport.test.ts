@@ -362,6 +362,83 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).not.toContain('### Befund vom 01.01.2020');
   });
 
+  it('date range with only `from` keeps items at or after the lower bound', () => {
+    const profile = makeProfile();
+    const reports: LabReport[] = [
+      {
+        id: 'old',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2020-01-01',
+        labName: 'A',
+        categoryAssessments: {},
+      },
+      {
+        id: 'new',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2026-01-01',
+        labName: 'B',
+        categoryAssessments: {},
+      },
+    ];
+    const md = exportProfileAsMarkdown(profile, [], reports, [], [], [], [], {
+      dateRange: { from: new Date('2025-01-01') },
+    });
+    expect(md).toContain('### Befund vom 01.01.2026');
+    expect(md).not.toContain('### Befund vom 01.01.2020');
+  });
+
+  it('date range with only `to` keeps items at or before the upper bound', () => {
+    const profile = makeProfile();
+    const reports: LabReport[] = [
+      {
+        id: 'old',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2020-01-01',
+        labName: 'A',
+        categoryAssessments: {},
+      },
+      {
+        id: 'new',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2026-01-01',
+        labName: 'B',
+        categoryAssessments: {},
+      },
+    ];
+    const md = exportProfileAsMarkdown(profile, [], reports, [], [], [], [], {
+      dateRange: { to: new Date('2025-01-01') },
+    });
+    expect(md).toContain('### Befund vom 01.01.2020');
+    expect(md).not.toContain('### Befund vom 01.01.2026');
+  });
+
+  it('empty date-range object (both bounds missing) is a no-op', () => {
+    const profile = makeProfile();
+    const reports: LabReport[] = [
+      {
+        id: 'r1',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2020-01-01',
+        labName: 'A',
+        categoryAssessments: {},
+      },
+    ];
+    const md = exportProfileAsMarkdown(profile, [], reports, [], [], [], [], {
+      dateRange: {},
+    });
+    expect(md).toContain('### Befund vom 01.01.2020');
+  });
+
   it('theme filter excludes observations whose theme is not in the whitelist', () => {
     const profile = makeProfile();
     const obs = [makeObservation('Schulter rechts'), makeObservation('Kopfschmerzen')];

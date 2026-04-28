@@ -296,14 +296,16 @@ function filterByDateRange<T>(
   range: ExportOptions['dateRange'],
   extractDate: (item: T) => Date | null,
 ): readonly T[] {
-  if (!range) return items;
-  const fromMs = range.from.getTime();
-  const toMs = range.to.getTime();
+  if (!range || (range.from === undefined && range.to === undefined)) return items;
+  const fromMs = range.from?.getTime();
+  const toMs = range.to?.getTime();
   return items.filter((item) => {
     const d = extractDate(item);
     if (!d || Number.isNaN(d.getTime())) return true;
     const ms = d.getTime();
-    return ms >= fromMs && ms <= toMs;
+    if (fromMs !== undefined && ms < fromMs) return false;
+    if (toMs !== undefined && ms > toMs) return false;
+    return true;
   });
 }
 

@@ -9,6 +9,7 @@ import type {
   Supplement,
 } from '../../domain';
 import { getDisplayName } from '../../domain';
+import type { ExportOptions } from './exportOptions';
 import { stripMarkdown } from './markdownStripper';
 
 /**
@@ -43,6 +44,14 @@ export interface PdfExportInput {
   t: TFunction<'export'>;
   /** BCP-47 locale tag (`'de'` / `'en'`). Drives date formatting. */
   locale: string;
+  /**
+   * Optional date-range filter (X-03). Applied to `LabReport.reportDate`
+   * and `Observation.createdAt`. Supplements and open points have no
+   * comparable date and are always included. Empty / missing bounds
+   * mean unbounded on that side, matching the `<DateRangeFilter>`
+   * semantic from O-18.
+   */
+  dateRange?: ExportOptions['dateRange'];
   /** Override for tests; defaults to `new Date()`. */
   now?: Date;
 }
@@ -86,8 +95,21 @@ function generate(
   autoTable: AutoTablePlugin,
   input: PdfExportInput,
 ): Blob {
-  const { profile, observations, labReports, labValues, supplements, openPoints, t, locale } =
-    input;
+  const {
+    profile,
+    observations: rawObservations,
+    labReports: rawLabReports,
+    labValues,
+    supplements,
+    openPoints,
+    t,
+    locale,
+    dateRange,
+  } = input;
+  // X-03 date-range filter. Supplements + open points have no comparable
+  // date and are always included regardless of the bounds.
+  const observations = filterObservationsByDateRange(rawObservations, dateRange);
+  const labReports = filterLabReportsByDateRange(rawLabReports, dateRange);
   const now = input.now ?? new Date();
   const name = getDisplayName(profile);
 
@@ -430,4 +452,35 @@ function formatDate(date: Date, locale: string): string {
     month: '2-digit',
     day: '2-digit',
   }).format(date);
+}
+
+function filterObservationsByDateRange(
+  observations: readonly Observation[],
+  range: ExportOptions['dateRange'],
+): readonly Observation[] {
+  if (!range || (range.from === undefined && range.to === undefined)) return observations;
+  const fromMs = range.from?.getTime();
+  const toMs = range.to?.getTime();
+  return observations.filter((o) => {
+    if (fromMs !== undefined && o.createdAt < fromMs) return false;
+    if (toMs !== undefined && o.createdAt > toMs) return false;
+    return true;
+  });
+}
+
+function filterLabReportsByDateRange(
+  reports: readonly LabReport[],
+  range: ExportOptions['dateRange'],
+): readonly LabReport[] {
+  if (!range || (range.from === undefined && range.to === undefined)) return reports;
+  const fromMs = range.from?.getTime();
+  const toMs = range.to?.getTime();
+  return reports.filter((r) => {
+    if (!r.reportDate) return true;
+    const ms = parseIsoDate(r.reportDate).getTime();
+    if (Number.isNaN(ms)) return true;
+    if (fromMs !== undefined && ms < fromMs) return false;
+    if (toMs !== undefined && ms > toMs) return false;
+    return true;
+  });
 }

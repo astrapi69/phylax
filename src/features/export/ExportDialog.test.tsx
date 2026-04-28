@@ -98,4 +98,45 @@ describe('ExportDialog', () => {
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  describe('date range filter (X-03)', () => {
+    it('renders the DateRangeFilter inside the dialog', async () => {
+      await seedProfile();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+      expect(screen.getByTestId('export-date-range')).toBeInTheDocument();
+      expect(screen.getByTestId('export-date-range-from')).toBeInTheDocument();
+      expect(screen.getByTestId('export-date-range-to')).toBeInTheDocument();
+    });
+
+    it('user can set both bounds and trigger a Markdown export with the filter applied', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      const fromInput = screen.getByTestId('export-date-range-from') as HTMLInputElement;
+      const toInput = screen.getByTestId('export-date-range-to') as HTMLInputElement;
+      await user.type(fromInput, '2025-01-01');
+      await user.type(toInput, '2026-12-31');
+      expect(fromInput.value).toBe('2025-01-01');
+      expect(toInput.value).toBe('2026-12-31');
+
+      await user.click(screen.getByTestId('export-markdown-button'));
+      await waitFor(() => {
+        expect(URL.createObjectURL).toHaveBeenCalledOnce();
+      });
+    });
+
+    it('partial range (from-only) is accepted and exports without crashing', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.type(screen.getByTestId('export-date-range-from'), '2025-06-01');
+      await user.click(screen.getByTestId('export-markdown-button'));
+
+      await waitFor(() => {
+        expect(URL.createObjectURL).toHaveBeenCalledOnce();
+      });
+    });
+  });
 });

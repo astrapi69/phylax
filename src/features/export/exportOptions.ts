@@ -5,14 +5,22 @@
  */
 export interface ExportOptions {
   /**
-   * Include only entities whose date falls within this range, inclusive.
+   * Include only entities whose date falls within this range, inclusive
+   * on both ends. Either bound is optional: omitting `from` means "no
+   * lower bound", omitting `to` means "no upper bound". An empty range
+   * object (both bounds missing) is equivalent to no filter.
+   *
    * Applies to lab reports (reportDate), timeline entries (period), and
-   * observations (updatedAt). Entities without a comparable date are
-   * always included.
+   * observations (updatedAt). Entities without a comparable date
+   * (supplements, open points) are always included.
+   *
+   * Relaxed in X-03 from `{ from, to }` to `{ from?, to? }` so the
+   * ExportDialog UI can accept partial bounds the same way the O-18
+   * `<DateRangeFilter>` does.
    */
   dateRange?: {
-    from: Date;
-    to: Date;
+    from?: Date;
+    to?: Date;
   };
   /**
    * Whitelist of observation themes to include. Empty or undefined means
