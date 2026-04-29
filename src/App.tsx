@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
-import { useAutoLock } from './features/auto-lock';
-import { DEFAULT_SETTINGS } from './db/settings';
+import { useAutoLock, useSavedAutoLockMinutes } from './features/auto-lock';
 import { setupServiceWorker } from './pwa/registerServiceWorker';
 import { AppRoutes } from './router/routes';
 
 function App() {
-  // Auto-lock: hook only runs its timer when keyStore is unlocked
-  useAutoLock(DEFAULT_SETTINGS.autoLockMinutes);
+  // P-05: read the persisted auto-lock-minutes setting from the
+  // encrypted MetaPayload after each unlock and feed it to
+  // useAutoLock. While locked the hook returns the default (5min);
+  // once the user unlocks, the saved value (if any) replaces it and
+  // the timer restarts. AutoLockSection in Settings writes the value
+  // via saveAppSettings; the change applies on the next unlock.
+  const autoLockMinutes = useSavedAutoLockMinutes();
+  useAutoLock(autoLockMinutes);
 
   // Register the service worker for silent background updates.
   // BUG-01 follow-up (no UI prompt): `registerType: 'prompt'` plus

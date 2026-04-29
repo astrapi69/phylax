@@ -34,6 +34,9 @@ describe('SettingsScreen', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Einstellungen' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Darstellung' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Sprache' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Automatisch sperren' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'KI-Assistent' })).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: 'Phylax unterstützen' }),
@@ -46,8 +49,8 @@ describe('SettingsScreen', () => {
       screen.getByRole('heading', { level: 3, name: 'Verschlüsseltes Backup' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Profil exportieren' })).toBeInTheDocument();
-    // 3 theme radios + 3 language radios = 6.
-    expect(screen.getAllByRole('radio')).toHaveLength(6);
+    // 3 theme radios + 3 language radios + 5 auto-lock preset buttons = 11.
+    expect(screen.getAllByRole('radio')).toHaveLength(11);
   });
 
   it('exposes the current theme as the checked radio', () => {

@@ -284,7 +284,7 @@ Goal: production-quality UX, mobile-ready, accessible, internationalized.
 - [x] **P-02** Dark mode via Tailwind `dark:`, system preference detection, manual override — shipped via T-01a (ThemeProvider + flash-prevention) + T-01b (dark variants on every screen)
 - [x] **P-03** i18next setup with DE and EN translations — shipped via I18N-series (extraction discipline) + ONB-01b (DE/EN copy) + TD-08 (lazy-loaded EN)
 - [x] **P-04** Onboarding tour: explain living health concept, local-first, encryption, no cloud, AI role, threat model in plain language — shipped via ONB-01a..f (entry router + Welcome + Privacy + Setup screens with plain-language copy)
-- [ ] **P-05** Settings screen: auto-lock timeout, language, theme, change master password, API key management
+- [ ] **P-05** Settings screen: auto-lock timeout, language, theme, change master password, API key management — partial close 2026-04-29: theme + language + AI/API-key shipped pre-Phase-2 (`ThemeSection`, `LanguageSection`, `AISettingsSection`); auto-lock timeout shipped via `AutoLockSection` (preset buttons 1/5/15/30/60min, `aria-checked` on the active preset, persisted via `saveAppSettings` -> encrypted MetaPayload, `apply-on-reload` semantic per Q-lock — `App.tsx` reads via `useSavedAutoLockMinutes` which re-reads on every unlock-state transition). Change-master-password remains as **P-06** dependency. Settings README mentions `ChangePassword.tsx` placeholder; that component is the open work.
 - [ ] **P-06** Change master password flow: re-encrypt all records with new key
 - [ ] **P-07** Accessibility audit: keyboard navigation, screen reader labels, focus management
 - [ ] **P-08** Performance audit: bundle under 350 KB gzipped (per ADR-0015), TTI under 3s on mid-range phone

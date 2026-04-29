@@ -20,6 +20,15 @@
       "en": "English"
     }
   },
+  "auto-lock": {
+    "heading": "Auto-lock",
+    "description": "Phylax locks automatically after this period of inactivity. The master key is wiped from memory and you have to re-enter your password.",
+    "legend": "Select auto-lock interval",
+    "preset-label_one": "{{count}} minute",
+    "preset-label_other": "{{count}} minutes",
+    "applies-on-reload": "Applies on next unlock.",
+    "save-error": "Save failed: {{detail}}"
+  },
   "data-management": {
     "heading": "Data management"
   },

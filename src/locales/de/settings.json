@@ -20,6 +20,15 @@
       "en": "English"
     }
   },
+  "auto-lock": {
+    "heading": "Automatisch sperren",
+    "description": "Phylax sperrt sich nach dieser Zeit ohne Aktivität automatisch. Der Master-Schlüssel wird aus dem Speicher entfernt und du musst dein Passwort erneut eingeben.",
+    "legend": "Auto-Lock-Zeitraum wählen",
+    "preset-label_one": "{{count}} Minute",
+    "preset-label_other": "{{count}} Minuten",
+    "applies-on-reload": "Wirksam beim nächsten Entsperren.",
+    "save-error": "Speichern fehlgeschlagen: {{detail}}"
+  },
   "data-management": {
     "heading": "Datenverwaltung"
   },
