@@ -116,7 +116,9 @@ describe('importProfile', () => {
       labValues: 2,
       supplements: 1,
       openPoints: 1,
-      profileVersions: 1,
+      // IM-04: 1 row from the source markdown + 1 synthesized
+      // "Profil aus Datei importiert" row.
+      profileVersions: 2,
       timelineEntries: 1,
     });
 
@@ -287,7 +289,9 @@ describe('importProfile', () => {
     expect(loaded?.baseData.weightKg).toBe(92);
     expect(loaded?.baseData.knownDiagnoses).toEqual(['Asthma']);
     expect(loaded?.warningSigns).toEqual(['Schwindel']);
-    expect(loaded?.version).toBe('1.3.1');
+    // IM-04: import bumps Profile.version. Source was 1.3.1 ->
+    // 1.3.2 after the auto-version-entry synthesis.
+    expect(loaded?.version).toBe('1.3.2');
   });
 
   it('preserves profileType when parsed baseData has no profileType', async () => {
@@ -393,7 +397,8 @@ describe('importProfile', () => {
     const profileRepo = new ProfileRepository();
     const loaded = await profileRepo.getById(profileId);
     expect(loaded?.baseData.weightKg).toBe(85);
-    expect(loaded?.version).toBe('1.1');
+    // IM-04: import bumps Profile.version. Source was 1.1 -> 1.2.
+    expect(loaded?.version).toBe('1.2');
   });
 
   it('throws and rolls back when a mismatched lab value reportIndex is present', async () => {
@@ -437,7 +442,10 @@ describe('importProfile', () => {
       labValues: 0,
       supplements: 0,
       openPoints: 0,
-      profileVersions: 0,
+      // IM-04: even with zero parsed entities the import gesture
+      // itself emits the synthesized "Profil aus Datei importiert"
+      // ProfileVersion row.
+      profileVersions: 1,
       timelineEntries: 0,
     });
   });
@@ -476,5 +484,71 @@ describe('importProfile', () => {
     expect((await obsRepo.listByProfile(profileId)).map((o) => o.theme)).toEqual(['New']);
     expect(await suppRepo.listByProfile(profileId)).toHaveLength(0);
     expect(await opRepo.listByProfile(profileId)).toHaveLength(0);
+  });
+
+  // IM-04: every successful import emits one synthesized
+  // ProfileVersion row recording the import gesture itself, alongside
+  // any rows lifted from the source markdown's Versionshistorie.
+  describe('IM-04 auto-version-entry', () => {
+    it('synthesizes a ProfileVersion row with the import-marker description', async () => {
+      const versionRepo = new ProfileVersionRepository();
+
+      await importProfile(emptyParseResult(), profileId);
+
+      const versions = await versionRepo.listByProfile(profileId);
+      expect(versions).toHaveLength(1);
+      expect(versions[0]?.changeDescription).toBe('Profil aus Datei importiert');
+      expect(versions[0]?.changeDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+
+    it('bumps Profile.version on the imported profile and uses the bumped value on the synthesized row', async () => {
+      const profileRepo = new ProfileRepository();
+      const versionRepo = new ProfileVersionRepository();
+
+      await importProfile(emptyParseResult(), profileId);
+
+      const profile = await profileRepo.getById(profileId);
+      // Pre-test profile is created with version "1.0" (beforeEach
+      // setup); bumpVersion("1.0") => "1.1".
+      expect(profile?.version).toBe('1.1');
+      const versions = await versionRepo.listByProfile(profileId);
+      expect(versions[0]?.version).toBe('1.1');
+    });
+
+    it('appends the synthesized row to versions lifted from the source markdown', async () => {
+      const versionRepo = new ProfileVersionRepository();
+
+      await importProfile(
+        emptyParseResult({
+          profileVersions: [
+            { version: '0.9', changeDescription: 'Initial', changeDate: '2026-01-01' },
+            { version: '1.0', changeDescription: 'Update', changeDate: '2026-02-01' },
+          ],
+        }),
+        profileId,
+      );
+
+      const versions = await versionRepo.listByProfile(profileId);
+      expect(versions).toHaveLength(3);
+      const descriptions = versions.map((v) => v.changeDescription).sort();
+      expect(descriptions).toEqual(['Initial', 'Profil aus Datei importiert', 'Update']);
+    });
+
+    it('replaceExisting: synthesized row survives the delete + re-insert pass', async () => {
+      const versionRepo = new ProfileVersionRepository();
+      // Pre-existing version row that should be wiped by replace.
+      await versionRepo.create({
+        profileId,
+        version: '0.5',
+        changeDescription: 'Old',
+        changeDate: '2025-12-01',
+      });
+
+      await importProfile(emptyParseResult(), profileId, { replaceExisting: true });
+
+      const versions = await versionRepo.listByProfile(profileId);
+      expect(versions).toHaveLength(1);
+      expect(versions[0]?.changeDescription).toBe('Profil aus Datei importiert');
+    });
   });
 });

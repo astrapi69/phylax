@@ -32,6 +32,17 @@ import {
   type ImportResult,
 } from './types';
 import { countEntities } from './countEntities';
+import { bumpVersion } from '../../../domain/profileVersion/bumpVersion';
+
+/**
+ * IM-04: every successful import emits one synthesized ProfileVersion
+ * row recording the import gesture itself. Matches the O-16 pattern
+ * (manual base-data edit also creates a version row + bumps
+ * Profile.version) so the post-import profile carries an unambiguous
+ * audit trail regardless of whether the source markdown had its own
+ * Versionshistorie.
+ */
+const IMPORT_CHANGE_DESCRIPTION = 'Profil aus Datei importiert';
 
 /**
  * Import a parsed markdown profile into the Phylax database under a
@@ -84,7 +95,17 @@ export async function importProfile(
 
   // Merge parsed profile fields into the existing target. Unset fields
   // on the parse result must not wipe existing values.
-  const mergedProfile: Profile = mergeProfile(existingProfile, parseResult.profile, now);
+  const mergedProfileBase: Profile = mergeProfile(existingProfile, parseResult.profile, now);
+
+  // IM-04: bump Profile.version on the imported profile so the
+  // synthesized "Profil aus Datei importiert" ProfileVersion row that
+  // we add below carries a strictly-increasing version string. Uses
+  // the same bumpVersion() shared with the manual-edit path (O-16)
+  // and the AI-commit path so all version-creating flows stay in
+  // sync. Mirrors the in-memory mergedProfile that goes to the DB
+  // and the import return value.
+  const importedVersion = bumpVersion(mergedProfileBase.version);
+  const mergedProfile: Profile = { ...mergedProfileBase, version: importedVersion };
   const profileRow = await profileRepo.serialize(mergedProfile);
 
   // Assign ids to lab reports up front so lab values can reference them.
@@ -141,8 +162,27 @@ export async function importProfile(
     ),
   );
 
+  // IM-04: append one synthesized ProfileVersion row recording the
+  // import gesture itself. Carries the bumped Profile.version (set
+  // above) and the German-constant changeDescription, matching the
+  // shape used by the parser when it lifts rows out of the source
+  // markdown's Versionshistorie. `now` ISO-formatted to YYYY-MM-DD
+  // so changeDate matches the existing display format.
+  const importedChangeDate = new Date(now).toISOString().slice(0, 10);
+  const synthesizedImportVersion: Omit<
+    ProfileVersion,
+    'id' | 'profileId' | 'createdAt' | 'updatedAt'
+  > = {
+    version: importedVersion,
+    changeDescription: IMPORT_CHANGE_DESCRIPTION,
+    changeDate: importedChangeDate,
+  };
+  const allParsedAndSynthesizedVersions = [
+    ...parseResult.profileVersions,
+    synthesizedImportVersion,
+  ];
   const profileVersionRows = await Promise.all(
-    parseResult.profileVersions.map((parsed) =>
+    allParsedAndSynthesizedVersions.map((parsed) =>
       profileVersionRepo.serialize(wrapEntity<ProfileVersion>(parsed, targetProfileId, now)),
     ),
   );
@@ -199,7 +239,11 @@ export async function importProfile(
     labValues: parseResult.labValues.length,
     supplements: parseResult.supplements.length,
     openPoints: parseResult.openPoints.length,
-    profileVersions: parseResult.profileVersions.length,
+    // IM-04: count includes the synthesized "Profil aus Datei
+    // importiert" row alongside any rows lifted from the source
+    // markdown's Versionshistorie, so the import-success summary
+    // numbers match the actual DB content.
+    profileVersions: allParsedAndSynthesizedVersions.length,
     timelineEntries: parseResult.timelineEntries.length,
   };
 

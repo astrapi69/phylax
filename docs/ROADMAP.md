@@ -93,7 +93,7 @@ Note on IDs: the parser was originally committed under the `[O-07]` tag before t
 - [x] **IM-02** Anonymized example fixture and integration test against the real profile shape (commit `4ffab8e`)
 - [x] **IM-03a** Headless import: `importProfile` with pre-encrypt + Dexie bulk-put transaction, `useImport` state machine, `BaseData.name` field with display-name helper (commit pending)
 - [x] **IM-03b** Import UI: file picker or paste-in, structured preview with counts/warnings/unrecognized, profile selection, confirm-replace dialog (commit pending)
-- [ ] **IM-04** Post-import navigation: land on the imported profile, create profile version entry automatically
+- [x] **IM-04** Post-import navigation: land on the imported profile, create profile version entry automatically (2026-04-29). Navigation half had been live since IM-03b (`ImportFlow.tsx` `handleNavigateHome` calls `navigate('/profile')` on the import-result screen). Added the auto-version-entry half: every successful `importProfile()` call now emits one synthesized `ProfileVersion` row with `changeDescription = "Profil aus Datei importiert"` plus a bumped `Profile.version` so the post-import profile carries an unambiguous audit trail regardless of whether the source markdown had its own Versionshistorie. Reuses the shared `bumpVersion()` primitive (same one O-16 manual edits and AI-commit flows call) so all version-creating paths stay consistent. The synthesized row appends to any rows lifted from the source's Versionshistorie; `replaceExisting=true` deletes the prior history before re-inserting both. `created.profileVersions` count includes the synthesized row. New tests: 4 (synthesizes the marker row, bumps Profile.version + matching synthesized row, appends to source-supplied versions, survives replaceExisting). Two pre-existing tests updated for the new bump (1.3.1 → 1.3.2 and 1.1 → 1.2 post-import).
 - [ ] **IM-05** Import conflict handling beyond replace-all: detect existing data, offer replace vs. selective merge vs. cancel
 - [x] **IM-06** Distinguish empty placeholder sections from malformed observation entries: parser emits info-severity notice for blank H3 under Relevante Vorgeschichte, warning-severity for content-but-no-recognized-fields, skips ghost entity creation in both cases. Preview UI splits into separate warnings / skipped-sections disclosures (commit pending)
 
@@ -453,8 +453,6 @@ Open backlog (deferred; not part of v1.0.0):
 - **F-06b**: cross-browser Playwright (Firefox, WebKit)
 - **O-16 through O-19**: remaining Phase 2 manual-entry forms (base-data
   editor, in-memory search, date range filter, empty states)
-- **IM-04**: auto-create a "Imported from file" profile version entry on
-  successful import, land directly on the imported profile
 - **IM-05**: import conflict handling beyond replace-all (selective merge)
 - **Phase 4** (Documents) through **Phase 9** (Derived plans): all future
 
