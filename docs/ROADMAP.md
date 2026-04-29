@@ -289,7 +289,7 @@ Goal: production-quality UX, mobile-ready, accessible, internationalized.
 - [ ] **P-07** Accessibility audit: keyboard navigation, screen reader labels, focus management
 - [ ] **P-08** Performance audit: bundle under 350 KB gzipped (per ADR-0015), TTI under 3s on mid-range phone
 - [ ] **P-09** Error boundary with friendly message and recovery option
-- [ ] **P-10** Toast system for user feedback (success, warning, error)
+- [x] **P-10** Toast system for user feedback (success, warning, error) — superseded by the modal-first error-display pattern (O-10 onwards every form keeps its submit + delete errors inline within its own `<ModalBody>` banner; `ObservationForm.tsx` + `LabReportForm.tsx` JSDoc call out the "toast that would dismiss the modal" anti-pattern). BUG-01 third iteration removed the last user-facing transient surface (PWA UpdateIndicator). No live use case for a generic Toast component remains. If a concrete transient-feedback need surfaces later (copy-to-clipboard ACK, undo affordance), it registers as a fresh task rather than reviving this line. Stale `Toast.tsx (P-10)` reference dropped from `src/ui/README.md` in the supersession commit.
 - [ ] **P-11** Add ES, FR, EL translations (matching the developer's language background)
 - [ ] **P-12** Privacy policy and license page in-app
 - [ ] **P-13** Image viewer: evaluate GPU-accelerated `transform: scale()` zoom + explicitly sized overflow wrapper if large-image (~20 MB medical scan) zoom CPU cost becomes noticeable. Current D-06 implementation uses width/height attribute resize because `transform: scale()` alone does not drive `overflow: auto` scrollbars; switching requires computing wrapper dimensions from scale factor. Marker only, no commitment.

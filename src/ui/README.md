@@ -16,6 +16,18 @@ All styling uses Tailwind utility classes. Every component must work at 360px wi
 - `Button.tsx` (F-16): primary, secondary, danger button variants
 - `Input.tsx` (F-16): text input with label and error state
 - `Modal.tsx` (E-13): confirmation and action modals (replaces `confirm()`)
-- `Toast.tsx` (P-10): success, warning, error notifications
 - `Spinner.tsx` (F-12): loading indicator for async operations
 - `index.ts`: public API re-exports
+
+`Toast.tsx` was originally planned as the P-10 entry but was superseded
+by the modal-first error-display pattern that emerged across O-10
+through O-20: every form keeps its submit + delete errors inline within
+its own modal (`<ModalBody>` error banner), no transient floating UI.
+The two `JSDoc` blocks on `ObservationForm.tsx` and `LabReportForm.tsx`
+explicitly call out the anti-pattern ("toast that would dismiss the
+modal first"). Silent SW updates (BUG-01 third iteration) removed the
+remaining update-prompt surface, so Phylax has no live use case for a
+generic Toast component. If a future feature needs transient
+confirmations (e.g., copy-to-clipboard ACK, undo affordance), it
+registers a fresh task with a concrete use case rather than reviving
+the generic Toast line.
