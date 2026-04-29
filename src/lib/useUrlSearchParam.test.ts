@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import type { SetURLSearchParams } from 'react-router-dom';
-import { useSearchQueryUrl } from './useSearchQueryUrl';
+import { useUrlSearchParam } from './useUrlSearchParam';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -17,7 +17,7 @@ afterEach(() => {
  * helper unwraps the updater so assertions can read the resulting
  * URLSearchParams without dragging react-router into the test.
  */
-function makeMockSetter(): {
+function makeMockSetter(paramKey: string): {
   setSearchParams: SetURLSearchParams & ReturnType<typeof vi.fn>;
   current: URLSearchParams;
   callMode: (call: number) => boolean | undefined;
@@ -25,9 +25,7 @@ function makeMockSetter(): {
 } {
   const current = new URLSearchParams();
   const setSearchParams = vi.fn((updater, options) => {
-    const next =
-      typeof updater === 'function' ? updater(current) : new URLSearchParams(updater);
-    // Sync the captured state so subsequent calls see the latest value.
+    const next = typeof updater === 'function' ? updater(current) : new URLSearchParams(updater);
     Array.from(current.keys()).forEach((k) => current.delete(k));
     next.forEach((v: string, k: string) => current.set(k, v));
     return options;
@@ -42,31 +40,28 @@ function makeMockSetter(): {
       return opts?.replace;
     },
     callValue: (call) => {
-      // The captured `current` reflects state AFTER the indexed call
-      // only when no further calls landed; tests inspect after each
-      // call individually.
       const args = setSearchParams.mock.calls[call];
       const updater = args?.[0];
       if (typeof updater !== 'function') return null;
       const snapshot = new URLSearchParams();
       const updated = updater(snapshot);
-      return updated.get('q');
+      return updated.get(paramKey);
     },
   };
 }
 
-function renderUseSearchQueryUrl(initialQuery: string) {
-  const mock = makeMockSetter();
+function renderUseUrlSearchParam(paramKey: string, initialValue: string) {
+  const mock = makeMockSetter(paramKey);
   const { result, rerender } = renderHook(
-    ({ query }) => useSearchQueryUrl(query, mock.setSearchParams),
-    { initialProps: { query: initialQuery } },
+    ({ value }) => useUrlSearchParam(paramKey, value, mock.setSearchParams),
+    { initialProps: { value: initialValue } },
   );
   return { result, rerender, ...mock };
 }
 
-describe('useSearchQueryUrl', () => {
+describe('useUrlSearchParam', () => {
   it('uses replace=false (push) on the first call after mount', () => {
-    const { result, setSearchParams, callMode, callValue } = renderUseSearchQueryUrl('');
+    const { result, setSearchParams, callMode, callValue } = renderUseUrlSearchParam('q', '');
     result.current('foo');
     expect(setSearchParams).toHaveBeenCalledTimes(1);
     expect(callMode(0)).toBe(false);
@@ -74,11 +69,11 @@ describe('useSearchQueryUrl', () => {
   });
 
   it('uses replace=true on subsequent calls before the settle timer fires', () => {
-    const { result, rerender, setSearchParams, callMode } = renderUseSearchQueryUrl('');
+    const { result, rerender, setSearchParams, callMode } = renderUseUrlSearchParam('q', '');
     result.current('a');
-    rerender({ query: 'a' });
+    rerender({ value: 'a' });
     result.current('ab');
-    rerender({ query: 'ab' });
+    rerender({ value: 'ab' });
     result.current('abc');
     expect(setSearchParams).toHaveBeenCalledTimes(3);
     expect(callMode(0)).toBe(false); // push
@@ -87,9 +82,9 @@ describe('useSearchQueryUrl', () => {
   });
 
   it('uses replace=false again after the settle timer fires', () => {
-    const { result, rerender, callMode } = renderUseSearchQueryUrl('');
+    const { result, rerender, callMode } = renderUseUrlSearchParam('q', '');
     result.current('a');
-    rerender({ query: 'a' });
+    rerender({ value: 'a' });
     vi.advanceTimersByTime(500);
     result.current('ab');
     expect(callMode(0)).toBe(false); // initial push
@@ -97,12 +92,12 @@ describe('useSearchQueryUrl', () => {
   });
 
   it('keeps replacing if the user keeps typing within the settle window', () => {
-    const { result, rerender, callMode } = renderUseSearchQueryUrl('');
+    const { result, rerender, callMode } = renderUseUrlSearchParam('q', '');
     result.current('a');
-    rerender({ query: 'a' });
+    rerender({ value: 'a' });
     vi.advanceTimersByTime(400);
     result.current('ab');
-    rerender({ query: 'ab' });
+    rerender({ value: 'ab' });
     vi.advanceTimersByTime(400);
     result.current('abc');
     expect(callMode(0)).toBe(false); // push
@@ -110,67 +105,68 @@ describe('useSearchQueryUrl', () => {
     expect(callMode(2)).toBe(true); // replace (timer reset by abc)
   });
 
-  it('skips the call entirely when the next value equals the current query', () => {
-    const { result, rerender, setSearchParams } = renderUseSearchQueryUrl('foo');
+  it('skips the call entirely when the next value equals the current value', () => {
+    const { result, rerender, setSearchParams } = renderUseUrlSearchParam('q', 'foo');
     result.current('foo');
-    rerender({ query: 'foo' });
+    rerender({ value: 'foo' });
     result.current('foo');
     expect(setSearchParams).not.toHaveBeenCalled();
   });
 
-  it('treats an empty-input X-click on an already-empty query as a no-op', () => {
-    const { result, setSearchParams } = renderUseSearchQueryUrl('');
+  it('treats an empty-input X-click on an already-empty value as a no-op', () => {
+    const { result, setSearchParams } = renderUseUrlSearchParam('q', '');
     result.current('');
     expect(setSearchParams).not.toHaveBeenCalled();
   });
 
-  it('deletes the q param when the next value is empty', () => {
-    const { result, callValue } = renderUseSearchQueryUrl('foo');
+  it('deletes the param when the next value is empty', () => {
+    const { result, callValue } = renderUseUrlSearchParam('q', 'foo');
     result.current('');
     expect(callValue(0)).toBeNull();
   });
 
-  it('does not push on initial mount when the URL already carries a query', () => {
-    // settledRef defaults to true; if no setQuery call happens, the URL
-    // stays exactly as it arrived. Verify by rendering with a non-empty
-    // query and asserting setSearchParams was never invoked.
-    const { setSearchParams } = renderUseSearchQueryUrl('preloaded');
+  it('does not push on initial mount when the URL already carries a value', () => {
+    const { setSearchParams } = renderUseUrlSearchParam('q', 'preloaded');
     expect(setSearchParams).not.toHaveBeenCalled();
   });
 
-  it('starts fresh on remount: the first keystroke pushes again', () => {
-    const { result: r1, callMode: cm1, unmount } = renderHookSession('');
+  it('starts fresh on remount: the first input pushes again', () => {
+    const { result: r1, callMode: cm1, unmount } = renderHookSession('q', '');
     r1.current('a');
     expect(cm1(0)).toBe(false);
     unmount();
 
-    // Fresh mount with the previously-typed query in the URL.
-    const { result: r2, callMode: cm2 } = renderHookSession('a');
+    const { result: r2, callMode: cm2 } = renderHookSession('q', 'a');
     r2.current('ab');
-    expect(cm2(0)).toBe(false); // push, because remount resets settledRef to true
+    expect(cm2(0)).toBe(false);
   });
 
   it('clears the pending settle timer on unmount', () => {
-    // After unmount with a pending timer, no callback should fire.
-    // Verified by ensuring no errors are thrown when timers advance
-    // beyond the settle window after unmount.
-    const { result, unmount } = renderHookSession('');
+    const { result, unmount } = renderHookSession('q', '');
     result.current('a');
     unmount();
     expect(() => vi.advanceTimersByTime(1000)).not.toThrow();
   });
+
+  it('honors a custom param key', () => {
+    const { result, callValue, setSearchParams } = renderUseUrlSearchParam('filter', '');
+    result.current('vitamin');
+    expect(setSearchParams).toHaveBeenCalledTimes(1);
+    expect(callValue(0)).toBe('vitamin');
+  });
+
+  it('reads and deletes the same custom param key', () => {
+    const { result, callValue } = renderUseUrlSearchParam('filter', 'vitamin');
+    result.current('');
+    expect(callValue(0)).toBeNull();
+  });
 });
 
-/**
- * Helper that exposes `unmount` plus the mock-setter helpers in one
- * record. Mirrors `renderUseSearchQueryUrl` but with the unmount
- * function visible so multi-mount tests can drive it.
- */
-function renderHookSession(initialQuery: string) {
-  const mock = makeMockSetter();
+function renderHookSession(paramKey: string, initialValue: string) {
+  const mock = makeMockSetter(paramKey);
   const { result, rerender, unmount } = renderHook(
-    ({ query }) => useSearchQueryUrl(query, mock.setSearchParams),
-    { initialProps: { query: initialQuery } },
+    ({ value }) => useUrlSearchParam(paramKey, value, mock.setSearchParams),
+    { initialProps: { value: initialValue } },
   );
   return { result, rerender, unmount, ...mock };
 }

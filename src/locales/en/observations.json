@@ -49,7 +49,10 @@
     "single-match": "1 result",
     "next-match": "Next match",
     "prev-match": "Previous match",
-    "no-matches": "No matches for \"{{query}}\"."
+    "no-matches": "No matches for \"{{query}}\".",
+    "filter-active-indicator": "Filter active",
+    "dates-open": "Filter by date",
+    "dates-shown": "Date filter visible"
   },
   "date-range": {
     "from": "From",

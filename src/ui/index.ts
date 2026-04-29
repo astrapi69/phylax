@@ -4,7 +4,7 @@ export {
   type PasswordVisibilityToggleProps,
 } from './PasswordVisibilityToggle';
 export { ArrayFieldEditor, type ArrayFieldEditorProps } from './ArrayFieldEditor';
-export { SearchInput, type SearchInputProps } from './SearchInput';
+export { SearchInput, SearchIcon, type SearchInputProps } from './SearchInput';
 export { HighlightedText, type HighlightedTextProps } from './HighlightedText';
 export { DateRangeFilter, type DateRangeFilterProps } from './DateRangeFilter';
 export { Skeleton, ListSkeleton, type SkeletonProps, type ListSkeletonProps } from './Skeleton';

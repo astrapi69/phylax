@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef } from 'react';
 
 /**
  * Shared search input. Single text input with an optional clear button
@@ -37,6 +37,29 @@ export interface SearchInputProps {
   onEnter?: () => void;
   /** Called on Shift+Enter. Used by P-19 for "previous match". */
   onShiftEnter?: () => void;
+  /**
+   * Called when the user presses Escape while the input is empty.
+   * Used by P-22a icon-triggered search to collapse the bar back to
+   * its trigger icon. Escape on a non-empty input still clears the
+   * value first (does not invoke this callback).
+   */
+  onEscapeWhenEmpty?: () => void;
+  /**
+   * Auto-focus the input on mount. Used by P-22a icon-triggered
+   * search to focus the input when the bar expands.
+   */
+  autoFocus?: boolean;
+  /**
+   * Override the X-button click. When provided, the X button calls
+   * this instead of the default `onChange('') + refocus` behavior.
+   * Used by P-22a two-stage search where the X is the global
+   * clear-and-collapse action (clears search query AND date range
+   * AND collapses the bar to its trigger icon). Escape on a
+   * non-empty input still uses the default clear-and-focus path so
+   * the standard Cmd+F semantic is preserved (first Escape clears
+   * the input, second Escape collapses via `onEscapeWhenEmpty`).
+   */
+  onClear?: () => void;
 }
 
 export function SearchInput({
@@ -48,20 +71,37 @@ export function SearchInput({
   testId = 'search-input',
   onEnter,
   onShiftEnter,
+  onEscapeWhenEmpty,
+  autoFocus = false,
+  onClear,
 }: SearchInputProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
 
   const clear = useCallback(() => {
     onChange('');
     inputRef.current?.focus();
   }, [onChange]);
 
+  const handleClearClick = useCallback(() => {
+    if (onClear) onClear();
+    else clear();
+  }, [onClear, clear]);
+
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === 'Escape' && value !== '') {
-        event.preventDefault();
-        clear();
+      if (event.key === 'Escape') {
+        if (value !== '') {
+          event.preventDefault();
+          clear();
+        } else if (onEscapeWhenEmpty) {
+          event.preventDefault();
+          onEscapeWhenEmpty();
+        }
         return;
       }
       if (event.key === 'Enter') {
@@ -70,7 +110,7 @@ export function SearchInput({
         else onEnter?.();
       }
     },
-    [clear, value, onEnter, onShiftEnter],
+    [clear, value, onEnter, onShiftEnter, onEscapeWhenEmpty],
   );
 
   return (
@@ -98,7 +138,7 @@ export function SearchInput({
       {value !== '' && (
         <button
           type="button"
-          onClick={clear}
+          onClick={handleClearClick}
           aria-label={clearLabel}
           title={clearLabel}
           data-testid={`${testId}-clear`}
@@ -111,7 +151,7 @@ export function SearchInput({
   );
 }
 
-function SearchIcon() {
+export function SearchIcon() {
   return (
     <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
       <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />

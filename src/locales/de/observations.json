@@ -49,7 +49,10 @@
     "single-match": "1 Treffer",
     "next-match": "Nächster Treffer",
     "prev-match": "Vorheriger Treffer",
-    "no-matches": "Keine Treffer für „{{query}}\"."
+    "no-matches": "Keine Treffer für „{{query}}\".",
+    "filter-active-indicator": "Filter aktiv",
+    "dates-open": "Zeitraum filtern",
+    "dates-shown": "Zeitraum sichtbar"
   },
   "date-range": {
     "from": "Von",

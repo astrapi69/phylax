@@ -8,3 +8,4 @@ export {
   isDateRangeActive,
   type DateRange,
 } from './dateRangeFilter';
+export { useUrlSearchParam } from './useUrlSearchParam';
