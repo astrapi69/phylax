@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { setupServiceWorker } from '../../pwa/registerServiceWorker';
 
@@ -22,21 +22,36 @@ const UpdateContext = createContext<UpdateContextValue | null>(null);
  * (vite.config.ts) so the new SW does not auto-reload. The user
  * applies the update via UpdateIndicator at a safe time of their
  * choosing — never mid-unlock.
+ *
+ * Implementation note: the `updateSW` function is held in a ref
+ * (not React state) so `apply` does not need a defensive null
+ * check. `apply` is only invoked from a user click after the
+ * Header has rendered, which is necessarily after the mount-time
+ * useEffect has populated the ref. Using state here would create
+ * a "first render before useEffect" branch that is impractical to
+ * cover in tests because the user gesture cannot fire in that
+ * window.
  */
 export function UpdateProvider({ children }: { children: ReactNode }) {
   const [needRefresh, setNeedRefresh] = useState(false);
-  const [updateSW, setUpdateSW] = useState<(() => void) | null>(null);
+  // The placeholder noop runs only between the first render and the
+  // mount-time useEffect; `apply()` is wired to a user click that
+  // cannot fire in that window, so the placeholder is provably
+  // unreachable. The /* v8 ignore */ comment keeps coverage honest
+  // about that — without it the placeholder shows as an uncovered
+  // function and drops `src/features/pwa-update/**` below the 100%
+  // function threshold.
+  const updateSWRef = useRef<() => void>(/* v8 ignore next */ () => undefined);
 
   useEffect(() => {
-    const doUpdate = setupServiceWorker(() => {
+    updateSWRef.current = setupServiceWorker(() => {
       setNeedRefresh(true);
     });
-    setUpdateSW(() => doUpdate);
   }, []);
 
   const apply = useCallback(() => {
-    if (updateSW) updateSW();
-  }, [updateSW]);
+    updateSWRef.current();
+  }, []);
 
   const value = useMemo(() => ({ needRefresh, apply }), [needRefresh, apply]);
 
