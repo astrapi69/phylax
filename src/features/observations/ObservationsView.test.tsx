@@ -8,6 +8,7 @@ import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { ObservationRepository, ProfileRepository } from '../../db/repositories';
 import type { Profile } from '../../domain';
+import { SearchProvider } from '../search-trigger';
 import { ObservationsView } from './ObservationsView';
 import { makeObservation } from './test-helpers';
 
@@ -28,10 +29,27 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderView() {
+/**
+ * Render helper. P-22 architecture pivot: the global header owns
+ * the magnifier trigger, so view-level tests must wrap in
+ * `<SearchProvider>` to drive `isOpen`. `defaultOpen` lets tests
+ * mount with the search bar already expanded without going
+ * through a fake header click. MemoryRouter `initialEntries`
+ * threads through; tests that exercise URL-seeded behaviour
+ * (`?q=`, `?from=`) pass their own initial entry.
+ */
+function renderView({
+  initialEntries = ['/observations'],
+  defaultOpen,
+}: {
+  initialEntries?: string[];
+  defaultOpen?: boolean;
+} = {}) {
   return render(
-    <MemoryRouter>
-      <ObservationsView />
+    <MemoryRouter initialEntries={initialEntries}>
+      <SearchProvider defaultOpen={defaultOpen}>
+        <ObservationsView />
+      </SearchProvider>
     </MemoryRouter>,
   );
 }
@@ -235,72 +253,61 @@ describe('ObservationsView', () => {
   });
 
   describe('search (O-17)', () => {
-    it('does NOT render the search toggle or input when there are zero observations', async () => {
+    it('does NOT render the search bar when there are zero observations', async () => {
       await mockLoadedState([]);
-      renderView();
+      // Even with `defaultOpen=true` the empty branch returns the
+      // EmptyStatePanel and skips the sticky bar entirely.
+      renderView({ defaultOpen: true });
       await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('search-toggle')).not.toBeInTheDocument();
     });
 
-    it('renders the search toggle (icon-trigger) when observations exist; input hidden until opened', async () => {
+    it('hides the inline search bar by default (header magnifier drives open state)', async () => {
       await mockLoadedState([
         { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
       ]);
       renderView();
-      await waitFor(() => expect(screen.getByTestId('search-toggle')).toBeInTheDocument());
-      // P-22a: input is icon-triggered, hidden until the toggle is clicked.
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Schulter/ })).toBeInTheDocument(),
+      );
+      // P-22 pivot: header owns the magnifier; the view-body sticky
+      // bar only renders when SearchContext.isOpen is true.
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      // Match-count is hidden when query is empty.
       expect(screen.queryByTestId('search-match-count')).not.toBeInTheDocument();
     });
 
-    it('opens the search input on toggle click; closes (preserving the value) on second click', async () => {
+    it('renders the inline search bar when SearchContext.isOpen is true', async () => {
       await mockLoadedState([
         {
           theme: 'Schulter',
           observations: [makeObservation({ id: 's1', theme: 'Schulter', fact: 'schmerz' })],
         },
       ]);
-      renderView();
-      const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
+      renderView({ defaultOpen: true });
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      const user = userEvent.setup();
       await user.type(input, 'schmerz');
       expect(input.value).toBe('schmerz');
-      // P-22a Q15: magnifier click only collapses, preserving values.
-      await user.click(screen.getByTestId('search-toggle'));
-      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      // Q14 indicator: filter remains active, dot visible on the toggle.
-      expect(screen.getByTestId('search-toggle-active-indicator')).toBeInTheDocument();
-      // Re-opening shows the preserved query.
-      await user.click(screen.getByTestId('search-toggle'));
-      expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('schmerz');
     });
 
-    it('clears query and dates and collapses to Stage 0 when the X is clicked (Q15)', async () => {
+    it('clears query and dates when the X is clicked (Q15)', async () => {
       await mockLoadedState([
         {
           theme: 'Schulter',
           observations: [makeObservation({ id: 's1', theme: 'Schulter', fact: 'schmerz' })],
         },
       ]);
-      render(
-        <MemoryRouter initialEntries={['/?q=schmerz&from=2024-01-01']}>
-          <ObservationsView />
-        </MemoryRouter>,
-      );
-      const user = userEvent.setup();
-      // Mounts at Stage 2 because both q and from are set.
+      // URL has q + from -> SearchProvider auto-opens on mount.
+      renderView({ initialEntries: ['/observations?q=schmerz&from=2024-01-01'] });
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
       expect(input.value).toBe('schmerz');
       expect(screen.getByTestId('date-range-filter')).toBeInTheDocument();
+      const user = userEvent.setup();
       await user.click(screen.getByTestId('search-input-clear'));
-      // Both query and dates cleared, bar collapsed.
+      // Both query and dates cleared, sticky bar collapses (no
+      // searchbox, no date-range-filter).
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
-      // No indicator because no filter is active.
-      expect(screen.queryByTestId('search-toggle-active-indicator')).not.toBeInTheDocument();
     });
 
     it('filters by theme + fact + pattern, hides non-matching groups, shows match count', async () => {
@@ -317,11 +324,10 @@ describe('ObservationsView', () => {
           observations: [makeObservation({ id: 'k1', theme: 'Knie', fact: 'kein Treffer' })],
         },
       ]);
-      renderView();
+      renderView({ defaultOpen: true });
       const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
-      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
-      await user.type(screen.getByRole('searchbox'), 'stechend');
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      await user.type(input, 'stechend');
 
       await waitFor(() => {
         // P-19 + sticky-bar refinement: at exactly 1 match, the
@@ -346,11 +352,9 @@ describe('ObservationsView', () => {
           ],
         },
       ]);
-      renderView();
+      renderView({ defaultOpen: true });
       const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
-      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
-      await user.type(screen.getByRole('searchbox'), 'schmerz');
+      await user.type(await screen.findByRole('searchbox'), 'schmerz');
 
       await waitFor(() => {
         expect(screen.getByTestId('search-match-count')).toHaveTextContent('1 von 3 Treffer');
@@ -363,11 +367,9 @@ describe('ObservationsView', () => {
       await mockLoadedState([
         { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
       ]);
-      renderView();
+      renderView({ defaultOpen: true });
       const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
-      await waitFor(() => expect(screen.getByRole('searchbox')).toBeInTheDocument());
-      await user.type(screen.getByRole('searchbox'), 'xyz');
+      await user.type(await screen.findByRole('searchbox'), 'xyz');
 
       await waitFor(() => {
         expect(screen.getByTestId('search-no-matches')).toHaveTextContent(/xyz/);
@@ -379,16 +381,10 @@ describe('ObservationsView', () => {
       await mockLoadedState([
         { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
       ]);
-      renderView();
-      // Stage 0: no date inputs visible.
-      await waitFor(() => expect(screen.getByTestId('search-toggle')).toBeInTheDocument());
+      renderView({ defaultOpen: true });
+      await waitFor(() => expect(screen.getByTestId('calendar-toggle')).toBeInTheDocument());
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
       const user = userEvent.setup();
-      // Stage 0 → 1: search input + calendar toggle visible, dates still hidden.
-      await user.click(screen.getByTestId('search-toggle'));
-      expect(await screen.findByTestId('calendar-toggle')).toBeInTheDocument();
-      expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
-      // Stage 1 → 2: dates visible.
       await user.click(screen.getByTestId('calendar-toggle'));
       expect(await screen.findByTestId('date-range-filter')).toBeInTheDocument();
     });
@@ -411,24 +407,20 @@ describe('ObservationsView', () => {
           ],
         },
       ]);
-      render(
-        <MemoryRouter initialEntries={['/?from=2024-01-01']}>
-          <ObservationsView />
-        </MemoryRouter>,
-      );
+      // URL ?from= -> SearchProvider auto-opens on mount.
+      renderView({ initialEntries: ['/observations?from=2024-01-01'] });
       await waitFor(() =>
         expect(screen.getByRole('heading', { level: 2, name: /Recent/ })).toBeInTheDocument(),
       );
       expect(screen.queryByRole('heading', { level: 2, name: /Old/ })).not.toBeInTheDocument();
     });
 
-    it('updates the URL when the user picks a date filter input (after expanding to Stage 2)', async () => {
+    it('updates the URL when the user picks a date filter input (after opening Stage 2)', async () => {
       await mockLoadedState([
         { theme: 'Schulter', observations: [makeObservation({ id: '1', theme: 'Schulter' })] },
       ]);
       const user = userEvent.setup();
-      renderView();
-      await user.click(await screen.findByTestId('search-toggle'));
+      renderView({ defaultOpen: true });
       await user.click(await screen.findByTestId('calendar-toggle'));
       const fromInput = (await screen.findByTestId('date-range-filter-from')) as HTMLInputElement;
       await user.type(fromInput, '2024-01-01');
@@ -446,11 +438,9 @@ describe('ObservationsView', () => {
           observations: [makeObservation({ id: '2', theme: 'Knie', fact: 'andere' })],
         },
       ]);
-      render(
-        <MemoryRouter initialEntries={['/?q=schmerz']}>
-          <ObservationsView />
-        </MemoryRouter>,
-      );
+      // URL ?q= -> SearchProvider auto-opens on mount, search input
+      // pre-filled, filter applied.
+      renderView({ initialEntries: ['/observations?q=schmerz'] });
       await waitFor(() => {
         expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('schmerz');
       });

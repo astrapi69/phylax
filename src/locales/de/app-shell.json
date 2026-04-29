@@ -2,7 +2,8 @@
   "header": {
     "lock-aria-label": "Phylax sperren",
     "lock": "Sperren",
-    "open-nav": "Navigation öffnen"
+    "open-nav": "Navigation öffnen",
+    "search-filter-active": "Filter aktiv"
   },
   "nav": {
     "aria-label": "Hauptnavigation",

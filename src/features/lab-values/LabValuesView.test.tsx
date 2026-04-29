@@ -9,6 +9,7 @@ import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { LabReportRepository, LabValueRepository, ProfileRepository } from '../../db/repositories';
 import type { LabReport, Profile } from '../../domain';
+import { SearchProvider } from '../search-trigger';
 import { LabValuesView } from './LabValuesView';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -29,10 +30,27 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderView() {
+/**
+ * Render helper. P-22 architecture pivot: the global header owns
+ * the magnifier trigger, so view-level tests must wrap in
+ * `<SearchProvider>` to drive `isOpen`. `defaultOpen` lets tests
+ * mount with the inline search bar already expanded without
+ * simulating a header click. Tests that exercise URL-seeded
+ * behaviour pass an `initialEntries` whose path is `/lab-values...`
+ * so `hasSearch=true` triggers the auto-open default.
+ */
+function renderView({
+  initialEntries = ['/lab-values'],
+  defaultOpen,
+}: {
+  initialEntries?: string[];
+  defaultOpen?: boolean;
+} = {}) {
   return render(
-    <MemoryRouter>
-      <LabValuesView />
+    <MemoryRouter initialEntries={initialEntries}>
+      <SearchProvider defaultOpen={defaultOpen}>
+        <LabValuesView />
+      </SearchProvider>
     </MemoryRouter>,
   );
 }
@@ -189,43 +207,34 @@ describe('LabValuesView', () => {
       vi.spyOn(LabValueRepository.prototype, 'listByReport').mockResolvedValue([]);
     }
 
-    it('renders the date range filter only after expanding to Stage 2 (P-22b)', async () => {
+    it('renders the date range filter only after the user opens Stage 2 via the calendar toggle', async () => {
       mockTwoReports();
-      renderView();
-      // Stage 0: only the magnifier toggle is visible.
-      await waitFor(() => expect(screen.getByTestId('search-toggle')).toBeInTheDocument());
+      renderView({ defaultOpen: true });
+      // Stage 1 (search bar inline): calendar toggle visible, dates hidden.
+      await waitFor(() => expect(screen.getByTestId('calendar-toggle')).toBeInTheDocument());
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
       const user = userEvent.setup();
-      // Stage 0 -> 1: magnifier opens search input + calendar toggle.
-      await user.click(screen.getByTestId('search-toggle'));
-      expect(await screen.findByTestId('calendar-toggle')).toBeInTheDocument();
-      expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
-      // Stage 1 -> 2: calendar reveals the date inputs.
       await user.click(screen.getByTestId('calendar-toggle'));
       expect(await screen.findByTestId('date-range-filter')).toBeInTheDocument();
       expect(screen.getByTestId('date-range-filter-from')).toBeInTheDocument();
       expect(screen.getByTestId('date-range-filter-to')).toBeInTheDocument();
     });
 
-    it('does NOT render the search toggle or date range filter when there are zero reports', async () => {
+    it('does NOT render the inline search bar or date range filter when there are zero reports', async () => {
       vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
       vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
 
-      renderView();
+      renderView({ defaultOpen: true });
       await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument());
-      expect(screen.queryByTestId('search-toggle')).not.toBeInTheDocument();
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 
     it('filters reports by `?from=` URL param', async () => {
       mockTwoReports();
-      render(
-        <MemoryRouter initialEntries={['/?from=2026-01-01']}>
-          <LabValuesView />
-        </MemoryRouter>,
-      );
+      // SearchProvider auto-opens on mount because URL has ?from=.
+      renderView({ initialEntries: ['/lab-values?from=2026-01-01'] });
       await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
-      // Only the 2026 report passes the lower bound; the 2024 one is hidden.
       const headings = screen.getAllByRole('heading', { level: 2 });
       expect(headings).toHaveLength(1);
       expect(headings[0]?.textContent).toMatch(/15\.06\.2026/);
@@ -233,11 +242,7 @@ describe('LabValuesView', () => {
 
     it('filters reports by `?to=` URL param', async () => {
       mockTwoReports();
-      render(
-        <MemoryRouter initialEntries={['/?to=2025-01-01']}>
-          <LabValuesView />
-        </MemoryRouter>,
-      );
+      renderView({ initialEntries: ['/lab-values?to=2025-01-01'] });
       await waitFor(() => expect(screen.getByTestId('date-range-filter')).toBeInTheDocument());
       const headings = screen.getAllByRole('heading', { level: 2 });
       expect(headings).toHaveLength(1);
@@ -246,22 +251,17 @@ describe('LabValuesView', () => {
 
     it('shows the no-matches state when the date range excludes every report', async () => {
       mockTwoReports();
-      render(
-        <MemoryRouter initialEntries={['/?from=2030-01-01&to=2030-12-31']}>
-          <LabValuesView />
-        </MemoryRouter>,
-      );
+      renderView({ initialEntries: ['/lab-values?from=2030-01-01&to=2030-12-31'] });
       await waitFor(() =>
         expect(screen.getByTestId('lab-values-no-matches')).toBeInTheDocument(),
       );
       expect(screen.queryAllByRole('heading', { level: 2 })).toHaveLength(0);
     });
 
-    it('updates the URL when the user picks a from date (after expanding to Stage 2)', async () => {
+    it('updates the URL when the user picks a from date (after opening Stage 2)', async () => {
       mockTwoReports();
       const user = userEvent.setup();
-      renderView();
-      await user.click(await screen.findByTestId('search-toggle'));
+      renderView({ defaultOpen: true });
       await user.click(await screen.findByTestId('calendar-toggle'));
       const fromInput = (await screen.findByTestId('date-range-filter-from')) as HTMLInputElement;
       await user.type(fromInput, '2026-01-01');
@@ -323,30 +323,29 @@ describe('LabValuesView', () => {
       );
     }
 
-    it('shows only the magnifier toggle in Stage 0; search input hidden until clicked', async () => {
+    it('hides the inline search bar by default (header magnifier drives open state)', async () => {
       mockSynlabAndOther();
       renderView();
-      await waitFor(() => expect(screen.getByTestId('search-toggle')).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getAllByRole('heading', { level: 2 }).length).toBeGreaterThan(0),
+      );
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
       expect(screen.queryByTestId('lab-values-match-count')).not.toBeInTheDocument();
     });
 
-    it('expanding the toggle reveals the search input + calendar toggle (Stage 1)', async () => {
+    it('renders the inline search bar with calendar toggle when SearchContext.isOpen is true', async () => {
       mockSynlabAndOther();
-      renderView();
-      const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
+      renderView({ defaultOpen: true });
       expect(await screen.findByRole('searchbox')).toBeInTheDocument();
       expect(screen.getByTestId('calendar-toggle')).toBeInTheDocument();
-      // Date inputs still hidden at Stage 1.
+      // Date inputs hidden until calendar toggle clicked.
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 
     it('typing a query filters reports via row-keep semantic', async () => {
       mockSynlabAndOther();
-      renderView();
+      renderView({ defaultOpen: true });
       const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
       await user.type(input, 'Kreatinin');
       await waitFor(() => {
@@ -362,62 +361,38 @@ describe('LabValuesView', () => {
 
     it('shows the no-matches state when query has zero hits', async () => {
       mockSynlabAndOther();
-      renderView();
+      renderView({ defaultOpen: true });
       const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
       await user.type(await screen.findByRole('searchbox'), 'xyz');
       await waitFor(() =>
         expect(screen.getByTestId('lab-values-no-matches')).toHaveTextContent(/xyz/),
       );
     });
 
-    it('seeds the search input from `?q=` on mount and lands on Stage 1', async () => {
+    it('seeds the search input from `?q=` on mount via SearchProvider auto-open', async () => {
       mockSynlabAndOther();
-      render(
-        <MemoryRouter initialEntries={['/?q=Synlab']}>
-          <LabValuesView />
-        </MemoryRouter>,
-      );
+      // URL ?q= -> SearchProvider auto-opens; input pre-filled.
+      renderView({ initialEntries: ['/lab-values?q=Synlab'] });
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
       expect(input.value).toBe('Synlab');
-      // Stage 1 — calendar toggle visible, date inputs not.
+      // Calendar toggle visible (still Stage 1; date param absent).
       expect(screen.getByTestId('calendar-toggle')).toBeInTheDocument();
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 
-    it('preserves filter values on collapse and shows the indicator dot', async () => {
-      mockSynlabAndOther();
-      renderView();
-      const user = userEvent.setup();
-      await user.click(await screen.findByTestId('search-toggle'));
-      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
-      await user.type(input, 'Kreatinin');
-      // Magnifier click collapses preserving values (Q15).
-      await user.click(screen.getByTestId('search-toggle'));
-      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      expect(screen.getByTestId('search-toggle-active-indicator')).toBeInTheDocument();
-      // Re-expand: query restored.
-      await user.click(screen.getByTestId('search-toggle'));
-      expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('Kreatinin');
-    });
-
     it('clears query and dates when the SearchInput X button is clicked (Q15)', async () => {
       mockSynlabAndOther();
-      render(
-        <MemoryRouter initialEntries={['/?q=Synlab&from=2025-01-01']}>
-          <LabValuesView />
-        </MemoryRouter>,
-      );
+      renderView({ initialEntries: ['/lab-values?q=Synlab&from=2025-01-01'] });
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
       expect(input.value).toBe('Synlab');
       // Mounts at Stage 2 because date is set.
       expect(screen.getByTestId('date-range-filter')).toBeInTheDocument();
       const user = userEvent.setup();
       await user.click(screen.getByTestId('search-input-clear'));
-      // Both query and dates cleared, bar collapsed to Stage 0.
+      // Both query and dates cleared, sticky bar collapses (no
+      // searchbox, no date-range-filter).
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('search-toggle-active-indicator')).not.toBeInTheDocument();
     });
   });
 

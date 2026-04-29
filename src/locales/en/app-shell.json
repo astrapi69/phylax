@@ -2,7 +2,8 @@
   "header": {
     "lock-aria-label": "Lock Phylax",
     "lock": "Lock",
-    "open-nav": "Open navigation"
+    "open-nav": "Open navigation",
+    "search-filter-active": "Filter active"
   },
   "nav": {
     "aria-label": "Main navigation",

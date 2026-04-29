@@ -10,13 +10,8 @@ import {
   type DateRange,
   type MatchRange,
 } from '../../lib';
-import {
-  DateRangeFilter,
-  EmptyStatePanel,
-  ListSkeleton,
-  SearchIcon,
-  SearchInput,
-} from '../../ui';
+import { DateRangeFilter, EmptyStatePanel, ListSkeleton, SearchInput } from '../../ui';
+import { useSearch } from '../search-trigger';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
 import { ObservationsSortToggle } from './ObservationsSortToggle';
@@ -96,42 +91,32 @@ export function ObservationsView() {
   const fromParam = searchParams.get('from') ?? '';
   const toParam = searchParams.get('to') ?? '';
 
-  // P-22a two-stage progressive disclosure.
+  // P-22 architecture pivot: the magnifier trigger lives in the
+  // global Header (next to the theme toggle); `isOpen` flows down
+  // via SearchContext. Local state still tracks whether the
+  // calendar Stage 2 has been expanded (Stage 1 vs 2). Initial
+  // `dateOpen`: true when the URL already carries `?from=` /
+  // `?to=` so a shared link / refresh / Back navigation drops the
+  // user straight into the date-visible stage; false otherwise.
   //
-  //   Stage 0: only the magnifier toggle is visible. If a filter is
-  //            active (URL-driven or preserved across collapses), a
-  //            small dot on the magnifier signals "filter set, UI
-  //            hidden" — see `filterActive` below.
-  //   Stage 1: search input + calendar toggle visible alongside the
-  //            magnifier. Date inputs hidden.
-  //   Stage 2: search input + date inputs both visible.
-  //
-  // Initial stage mirrors the URL so a shared link / refresh /
-  // Back navigation drops the user into the highest stage their
-  // params imply (no point hiding inputs whose values they came
-  // here to see).
+  //   isOpen=false                 → header magnifier alone
+  //   isOpen=true && dateOpen=false → header chevron + inline
+  //                                   SearchInput + calendar toggle
+  //   isOpen=true && dateOpen=true → adds the inline DateRangeFilter
   //
   // Click cascades:
-  //   - Magnifier (any stage > 0)        → collapse to 0, preserve values.
-  //   - Magnifier at stage 0             → expand to 1.
-  //   - Calendar at stage 1              → expand to 2.
-  //   - X (in SearchInput) / Escape-non-empty deferred to default → see SearchInput.
-  //   - Global clear (X handled here)    → clear query + clear dates + collapse to 0.
-  const initialStageRef = useRef<0 | 1 | 2>(
-    fromParam !== '' || toParam !== '' ? 2 : query !== '' ? 1 : 0,
-  );
-  const [stage, setStage] = useState<0 | 1 | 2>(initialStageRef.current);
-  const filterActive = query !== '' || fromParam !== '' || toParam !== '';
-  const showFilterIndicator = stage === 0 && filterActive;
-
-  const collapseToStageZero = () => setStage(0);
-  const onMagnifierClick = () => {
-    if (stage === 0) setStage(1);
-    else collapseToStageZero();
-  };
-  const onCalendarClick = () => {
-    if (stage === 1) setStage(2);
-  };
+  //   - Header magnifier toggle  → flips isOpen; closing preserves
+  //                                values (Q15).
+  //   - Calendar at stage 1      → expand to 2 (no reverse step).
+  //   - X (in SearchInput) / Escape-non-empty deferred to default
+  //                                → see SearchInput.
+  //   - Global clear (X handled here) → clear query + clear dates
+  //                                + collapse via context.close().
+  const { isOpen: searchOpen, close: closeSearch } = useSearch();
+  const initialDateOpenRef = useRef<boolean>(fromParam !== '' || toParam !== '');
+  const [dateOpen, setDateOpen] = useState<boolean>(initialDateOpenRef.current);
+  const onCalendarClick = () => setDateOpen(true);
+  const onEscapeWhenEmpty = () => closeSearch();
   const clearAllAndCollapse = () => {
     setQuery('');
     setSearchParams(
@@ -144,7 +129,8 @@ export function ObservationsView() {
       },
       { replace: true },
     );
-    setStage(0);
+    setDateOpen(false);
+    closeSearch();
   };
   const dateRange: DateRange = useMemo(() => parseDateRange(searchParams), [searchParams]);
   const setDateParam = (key: 'from' | 'to', value: string) => {
@@ -291,80 +277,69 @@ export function ObservationsView() {
            *  content beneath. `-mx-4 px-4` extends the opaque region
            *  to the parent's padding so observations do not bleed
            *  through the gutters. */}
-          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
-            {/* P-22a two-stage progressive disclosure.
-             *
-             *  Layout: outer wrapper is `justify-between` with two
-             *  inner clusters. Left cluster carries the match
-             *  counter + Up/Down nav (only present when a search
-             *  query is active and produced matches). Right cluster
-             *  is always present; it carries the date filter
-             *  (Stage 2 only), the search input + calendar toggle
-             *  (Stage 1 onward), and the magnifier toggle anchored
-             *  to the right edge. Right-anchored magnifier matches
-             *  the standard "actions on the right" rhythm (theme +
-             *  lock are also right-aligned in the Header).
-             *
-             *  Default chrome (Stage 0) is the magnifier alone.
-             *  Click expands to Stage 1; the search input + calendar
-             *  toggle render alongside, growing leftward from the
-             *  magnifier. Calendar click expands to Stage 2,
-             *  revealing the date inputs further to the left. A
-             *  subsequent magnifier click cascades all the way back
-             *  to Stage 0 and preserves the values (Q15 lock); the
-             *  global X clear button on the search input clears
-             *  query + dates and collapses to Stage 0 (Q15). When
-             *  the bar is collapsed but a filter remains active
-             *  (e.g. via shared `?q=` link or a previous expand-
-             *  then-magnifier-click), a small dot on the magnifier
-             *  signals "filter set, UI hidden" (Q14). */}
-            <div className="flex flex-wrap items-center gap-3">
-              {isFiltering && totalMatches > 0 && (
-                <p
-                  role="status"
-                  aria-live="polite"
-                  data-testid="search-match-count"
-                  className="text-xs text-gray-600 dark:text-gray-400"
-                >
-                  {totalMatches === 1
-                    ? t('search.single-match')
-                    : t('search.match-count-treffer', {
-                        count: activeIndex,
-                        total: totalMatches,
-                      })}
-                </p>
-              )}
-              {isFiltering && totalMatches >= 2 && (
-                <>
-                  <NavButton
-                    onClick={prev}
-                    ariaLabel={t('search.prev-match')}
-                    testId="search-prev"
-                    iconRotation="up"
-                  />
-                  <NavButton
-                    onClick={next}
-                    ariaLabel={t('search.next-match')}
-                    testId="search-next"
-                    iconRotation="down"
-                  />
-                </>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {stage >= 2 && (
-                <DateRangeFilter
-                  from={fromParam}
-                  to={toParam}
-                  onFromChange={(v) => setDateParam('from', v)}
-                  onToChange={(v) => setDateParam('to', v)}
-                  fromLabel={t('date-range.from')}
-                  toLabel={t('date-range.to')}
-                  groupAriaLabel={t('date-range.aria-label')}
-                />
-              )}
-              {stage >= 1 && (
-                <>
+          {(searchOpen || (isFiltering && totalMatches > 0)) && (
+            <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
+              {/* P-22 architecture pivot: the magnifier trigger now
+               *  lives in the global header (Header.tsx via
+               *  SearchContext). The view-body sticky bar carries
+               *  only the inline search bar (when searchOpen) plus
+               *  the match counter + Up/Down nav (when filtering
+               *  produced matches). Calendar toggle stays here
+               *  because it is a Stage 1 -> 2 control specific to
+               *  this view; the global header has no awareness of
+               *  Stage 2.
+               *
+               *  Layout: `justify-between` with the counter + nav
+               *  on the left and the search input + calendar
+               *  toggle + (Stage 2) date inputs on the right. The
+               *  outer wrapper renders only when there is something
+               *  to show (search open OR active match counter). */}
+              <div className="flex flex-wrap items-center gap-3">
+                {isFiltering && totalMatches > 0 && (
+                  <p
+                    role="status"
+                    aria-live="polite"
+                    data-testid="search-match-count"
+                    className="text-xs text-gray-600 dark:text-gray-400"
+                  >
+                    {totalMatches === 1
+                      ? t('search.single-match')
+                      : t('search.match-count-treffer', {
+                          count: activeIndex,
+                          total: totalMatches,
+                        })}
+                  </p>
+                )}
+                {isFiltering && totalMatches >= 2 && (
+                  <>
+                    <NavButton
+                      onClick={prev}
+                      ariaLabel={t('search.prev-match')}
+                      testId="search-prev"
+                      iconRotation="up"
+                    />
+                    <NavButton
+                      onClick={next}
+                      ariaLabel={t('search.next-match')}
+                      testId="search-next"
+                      iconRotation="down"
+                    />
+                  </>
+                )}
+              </div>
+              {searchOpen && (
+                <div className="flex flex-wrap items-center gap-3">
+                  {dateOpen && (
+                    <DateRangeFilter
+                      from={fromParam}
+                      to={toParam}
+                      onFromChange={(v) => setDateParam('from', v)}
+                      onToChange={(v) => setDateParam('to', v)}
+                      fromLabel={t('date-range.from')}
+                      toLabel={t('date-range.to')}
+                      groupAriaLabel={t('date-range.aria-label')}
+                    />
+                  )}
                   <SearchInput
                     value={query}
                     onChange={setQuery}
@@ -373,28 +348,20 @@ export function ObservationsView() {
                     clearLabel={t('search.clear')}
                     onEnter={next}
                     onShiftEnter={prev}
-                    onEscapeWhenEmpty={collapseToStageZero}
+                    onEscapeWhenEmpty={onEscapeWhenEmpty}
                     onClear={clearAllAndCollapse}
                     autoFocus
                   />
                   <CalendarToggle
-                    stage={stage}
+                    dateOpen={dateOpen}
                     onClick={onCalendarClick}
                     openLabel={t('search.dates-open')}
                     alreadyOpenLabel={t('search.dates-shown')}
                   />
-                </>
+                </div>
               )}
-              <SearchToggle
-                stage={stage}
-                showActiveIndicator={showFilterIndicator}
-                onClick={onMagnifierClick}
-                openLabel={t('common:search.open')}
-                closeLabel={t('common:search.close')}
-                activeIndicatorLabel={t('search.filter-active-indicator')}
-              />
             </div>
-          </div>
+          )}
 
           {isFiltering && filterResult.matchCount === 0 ? (
             <NoMatchesState query={deferredQuery} />
@@ -457,82 +424,32 @@ function NavButton({
   );
 }
 
-function SearchToggle({
-  stage,
-  showActiveIndicator,
-  onClick,
-  openLabel,
-  closeLabel,
-  activeIndicatorLabel,
-}: {
-  stage: 0 | 1 | 2;
-  showActiveIndicator: boolean;
-  onClick: () => void;
-  openLabel: string;
-  closeLabel: string;
-  activeIndicatorLabel: string;
-}) {
-  const expanded = stage > 0;
-  const label = expanded ? closeLabel : openLabel;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={
-        showActiveIndicator ? `${label} (${activeIndicatorLabel})` : label
-      }
-      aria-expanded={expanded}
-      title={label}
-      data-testid="search-toggle"
-      className="relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-    >
-      {expanded ? <CloseIcon /> : <SearchIcon />}
-      {showActiveIndicator && (
-        <span
-          aria-hidden="true"
-          data-testid="search-toggle-active-indicator"
-          className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"
-        />
-      )}
-    </button>
-  );
-}
-
 function CalendarToggle({
-  stage,
+  dateOpen,
   onClick,
   openLabel,
   alreadyOpenLabel,
 }: {
-  stage: 0 | 1 | 2;
+  dateOpen: boolean;
   onClick: () => void;
   openLabel: string;
   alreadyOpenLabel: string;
 }) {
-  const opened = stage >= 2;
-  const label = opened ? alreadyOpenLabel : openLabel;
+  const label = dateOpen ? alreadyOpenLabel : openLabel;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      aria-expanded={opened}
-      aria-pressed={opened}
+      aria-expanded={dateOpen}
+      aria-pressed={dateOpen}
       title={label}
-      disabled={opened}
+      disabled={dateOpen}
       data-testid="calendar-toggle"
       className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
     >
       <CalendarIcon />
     </button>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-    </svg>
   );
 }
 
