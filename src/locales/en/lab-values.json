@@ -131,5 +131,16 @@
     "to": "To",
     "aria-label": "Filter by date range",
     "no-matches": "No reports in the selected date range."
+  },
+  "search": {
+    "placeholder": "Search reports...",
+    "aria-label": "Search reports",
+    "clear": "Clear search",
+    "match-count": "{{count}} of {{total}} reports",
+    "no-matches-counter": "No matches",
+    "no-matches": "No matches for \"{{query}}\".",
+    "filter-active-indicator": "Filter active",
+    "dates-open": "Filter by date",
+    "dates-shown": "Date filter visible"
   }
 }

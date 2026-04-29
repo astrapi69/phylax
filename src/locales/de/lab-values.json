@@ -131,5 +131,16 @@
     "to": "Bis",
     "aria-label": "Zeitraum filtern",
     "no-matches": "Keine Befunde im gewählten Zeitraum."
+  },
+  "search": {
+    "placeholder": "Befunde durchsuchen...",
+    "aria-label": "Befunde durchsuchen",
+    "clear": "Suche zurücksetzen",
+    "match-count": "{{count}} von {{total}} Befunden",
+    "no-matches-counter": "Keine Treffer",
+    "no-matches": "Keine Treffer für „{{query}}\".",
+    "filter-active-indicator": "Filter aktiv",
+    "dates-open": "Zeitraum filtern",
+    "dates-shown": "Zeitraum sichtbar"
   }
 }

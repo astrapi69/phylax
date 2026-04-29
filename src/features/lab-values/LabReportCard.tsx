@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { LabReport, LabValue } from '../../domain';
+import { findMatchRanges, splitQuery } from '../../lib';
+import { HighlightedText } from '../../ui';
 import { MarkdownContent } from '../profile-view';
 import { CategoryAssessment } from './CategoryAssessment';
 import { LabValuesTable } from './LabValuesTable';
@@ -28,6 +30,17 @@ interface LabReportCardProps {
    * with the report-level `form` prop.
    */
   valueForm?: UseLabValueFormResult;
+  /**
+   * Optional search query for P-22b in-cell highlighting. When set,
+   * plain-text fields (lab name, doctor name, value cells) wrap
+   * matching substrings in `<mark>` via `<HighlightedText>`, and
+   * Markdown fields (contextNote, overallAssessment, relevanceNotes,
+   * categoryAssessments) thread the query through `<MarkdownContent>`'s
+   * `highlightQuery` prop. Empty / whitespace-only renders unchanged.
+   * Read-only mounts (profile-view summary) omit the prop and behave
+   * exactly as before.
+   */
+  highlightQuery?: string;
 }
 
 /**
@@ -39,7 +52,13 @@ interface LabReportCardProps {
  * header-only with a "Keine Werte erfasst" placeholder so the
  * report shell is visible while users add values incrementally.
  */
-export function LabReportCard({ report, valuesByCategory, form, valueForm }: LabReportCardProps) {
+export function LabReportCard({
+  report,
+  valuesByCategory,
+  form,
+  valueForm,
+  highlightQuery,
+}: LabReportCardProps) {
   const { t } = useTranslation('lab-values');
   const {
     reportDate,
@@ -56,6 +75,10 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
   const categories = Array.from(valuesByCategory.entries());
   const hasValues = categories.length > 0;
   const allValues = useMemo(() => Array.from(valuesByCategory.values()).flat(), [valuesByCategory]);
+  const queryTerms = useMemo(
+    () => (highlightQuery ? splitQuery(highlightQuery) : []),
+    [highlightQuery],
+  );
 
   return (
     <section
@@ -74,10 +97,18 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
             <ProvenanceBadge sourceDocumentId={report.sourceDocumentId} />
           </div>
           <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-            {labName && <MetaItem label={t('report.meta.lab')} value={labName} />}
-            {doctorName && <MetaItem label={t('report.meta.doctor')} value={doctorName} />}
+            {labName && (
+              <MetaItem label={t('report.meta.lab')} value={labName} terms={queryTerms} />
+            )}
+            {doctorName && (
+              <MetaItem label={t('report.meta.doctor')} value={doctorName} terms={queryTerms} />
+            )}
             {reportNumber && (
-              <MetaItem label={t('report.meta.report-number')} value={reportNumber} />
+              <MetaItem
+                label={t('report.meta.report-number')}
+                value={reportNumber}
+                terms={queryTerms}
+              />
             )}
           </dl>
         </div>
@@ -86,7 +117,7 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
 
       {contextNote && (
         <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-          <MarkdownContent>{contextNote}</MarkdownContent>
+          <MarkdownContent highlightQuery={highlightQuery}>{contextNote}</MarkdownContent>
         </div>
       )}
 
@@ -95,10 +126,19 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
           categories.map(([category, values]) => (
             <div key={category}>
               <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-                {category}
+                <HighlightCell text={category} terms={queryTerms} />
               </h3>
-              <LabValuesTable category={category} values={values} valueForm={valueForm} />
-              <CategoryAssessment category={category} assessment={categoryAssessments[category]} />
+              <LabValuesTable
+                category={category}
+                values={values}
+                valueForm={valueForm}
+                queryTerms={queryTerms}
+              />
+              <CategoryAssessment
+                category={category}
+                assessment={categoryAssessments[category]}
+                highlightQuery={highlightQuery}
+              />
             </div>
           ))
         ) : (
@@ -124,7 +164,7 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
               {t('report.section.overall')}
             </h3>
-            <MarkdownContent>{overallAssessment}</MarkdownContent>
+            <MarkdownContent highlightQuery={highlightQuery}>{overallAssessment}</MarkdownContent>
           </div>
         )}
 
@@ -133,7 +173,7 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
               {t('report.section.relevance')}
             </h3>
-            <MarkdownContent>{relevanceNotes}</MarkdownContent>
+            <MarkdownContent highlightQuery={highlightQuery}>{relevanceNotes}</MarkdownContent>
           </div>
         )}
 
@@ -143,13 +183,38 @@ export function LabReportCard({ report, valuesByCategory, form, valueForm }: Lab
   );
 }
 
-function MetaItem({ label, value }: { label: string; value: string }) {
+function MetaItem({
+  label,
+  value,
+  terms,
+}: {
+  label: string;
+  value: string;
+  terms: string[];
+}) {
   return (
     <div className="flex gap-1">
       <dt className="font-medium">{label}:</dt>
-      <dd>{value}</dd>
+      <dd>
+        <HighlightCell text={value} terms={terms} />
+      </dd>
     </div>
   );
+}
+
+/**
+ * Wraps a plain-text string with `<HighlightedText>` when the query
+ * matches any range; otherwise renders the bare string. Used for
+ * every value-table cell + lab-report meta field. Match indexing is
+ * intentionally per-cell (no global cursor) because P-22b ships
+ * highlighting only — Up/Down match navigation is registered as
+ * P-22b polish and would need a global match plan threaded through
+ * the entire LabReportCard subtree.
+ */
+function HighlightCell({ text, terms }: { text: string; terms: string[] }) {
+  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
+  if (ranges.length === 0) return <>{text}</>;
+  return <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />;
 }
 
 function formatGermanDate(isoDate: string): string {

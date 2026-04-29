@@ -4,6 +4,8 @@ import { MarkdownContent } from '../profile-view';
 interface CategoryAssessmentProps {
   category: string;
   assessment: string | undefined;
+  /** P-22b: forwarded to MarkdownContent for in-text highlighting. */
+  highlightQuery?: string;
 }
 
 /**
@@ -11,7 +13,11 @@ interface CategoryAssessmentProps {
  * Markdown below the values table for that category. Renders
  * nothing when the assessment is empty or undefined.
  */
-export function CategoryAssessment({ category, assessment }: CategoryAssessmentProps) {
+export function CategoryAssessment({
+  category,
+  assessment,
+  highlightQuery,
+}: CategoryAssessmentProps) {
   const { t } = useTranslation('lab-values');
   if (!assessment || assessment.trim() === '') return null;
   return (
@@ -19,7 +25,7 @@ export function CategoryAssessment({ category, assessment }: CategoryAssessmentP
       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
         {t('report.category-assessment', { category })}
       </p>
-      <MarkdownContent>{assessment}</MarkdownContent>
+      <MarkdownContent highlightQuery={highlightQuery}>{assessment}</MarkdownContent>
     </div>
   );
 }

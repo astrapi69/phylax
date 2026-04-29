@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { LabValue } from '../../domain';
+import { findMatchRanges } from '../../lib';
+import { HighlightedText } from '../../ui';
 import { LabValueActions } from './LabValueActions';
 import type { UseLabValueFormResult } from './useLabValueForm';
 
@@ -12,6 +14,13 @@ interface LabValuesTableProps {
    * read-only contexts (e.g., profile-view summary panes).
    */
   valueForm?: UseLabValueFormResult;
+  /**
+   * P-22b cell highlighting. Pre-split query terms (so the parent
+   * computes `splitQuery(...)` once instead of every cell repeating
+   * the work). Empty array => no highlighting; cells render bare
+   * text.
+   */
+  queryTerms?: string[];
 }
 
 /**
@@ -21,7 +30,12 @@ interface LabValuesTableProps {
  * O-12b: when a `valueForm` is supplied, an actions column is
  * appended with edit + delete buttons per row.
  */
-export function LabValuesTable({ category, values, valueForm }: LabValuesTableProps) {
+export function LabValuesTable({
+  category,
+  values,
+  valueForm,
+  queryTerms = [],
+}: LabValuesTableProps) {
   const { t } = useTranslation('lab-values');
   const showActions = !!valueForm;
   return (
@@ -56,14 +70,20 @@ export function LabValuesTable({ category, values, valueForm }: LabValuesTablePr
           {values.map((v) => (
             <tr key={v.id} className="border-b border-gray-100 last:border-0 dark:border-gray-800">
               <td className="py-1.5 pr-4 font-medium text-gray-900 dark:text-gray-100">
-                {v.parameter}
+                <Cell text={v.parameter} terms={queryTerms} />
               </td>
-              <td className="py-1.5 pr-4 text-gray-800 dark:text-gray-200">{v.result}</td>
-              <td className="py-1.5 pr-4 text-gray-600 dark:text-gray-400">{v.unit ?? '-'}</td>
+              <td className="py-1.5 pr-4 text-gray-800 dark:text-gray-200">
+                <Cell text={v.result} terms={queryTerms} />
+              </td>
               <td className="py-1.5 pr-4 text-gray-600 dark:text-gray-400">
-                {v.referenceRange ?? '-'}
+                <Cell text={v.unit ?? '-'} terms={queryTerms} />
               </td>
-              <td className={`py-1.5 ${assessmentStyle(v.assessment)}`}>{v.assessment ?? '-'}</td>
+              <td className="py-1.5 pr-4 text-gray-600 dark:text-gray-400">
+                <Cell text={v.referenceRange ?? '-'} terms={queryTerms} />
+              </td>
+              <td className={`py-1.5 ${assessmentStyle(v.assessment)}`}>
+                <Cell text={v.assessment ?? '-'} terms={queryTerms} />
+              </td>
               {valueForm && (
                 <td className="py-1 pl-2 text-right">
                   <LabValueActions value={v} form={valueForm} />
@@ -74,6 +94,14 @@ export function LabValuesTable({ category, values, valueForm }: LabValuesTablePr
         </tbody>
       </table>
     </div>
+  );
+}
+
+function Cell({ text, terms }: { text: string; terms: string[] }) {
+  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
+  if (ranges.length === 0) return <>{text}</>;
+  return (
+    <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />
   );
 }
 

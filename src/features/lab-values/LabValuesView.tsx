@@ -1,13 +1,19 @@
-import { useMemo } from 'react';
+import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   isDateRangeActive,
-  isInDateRangeIso,
   parseDateRange,
+  useUrlSearchParam,
   type DateRange,
 } from '../../lib';
-import { DateRangeFilter, EmptyStatePanel, ListSkeleton } from '../../ui';
+import {
+  DateRangeFilter,
+  EmptyStatePanel,
+  ListSkeleton,
+  SearchIcon,
+  SearchInput,
+} from '../../ui';
 import { LabReportCard } from './LabReportCard';
 import { useLabValues } from './useLabValues';
 import { useLabReportForm } from './useLabReportForm';
@@ -17,6 +23,7 @@ import { LabReportDeleteDialog } from './LabReportDeleteDialog';
 import { LabValueForm } from './LabValueForm';
 import { LabValueDeleteDialog } from './LabValueDeleteDialog';
 import { AddLabReportButton } from './AddLabReportButton';
+import { filterLabReports } from './filterLabReports';
 
 /**
  * Read-only lab values page at /lab-values. Shows lab reports
@@ -26,13 +33,25 @@ import { AddLabReportButton } from './AddLabReportButton';
  * modal primitive. Empty reports (no values yet) render header-only,
  * surfacing the report shell users build incrementally.
  *
- * O-18 introduces the date-range filter. URL params `?from=YYYY-MM-DD`
- * and `?to=YYYY-MM-DD` (either or both, validated) narrow the report
- * list by `reportDate`. Filtering happens at view level on the
- * already-decrypted data, mirroring the O-17 pattern in
- * ObservationsView. The sticky bar matches P-19's pattern from
- * observations so the filter inputs stay reachable while scrolling
- * through long report lists.
+ * O-18 introduced the date-range filter via URL params `?from=YYYY-MM-DD`
+ * and `?to=YYYY-MM-DD`. P-22b adds the search half via `?q=` and
+ * folds both filter dimensions into the same two-stage progressive-
+ * disclosure sticky-bar pattern shipped for ObservationsView in
+ * P-22a (commit 2540119 + magnifier-right-align follow-up 3d4ce9f):
+ *
+ *   Stage 0: only the magnifier toggle is visible. If a filter is
+ *            active (URL-driven or preserved across collapses), a
+ *            small dot on the magnifier signals "filter set, UI
+ *            hidden".
+ *   Stage 1: search input + calendar toggle visible alongside the
+ *            magnifier. Date inputs hidden.
+ *   Stage 2: search input + date inputs both visible.
+ *
+ * Q10 row-keep semantic: when a search query matches a report
+ * (header field OR any child value OR per-category assessment),
+ * the entire report renders with all its values intact for
+ * clinical context. Highlighting (handled per-cell + per-Markdown-
+ * field by LabReportCard) shows only the actual matches.
  */
 export function LabValuesView() {
   const { t } = useTranslation('lab-values');
@@ -41,8 +60,46 @@ export function LabValuesView() {
   const valueForm = useLabValueForm({ onCommitted: refetch });
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') ?? '';
+  const deferredQuery = useDeferredValue(query);
+  const setQuery = useUrlSearchParam('q', query, setSearchParams);
+
   const fromParam = searchParams.get('from') ?? '';
   const toParam = searchParams.get('to') ?? '';
+
+  // P-22b two-stage progressive disclosure (mirrors ObservationsView).
+  // Initial stage on mount mirrors the URL: `?from`/`?to` -> Stage 2,
+  // `?q` -> Stage 1, none -> Stage 0.
+  const initialStageRef = useRef<0 | 1 | 2>(
+    fromParam !== '' || toParam !== '' ? 2 : query !== '' ? 1 : 0,
+  );
+  const [stage, setStage] = useState<0 | 1 | 2>(initialStageRef.current);
+  const filterActive = query !== '' || fromParam !== '' || toParam !== '';
+  const showFilterIndicator = stage === 0 && filterActive;
+
+  const collapseToStageZero = () => setStage(0);
+  const onMagnifierClick = () => {
+    if (stage === 0) setStage(1);
+    else collapseToStageZero();
+  };
+  const onCalendarClick = () => {
+    if (stage === 1) setStage(2);
+  };
+  const clearAllAndCollapse = () => {
+    setQuery('');
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        params.delete('q');
+        params.delete('from');
+        params.delete('to');
+        return params;
+      },
+      { replace: true },
+    );
+    setStage(0);
+  };
+
   const dateRange: DateRange = useMemo(() => parseDateRange(searchParams), [searchParams]);
   const setDateParam = (key: 'from' | 'to', value: string) => {
     setSearchParams(
@@ -55,6 +112,13 @@ export function LabValuesView() {
       { replace: true },
     );
   };
+
+  const filterResult = useMemo(() => {
+    if (state.kind !== 'loaded') return null;
+    return filterLabReports(state.reports, { query: deferredQuery, dateRange });
+  }, [state, deferredQuery, dateRange]);
+
+  const isFiltering = deferredQuery.trim() !== '' || isDateRangeActive(dateRange);
 
   if (state.kind === 'loading') {
     return <ListSkeleton variant="card" count={3} ariaLabel={t('loading.aria-label')} />;
@@ -76,10 +140,9 @@ export function LabValuesView() {
     );
   }
 
-  const isFiltering = isDateRangeActive(dateRange);
-  const filteredReports = isFiltering
-    ? state.reports.filter(({ report }) => isInDateRangeIso(report.reportDate, dateRange))
-    : state.reports;
+  if (!filterResult) return null;
+
+  const reports = filterResult.reports;
 
   return (
     <article className="space-y-6">
@@ -92,28 +155,79 @@ export function LabValuesView() {
         <EmptyState />
       ) : (
         <>
-          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
-            <DateRangeFilter
-              from={fromParam}
-              to={toParam}
-              onFromChange={(v) => setDateParam('from', v)}
-              onToChange={(v) => setDateParam('to', v)}
-              fromLabel={t('date-range.from')}
-              toLabel={t('date-range.to')}
-              groupAriaLabel={t('date-range.aria-label')}
-            />
+          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
+            <div className="flex flex-wrap items-center gap-3">
+              {isFiltering && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  data-testid="lab-values-match-count"
+                  className="text-xs text-gray-600 dark:text-gray-400"
+                >
+                  {filterResult.matchCount === 0
+                    ? t('search.no-matches-counter')
+                    : t('search.match-count', {
+                        count: filterResult.matchCount,
+                        total: filterResult.totalCount,
+                      })}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {stage >= 2 && (
+                <DateRangeFilter
+                  from={fromParam}
+                  to={toParam}
+                  onFromChange={(v) => setDateParam('from', v)}
+                  onToChange={(v) => setDateParam('to', v)}
+                  fromLabel={t('date-range.from')}
+                  toLabel={t('date-range.to')}
+                  groupAriaLabel={t('date-range.aria-label')}
+                />
+              )}
+              {stage >= 1 && (
+                <>
+                  <SearchInput
+                    value={query}
+                    onChange={setQuery}
+                    placeholder={t('search.placeholder')}
+                    ariaLabel={t('search.aria-label')}
+                    clearLabel={t('search.clear')}
+                    onEscapeWhenEmpty={collapseToStageZero}
+                    onClear={clearAllAndCollapse}
+                    autoFocus
+                  />
+                  <CalendarToggle
+                    stage={stage}
+                    onClick={onCalendarClick}
+                    openLabel={t('search.dates-open')}
+                    alreadyOpenLabel={t('search.dates-shown')}
+                  />
+                </>
+              )}
+              <SearchToggle
+                stage={stage}
+                showActiveIndicator={showFilterIndicator}
+                onClick={onMagnifierClick}
+                openLabel={t('common:search.open')}
+                closeLabel={t('common:search.close')}
+                activeIndicatorLabel={t('search.filter-active-indicator')}
+              />
+            </div>
           </div>
-          {isFiltering && filteredReports.length === 0 ? (
-            <NoMatchesState />
+
+          {isFiltering && reports.length === 0 ? (
+            <NoMatchesState query={deferredQuery} />
           ) : (
             <div className="space-y-6">
-              {filteredReports.map(({ report, valuesByCategory }) => (
+              {reports.map(({ report, valuesByCategory }) => (
                 <LabReportCard
                   key={report.id}
                   report={report}
                   valuesByCategory={valuesByCategory}
                   form={form}
                   valueForm={valueForm}
+                  highlightQuery={deferredQuery}
                 />
               ))}
             </div>
@@ -129,15 +243,101 @@ export function LabValuesView() {
   );
 }
 
-function NoMatchesState() {
+function SearchToggle({
+  stage,
+  showActiveIndicator,
+  onClick,
+  openLabel,
+  closeLabel,
+  activeIndicatorLabel,
+}: {
+  stage: 0 | 1 | 2;
+  showActiveIndicator: boolean;
+  onClick: () => void;
+  openLabel: string;
+  closeLabel: string;
+  activeIndicatorLabel: string;
+}) {
+  const expanded = stage > 0;
+  const label = expanded ? closeLabel : openLabel;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={showActiveIndicator ? `${label} (${activeIndicatorLabel})` : label}
+      aria-expanded={expanded}
+      title={label}
+      data-testid="search-toggle"
+      className="relative flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+    >
+      {expanded ? <CloseIcon /> : <SearchIcon />}
+      {showActiveIndicator && (
+        <span
+          aria-hidden="true"
+          data-testid="search-toggle-active-indicator"
+          className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400"
+        />
+      )}
+    </button>
+  );
+}
+
+function CalendarToggle({
+  stage,
+  onClick,
+  openLabel,
+  alreadyOpenLabel,
+}: {
+  stage: 0 | 1 | 2;
+  onClick: () => void;
+  openLabel: string;
+  alreadyOpenLabel: string;
+}) {
+  const opened = stage >= 2;
+  const label = opened ? alreadyOpenLabel : openLabel;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      aria-expanded={opened}
+      aria-pressed={opened}
+      title={label}
+      disabled={opened}
+      data-testid="calendar-toggle"
+      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+    >
+      <CalendarIcon />
+    </button>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
+      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z" />
+    </svg>
+  );
+}
+
+function NoMatchesState({ query }: { query: string }) {
   const { t } = useTranslation('lab-values');
+  const trimmed = query.trim();
   return (
     <div
       role="status"
-      data-testid="lab-values-no-matches-in-range"
+      data-testid="lab-values-no-matches"
       className="rounded-sm border border-gray-200 bg-gray-50 p-6 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
     >
-      {t('date-range.no-matches')}
+      {trimmed === '' ? t('date-range.no-matches') : t('search.no-matches', { query: trimmed })}
     </div>
   );
 }
