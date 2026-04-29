@@ -23,7 +23,6 @@ import exportDE from '../locales/de/export.json';
 import errorsDE from '../locales/de/errors.json';
 import appShellDE from '../locales/de/app-shell.json';
 import themeDE from '../locales/de/theme.json';
-import pwaUpdateDE from '../locales/de/pwa-update.json';
 import documentsDE from '../locales/de/documents.json';
 import notFoundDE from '../locales/de/not-found.json';
 import backupImportDE from '../locales/de/backup-import.json';
@@ -71,7 +70,6 @@ export const NAMESPACES = [
   'errors',
   'app-shell',
   'theme',
-  'pwa-update',
   'documents',
   'not-found',
   'backup-import',
@@ -184,7 +182,6 @@ void i18n
         errors: errorsDE,
         'app-shell': appShellDE,
         theme: themeDE,
-        'pwa-update': pwaUpdateDE,
         documents: documentsDE,
         'not-found': notFoundDE,
         'backup-import': backupImportDE,

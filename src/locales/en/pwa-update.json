@@ -1,7 +1,0 @@
-{
-  "indicator": {
-    "label": "Update",
-    "aria-label": "Update available — click to apply",
-    "tooltip": "A new version is available. Click to apply."
-  }
-}

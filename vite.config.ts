@@ -78,6 +78,40 @@ export default defineConfig(({ mode }) => {
           navigateFallback: `${base}index.html`,
           // No runtime caching: Phylax has no external resources.
           // All assets are bundled and cached via precaching.
+          //
+          // BUG-01 follow-up: silent update strategy.
+          //
+          // Two distinct skipWaiting mechanisms exist:
+          //   1. workbox `skipWaiting: true` — bakes
+          //      `self.skipWaiting()` into the SW install handler so
+          //      the new SW activates immediately, no waiting state.
+          //   2. `updateSW(true)` from `virtual:pwa-register` — sends
+          //      a SKIP_WAITING postMessage at runtime AND reloads
+          //      the page programmatically.
+          //
+          // Mechanism #2 is what BUG-01 was about: registerType
+          // 'autoUpdate' triggered it automatically, causing a
+          // mid-session reload that wiped the in-memory keyStore.
+          // The fix in commit 0a0bfbb switched to registerType
+          // 'prompt' so the plugin no longer calls updateSW(true)
+          // automatically.
+          //
+          // This follow-up keeps registerType 'prompt' (no
+          // programmatic reload, BUG-01 stays fixed) AND turns on
+          // mechanism #1: the new SW activates the moment it
+          // finishes installing, but `clientsClaim: false` (Workbox
+          // default) means it does NOT take over the existing tab.
+          // The user's session keeps using the old SW until they
+          // navigate / reload, at which point the new active SW
+          // serves the new page. Result: silent install, update
+          // applies on next user-initiated reload, no UI prompt
+          // needed.
+          //
+          // Trade-off: a tab kept open for days runs the old build
+          // until the user reloads. Acceptable for a local-first app
+          // with no server-side state to migrate.
+          skipWaiting: true,
+          clientsClaim: false,
         },
         devOptions: {
           enabled: true,
