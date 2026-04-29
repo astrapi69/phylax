@@ -9,6 +9,7 @@ import { readMeta } from '../../db/meta';
 import { ProfileRepository, SupplementRepository } from '../../db/repositories';
 import type { Profile, Supplement, SupplementCategory } from '../../domain';
 import { __resetScrollLockForTest } from '../../ui';
+import { SearchProvider } from '../search-trigger';
 import { SupplementsView } from './SupplementsView';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -29,10 +30,18 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderView() {
+function renderView({
+  initialEntries = ['/supplements'],
+  defaultOpen,
+}: {
+  initialEntries?: string[];
+  defaultOpen?: boolean;
+} = {}) {
   return render(
-    <MemoryRouter>
-      <SupplementsView />
+    <MemoryRouter initialEntries={initialEntries}>
+      <SearchProvider defaultOpen={defaultOpen}>
+        <SupplementsView />
+      </SearchProvider>
     </MemoryRouter>,
   );
 }
@@ -151,5 +160,98 @@ describe('SupplementsView', () => {
     const headings = screen.getAllByRole('heading', { level: 2 });
     expect(headings[0]?.textContent).toMatch(/Täglich/);
     expect(headings[1]?.textContent).toMatch(/Pausiert/);
+  });
+
+  describe('search filter (P-22c)', () => {
+    function mockTwoGroups() {
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+      vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([
+        mockSupplement('Magnesium', 'daily'),
+        mockSupplement('Vitamin D3', 'daily', 'vd3'),
+        mockSupplement('Kreatin', 'paused'),
+      ]);
+    }
+
+    it('does NOT render the inline search bar by default (header drives open state)', async () => {
+      mockTwoGroups();
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Täglich/ })).toBeInTheDocument(),
+      );
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('supplements-match-count')).not.toBeInTheDocument();
+    });
+
+    it('renders the inline search bar when SearchContext.isOpen is true', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      expect(await screen.findByRole('searchbox')).toBeInTheDocument();
+    });
+
+    it('typing a query filters via group-keep semantic (child match)', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      await user.type(input, 'Magnesium');
+      await waitFor(() => {
+        const headings = screen.getAllByRole('heading', { level: 2 });
+        expect(headings).toHaveLength(1);
+      });
+      // Daily group kept; group-keep keeps Vitamin D3 too.
+      expect(screen.getByRole('heading', { level: 2, name: /Täglich/ })).toBeInTheDocument();
+      expect(screen.getByText('Vitamin D3')).toBeInTheDocument();
+      // Paused group hidden.
+      expect(screen.queryByRole('heading', { level: 2, name: /Pausiert/ })).not.toBeInTheDocument();
+    });
+
+    it('group-label match keeps the group visible', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'pausiert');
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { level: 2, name: /Pausiert/ })).toBeInTheDocument();
+      });
+      expect(screen.queryByRole('heading', { level: 2, name: /Täglich/ })).not.toBeInTheDocument();
+    });
+
+    it('shows the no-matches state when query has zero hits', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'xyz');
+      await waitFor(() =>
+        expect(screen.getByTestId('supplements-no-matches')).toHaveTextContent(/xyz/),
+      );
+    });
+
+    it('seeds search input from `?q=` URL param via SearchProvider auto-open', async () => {
+      mockTwoGroups();
+      renderView({ initialEntries: ['/supplements?q=Magnesium'] });
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      expect(input.value).toBe('Magnesium');
+    });
+
+    it('clears query when the SearchInput X button is clicked (Q15)', async () => {
+      mockTwoGroups();
+      renderView({ initialEntries: ['/supplements?q=Magnesium'] });
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      expect(input.value).toBe('Magnesium');
+      const user = userEvent.setup();
+      await user.click(screen.getByTestId('search-input-clear'));
+      // Bar collapses when cleared.
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    });
+
+    it('hides the inline search bar when there are zero supplements (empty branch)', async () => {
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+      vi.spyOn(SupplementRepository.prototype, 'listByProfile').mockResolvedValue([]);
+      renderView({ defaultOpen: true });
+      await waitFor(() =>
+        expect(screen.getByText(/Noch keine Supplemente erfasst/)).toBeInTheDocument(),
+      );
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    });
   });
 });

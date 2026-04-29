@@ -69,5 +69,13 @@
     "cancel": "Abbrechen",
     "busy": "Wird gelöscht...",
     "error": "Löschen fehlgeschlagen."
+  },
+  "search": {
+    "placeholder": "Supplemente durchsuchen...",
+    "aria-label": "Supplemente durchsuchen",
+    "clear": "Suche zurücksetzen",
+    "match-count": "{{count}} von {{total}} Kategorien",
+    "no-matches-counter": "Keine Treffer",
+    "no-matches": "Keine Treffer für „{{query}}\"."
   }
 }

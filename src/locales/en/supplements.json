@@ -69,5 +69,13 @@
     "cancel": "Cancel",
     "busy": "Deleting...",
     "error": "Delete failed."
+  },
+  "search": {
+    "placeholder": "Search supplements...",
+    "aria-label": "Search supplements",
+    "clear": "Clear search",
+    "match-count": "{{count}} of {{total}} categories",
+    "no-matches-counter": "No matches",
+    "no-matches": "No matches for \"{{query}}\"."
   }
 }
