@@ -16,18 +16,19 @@ const EXPECTED_ITEMS = [
   'Einstellungen',
 ];
 
-describe('NavBar', () => {
-  it('shows all expected navigation items', () => {
+describe('NavBar (desktop side panel)', () => {
+  it('shows all expected navigation items exactly once', () => {
     render(
       <MemoryRouter>
         <NavBar />
       </MemoryRouter>,
     );
 
+    // BUG-02: NavBar renders only the desktop side panel; mobile
+    // moved to NavDrawer. Each item must appear exactly once.
     for (const label of EXPECTED_ITEMS) {
-      // Each item appears twice: mobile (bottom) + desktop (side)
       const links = screen.getAllByText(label);
-      expect(links.length).toBeGreaterThanOrEqual(1);
+      expect(links).toHaveLength(1);
     }
   });
 
@@ -38,12 +39,8 @@ describe('NavBar', () => {
       </MemoryRouter>,
     );
 
-    // Find the desktop nav links (they have the full text)
-    const activeLinks = screen.getAllByText('Profil');
-    const hasActiveClass = activeLinks.some((link) =>
-      link.closest('a')?.className.includes('text-blue-700'),
-    );
-    expect(hasActiveClass).toBe(true);
+    const link = screen.getByText('Profil').closest('a');
+    expect(link?.className).toContain('text-blue-700');
   });
 
   it('all items are keyboard-reachable links', () => {
@@ -55,7 +52,6 @@ describe('NavBar', () => {
 
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
     const links = nav.querySelectorAll('a');
-    // Each nav item renders twice (mobile bottom bar + desktop side panel)
-    expect(links.length).toBe(EXPECTED_ITEMS.length * 2);
+    expect(links).toHaveLength(EXPECTED_ITEMS.length);
   });
 });

@@ -50,4 +50,31 @@ describe('Header', () => {
     const link = screen.getByText('Phylax');
     expect(link.closest('a')).toHaveAttribute('href', '/profile');
   });
+
+  it('hides the hamburger trigger when onOpenNavDrawer is not provided (BUG-02 desktop default)', () => {
+    render(
+      <MemoryRouter>
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.queryByTestId('header-hamburger')).not.toBeInTheDocument();
+  });
+
+  it('renders the hamburger trigger when onOpenNavDrawer is provided (BUG-02 mobile)', async () => {
+    const onOpenNavDrawer = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <ThemeProvider>
+          <Header onOpenNavDrawer={onOpenNavDrawer} />
+        </ThemeProvider>
+      </MemoryRouter>,
+    );
+    const trigger = screen.getByTestId('header-hamburger');
+    expect(trigger).toHaveAttribute('aria-label', 'Navigation öffnen');
+    await user.click(trigger);
+    expect(onOpenNavDrawer).toHaveBeenCalledOnce();
+  });
 });

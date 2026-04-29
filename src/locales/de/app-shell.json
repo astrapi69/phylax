@@ -1,7 +1,8 @@
 {
   "header": {
     "lock-aria-label": "Phylax sperren",
-    "lock": "Sperren"
+    "lock": "Sperren",
+    "open-nav": "Navigation öffnen"
   },
   "nav": {
     "aria-label": "Hauptnavigation",
@@ -13,5 +14,9 @@
     "documents": "Dokumente",
     "import": "Import",
     "settings": "Einstellungen"
+  },
+  "drawer": {
+    "title": "Navigation",
+    "close": "Navigation schließen"
   }
 }

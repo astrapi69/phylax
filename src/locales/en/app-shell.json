@@ -1,7 +1,8 @@
 {
   "header": {
     "lock-aria-label": "Lock Phylax",
-    "lock": "Lock"
+    "lock": "Lock",
+    "open-nav": "Open navigation"
   },
   "nav": {
     "aria-label": "Main navigation",
@@ -13,5 +14,9 @@
     "documents": "Documents",
     "import": "Import",
     "settings": "Settings"
+  },
+  "drawer": {
+    "title": "Navigation",
+    "close": "Close navigation"
   }
 }

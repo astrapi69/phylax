@@ -1,18 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-const NAV_ITEMS = [
-  { to: '/profile', i18n: 'app-shell:nav.profile' },
-  { to: '/observations', i18n: 'app-shell:nav.observations' },
-  { to: '/lab-values', i18n: 'app-shell:nav.lab-values' },
-  { to: '/supplements', i18n: 'app-shell:nav.supplements' },
-  { to: '/open-points', i18n: 'common:entity.open-points' },
-  { to: '/timeline', i18n: 'app-shell:nav.timeline' },
-  { to: '/documents', i18n: 'app-shell:nav.documents' },
-  { to: '/chat', i18n: 'common:entity.ai-assistant' },
-  { to: '/import', i18n: 'app-shell:nav.import' },
-  { to: '/settings', i18n: 'app-shell:nav.settings' },
-] as const;
+import { NAV_ITEMS } from './navItems';
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   const base = 'block rounded-sm px-3 py-2 text-sm transition-colors no-underline';
@@ -22,30 +10,27 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 }
 
 /**
- * Navigation bar. Bottom on mobile (< md), side on desktop (>= md).
- * Uses NavLink for active-route highlighting.
+ * Desktop-only side navigation panel.
+ *
+ * BUG-02: mobile bottom-nav (10 NAV_ITEMS at h-16 with
+ * justify-around) squeezed each item to ~36px on a 360px viewport,
+ * making the labels effectively invisible. Mobile rendering moved
+ * to NavDrawer (hamburger top-left) which scales independently of
+ * item count. NavBar therefore renders only at the `md` breakpoint
+ * and above; mobile users open NAV_ITEMS via the drawer.
  */
 export function NavBar() {
   const { t } = useTranslation('app-shell');
   return (
-    <nav aria-label={t('nav.aria-label')}>
-      {/* Mobile: bottom fixed bar */}
-      <div className="fixed right-0 bottom-0 left-0 z-40 flex h-16 items-center justify-around border-t border-gray-200 bg-white md:hidden dark:border-gray-700 dark:bg-gray-900">
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            <span className="text-xs">{t(item.i18n)}</span>
-          </NavLink>
-        ))}
-      </div>
-
-      {/* Desktop: side panel */}
-      <div className="hidden md:fixed md:top-14 md:bottom-0 md:left-0 md:flex md:w-48 md:flex-col md:gap-1 md:border-r md:border-gray-200 md:bg-white md:p-3 md:dark:border-gray-700 md:dark:bg-gray-900">
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.to} to={item.to} className={navLinkClass}>
-            {t(item.i18n)}
-          </NavLink>
-        ))}
-      </div>
+    <nav
+      aria-label={t('nav.aria-label')}
+      className="hidden md:fixed md:top-14 md:bottom-0 md:left-0 md:flex md:w-48 md:flex-col md:gap-1 md:border-r md:border-gray-200 md:bg-white md:p-3 md:dark:border-gray-700 md:dark:bg-gray-900"
+    >
+      {NAV_ITEMS.map((item) => (
+        <NavLink key={item.to} to={item.to} className={navLinkClass}>
+          {t(item.i18n)}
+        </NavLink>
+      ))}
     </nav>
   );
 }
