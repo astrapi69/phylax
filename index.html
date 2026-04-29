@@ -38,7 +38,11 @@
 
     <!-- Apple PWA -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!-- Apple deprecated apple-mobile-web-app-capable in iOS 16.4+. Both
+         tags coexist: the prefixed one for iOS < 16.4, the unprefixed
+         standard for iOS 16.4+ and other browsers. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Phylax" />
 
