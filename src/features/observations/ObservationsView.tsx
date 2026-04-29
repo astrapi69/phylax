@@ -291,93 +291,109 @@ export function ObservationsView() {
            *  content beneath. `-mx-4 px-4` extends the opaque region
            *  to the parent's padding so observations do not bleed
            *  through the gutters. */}
-          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
+          <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
             {/* P-22a two-stage progressive disclosure.
              *
-             *  Default chrome is the magnifier toggle alone (Stage 0).
-             *  Click expands to Stage 1: search input + a calendar
-             *  toggle that, when clicked, expands further to Stage 2
-             *  by revealing the date inputs. A subsequent magnifier
-             *  click cascades all the way back to Stage 0 and
-             *  preserves the values (Q15 lock); the global X clear
-             *  button on the search input clears query + dates and
-             *  collapses to Stage 0 (Q15). When the bar is collapsed
-             *  but a filter remains active (e.g. via shared `?q=`
-             *  link or a previous expand-then-magnifier-click), a
-             *  small dot on the magnifier signals "filter set, UI
-             *  hidden" (Q14). */}
-            <SearchToggle
-              stage={stage}
-              showActiveIndicator={showFilterIndicator}
-              onClick={onMagnifierClick}
-              openLabel={t('common:search.open')}
-              closeLabel={t('common:search.close')}
-              activeIndicatorLabel={t('search.filter-active-indicator')}
-            />
-            {stage >= 1 && (
-              <>
-                <SearchInput
-                  value={query}
-                  onChange={setQuery}
-                  placeholder={t('search.placeholder')}
-                  ariaLabel={t('search.aria-label')}
-                  clearLabel={t('search.clear')}
-                  onEnter={next}
-                  onShiftEnter={prev}
-                  onEscapeWhenEmpty={collapseToStageZero}
-                  onClear={clearAllAndCollapse}
-                  autoFocus
+             *  Layout: outer wrapper is `justify-between` with two
+             *  inner clusters. Left cluster carries the match
+             *  counter + Up/Down nav (only present when a search
+             *  query is active and produced matches). Right cluster
+             *  is always present; it carries the date filter
+             *  (Stage 2 only), the search input + calendar toggle
+             *  (Stage 1 onward), and the magnifier toggle anchored
+             *  to the right edge. Right-anchored magnifier matches
+             *  the standard "actions on the right" rhythm (theme +
+             *  lock are also right-aligned in the Header).
+             *
+             *  Default chrome (Stage 0) is the magnifier alone.
+             *  Click expands to Stage 1; the search input + calendar
+             *  toggle render alongside, growing leftward from the
+             *  magnifier. Calendar click expands to Stage 2,
+             *  revealing the date inputs further to the left. A
+             *  subsequent magnifier click cascades all the way back
+             *  to Stage 0 and preserves the values (Q15 lock); the
+             *  global X clear button on the search input clears
+             *  query + dates and collapses to Stage 0 (Q15). When
+             *  the bar is collapsed but a filter remains active
+             *  (e.g. via shared `?q=` link or a previous expand-
+             *  then-magnifier-click), a small dot on the magnifier
+             *  signals "filter set, UI hidden" (Q14). */}
+            <div className="flex flex-wrap items-center gap-3">
+              {isFiltering && totalMatches > 0 && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  data-testid="search-match-count"
+                  className="text-xs text-gray-600 dark:text-gray-400"
+                >
+                  {totalMatches === 1
+                    ? t('search.single-match')
+                    : t('search.match-count-treffer', {
+                        count: activeIndex,
+                        total: totalMatches,
+                      })}
+                </p>
+              )}
+              {isFiltering && totalMatches >= 2 && (
+                <>
+                  <NavButton
+                    onClick={prev}
+                    ariaLabel={t('search.prev-match')}
+                    testId="search-prev"
+                    iconRotation="up"
+                  />
+                  <NavButton
+                    onClick={next}
+                    ariaLabel={t('search.next-match')}
+                    testId="search-next"
+                    iconRotation="down"
+                  />
+                </>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {stage >= 2 && (
+                <DateRangeFilter
+                  from={fromParam}
+                  to={toParam}
+                  onFromChange={(v) => setDateParam('from', v)}
+                  onToChange={(v) => setDateParam('to', v)}
+                  fromLabel={t('date-range.from')}
+                  toLabel={t('date-range.to')}
+                  groupAriaLabel={t('date-range.aria-label')}
                 />
-                <CalendarToggle
-                  stage={stage}
-                  onClick={onCalendarClick}
-                  openLabel={t('search.dates-open')}
-                  alreadyOpenLabel={t('search.dates-shown')}
-                />
-              </>
-            )}
-            {stage >= 2 && (
-              <DateRangeFilter
-                from={fromParam}
-                to={toParam}
-                onFromChange={(v) => setDateParam('from', v)}
-                onToChange={(v) => setDateParam('to', v)}
-                fromLabel={t('date-range.from')}
-                toLabel={t('date-range.to')}
-                groupAriaLabel={t('date-range.aria-label')}
+              )}
+              {stage >= 1 && (
+                <>
+                  <SearchInput
+                    value={query}
+                    onChange={setQuery}
+                    placeholder={t('search.placeholder')}
+                    ariaLabel={t('search.aria-label')}
+                    clearLabel={t('search.clear')}
+                    onEnter={next}
+                    onShiftEnter={prev}
+                    onEscapeWhenEmpty={collapseToStageZero}
+                    onClear={clearAllAndCollapse}
+                    autoFocus
+                  />
+                  <CalendarToggle
+                    stage={stage}
+                    onClick={onCalendarClick}
+                    openLabel={t('search.dates-open')}
+                    alreadyOpenLabel={t('search.dates-shown')}
+                  />
+                </>
+              )}
+              <SearchToggle
+                stage={stage}
+                showActiveIndicator={showFilterIndicator}
+                onClick={onMagnifierClick}
+                openLabel={t('common:search.open')}
+                closeLabel={t('common:search.close')}
+                activeIndicatorLabel={t('search.filter-active-indicator')}
               />
-            )}
-            {isFiltering && totalMatches > 0 && (
-              <p
-                role="status"
-                aria-live="polite"
-                data-testid="search-match-count"
-                className="text-xs text-gray-600 dark:text-gray-400"
-              >
-                {totalMatches === 1
-                  ? t('search.single-match')
-                  : t('search.match-count-treffer', {
-                      count: activeIndex,
-                      total: totalMatches,
-                    })}
-              </p>
-            )}
-            {isFiltering && totalMatches >= 2 && (
-              <>
-                <NavButton
-                  onClick={prev}
-                  ariaLabel={t('search.prev-match')}
-                  testId="search-prev"
-                  iconRotation="up"
-                />
-                <NavButton
-                  onClick={next}
-                  ariaLabel={t('search.next-match')}
-                  testId="search-next"
-                  iconRotation="down"
-                />
-              </>
-            )}
+            </div>
           </div>
 
           {isFiltering && filterResult.matchCount === 0 ? (
