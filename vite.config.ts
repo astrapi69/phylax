@@ -22,7 +22,21 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
-        registerType: 'autoUpdate',
+        // BUG-01 fix: 'prompt' (not 'autoUpdate'). autoUpdate calls
+        // updateSW(true) -> window.location.reload() the moment the
+        // new SW activates via clientsClaim, which wipes the
+        // in-memory keyStore mid-session. A user who unlocks fast
+        // right after a fresh `make dev` start (or after a
+        // production deploy) sees ProfileView render briefly, the
+        // new SW takes control, the page reloads, and the now-empty
+        // keyStore makes resolveAuthState=locked → redirect back to
+        // /unlock. 'prompt' mode installs the new SW silently and
+        // surfaces the existing <UpdatePrompt> toast wired in
+        // App.tsx; the user reloads at a safe time of their
+        // choosing. Trade-off: users may run a slightly stale build
+        // until they accept the prompt — acceptable for a
+        // local-first app with no server-side state.
+        registerType: 'prompt',
         manifest: {
           name: 'Phylax',
           short_name: 'Phylax',
