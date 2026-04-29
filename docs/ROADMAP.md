@@ -38,7 +38,7 @@ Goal: a working PWA shell with master password, encryption layer, and an empty b
 - [x] **F-05** Vitest setup with `fake-indexeddb`, sample test green
 - [x] **F-05b** Enable per-module coverage thresholds in vitest config (activate after F-11)
 - [x] **F-06** Playwright setup with one smoke test
-- [ ] **F-06b** Cross-browser E2E: add Firefox and WebKit projects to Playwright config
+- [x] **F-06b** Cross-browser E2E: Firefox and WebKit projects added to `playwright.config.base.ts` alongside the existing Chromium project (2026-04-30). `baseProjects` now lists three projects using `devices['Desktop Chrome']`, `devices['Desktop Firefox']`, `devices['Desktop Safari']`; both dev and production suites pick up the matrix automatically because they spread `baseProjects` directly. The CI `mcr.microsoft.com/playwright:v1.59.1-noble` container image (TD-10) ships all three browser binaries pre-baked, so no workflow changes were needed; only the suite duration grows by ~3x. Test count per CI run: `e2e-dev` previously N specs * 1 browser, now N * 3; same for `e2e-production`.
 - [x] **F-07** Crypto module: AES-256-GCM encrypt/decrypt with round-trip and negative tests
 - [x] **F-08** Crypto module: PBKDF2 key derivation with salt, 600k iterations, constants in `crypto/constants.ts`
 - [x] **F-09** Key store module: in-memory key holder, lock/unlock API, no persistence
@@ -450,7 +450,6 @@ O-19 (empty states and loading skeletons).
 
 Open backlog (deferred; not part of v1.0.0):
 
-- **F-06b**: cross-browser Playwright (Firefox, WebKit)
 - **O-16 through O-19**: remaining Phase 2 manual-entry forms (base-data
   editor, in-memory search, date range filter, empty states)
 - **IM-05**: import conflict handling beyond replace-all (selective merge)

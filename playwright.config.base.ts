@@ -45,16 +45,28 @@ export const baseUse: NonNullable<PlaywrightTestConfig['use']> = {
 };
 
 /**
- * Default project list: a single Chromium + Desktop Chrome entry.
+ * Default project list. F-06b adds Firefox and WebKit alongside the
+ * original Chromium project so the dev + production e2e suites both
+ * run across all three engines on every CI invocation. The official
+ * `mcr.microsoft.com/playwright:v<x>-noble` container image ships
+ * all three browsers pre-baked, so the only cost is suite duration.
  *
- * Both configs currently assign `projects: baseProjects`. When a future
- * requirement needs divergence (e.g. production theme matrix or dev
- * multi-browser), the consuming config overwrites or extends the field
- * locally; the default stays a single source of truth.
+ * Consuming configs assign `projects: baseProjects` directly. If a
+ * future requirement needs divergence (e.g. a production-only theme
+ * matrix), override or extend the field locally; the default stays
+ * a single source of truth.
  */
 export const baseProjects: PlaywrightTestConfig['projects'] = [
   {
     name: 'chromium',
     use: { ...devices['Desktop Chrome'] },
+  },
+  {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+  {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
   },
 ];
