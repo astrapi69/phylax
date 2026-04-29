@@ -27,6 +27,8 @@ import {
   EMPTY_COUNTS,
   ImportTargetNotEmptyError,
   countsAreEmpty,
+  resolvePerTypeReplace,
+  userAuthorisedAnyReplace,
   type EntityCounts,
   type ImportOptions,
   type ImportResult,
@@ -70,7 +72,17 @@ export async function importProfile(
   targetProfileId: string,
   options: ImportOptions = {},
 ): Promise<ImportResult> {
-  const replaceExisting = options.replaceExisting ?? false;
+  // IM-05: replaceExisting accepts boolean (legacy) OR PerTypeReplace
+  // object (selective merge). Two helpers split the policy:
+  //   resolvePerTypeReplace(...) -> per-type write-decision map
+  //   userAuthorisedAnyReplace(...) -> throw-guard authorisation
+  //
+  // The map is all-true for legacy boolean / undefined inputs so the
+  // legacy write-everything-on-empty-target contract is preserved.
+  // The throw guard is independent: undefined / false default-deny
+  // on a non-empty target, true and object-with-any-true authorise.
+  const replaceMap = resolvePerTypeReplace(options.replaceExisting);
+  const userAuthorisedReplace = userAuthorisedAnyReplace(options.replaceExisting);
 
   const profileRepo = new ProfileRepository();
   const observationRepo = new ObservationRepository();
@@ -87,7 +99,7 @@ export async function importProfile(
   }
 
   const existingCounts = await countEntities(targetProfileId);
-  if (!replaceExisting && !countsAreEmpty(existingCounts)) {
+  if (!userAuthorisedReplace && !countsAreEmpty(existingCounts)) {
     throw new ImportTargetNotEmptyError(targetProfileId, existingCounts);
   }
 
@@ -177,15 +189,32 @@ export async function importProfile(
     changeDescription: IMPORT_CHANGE_DESCRIPTION,
     changeDate: importedChangeDate,
   };
-  const allParsedAndSynthesizedVersions = [
-    ...parseResult.profileVersions,
-    synthesizedImportVersion,
-  ];
-  const profileVersionRows = await Promise.all(
-    allParsedAndSynthesizedVersions.map((parsed) =>
+  // IM-05: profileVersions has two write modes depending on the
+  // per-type replace flag.
+  //   replaceMap.profileVersions=true   -> wipe existing + write
+  //                                         [parsed source rows
+  //                                          + synthesized marker]
+  //   replaceMap.profileVersions=false  -> keep existing + write
+  //                                         [synthesized marker
+  //                                          only]
+  // The synthesized "Profil aus Datei importiert" row writes
+  // unconditionally because it records the import-gesture itself,
+  // not data being imported (Q5 lock). The pre-encrypted row arrays
+  // for both modes are prepared up-front so the transaction body
+  // only does Dexie I/O.
+  const synthesizedImportVersionRow = await profileVersionRepo.serialize(
+    wrapEntity<ProfileVersion>(synthesizedImportVersion, targetProfileId, now),
+  );
+  const parsedProfileVersionRows = await Promise.all(
+    parseResult.profileVersions.map((parsed) =>
       profileVersionRepo.serialize(wrapEntity<ProfileVersion>(parsed, targetProfileId, now)),
     ),
   );
+  const profileVersionRowsForReplaceMode = [
+    ...parsedProfileVersionRows,
+    synthesizedImportVersionRow,
+  ];
+  const profileVersionRowsForKeepMode = [synthesizedImportVersionRow];
 
   const timelineEntryRows = await Promise.all(
     parseResult.timelineEntries.map((parsed) =>
@@ -193,6 +222,16 @@ export async function importProfile(
     ),
   );
 
+  // IM-05 per-type branching. For each type:
+  //   replaceMap.X = true  -> deleteByProfileId + bulkPut(imported)
+  //   replaceMap.X = false -> no delete + no bulkPut (existing kept,
+  //                            imported dropped)
+  // Lab data (LabReport + LabValue) is a single combined toggle (Q6
+  // lock) because the FK from LabValue to LabReport means split
+  // toggles would either orphan child rows or insert empty reports.
+  // ProfileVersions has its own special mode handled above.
+  // Profile.profiles is always written via mergeProfile() (Q4 lock —
+  // identity-level data is never wiped by per-type toggles).
   await db.transaction(
     'rw',
     [
@@ -206,51 +245,73 @@ export async function importProfile(
       db.timelineEntries,
     ],
     async () => {
-      // Stryker disable next-line ConditionalExpression: defense-in-depth; only reached when target is empty (no-op) or replaceExisting=true
-      if (replaceExisting) {
-        await Promise.all([
-          deleteByProfileId(db.observations, targetProfileId),
-          deleteByProfileId(db.labReports, targetProfileId),
-          deleteByProfileId(db.labValues, targetProfileId),
-          deleteByProfileId(db.supplements, targetProfileId),
-          deleteByProfileId(db.openPoints, targetProfileId),
-          deleteByProfileId(db.profileVersions, targetProfileId),
-          deleteByProfileId(db.timelineEntries, targetProfileId),
-        ]);
+      const ops: Promise<unknown>[] = [db.profiles.put(profileRow)];
+
+      if (replaceMap.observations) {
+        ops.push(deleteByProfileId(db.observations, targetProfileId));
+        ops.push(bulkPut(db.observations, observationRows));
       }
 
-      await Promise.all([
-        db.profiles.put(profileRow),
-        bulkPut(db.observations, observationRows),
-        bulkPut(db.labReports, labReportRows),
-        bulkPut(db.labValues, labValueRows),
-        bulkPut(db.supplements, supplementRows),
-        bulkPut(db.openPoints, openPointRows),
-        bulkPut(db.profileVersions, profileVersionRows),
-        bulkPut(db.timelineEntries, timelineEntryRows),
-      ]);
+      if (replaceMap.labData) {
+        ops.push(deleteByProfileId(db.labReports, targetProfileId));
+        ops.push(deleteByProfileId(db.labValues, targetProfileId));
+        ops.push(bulkPut(db.labReports, labReportRows));
+        ops.push(bulkPut(db.labValues, labValueRows));
+      }
+
+      if (replaceMap.supplements) {
+        ops.push(deleteByProfileId(db.supplements, targetProfileId));
+        ops.push(bulkPut(db.supplements, supplementRows));
+      }
+
+      if (replaceMap.openPoints) {
+        ops.push(deleteByProfileId(db.openPoints, targetProfileId));
+        ops.push(bulkPut(db.openPoints, openPointRows));
+      }
+
+      if (replaceMap.timelineEntries) {
+        ops.push(deleteByProfileId(db.timelineEntries, targetProfileId));
+        ops.push(bulkPut(db.timelineEntries, timelineEntryRows));
+      }
+
+      if (replaceMap.profileVersions) {
+        ops.push(deleteByProfileId(db.profileVersions, targetProfileId));
+        ops.push(bulkPut(db.profileVersions, profileVersionRowsForReplaceMode));
+      } else {
+        // Q5: synthesized marker still writes even when existing
+        // ProfileVersion rows are preserved.
+        ops.push(bulkPut(db.profileVersions, profileVersionRowsForKeepMode));
+      }
+
+      await Promise.all(ops);
     },
   );
 
+  // IM-05: counts reflect what was actually written. Skipped types
+  // contribute zero to `created` (their parsed rows were dropped).
+  // ProfileVersions count: parsed rows + synthesized in replace mode,
+  // synthesized only in keep mode (mirrors the transaction body
+  // above).
   const created: EntityCounts = {
     ...EMPTY_COUNTS,
-    observations: parseResult.observations.length,
-    labReports: parseResult.labReports.length,
-    labValues: parseResult.labValues.length,
-    supplements: parseResult.supplements.length,
-    openPoints: parseResult.openPoints.length,
-    // IM-04: count includes the synthesized "Profil aus Datei
-    // importiert" row alongside any rows lifted from the source
-    // markdown's Versionshistorie, so the import-success summary
-    // numbers match the actual DB content.
-    profileVersions: allParsedAndSynthesizedVersions.length,
-    timelineEntries: parseResult.timelineEntries.length,
+    observations: replaceMap.observations ? parseResult.observations.length : 0,
+    labReports: replaceMap.labData ? parseResult.labReports.length : 0,
+    labValues: replaceMap.labData ? parseResult.labValues.length : 0,
+    supplements: replaceMap.supplements ? parseResult.supplements.length : 0,
+    openPoints: replaceMap.openPoints ? parseResult.openPoints.length : 0,
+    profileVersions: replaceMap.profileVersions
+      ? profileVersionRowsForReplaceMode.length
+      : profileVersionRowsForKeepMode.length,
+    timelineEntries: replaceMap.timelineEntries ? parseResult.timelineEntries.length : 0,
   };
 
   return {
     targetProfileId,
     created,
-    replaced: replaceExisting && !countsAreEmpty(existingCounts),
+    // `replaced` is true iff the user authorised at least one type
+    // replacement AND the target had pre-existing data to delete.
+    // Preserves the legacy contract used by the success-screen UI.
+    replaced: userAuthorisedReplace && !countsAreEmpty(existingCounts),
   };
 }
 

@@ -64,10 +64,25 @@
   },
   "confirm": {
     "heading": "Replace existing data?",
-    "body": "\"{{name}}\" already contains:",
-    "warning": "This data will be irreversibly deleted on import and replaced by the new data.",
+    "body": "\"{{name}}\" already contains data. Choose which sections to replace on import. Sections that are not selected stay unchanged.",
+    "warning": "Selected sections will be irreversibly deleted on import and replaced by the new data. Unchecked sections are kept and their imported content is discarded.",
     "lab-report-line_one": "{{count}} lab report ({{values}} values)",
     "lab-report-line_other": "{{count}} lab reports ({{values}} values)",
+    "toggle-legend": "Which sections to replace?",
+    "toggle": {
+      "observations_one": "Replace {{count}} observation",
+      "observations_other": "Replace {{count}} observations",
+      "lab-data_one": "Replace {{count}} lab report ({{values}} values)",
+      "lab-data_other": "Replace {{count}} lab reports ({{values}} values)",
+      "supplements_one": "Replace {{count}} supplement",
+      "supplements_other": "Replace {{count}} supplements",
+      "open-points_one": "Replace {{count}} open point",
+      "open-points_other": "Replace {{count}} open points",
+      "timeline-entries_one": "Replace {{count}} timeline entry",
+      "timeline-entries_other": "Replace {{count}} timeline entries",
+      "profile-versions_one": "Replace {{count}} profile version",
+      "profile-versions_other": "Replace {{count}} profile versions"
+    },
     "replace": "Yes, replace"
   },
   "result": {

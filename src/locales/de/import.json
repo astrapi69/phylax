@@ -64,10 +64,25 @@
   },
   "confirm": {
     "heading": "Bestehende Daten ersetzen?",
-    "body": "\"{{name}}\" enthält bereits:",
-    "warning": "Diese Daten werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt.",
+    "body": "\"{{name}}\" enthält bereits Daten. Wähle aus, welche Bereiche durch den Import ersetzt werden sollen. Nicht ausgewählte Bereiche bleiben unverändert.",
+    "warning": "Ausgewählte Bereiche werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt. Nicht angehakte Bereiche bleiben erhalten und ihre importierten Inhalte werden verworfen.",
     "lab-report-line_one": "{{count}} Laborbefund ({{values}} Werte)",
     "lab-report-line_other": "{{count}} Laborbefunde ({{values}} Werte)",
+    "toggle-legend": "Welche Bereiche ersetzen?",
+    "toggle": {
+      "observations_one": "{{count}} Beobachtung ersetzen",
+      "observations_other": "{{count}} Beobachtungen ersetzen",
+      "lab-data_one": "{{count}} Laborbefund ({{values}} Werte) ersetzen",
+      "lab-data_other": "{{count}} Laborbefunde ({{values}} Werte) ersetzen",
+      "supplements_one": "{{count}} Supplement ersetzen",
+      "supplements_other": "{{count}} Supplemente ersetzen",
+      "open-points_one": "{{count}} offenen Punkt ersetzen",
+      "open-points_other": "{{count}} offene Punkte ersetzen",
+      "timeline-entries_one": "{{count}} Verlaufsnotiz ersetzen",
+      "timeline-entries_other": "{{count}} Verlaufsnotizen ersetzen",
+      "profile-versions_one": "{{count}} Profilversion ersetzen",
+      "profile-versions_other": "{{count}} Profilversionen ersetzen"
+    },
     "replace": "Ja, ersetzen"
   },
   "result": {

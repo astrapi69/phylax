@@ -1,12 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { EntityCounts } from '../import';
+import type { EntityCounts, PerTypeReplace } from '../import';
 
 interface ConfirmDialogProps {
   existingCounts: EntityCounts;
   targetProfileName: string;
-  onConfirm: () => void;
+  onConfirm: (selection: PerTypeReplace) => void;
   onCancel: () => void;
+}
+
+function initialSelection(counts: EntityCounts): Required<PerTypeReplace> {
+  // Default: every type that has existing data is checked. The user's
+  // gesture to land on this dialog is "import into a non-empty target",
+  // so the legacy "replace everything" intent is preserved by default.
+  // Per-type opt-out lets them keep specific sections.
+  return {
+    observations: counts.observations > 0,
+    labData: counts.labReports > 0 || counts.labValues > 0,
+    supplements: counts.supplements > 0,
+    openPoints: counts.openPoints > 0,
+    timelineEntries: counts.timelineEntries > 0,
+    profileVersions: counts.profileVersions > 0,
+  };
 }
 
 /**
@@ -15,6 +30,12 @@ interface ConfirmDialogProps {
  * accidental dismiss could lose the user's place in the flow. Focus
  * lands on the cancel button by default (safer default for destructive
  * dialogs).
+ *
+ * IM-05: per-type toggles let the user opt out of replacing specific
+ * sections. Lab data is a single combined toggle (covers both LabReport
+ * and LabValue) due to the parent/child FK constraint. Confirm is
+ * disabled while no toggle is checked, since the strict per-type form
+ * with all-false would throw `ImportTargetNotEmptyError` at write time.
  */
 export function ConfirmDialog({
   existingCounts,
@@ -25,6 +46,9 @@ export function ConfirmDialog({
   const { t } = useTranslation('import');
   const cancelRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<Required<PerTypeReplace>>(() =>
+    initialSelection(existingCounts),
+  );
 
   useEffect(() => {
     cancelRef.current?.focus();
@@ -58,24 +82,22 @@ export function ConfirmDialog({
     return () => document.removeEventListener('keydown', handleKey);
   }, [onCancel]);
 
-  const lines: string[] = [];
-  if (existingCounts.observations > 0)
-    lines.push(t('common:counts.observations', { count: existingCounts.observations }));
-  if (existingCounts.labReports > 0)
-    lines.push(
-      t('confirm.lab-report-line', {
-        count: existingCounts.labReports,
-        values: existingCounts.labValues,
-      }),
-    );
-  if (existingCounts.supplements > 0)
-    lines.push(t('common:counts.supplements', { count: existingCounts.supplements }));
-  if (existingCounts.openPoints > 0)
-    lines.push(t('counts.open-points', { count: existingCounts.openPoints }));
-  if (existingCounts.timelineEntries > 0)
-    lines.push(t('counts.timeline-entries', { count: existingCounts.timelineEntries }));
-  if (existingCounts.profileVersions > 0)
-    lines.push(t('counts.profile-versions', { count: existingCounts.profileVersions }));
+  const anyChecked = useMemo(
+    () =>
+      selection.observations ||
+      selection.labData ||
+      selection.supplements ||
+      selection.openPoints ||
+      selection.timelineEntries ||
+      selection.profileVersions,
+    [selection],
+  );
+
+  const toggle = (key: keyof PerTypeReplace) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelection((prev) => ({ ...prev, [key]: e.target.checked }));
+  };
+
+  const hasLabData = existingCounts.labReports > 0 || existingCounts.labValues > 0;
 
   return (
     <div
@@ -98,11 +120,86 @@ export function ConfirmDialog({
         <p className="mb-3 text-sm text-gray-700 dark:text-gray-300">
           {t('confirm.body', { name: targetProfileName })}
         </p>
-        <ul className="mb-4 space-y-1 text-sm text-gray-800 dark:text-gray-200">
-          {lines.map((l) => (
-            <li key={l}>{l}</li>
-          ))}
-        </ul>
+        <fieldset className="mb-4 space-y-2 text-sm text-gray-800 dark:text-gray-200">
+          <legend className="mb-2 font-medium">{t('confirm.toggle-legend')}</legend>
+          {existingCounts.observations > 0 && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.observations}
+                onChange={toggle('observations')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>
+                {t('confirm.toggle.observations', { count: existingCounts.observations })}
+              </span>
+            </label>
+          )}
+          {hasLabData && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.labData}
+                onChange={toggle('labData')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>
+                {t('confirm.toggle.lab-data', {
+                  count: existingCounts.labReports,
+                  values: existingCounts.labValues,
+                })}
+              </span>
+            </label>
+          )}
+          {existingCounts.supplements > 0 && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.supplements}
+                onChange={toggle('supplements')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>{t('confirm.toggle.supplements', { count: existingCounts.supplements })}</span>
+            </label>
+          )}
+          {existingCounts.openPoints > 0 && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.openPoints}
+                onChange={toggle('openPoints')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>{t('confirm.toggle.open-points', { count: existingCounts.openPoints })}</span>
+            </label>
+          )}
+          {existingCounts.timelineEntries > 0 && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.timelineEntries}
+                onChange={toggle('timelineEntries')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>
+                {t('confirm.toggle.timeline-entries', { count: existingCounts.timelineEntries })}
+              </span>
+            </label>
+          )}
+          {existingCounts.profileVersions > 0 && (
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selection.profileVersions}
+                onChange={toggle('profileVersions')}
+                className="h-4 w-4 rounded-sm border-gray-300 text-red-600 focus:ring-red-500 dark:border-gray-600"
+              />
+              <span>
+                {t('confirm.toggle.profile-versions', { count: existingCounts.profileVersions })}
+              </span>
+            </label>
+          )}
+        </fieldset>
         <p className="mb-6 text-sm text-red-700 dark:text-red-300">{t('confirm.warning')}</p>
         <div className="flex justify-end gap-3">
           <button
@@ -115,8 +212,9 @@ export function ConfirmDialog({
           </button>
           <button
             type="button"
-            onClick={onConfirm}
-            className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+            onClick={() => onConfirm(selection)}
+            disabled={!anyChecked}
+            className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400 dark:disabled:bg-gray-700"
           >
             {t('confirm.replace')}
           </button>

@@ -153,9 +153,12 @@ describe('useImport', () => {
       await result.current.selectProfile(profileId);
     });
     act(() => {
-      result.current.confirmReplace();
+      result.current.confirmReplace({ observations: true });
     });
     expect(result.current.state.kind).toBe('preview');
+    if (result.current.state.kind === 'preview') {
+      expect(result.current.state.replaceSelection).toEqual({ observations: true });
+    }
   });
 
   it('startImport succeeds and transitions preview -> done', async () => {
@@ -233,7 +236,7 @@ describe('useImport', () => {
   it('confirmReplace does nothing when not in confirm-replace state', () => {
     const { result } = renderHook(() => useImport());
     act(() => {
-      result.current.confirmReplace();
+      result.current.confirmReplace({ observations: true });
     });
     expect(result.current.state.kind).toBe('entry');
   });

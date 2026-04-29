@@ -14,6 +14,7 @@ import {
   countsAreEmpty,
   type EntityCounts,
   type ImportResult,
+  type PerTypeReplace,
 } from './types';
 
 export type ImportState =
@@ -26,14 +27,30 @@ export type ImportState =
       parseResult: ParseResult;
       cleanup: CleanupSubState;
     }
-  | { kind: 'preview'; parseResult: ParseResult; targetProfileId: string }
+  | {
+      kind: 'preview';
+      parseResult: ParseResult;
+      targetProfileId: string;
+      /**
+       * IM-05 selection from the confirm-replace dialog. Undefined when
+       * preview was reached on an empty target (no dialog shown); in that
+       * case the import passes legacy `replaceExisting: true` since per-type
+       * deletes are no-ops on an empty target.
+       */
+      replaceSelection?: PerTypeReplace;
+    }
   | {
       kind: 'confirm-replace';
       parseResult: ParseResult;
       targetProfileId: string;
       existingCounts: EntityCounts;
     }
-  | { kind: 'importing'; parseResult: ParseResult; targetProfileId: string }
+  | {
+      kind: 'importing';
+      parseResult: ParseResult;
+      targetProfileId: string;
+      replaceSelection?: PerTypeReplace;
+    }
   | { kind: 'done'; importResult: ImportResult }
   | { kind: 'error'; detail: string };
 
@@ -41,7 +58,7 @@ export interface ImportHook {
   state: ImportState;
   loadMarkdown: (markdown: string) => Promise<void>;
   selectProfile: (targetProfileId: string) => Promise<void>;
-  confirmReplace: () => void;
+  confirmReplace: (selection: PerTypeReplace) => void;
   startImport: () => Promise<void>;
   /**
    * Trigger AI-09 cleanup on a parse-failure state. Reads the original
@@ -122,22 +139,26 @@ export function useImport(): ImportHook {
     [state],
   );
 
-  const confirmReplace = useCallback((): void => {
-    if (state.kind !== 'confirm-replace') return;
-    setState({
-      kind: 'preview',
-      parseResult: state.parseResult,
-      targetProfileId: state.targetProfileId,
-    });
-  }, [state]);
+  const confirmReplace = useCallback(
+    (selection: PerTypeReplace): void => {
+      if (state.kind !== 'confirm-replace') return;
+      setState({
+        kind: 'preview',
+        parseResult: state.parseResult,
+        targetProfileId: state.targetProfileId,
+        replaceSelection: selection,
+      });
+    },
+    [state],
+  );
 
   const startImport = useCallback(async (): Promise<void> => {
     if (state.kind !== 'preview') return;
-    const { parseResult, targetProfileId } = state;
-    setState({ kind: 'importing', parseResult, targetProfileId });
+    const { parseResult, targetProfileId, replaceSelection } = state;
+    setState({ kind: 'importing', parseResult, targetProfileId, replaceSelection });
     try {
       const importResult = await importProfile(parseResult, targetProfileId, {
-        replaceExisting: true,
+        replaceExisting: replaceSelection ?? true,
       });
       setState({ kind: 'done', importResult });
     } catch (err) {
