@@ -168,3 +168,7 @@ Deutsche Strings in Locales und deutschen Docs verwenden die Unicode-Zeichen `ä
 - `make build`
 
 Single-Feature-Änderungen mit begrenztem Blast-Radius dürfen einzelne Suites auslassen, wenn dies explizit begründet wird. Cross-Cutting-Änderungen dürfen das nicht. Lokaler Pass ist notwendig, aber nicht hinreichend; der CI-Run auf dem finalen Commit muss ebenfalls grün sein, bevor der Task geschlossen wird.
+
+# Reviews
+
+OpenAI Codex wird deine Ergebnisse überprüfen, sobald Sie fertig sind.
