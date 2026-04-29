@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { lock } from '../../crypto';
 import { ThemeToggle } from '../theme';
+import { UpdateIndicator } from '../pwa-update';
 
 /**
  * Top header bar with app name and lock button.
@@ -19,6 +20,7 @@ export function Header() {
       </Link>
 
       <div className="flex items-center gap-1">
+        <UpdateIndicator />
         <ThemeToggle />
         <button
           type="button"

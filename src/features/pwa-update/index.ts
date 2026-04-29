@@ -1,1 +1,2 @@
-export { UpdatePrompt } from './UpdatePrompt';
+export { UpdateIndicator } from './UpdateIndicator';
+export { UpdateProvider, useUpdate } from './UpdateContext';

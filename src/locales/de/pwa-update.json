@@ -1,5 +1,7 @@
 {
-  "available": "Eine neue Version ist verfügbar.",
-  "update": "Jetzt aktualisieren",
-  "later": "Später"
+  "indicator": {
+    "label": "Update",
+    "aria-label": "Update verfügbar — klicken zum Aktualisieren",
+    "tooltip": "Eine neue Version ist verfügbar. Klicken zum Aktualisieren."
+  }
 }
