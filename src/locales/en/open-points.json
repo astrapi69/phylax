@@ -62,5 +62,13 @@
   },
   "toggle": {
     "error": "Status could not be changed: {{detail}}"
+  },
+  "search": {
+    "placeholder": "Search open points...",
+    "aria-label": "Search open points",
+    "clear": "Clear search",
+    "match-count": "{{count}} of {{total}} contexts",
+    "no-matches-counter": "No matches",
+    "no-matches": "No matches for \"{{query}}\"."
   }
 }

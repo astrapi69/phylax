@@ -8,6 +8,7 @@ import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { OpenPointRepository, ProfileRepository } from '../../db/repositories';
 import type { OpenPoint, Profile } from '../../domain';
+import { SearchProvider } from '../search-trigger';
 import { OpenPointsView } from './OpenPointsView';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -29,10 +30,18 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderView() {
+function renderView({
+  initialEntries = ['/open-points'],
+  defaultOpen,
+}: {
+  initialEntries?: string[];
+  defaultOpen?: boolean;
+} = {}) {
   return render(
-    <MemoryRouter>
-      <OpenPointsView />
+    <MemoryRouter initialEntries={initialEntries}>
+      <SearchProvider defaultOpen={defaultOpen}>
+        <OpenPointsView />
+      </SearchProvider>
     </MemoryRouter>,
   );
 }
@@ -135,5 +144,93 @@ describe('OpenPointsView', () => {
     await waitFor(() => expect(screen.getByTestId('open-point-toggle-pt-a')).toBeInTheDocument());
     expect(screen.getByTestId('open-point-toggle-pt-a')).not.toBeDisabled();
     expect(screen.getByTestId('open-point-actions')).toBeInTheDocument();
+  });
+
+  describe('search filter (P-22d)', () => {
+    function mockTwoGroups() {
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(mockProfile());
+      vi.spyOn(OpenPointRepository.prototype, 'listByProfile').mockResolvedValue([
+        mockPoint('Bluttest', 'Arztbesuch', 'a1'),
+        mockPoint('EKG abklären', 'Arztbesuch', 'a2'),
+        mockPoint('Schlaf protokollieren', 'Laufende Beobachtung', 'l1'),
+      ]);
+    }
+
+    it('does NOT render the inline search bar by default (header drives open state)', async () => {
+      mockTwoGroups();
+      renderView();
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Arztbesuch/ })).toBeInTheDocument(),
+      );
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('open-points-match-count')).not.toBeInTheDocument();
+    });
+
+    it('renders the inline search bar when SearchContext.isOpen is true', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      expect(await screen.findByRole('searchbox')).toBeInTheDocument();
+    });
+
+    it('typing a query filters via group-keep semantic (child match)', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      await user.type(input, 'Bluttest');
+      await waitFor(() => {
+        const headings = screen.getAllByRole('heading', { level: 2 });
+        expect(headings).toHaveLength(1);
+      });
+      // Arztbesuch group kept; group-keep keeps EKG too.
+      expect(screen.getByRole('heading', { level: 2, name: /Arztbesuch/ })).toBeInTheDocument();
+      expect(screen.getByText('EKG abklären')).toBeInTheDocument();
+      // Laufende Beobachtung group hidden.
+      expect(
+        screen.queryByRole('heading', { level: 2, name: /Laufende Beobachtung/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('context-label match keeps the group visible', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'Beobachtung');
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { level: 2, name: /Laufende Beobachtung/ }),
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.queryByRole('heading', { level: 2, name: /Arztbesuch/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the no-matches state when query has zero hits', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'xyz');
+      await waitFor(() =>
+        expect(screen.getByTestId('open-points-no-matches')).toHaveTextContent(/xyz/),
+      );
+    });
+
+    it('seeds search input from `?q=` URL param via SearchProvider auto-open', async () => {
+      mockTwoGroups();
+      renderView({ initialEntries: ['/open-points?q=Bluttest'] });
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      expect(input.value).toBe('Bluttest');
+    });
+
+    it('clears query when the SearchInput X button is clicked (Q15)', async () => {
+      mockTwoGroups();
+      renderView({ initialEntries: ['/open-points?q=Bluttest'] });
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      expect(input.value).toBe('Bluttest');
+      const user = userEvent.setup();
+      await user.click(screen.getByTestId('search-input-clear'));
+      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    });
   });
 });

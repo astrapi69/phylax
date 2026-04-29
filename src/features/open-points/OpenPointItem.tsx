@@ -1,5 +1,8 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OpenPoint } from '../../domain';
+import { findMatchRanges, splitQuery } from '../../lib';
+import { HighlightedText } from '../../ui';
 import { MarkdownContent } from '../profile-view';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 import { OpenPointActions } from './OpenPointActions';
@@ -15,6 +18,15 @@ interface OpenPointItemProps {
    * disabled and no actions render.
    */
   form?: UseOpenPointFormResult;
+  /**
+   * P-22d search query. When non-empty, plain-text fields (text,
+   * priority, timeHorizon) wrap matching substrings via
+   * `<HighlightedText>`; the markdown details field threads the
+   * query through `<MarkdownContent highlightQuery>` (rehype
+   * plugin from P-19). Read-only mounts that omit the prop render
+   * bare text.
+   */
+  highlightQuery?: string;
 }
 
 /**
@@ -27,9 +39,13 @@ interface OpenPointItemProps {
  * Strikethrough text on resolved items is the standard checklist
  * convention.
  */
-export function OpenPointItem({ point, form }: OpenPointItemProps) {
+export function OpenPointItem({ point, form, highlightQuery }: OpenPointItemProps) {
   const { t } = useTranslation('open-points');
   const { id, text, resolved, priority, timeHorizon, details } = point;
+  const terms = useMemo(
+    () => (highlightQuery ? splitQuery(highlightQuery) : []),
+    [highlightQuery],
+  );
   const containerClass = resolved
     ? 'rounded-sm border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
     : 'rounded-sm border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
@@ -62,10 +78,18 @@ export function OpenPointItem({ point, form }: OpenPointItemProps) {
                     : 'text-sm text-gray-900 dark:text-gray-100'
                 }
               >
-                {text}
+                <HighlightCell text={text} terms={terms} />
               </span>
-              {priority && <Badge>{priority}</Badge>}
-              {timeHorizon && <Badge>{timeHorizon}</Badge>}
+              {priority && (
+                <Badge>
+                  <HighlightCell text={priority} terms={terms} />
+                </Badge>
+              )}
+              {timeHorizon && (
+                <Badge>
+                  <HighlightCell text={timeHorizon} terms={terms} />
+                </Badge>
+              )}
               {resolved && (
                 <span className="rounded-sm bg-gray-200 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                   {t('item.resolved-badge')}
@@ -77,7 +101,7 @@ export function OpenPointItem({ point, form }: OpenPointItemProps) {
           </div>
           {details && details.trim() !== '' && (
             <div className="mt-2 pl-0">
-              <MarkdownContent>{details}</MarkdownContent>
+              <MarkdownContent highlightQuery={highlightQuery}>{details}</MarkdownContent>
             </div>
           )}
         </div>
@@ -91,5 +115,13 @@ function Badge({ children }: { children: React.ReactNode }) {
     <span className="rounded-sm bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
       {children}
     </span>
+  );
+}
+
+function HighlightCell({ text, terms }: { text: string; terms: string[] }) {
+  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
+  if (ranges.length === 0) return <>{text}</>;
+  return (
+    <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />
   );
 }

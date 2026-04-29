@@ -62,5 +62,13 @@
   },
   "toggle": {
     "error": "Status konnte nicht geändert werden: {{detail}}"
+  },
+  "search": {
+    "placeholder": "Offene Punkte durchsuchen...",
+    "aria-label": "Offene Punkte durchsuchen",
+    "clear": "Suche zurücksetzen",
+    "match-count": "{{count}} von {{total}} Kontexten",
+    "no-matches-counter": "Keine Treffer",
+    "no-matches": "Keine Treffer für „{{query}}\"."
   }
 }
