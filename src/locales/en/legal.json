@@ -1,0 +1,13 @@
+{
+  "section": {
+    "heading": "Legal",
+    "description": "Privacy disclosure and license for this app.",
+    "privacy-link": "Privacy",
+    "license-link": "License"
+  },
+  "license": {
+    "heading": "License",
+    "intro": "Phylax is open source under the MIT license. The full license text follows below.",
+    "back-to-settings": "Back to settings"
+  }
+}

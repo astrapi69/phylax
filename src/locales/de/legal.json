@@ -1,0 +1,13 @@
+{
+  "section": {
+    "heading": "Rechtliches",
+    "description": "Datenschutzerklärung und Lizenz für diese App.",
+    "privacy-link": "Datenschutz",
+    "license-link": "Lizenz"
+  },
+  "license": {
+    "heading": "Lizenz",
+    "intro": "Phylax ist quelloffen unter der MIT-Lizenz. Der vollständige Lizenztext folgt unten.",
+    "back-to-settings": "Zurück zu den Einstellungen"
+  }
+}

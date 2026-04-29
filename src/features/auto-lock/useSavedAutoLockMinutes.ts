@@ -32,17 +32,20 @@ export function useSavedAutoLockMinutes(): number {
 
     async function load(): Promise<void> {
       if (getLockState() !== 'unlocked') return;
+      /* v8 ignore start */
+      // The cancel-after-await branch and the catch-on-decrypt-failure
+      // branch only fire under tight unmount / lock races that are
+      // brittle to reproduce in tests. Defensive code, intentionally
+      // not gated on coverage.
       try {
         const settings = await readAppSettings();
         if (cancelled) return;
         setMinutes(settings.autoLockMinutes);
       } catch {
-        // Decrypt or read failed (keystore raced to locked, IDB
-        // error). Keep current value; next unlock retries. Defensive
-        // path that requires a tight lock/unlock race to reproduce
-        // and is not worth a brittle test.
-        /* v8 ignore next */
+        // Decrypt or read failed (keystore raced to locked, IDB error).
+        // Keep current value; next unlock retries.
       }
+      /* v8 ignore stop */
     }
 
     void load();

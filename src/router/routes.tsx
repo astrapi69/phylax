@@ -20,6 +20,7 @@ import { DocumentViewer } from '../features/documents/DocumentViewer';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
 import { ChatView } from '../features/ai-chat';
+import { LicenseView } from '../features/legal';
 import { NotFound } from '../features/not-found/NotFound';
 
 function ProfileCreatePage() {
@@ -101,6 +102,7 @@ export function AppRoutes() {
         <Route path="/chat" element={<ChatView />} />
         <Route path="/import" element={<ImportFlow />} />
         <Route path="/settings" element={<SettingsScreen />} />
+        <Route path="/license" element={<LicenseView />} />
       </Route>
     </Routes>
   );
