@@ -280,7 +280,7 @@ Goal: user can export an encrypted backup file and restore it on the same or ano
 
 Goal: production-quality UX, mobile-ready, accessible, internationalized.
 
-- [ ] **P-01** Mobile-first responsive review of every screen at 360px, 768px, 1024px
+- [ ] **P-01** Mobile-first responsive review of every screen at 360px, 768px, 1024px. Audit shipped 2026-04-30 in `docs/audits/2026-04-30-mobile-sweep.md` with Tier 1 automated sweep at `tests/e2e/viewport-sweep.spec.ts` (6/6 chromium tests green across 39 route × viewport combinations) + new ConfirmDialog 6-toggle structural-fit test (Q5 lock; verifies the just-shipped IM-05 dialog at 360 px). BUG-02 hamburger drawer documented as the resolved precedent for "squeezed flex strip to drawer" pattern. Tier 2 walk-through is the canonical execution artifact at `docs/manual-smoke/p-01-mobile-sweep.md`; the new `docs/manual-smoke/` directory pattern is established by this commit (README + first entry, convention also documented in `.claude/rules/test-strategy.md`). Findings, if any, register as P-01a..n and ship as separate per-finding commits per Q3 lock. Parent stays unticked until Tier 2 walked.
 - [x] **P-02** Dark mode via Tailwind `dark:`, system preference detection, manual override — shipped via T-01a (ThemeProvider + flash-prevention) + T-01b (dark variants on every screen)
 - [x] **P-03** i18next setup with DE and EN translations — shipped via I18N-series (extraction discipline) + ONB-01b (DE/EN copy) + TD-08 (lazy-loaded EN)
 - [x] **P-04** Onboarding tour: explain living health concept, local-first, encryption, no cloud, AI role, threat model in plain language — shipped via ONB-01a..f (entry router + Welcome + Privacy + Setup screens with plain-language copy)
