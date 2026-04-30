@@ -7,6 +7,13 @@ import type { CommitResult, DraftSelection } from '../commit';
 import { totalCommitted } from '../commit';
 import type { AiCallError } from '../aiCallError';
 import { isRetryableAiCallError } from '../aiCallError';
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  useModalTitleId,
+} from '../../../ui';
 import { ConsentDialog } from './ConsentDialog';
 import { ClassificationConfirm } from './ClassificationConfirm';
 import { ReviewPanel } from './ReviewPanel';
@@ -34,7 +41,7 @@ export interface ImportFlowProps {
 export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFlowProps) {
   const { t } = useTranslation('document-import');
   const session = useImportSession({ pipeline: pipelineOverrides });
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useModalTitleId();
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -42,17 +49,6 @@ export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFl
     startedRef.current = true;
     void session.pickFile(initialFile);
   }, [initialFile, session]);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key !== 'Escape') return;
-      e.preventDefault();
-      session.cancel();
-      onClose();
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose, session]);
 
   const cancelAndClose = () => {
     session.cancel();
@@ -69,45 +65,51 @@ export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFl
     );
   }, [session.state]);
 
+  // TD-12 migration: composes the shared `<Modal>` primitive with
+  // `ModalHeader`/`Body`/`Footer` sub-components. Modal provides focus
+  // trap, Escape close (routed through cancelAndClose so the session
+  // is also cancelled), backdrop, scroll lock, portal mount, and the
+  // size="xl" container. Backdrop click does NOT close (default false)
+  // so a misclick mid-import does not abandon the session. ConsentDialog
+  // renders as a sibling overlay (its own portal'd primitive) when
+  // consent-prompt state is reached; both modals coexist via the
+  // module-level scroll-lock counter in `useBodyScrollLock`.
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="import-flow-title"
-      data-testid="import-flow"
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4"
-    >
-      <div
-        ref={dialogRef}
-        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-900 dark:shadow-black/60"
+    <>
+      <Modal
+        open
+        onClose={cancelAndClose}
+        titleId={titleId}
+        role="dialog"
+        closeOnEscape
+        closeOnBackdropClick={false}
+        size="xl"
+        testId="import-flow"
       >
-        <header className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h2 id="import-flow-title" className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            {t('import.flow.title')}
-          </h2>
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-            {t('import.flow.memory-hint')}
-          </p>
-        </header>
+        <ModalHeader titleId={titleId} description={t('import.flow.memory-hint')}>
+          {t('import.flow.title')}
+        </ModalHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4" data-testid="import-flow-body">
-          <FlowBody
-            state={session.state}
-            t={t}
-            commitCount={commitCount}
-            onConfirmClassification={() => {
-              void session.confirmClassification();
-            }}
-            onRejectClassification={session.rejectClassification}
-            onSelectionChange={(s: DraftSelection) => session.setSelection(s)}
-            onEditObservation={session.editObservation}
-            onEditLabValue={session.editLabValue}
-            onEditSupplement={session.editSupplement}
-            onEditOpenPoint={session.editOpenPoint}
-          />
-        </div>
+        <ModalBody>
+          <div data-testid="import-flow-body">
+            <FlowBody
+              state={session.state}
+              t={t}
+              commitCount={commitCount}
+              onConfirmClassification={() => {
+                void session.confirmClassification();
+              }}
+              onRejectClassification={session.rejectClassification}
+              onSelectionChange={(s: DraftSelection) => session.setSelection(s)}
+              onEditObservation={session.editObservation}
+              onEditLabValue={session.editLabValue}
+              onEditSupplement={session.editSupplement}
+              onEditOpenPoint={session.editOpenPoint}
+            />
+          </div>
+        </ModalBody>
 
-        <footer className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-3 dark:border-gray-700">
+        <ModalFooter>
           {session.state.kind === 'reviewing' ? (
             <>
               <button
@@ -170,8 +172,8 @@ export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFl
               {t('import.flow.cancel')}
             </button>
           )}
-        </footer>
-      </div>
+        </ModalFooter>
+      </Modal>
 
       {session.state.kind === 'consent-prompt' ? (
         <ConsentDialog
@@ -185,7 +187,7 @@ export function ImportFlow({ initialFile, onClose, pipelineOverrides }: ImportFl
           }}
         />
       ) : null}
-    </div>
+    </>
   );
 }
 
