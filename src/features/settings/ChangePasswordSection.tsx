@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PasswordVisibilityToggle } from '../../ui';
 import { useChangeMasterPassword } from './useChangeMasterPassword';
 import type { ChangePasswordError } from './useChangeMasterPassword';
 
@@ -163,20 +164,31 @@ function PasswordInput({
   disabled,
   hint,
 }: PasswordInputProps) {
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-gray-800 dark:text-gray-200">
         {label}
       </label>
-      <input
-        id={id}
-        type="password"
-        autoComplete={autoComplete}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className="mt-1 block w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
-      />
+      <div className="relative mt-1">
+        <input
+          id={id}
+          type={visible ? 'text' : 'password'}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className="block w-full rounded-sm border border-gray-300 bg-white px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
+        />
+        <PasswordVisibilityToggle
+          visible={visible}
+          onToggle={() => setVisible((v) => !v)}
+          labelShow={t('common:password-toggle.password-show')}
+          labelHide={t('common:password-toggle.password-hide')}
+          disabled={disabled}
+        />
+      </div>
       {hint && <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{hint}</p>}
     </div>
   );
