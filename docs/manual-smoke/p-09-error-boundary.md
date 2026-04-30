@@ -34,7 +34,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
   - Two buttons visible: "Neu laden" and "Zur Startseite".
   - A collapsed `<details>` summary "Technische Details (für
     Fehlerbericht kopieren)".
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 2. Reload button reloads the page
 
@@ -47,7 +47,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
   - Service worker activation: if a new SW is waiting, the reload
     activates it (BUG-01 fix flow). No console error from the SW
     layer.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 3. Go-home button navigates to /
 
@@ -58,7 +58,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
     `/welcome` (no vault), `/unlock` (locked), or `/profile`
     (unlocked).
   - Boundary fallback gone; normal app shell renders.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 4. Details disclosure copy-paste
 
@@ -70,7 +70,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
     trace, and the React component stack.
   - Line breaks preserved (no flowed-paragraph wrapping).
   - No HTML markup leaked into the clipboard.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 5. No-data-loss verification
 
@@ -82,7 +82,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
   - Vault unlocks normally. Profile, observations, lab values etc.
     all present and unchanged.
   - The error path does not corrupt or wipe any IndexedDB data.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 6. Dark mode UI
 
@@ -90,7 +90,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
 - **Expected**: Boundary card legible in dark mode. Heading red-300
   on dark background, body gray-200, buttons readable, details block
   borders visible. No contrast failures.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 7. Mobile viewport (360 px)
 
@@ -102,24 +102,28 @@ real browser, dark-mode contrast, and the no-data-loss promise.
     `flex-wrap`).
   - Details `<pre>` scrolls horizontally inside the card without
     leaking the page scrollbar.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ## Findings
 
-User adds findings here. Severity tag (A / B / C) + scenario number.
-
-- (none yet)
+- **B / scenario 4** - Manual select+copy of the technical-details
+  block worked but a one-click copy button was missing. Stacktrace
+  is the load-bearing artifact for bug reports; faster capture
+  matters. Fixed in commit `039576e` (registered as P-09a): added
+  copy-icon button at top-right of the expanded disclosure with
+  `navigator.clipboard.writeText` + execCommand legacy fallback,
+  inline "Kopiert" / "Kopieren fehlgeschlagen" feedback for ~2.5s.
 
 ## Sign-off
 
-- ☐ Boundary catches and renders fallback (scenario 1)
-- ☐ Reload + Go-home buttons work (scenarios 2 + 3)
-- ☐ Details copy-paste preserves diagnostic text (scenario 4)
-- ☐ No data loss (scenario 5)
-- ☐ Dark mode legible (scenario 6)
-- ☐ Mobile 360 px fits (scenario 7)
-- ☐ Trigger throw rolled back from source before commit
-- ☐ All Category A findings registered as `P-09a..n` ROADMAP sub-tasks
+- ☑ Boundary catches and renders fallback (scenario 1)
+- ☑ Reload + Go-home buttons work (scenarios 2 + 3)
+- ☑ Details copy-paste preserves diagnostic text (scenario 4)
+- ☑ No data loss (scenario 5)
+- ☑ Dark mode legible (scenario 6)
+- ☑ Mobile 360 px fits (scenario 7)
+- ☑ Trigger throw rolled back from source before commit
+- ☑ All Category A findings registered as `P-09a..n` ROADMAP sub-tasks (none; P-09a is Category B, fixed inline)
 
-Walker: ____________________
-Date: 2026-__-__
+Walker: Asterios Raptis
+Date: 2026-04-30
