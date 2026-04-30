@@ -43,7 +43,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
   - Lock icon ends the session.
   - New password unlocks; the previous content (observations, lab
     values, etc.) is intact.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 2. Old password is rejected after the change
 
@@ -52,7 +52,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
   worked before the change).
 - **Expected**: "Falsches Passwort" message, no vault access. App
   stays on `/unlock`.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 3. Wrong current password: inline error, no progress
 
@@ -68,7 +68,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
     field.
   - Lock + unlock with the original password still works (vault
     unchanged on disk).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 4. Submit-gate validation: weak / mismatch / same-as-current
 
@@ -80,7 +80,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
      übereinstimmen".
 - **Expected**: Each surfaces an inline alert. None starts the
   re-encryption.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 5. Performance on a populated vault
 
@@ -95,7 +95,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
   - No browser "page unresponsive" warning.
 - **Notes**: If the operation takes more than 60 seconds, file a
   P-06-perf-a follow-up task with vault size + browser + machine.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 6. Auto-lock does not fire mid-operation
 
@@ -107,7 +107,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
   Section 4 pause primitive). Success banner renders; user is still
   unlocked. Auto-lock resumes after the operation, so the timer
   starts fresh.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 7. Dark mode UI
 
@@ -116,7 +116,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
   and the confirmation modal all read with sufficient contrast.
 - **Expected**: All states legible. No invisible borders or text
   that disappears against the dark background.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 8. Close-window guidance during operation
 
@@ -126,25 +126,26 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
 - **Expected**: The DE description copy says "Schließe das Fenster
   während des Vorgangs nicht." (and the EN equivalent). The user is
   warned before submitting.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ## Findings
 
-User adds findings here. Severity tag (A / B / C) + scenario number.
-
-- (none yet)
+- **B / scenario 1** - Password fields lacked the eye-toggle
+  (PasswordVisibilityToggle) that SetupView and UnlockView both use.
+  Users could not verify what they typed across the three fields
+  (current / new / confirm), painful since a typo costs an entire
+  vault re-encryption attempt. Fixed in commit `5195e32`
+  (registered as P-06a).
 
 ## Sign-off
 
-Tick each criterion when its scenarios pass.
+- ☑ Happy path complete (scenarios 1 + 2)
+- ☑ Validation gates exercised (scenarios 3 + 4)
+- ☑ Performance acceptable on a populated vault (scenario 5)
+- ☑ Auto-lock pause holds (scenario 6)
+- ☑ Dark mode verified (scenario 7)
+- ☑ Close-window guidance visible (scenario 8)
+- ☑ All Category A findings registered as `P-06a..n` ROADMAP sub-tasks (none; P-06a is Category B, fixed inline)
 
-- ☐ Happy path complete (scenarios 1 + 2)
-- ☐ Validation gates exercised (scenarios 3 + 4)
-- ☐ Performance acceptable on a populated vault (scenario 5)
-- ☐ Auto-lock pause holds (scenario 6)
-- ☐ Dark mode verified (scenario 7)
-- ☐ Close-window guidance visible (scenario 8)
-- ☐ All Category A findings registered as `P-06a..n` ROADMAP sub-tasks
-
-Walker: ____________________
-Date: 2026-__-__
+Walker: Asterios Raptis
+Date: 2026-04-30
