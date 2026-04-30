@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Top-level error boundary (P-09): single React class component at `src/ui/ErrorBoundary.tsx` mounted in `src/main.tsx` between StrictMode and the theme provider. Catches render-phase errors from any descendant and shows a localized friendly fallback with two recovery actions (Reload + Go-Home) plus a collapsible `<details>` block carrying error message + stack + component stack so users can copy-paste the diagnostic into a manual bug report. `console.error` for dev visibility; no telemetry per CLAUDE.md (no Sentry, no auto-submission). Per-route boundaries deferred until a concrete failure mode justifies them. Manual smoke at `docs/manual-smoke/p-09-error-boundary.md`.
+
 - Change master password (P-06): re-encrypts the entire vault under a new key via a three-phase pipeline (decrypt-encrypt outside Dexie tx, atomic bulkPut + meta.put inside one transaction, in-memory keyStore swap). Settings section + confirmation modal + busy-state UI; sudo-pattern verification re-derives the candidate key from the typed current password and decrypts the meta verification token before any work begins. Auto-lock paused for the duration via a new reference-counted pause primitive (`src/features/auto-lock/pauseStore.ts`) reusable for backup-restore and other long-running operations. Same salt preserved (PBKDF2 does not need salt rotation per password). Manual smoke at `docs/manual-smoke/p-06-change-password.md`.
 
 ### Security

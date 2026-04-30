@@ -97,6 +97,7 @@ boundary.
 | ------- | ----------- | ------ |
 | P-01 | [Mobile-first viewport sweep](p-01-mobile-sweep.md) | Pending walk |
 | P-06 | [Change master password](p-06-change-password.md) | Pending walk |
+| P-09 | [Error boundary](p-09-error-boundary.md) | Pending walk |
 
 When more smoke files ship, add rows above. Mark Status as `Pending
 walk` (file created, not yet walked), `In progress` (partial walk),

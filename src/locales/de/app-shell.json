@@ -19,5 +19,14 @@
   "drawer": {
     "title": "Navigation",
     "close": "Navigation schließen"
+  },
+  "error-boundary": {
+    "heading": "Etwas ist schiefgelaufen",
+    "body": "Phylax konnte diese Seite nicht anzeigen. Lade die Anwendung neu oder kehre zur Startseite zurück. Deine Daten sind weiterhin verschlüsselt auf diesem Gerät gespeichert und gehen durch diesen Fehler nicht verloren.",
+    "action": {
+      "reload": "Neu laden",
+      "home": "Zur Startseite"
+    },
+    "details-summary": "Technische Details (für Fehlerbericht kopieren)"
   }
 }

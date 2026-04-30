@@ -9,6 +9,7 @@ export { HighlightedText, type HighlightedTextProps } from './HighlightedText';
 export { DateRangeFilter, type DateRangeFilterProps } from './DateRangeFilter';
 export { Skeleton, ListSkeleton, type SkeletonProps, type ListSkeletonProps } from './Skeleton';
 export { EmptyStatePanel, type EmptyStatePanelProps } from './EmptyStatePanel';
+export { ErrorBoundary } from './ErrorBoundary';
 export {
   Modal,
   ModalHeader,

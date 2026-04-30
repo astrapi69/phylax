@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { ThemeProvider } from './features/theme';
+import { ErrorBoundary } from './ui';
 // Side-effect import: initializes i18next synchronously with DE
 // preloaded. EN resources lazy-load via the i18next backend and
 // `import.meta.glob` defined in i18n/config.ts.
@@ -29,11 +30,13 @@ async function bootstrap(root: HTMLElement): Promise<void> {
   }
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <ThemeProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </ErrorBoundary>
     </React.StrictMode>,
   );
 }
