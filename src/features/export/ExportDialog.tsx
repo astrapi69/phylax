@@ -513,38 +513,57 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             </span>
           </label>
 
-          <FormatRow
-            primaryTestId="export-markdown-button"
-            previewTestId="export-markdown-preview"
-            title={t('dialog.markdown.title')}
-            description={t('dialog.markdown.description')}
-            previewLabel={t('preview.button')}
-            disabled={working}
-            onExport={() => void handleMarkdownExport()}
-            onPreview={() => void handleMarkdownPreview()}
-          />
+          {/*
+            P-07-b: explicit grouping for the three format options
+            (Markdown / PDF / CSV). Without `<fieldset><legend>` the
+            three FormatRows render as six independent buttons in
+            screen-reader output ("export markdown", "preview
+            markdown", "export pdf", ...) with no signal that they
+            are a related option set. The fieldset names the group;
+            the legend gives the SR label. `m-0 border-0 p-0` keeps
+            the visual layout unchanged. `legend.sr-only` keeps the
+            existing visual chrome (dialog header already conveys
+            the same meaning to sighted users) while giving AT a
+            real label.
+           */}
+          <fieldset
+            data-testid="export-formats-group"
+            className="m-0 flex flex-col gap-3 border-0 p-0"
+          >
+            <legend className="sr-only">{t('dialog.formats.legend')}</legend>
+            <FormatRow
+              primaryTestId="export-markdown-button"
+              previewTestId="export-markdown-preview"
+              title={t('dialog.markdown.title')}
+              description={t('dialog.markdown.description')}
+              previewLabel={t('preview.button')}
+              disabled={working}
+              onExport={() => void handleMarkdownExport()}
+              onPreview={() => void handleMarkdownPreview()}
+            />
 
-          <FormatRow
-            primaryTestId="export-pdf-button"
-            previewTestId="export-pdf-preview"
-            title={t('dialog.pdf.title')}
-            description={t('dialog.pdf.description')}
-            previewLabel={t('preview.button')}
-            disabled={working}
-            onExport={() => void handlePdfExport()}
-            onPreview={() => void handlePdfPreview()}
-          />
+            <FormatRow
+              primaryTestId="export-pdf-button"
+              previewTestId="export-pdf-preview"
+              title={t('dialog.pdf.title')}
+              description={t('dialog.pdf.description')}
+              previewLabel={t('preview.button')}
+              disabled={working}
+              onExport={() => void handlePdfExport()}
+              onPreview={() => void handlePdfPreview()}
+            />
 
-          <FormatRow
-            primaryTestId="export-csv-button"
-            previewTestId="export-csv-preview"
-            title={t('dialog.csv.title')}
-            description={t('dialog.csv.description')}
-            previewLabel={t('preview.button')}
-            disabled={working}
-            onExport={() => void handleCsvExport()}
-            onPreview={() => void handleCsvPreview()}
-          />
+            <FormatRow
+              primaryTestId="export-csv-button"
+              previewTestId="export-csv-preview"
+              title={t('dialog.csv.title')}
+              description={t('dialog.csv.description')}
+              previewLabel={t('preview.button')}
+              disabled={working}
+              onExport={() => void handleCsvExport()}
+              onPreview={() => void handleCsvPreview()}
+            />
+          </fieldset>
 
           {status.kind === 'error' && (
             <p

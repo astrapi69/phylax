@@ -90,6 +90,19 @@ describe('ExportDialog', () => {
     });
   });
 
+  it('format options are grouped in a fieldset with sr-only legend (P-07-b)', async () => {
+    await seedProfile();
+    render(<ExportDialog open={true} onClose={vi.fn()} />);
+    const group = screen.getByTestId('export-formats-group');
+    expect(group.tagName).toBe('FIELDSET');
+    // Fieldset is exposed as a group landmark to AT.
+    expect(screen.getByRole('group', { name: /Exportformat/i })).toBe(group);
+    // All three FormatRows are inside the group.
+    expect(group).toContainElement(screen.getByTestId('export-markdown-button'));
+    expect(group).toContainElement(screen.getByTestId('export-pdf-button'));
+    expect(group).toContainElement(screen.getByTestId('export-csv-button'));
+  });
+
   it('Escape key calls onClose', async () => {
     await seedProfile();
     const onClose = vi.fn();

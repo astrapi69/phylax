@@ -15,6 +15,9 @@
     "csv": {
       "title": "CSV (.csv)",
       "description": "Nur Laborwerte als Tabelle für Excel oder Datenanalyse."
+    },
+    "formats": {
+      "legend": "Exportformat wählen"
     }
   },
   "error": {
