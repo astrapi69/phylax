@@ -1,10 +1,17 @@
 # Support Phylax
 
-Phylax is an open-source project developed by a single developer. No cloud,
-no tracking, no ads - your health data stays encrypted on your device.
+Phylax is an open-source project built and maintained by one person, in
+evenings and weekends around full-time work and family life. No cloud,
+no tracking, no ads. Your health data stays encrypted on your device.
 
-If Phylax helps you and you would like to support its development, donations
-are very welcome. Several options are available:
+The project exists because keeping medical information organised for a
+household is a constant task, and the available tools either ship the
+data to someone else's servers or treat privacy as an afterthought.
+Phylax is the tool I wanted for myself, built so it works for anyone
+managing their own records.
+
+If Phylax helps you and you would like to support its development,
+donations are very welcome. Several options are available below.
 
 ---
 
@@ -54,7 +61,7 @@ for the development work.
 ## PayPal
 
 For one-time donations with the widest reach. No PayPal account required
-on the donor side - credit card works as well.
+on the donor side, credit card works as well.
 
 **Link:** https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=MJ7V43GU2H386
 
@@ -62,25 +69,41 @@ on the donor side - credit card works as well.
 
 ## Frequently Asked Questions
 
+### Who builds Phylax?
+
+One developer, in spare time. The work happens around a full-time job
+and a household with three kids, one of whom lives with autism, type 1
+diabetes, and epilepsy. That context shapes priorities (privacy, offline
+capability, no vendor lock-in are non-negotiable for me), but Phylax is
+designed for anyone who wants control over their health records, not
+for any one person's situation.
+
 ### What are donations used for?
 
-Phylax is developed by a single person. Donations cover:
+Phylax has no funding, no investors, and no commercial backing.
+Donations cover:
 
-- Development time (currently unpaid, done in free time)
-- Domain costs and hosting for documentation
-- Legal advice on privacy-related questions
-- Tools and licenses (e.g., code-signing certificates for PWA distribution)
+- **Development time.** Currently unpaid, fitted into evenings and
+  weekends around work and significant family care responsibilities.
+  Recurring support in particular makes it possible to plan focused
+  development hours rather than working with whatever time remains.
+- **Domain and hosting** for documentation and the public landing page.
+- **Legal advice** on privacy and data protection questions.
+- **Tools and licenses** (e.g., code-signing certificates for PWA
+  distribution, paid developer accounts where required).
 
 ### Do I receive a donation receipt?
 
-You receive a payment confirmation through the respective platform. Since
-Phylax is not a registered non-profit, donations are not tax-deductible.
+You receive a payment confirmation through the respective platform.
+Since Phylax is not a registered non-profit, donations are not
+tax-deductible.
 
 ### What is the difference between recurring and one-time donations?
 
-Recurring donations (via Liberapay, GitHub Sponsors, or Flattr) help plan
-development time long-term. One-time donations (via Ko-fi or PayPal) are
-equally welcome, especially when a specific feature has helped you.
+Recurring donations (via Liberapay, GitHub Sponsors, or Flattr) help
+plan development time long-term. One-time donations (via Ko-fi or
+PayPal) are equally welcome, especially when a specific feature has
+helped you.
 
 ### Can I change or cancel my recurring donation?
 
@@ -90,13 +113,13 @@ platforms have account settings for managing subscriptions.
 ### Are donations anonymous?
 
 On all platforms, you can choose whether your name is displayed publicly.
-Phylax itself receives no donor information beyond what you actively choose
-to share.
+Phylax itself receives no donor information beyond what you actively
+choose to share.
 
 ### Why no direct bank transfer?
 
-For simplicity and privacy reasons. The platforms above cover all important
-payment methods and handle payment processing professionally.
+For simplicity and privacy reasons. The platforms above cover all
+important payment methods and handle payment processing professionally.
 
 ### Which platform should I choose?
 
@@ -105,16 +128,17 @@ payment methods and handle payment processing professionally.
 - **Quick one-time support:** Ko-fi
 - **Widest reach:** PayPal
 
-All channels ultimately support the same project. Choose whichever fits you best.
+All channels ultimately support the same project. Choose whichever
+fits you best.
 
 ---
 
 ## Contact
 
-Questions about donations or project development? Open a GitHub issue or
-reach out via email (see project profile).
+Questions about donations or project development? Open a GitHub issue
+or reach out via email (see project profile).
 
 ---
 
-_Thank you for your support. Every donation, no matter how small, helps keep
-Phylax alive._
+_Thank you for your support. Every donation, no matter how small, helps
+keep Phylax alive._

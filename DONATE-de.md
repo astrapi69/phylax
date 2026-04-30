@@ -1,18 +1,27 @@
-# Phylax unterstuetzen
+# Phylax unterstützen
 
-Phylax ist ein Open-Source-Projekt eines einzelnen Entwicklers. Keine Cloud,
-kein Tracking, keine Werbung - deine Gesundheitsdaten bleiben verschluesselt
-auf deinem Geraet.
+Phylax ist ein Open-Source-Projekt, das von einer Person gebaut und
+gepflegt wird. Abends und am Wochenende, neben einem Vollzeitjob und
+dem Familienleben. Keine Cloud, kein Tracking, keine Werbung. Deine
+Gesundheitsdaten bleiben verschlüsselt auf deinem Gerät.
 
-Wenn dir Phylax hilft und du die Entwicklung unterstuetzen moechtest, freue
-ich mich ueber eine Spende. Es gibt mehrere Moeglichkeiten:
+Das Projekt existiert, weil das Verwalten medizinischer Informationen
+für einen Haushalt eine ständige Aufgabe ist und die verfügbaren
+Tools entweder die Daten auf fremde Server schicken oder Privatsphäre
+als Nebensache behandeln. Phylax ist das Werkzeug, das ich für mich
+selbst wollte. Gebaut so, dass es für alle funktioniert, die ihre
+eigenen Akten verwalten.
+
+Wenn Phylax dir hilft und du die Entwicklung unterstützen möchtest,
+sind Spenden sehr willkommen. Mehrere Optionen stehen zur Verfügung.
 
 ---
 
 ## Liberapay (empfohlen)
 
-Privacy-freundliche Plattform aus der FOSS-Community. Einmalig oder wiederkehrend,
-keine Plattform-Gebuehren, kein Konto beim Spender noetig.
+Datenschutzfreundliche Plattform aus der FOSS-Community. Einmalig oder
+wiederkehrend, keine Plattformgebühren, kein Konto auf Spenderseite
+nötig.
 
 [![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/astrapi69/donate)
 
@@ -22,8 +31,8 @@ keine Plattform-Gebuehren, kein Konto beim Spender noetig.
 
 ## GitHub Sponsors
 
-Ideal fuer Entwickler und langfristige monatliche Unterstuetzung. GitHub matcht
-neue Sponsoren im ersten Jahr.
+Ideal für Entwickler und langfristige monatliche Unterstützung. GitHub
+verdoppelt neue Sponsoren im ersten Jahr.
 
 [![Sponsor astrapi69](https://img.shields.io/badge/Sponsor-astrapi69-EA4AAA?logo=github-sponsors&style=flat-square)](https://github.com/sponsors/astrapi69)
 
@@ -31,10 +40,20 @@ neue Sponsoren im ersten Jahr.
 
 ---
 
+## Flattr
+
+Mikrospenden-Plattform, bei der Unterstützer ein monatliches Budget
+festlegen und es auf Creator verteilen. FOSS-freundlich, etabliert in
+der Open-Source-Community.
+
+**Link:** https://flattr.com/@astrapi69
+
+---
+
 ## Ko-fi
 
-Fuer einmalige Unterstuetzung ohne Account-Zwang. "Spendier mir einen Kaffee"
-fuer die Entwicklungsarbeit.
+Für einmalige Unterstützung ohne Kontozwang. "Spendier mir einen
+Kaffee" für die Entwicklungsarbeit.
 
 [![ko-fi](https://storage.ko-fi.com/cdn/kofi1.png?v=3)](https://ko-fi.com/astrapi69)
 
@@ -44,62 +63,89 @@ fuer die Entwicklungsarbeit.
 
 ## PayPal
 
-Fuer Einmalspenden mit der groessten Reichweite. Kein PayPal-Konto beim Spender
-noetig - Kreditkarte funktioniert auch.
+Für einmalige Spenden mit größter Reichweite. Auf Spenderseite ist
+kein PayPal-Konto nötig, Kreditkarte funktioniert ebenfalls.
 
 **Link:** https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=MJ7V43GU2H386
 
 ---
 
-## Haeufige Fragen
+## Häufig gestellte Fragen
 
-### Wofuer werden die Spenden verwendet?
+### Wer baut Phylax?
 
-Phylax wird von einer Person entwickelt. Spenden decken:
+Ein Entwickler, in der Freizeit. Die Arbeit findet rund um einen
+Vollzeitjob und einen Haushalt mit drei Kindern statt, eines davon
+lebt mit Autismus, Typ-1-Diabetes und Epilepsie. Dieser Kontext prägt
+die Prioritäten (Datenschutz, Offline-Fähigkeit, keine
+Anbieterbindung sind für mich nicht verhandelbar), aber Phylax ist
+für jeden gedacht, der die Kontrolle über seine Gesundheitsdaten
+behalten möchte, nicht für eine einzelne Situation.
 
-- Entwicklungszeit (derzeit unbezahlt in der Freizeit)
-- Domain-Kosten und ggf. Hosting fuer Dokumentation
-- Rechtliche Beratung bei Privacy-Fragen
-- Werkzeuge und Lizenzen (z.B. Code-Signing-Zertifikate fuer PWA-Distribution)
+### Wofür werden Spenden verwendet?
+
+Phylax hat keine Förderung, keine Investoren und keine kommerzielle
+Unterstützung. Spenden decken:
+
+- **Entwicklungszeit.** Aktuell unbezahlt, eingepasst in Abende und
+  Wochenenden neben Arbeit und erheblichen familiären Aufgaben.
+  Wiederkehrende Unterstützung macht es möglich, fokussierte
+  Entwicklungsstunden einzuplanen, statt mit der Restzeit zu arbeiten.
+- **Domain und Hosting** für Dokumentation und die öffentliche
+  Landing Page.
+- **Rechtsberatung** zu Datenschutz- und Datensicherheitsfragen.
+- **Werkzeuge und Lizenzen** (z. B. Code-Signing-Zertifikate für die
+  PWA-Distribution, kostenpflichtige Entwicklerkonten wo erforderlich).
 
 ### Bekomme ich eine Spendenquittung?
 
-Bei Liberapay, GitHub Sponsors, Ko-fi und PayPal bekommst du eine
-Zahlungsbestaetigung ueber die jeweilige Plattform. Da Phylax kein eingetragener
-Verein ist, sind Spenden steuerlich nicht absetzbar.
+Du erhältst eine Zahlungsbestätigung über die jeweilige Plattform.
+Da Phylax keine eingetragene gemeinnützige Organisation ist, sind
+Spenden nicht steuerlich absetzbar.
 
 ### Was ist der Unterschied zwischen wiederkehrenden und einmaligen Spenden?
 
-Wiederkehrende Spenden (ueber Liberapay oder GitHub Sponsors) helfen mir,
-Entwicklungszeit langfristig zu planen. Einmalige Spenden (ueber Ko-fi oder
-PayPal) sind genauso willkommen, besonders wenn dir ein bestimmtes Feature
-geholfen hat.
+Wiederkehrende Spenden (über Liberapay, GitHub Sponsors oder Flattr)
+helfen, Entwicklungszeit langfristig zu planen. Einmalige Spenden
+(über Ko-fi oder PayPal) sind genauso willkommen, besonders wenn
+ein bestimmtes Feature dir geholfen hat.
 
-### Kann ich meine wiederkehrende Spende aendern oder kuendigen?
+### Kann ich meine wiederkehrende Spende ändern oder kündigen?
 
-Ja, jederzeit ueber die jeweilige Plattform. Bei Liberapay und GitHub Sponsors
-findest du die Verwaltung in deinem Account.
+Ja, jederzeit über die jeweilige Plattform. Alle vier
+Wiederkehr-Plattformen haben Konto-Einstellungen zur Verwaltung von
+Abonnements.
 
 ### Sind Spenden anonym?
 
-Bei allen vier Plattformen kannst du selbst entscheiden, ob dein Name
-oeffentlich angezeigt wird. Phylax selbst bekommt keine Spender-Informationen
-ausser dem was du aktiv teilen moechtest.
+Auf allen Plattformen kannst du auswählen, ob dein Name öffentlich
+angezeigt wird. Phylax selbst erhält keine Spenderinformationen über
+das hinaus, was du aktiv teilst.
 
-### Warum keine Bankverbindung?
+### Warum keine direkte Banküberweisung?
 
-Aus Gruenden der Einfachheit und Privatsphaere. Die vier oben genannten
-Plattformen decken alle wichtigen Zahlungswege ab und verwalten die
-Zahlungsabwicklung professionell.
+Aus Gründen der Einfachheit und des Datenschutzes. Die obigen
+Plattformen decken alle wichtigen Zahlungsmethoden ab und
+professionalisieren die Zahlungsabwicklung.
+
+### Welche Plattform soll ich wählen?
+
+- **Datenschutzfokussiert:** Liberapay oder Flattr
+- **Entwickler-Community:** GitHub Sponsors
+- **Schnelle einmalige Unterstützung:** Ko-fi
+- **Größte Reichweite:** PayPal
+
+Alle Kanäle unterstützen letztlich dasselbe Projekt. Wähle, was zu
+dir passt.
 
 ---
 
 ## Kontakt
 
-Fragen zu Spenden oder Projekt-Entwicklung? Github-Issues oder Email (siehe
-Projekt-Profil).
+Fragen zu Spenden oder zur Projektentwicklung? Öffne ein GitHub-Issue
+oder kontaktiere mich per E-Mail (siehe Profil).
 
 ---
 
-_Vielen Dank fuer deine Unterstuetzung. Jede Spende, egal wie klein, hilft
+_Danke für deine Unterstützung. Jede Spende, egal wie klein, hilft,
 Phylax am Leben zu halten._
