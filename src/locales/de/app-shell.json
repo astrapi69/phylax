@@ -25,7 +25,10 @@
     "body": "Phylax konnte diese Seite nicht anzeigen. Lade die Anwendung neu oder kehre zur Startseite zurück. Deine Daten sind weiterhin verschlüsselt auf diesem Gerät gespeichert und gehen durch diesen Fehler nicht verloren.",
     "action": {
       "reload": "Neu laden",
-      "home": "Zur Startseite"
+      "home": "Zur Startseite",
+      "copy": "Details kopieren",
+      "copied": "Kopiert",
+      "copy-failed": "Kopieren fehlgeschlagen"
     },
     "details-summary": "Technische Details (für Fehlerbericht kopieren)"
   }

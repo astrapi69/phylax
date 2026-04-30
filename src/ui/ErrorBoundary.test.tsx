@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ErrorBoundary } from './ErrorBoundary';
 
@@ -89,6 +89,31 @@ describe('ErrorBoundary', () => {
     const details = detail.closest('details');
     expect(details).not.toBeNull();
     expect(details).not.toHaveAttribute('open');
+  });
+
+  it('copy button writes the detail block to the clipboard (P-09a)', async () => {
+    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
+    // jsdom does not ship navigator.clipboard; assign a shim that the
+    // component's `navigator.clipboard?.writeText` check will pick up.
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      writable: true,
+      value: { writeText },
+    });
+    const { container } = render(
+      <ErrorBoundary onReload={vi.fn()} onGoHome={vi.fn()}>
+        <Boom message="copy-test-token" />
+      </ErrorBoundary>,
+    );
+    const details = container.querySelector('details');
+    if (!details) throw new Error('details element missing');
+    details.open = true;
+    // fireEvent (lower level than userEvent) bypasses jsdom's inertness
+    // checks for the still-collapsed-from-userEvent's-pov details panel.
+    fireEvent.click(screen.getByTestId('error-boundary-copy'));
+    await waitFor(() => expect(writeText).toHaveBeenCalled());
+    const arg = writeText.mock.calls[0]?.[0] as string;
+    expect(arg).toContain('copy-test-token');
   });
 
   it('logs error + errorInfo to console.error for dev visibility', () => {

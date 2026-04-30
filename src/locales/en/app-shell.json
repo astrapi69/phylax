@@ -25,7 +25,10 @@
     "body": "Phylax could not render this page. Reload the app or return to the home screen. Your data stays encrypted on this device and is not lost by this error.",
     "action": {
       "reload": "Reload",
-      "home": "Go to home"
+      "home": "Go to home",
+      "copy": "Copy details",
+      "copied": "Copied",
+      "copy-failed": "Copy failed"
     },
     "details-summary": "Technical details (copy for bug report)"
   }
