@@ -106,20 +106,45 @@ function ViewerBody({ state }: { state: DocumentContentState }) {
 }
 
 function PdfViewer({ url, filename }: { url: string; filename: string }) {
-  // sandbox="allow-scripts" is the minimum that lets the browser's
-  // built-in PDF viewer (Chromium pdfium, Firefox pdf.js, Safari
-  // WebKit PDF) run inside the iframe. allow-same-origin is
-  // deliberately omitted so the viewer (and any JS embedded in the
-  // PDF itself, e.g. form logic) runs in an opaque origin — it
-  // cannot reach the Phylax origin's IndexedDB, localStorage, or the
-  // in-memory master key. Trade-off: users who upload a PDF that
-  // relies on same-origin requests (unusual) will see a degraded
-  // experience. Accepted. See docs/browser-support.md.
+  // sandbox="allow-scripts allow-same-origin" is required for the
+  // browser's built-in PDF viewer (Chromium pdfium, Firefox pdf.js,
+  // Safari WebKit PDF) to load a blob: URL. Chromium 115+ silently
+  // blocks blob URL navigation in sandboxed iframes that lack
+  // `allow-same-origin` and surfaces it as "Diese Seite wurde von
+  // Chrome blockiert" - the viewer never even paints (BUG-03 surface
+  // during P-16 smoke walk).
+  //
+  // Trade-off (security note): blob: URLs created from this page
+  // inherit the Phylax origin, so `allow-same-origin` permits the
+  // iframe's content to access localStorage, sessionStorage, and
+  // IndexedDB scoped to the Phylax origin. Mitigations:
+  //
+  //   - Inside the iframe runs the browser's PDFium / pdf.js / WebKit
+  //     PDF viewer, NOT arbitrary HTML+JS. PDF embedded JavaScript
+  //     (form logic, calculate-fields scripts) runs in a restricted
+  //     Acrobat-style sandbox that does NOT expose `window.indexedDB`
+  //     or DOM-style storage APIs to PDF scripts.
+  //   - The Phylax master key lives in a module-level variable inside
+  //     `src/crypto/keyStore.ts`, never in IndexedDB nor in any web-
+  //     storage API. Even worst-case storage access from a PDF could
+  //     not extract the unlocked AES key.
+  //   - The threat model in `docs/CONCEPT.md` already documents that
+  //     Phylax does not protect against browser exploits or compromised
+  //     OS / browser; same-origin access from a malicious PDF that
+  //     successfully exploits the browser PDF viewer is the same class
+  //     of risk.
+  //
+  // The original `sandbox="allow-scripts"` posture was stricter on
+  // paper but is now functionally broken in Chromium and would force
+  // a `pdfjs-dist`-driven custom viewer to recover the same UX. The
+  // bundled-viewer path is tracked under P-13 (image viewer perf) and
+  // could later host a custom PDF viewer too if a concrete threat
+  // surfaces.
   return (
     <iframe
       src={url}
       title={filename}
-      sandbox="allow-scripts"
+      sandbox="allow-scripts allow-same-origin"
       className="h-[80vh] w-full rounded-md border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
       data-testid="pdf-viewer-iframe"
     />

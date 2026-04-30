@@ -95,7 +95,16 @@ describe('DocumentViewer', () => {
     expect(screen.getByTestId('viewer-title')).toHaveTextContent('report.pdf');
   });
 
-  it('sandboxes the PDF iframe with only allow-scripts (no allow-same-origin)', async () => {
+  it('sandboxes the PDF iframe with allow-scripts + allow-same-origin (BUG-03)', async () => {
+    // BUG-03 (manual smoke during P-16, 2026-04-30): Chromium 115+
+    // silently blocks blob: URL navigation in sandboxed iframes
+    // without `allow-same-origin` and surfaces it as "Diese Seite
+    // wurde von Chrome blockiert". Granting `allow-same-origin`
+    // unblocks the browser's built-in PDF viewer; the security
+    // trade-off is documented inline in DocumentViewer.tsx
+    // (PDF-embedded JS runs in a restricted Acrobat-style context
+    // that does not expose web-storage APIs; master key lives in
+    // module-level memory not IndexedDB).
     const profileId = await seedProfile();
     const id = await seedDocument(
       profileId,
@@ -108,12 +117,7 @@ describe('DocumentViewer', () => {
 
     const iframe = await waitFor(() => screen.getByTestId('pdf-viewer-iframe'));
     const sandbox = iframe.getAttribute('sandbox');
-    expect(sandbox).toBe('allow-scripts');
-    // Regression guard: never grant same-origin back to the viewer.
-    // PDF JS under same-origin can reach the Phylax origin's
-    // IndexedDB and in-memory state, which is the whole threat we
-    // mitigate by sandboxing.
-    expect(sandbox).not.toMatch(/allow-same-origin/);
+    expect(sandbox).toBe('allow-scripts allow-same-origin');
   });
 
   it('surfaces the localized not-found error for an unknown id', async () => {
