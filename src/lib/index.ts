@@ -9,3 +9,4 @@ export {
   type DateRange,
 } from './dateRangeFilter';
 export { useUrlSearchParam } from './useUrlSearchParam';
+export { prefersReducedMotion, preferredScrollBehavior } from './prefersReducedMotion';

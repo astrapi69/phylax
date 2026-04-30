@@ -5,6 +5,7 @@ import {
   findMatchRanges,
   isDateRangeActive,
   parseDateRange,
+  preferredScrollBehavior,
   splitQuery,
   useUrlSearchParam,
   type DateRange,
@@ -222,12 +223,15 @@ export function ObservationsView() {
   // matching the activeIndex; if it is missing (e.g., source-level
   // count over-counted because a match sat inside a Markdown syntax
   // marker), the lookup returns null and we no-op silently.
+  // P-07-c: scroll behaviour follows `prefers-reduced-motion`. Smooth
+  // animation for default users; instant ('auto') for reduced-motion
+  // users (vestibular disorders, anti-motion preference).
   useEffect(() => {
     if (scrollSignal === 0) return;
     if (activeIndex === 0) return;
     const target = document.querySelector(`mark[data-match-index="${activeIndex}"]`);
     if (target instanceof HTMLElement) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'center' });
     }
   }, [scrollSignal, activeIndex]);
 
