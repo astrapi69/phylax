@@ -30,7 +30,7 @@ export function DocumentsPlaceholder() {
         <DocumentUploadButton onUploaded={() => setRefreshKey((n) => n + 1)} />
         <ImportButton onImported={() => setRefreshKey((n) => n + 1)} />
       </div>
-      <DocumentList versionKey={refreshKey} />
+      <DocumentList versionKey={refreshKey} onDeleted={() => setRefreshKey((n) => n + 1)} />
       <StorageQuotaIndicator versionKey={refreshKey} />
     </div>
   );

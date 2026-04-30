@@ -8,6 +8,13 @@ export interface DocumentListProps {
    * delete) so the hook refetches. Default 0; caller-owned.
    */
   versionKey?: number;
+  /**
+   * Optional. When provided, each row gets an inline delete affordance
+   * (P-16) and this callback fires after a successful delete so the
+   * caller can refresh the list (typically by bumping `versionKey`).
+   * Omit for a read-only list.
+   */
+  onDeleted?: () => void;
 }
 
 /**
@@ -16,7 +23,7 @@ export interface DocumentListProps {
  * components. Shows loading placeholder, error banner, or empty-state
  * as appropriate.
  */
-export function DocumentList({ versionKey = 0 }: DocumentListProps) {
+export function DocumentList({ versionKey = 0, onDeleted }: DocumentListProps) {
   const { t } = useTranslation('documents');
   const { state } = useDocuments(versionKey);
 
@@ -55,7 +62,7 @@ export function DocumentList({ versionKey = 0 }: DocumentListProps) {
       data-testid="documents-list"
     >
       {state.documents.map((doc) => (
-        <DocumentListItem key={doc.id} document={doc} />
+        <DocumentListItem key={doc.id} document={doc} onDeleted={onDeleted} />
       ))}
     </ul>
   );

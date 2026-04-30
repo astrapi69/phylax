@@ -72,7 +72,10 @@
     },
     "meta": "{{size}} · {{date}}",
     "aria-label": "Dokumente",
-    "link-indicator-tooltip": "Verknüpft mit {{kind}}"
+    "link-indicator-tooltip": "Verknüpft mit {{kind}}",
+    "row-delete": {
+      "aria-label": "Dokument {{filename}} löschen"
+    }
   },
   "attached-documents": {
     "heading": "Angehängte Dokumente"

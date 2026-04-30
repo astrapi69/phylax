@@ -4,9 +4,17 @@ import { useTranslation } from 'react-i18next';
 import type { Document } from '../../domain';
 import { DocumentRepository } from '../../db/repositories';
 import { isImageMimeType } from './mimeTypes';
+import { DocumentRowDeleteAction } from './DocumentRowDeleteAction';
 
 export interface DocumentListItemProps {
   document: Document;
+  /**
+   * Optional. When provided, renders an inline delete action at the
+   * end of the row (P-16). Caller fires its list-refresh side-effect
+   * here (typically by bumping a `versionKey` on the parent
+   * `DocumentList`). When omitted, the row is read-only.
+   */
+  onDeleted?: () => void;
 }
 
 /**
@@ -20,7 +28,7 @@ export interface DocumentListItemProps {
  * already unmounted) so nothing leaks between list re-renders or
  * navigations away from the documents view.
  */
-export function DocumentListItem({ document }: DocumentListItemProps) {
+export function DocumentListItem({ document, onDeleted }: DocumentListItemProps) {
   const { t, i18n } = useTranslation('documents');
   const isImage = isImageMimeType(document.mimeType);
   const thumbnailUrl = useThumbnailUrl(document, isImage);
@@ -28,35 +36,48 @@ export function DocumentListItem({ document }: DocumentListItemProps) {
   const sizeLabel = formatSize(document.sizeBytes);
   const dateLabel = formatDate(document.createdAt, i18n.language);
 
+  // Layout: the navigation `<Link>` and the inline delete action are
+  // siblings within an outer `<li>` so we never nest interactive
+  // elements (avoids the WCAG nested-interactive violation that
+  // surfaced during O-10 production E2E). Outer wrapper carries the
+  // visual chrome (border, hover, padding); link is inert chrome-wise
+  // but still keyboard-focusable as a navigation surface.
   return (
     <li data-testid={`document-item-${document.id}`}>
-      <Link
-        to={`/documents/${document.id}`}
-        className="flex items-center gap-3 rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-900 hover:border-blue-400 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-blue-500 dark:hover:bg-blue-900/20"
-        data-testid={`document-item-link-${document.id}`}
-      >
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
-          {isImage && thumbnailUrl ? (
-            <img
-              src={thumbnailUrl}
-              alt=""
-              className="h-full w-full object-cover"
-              data-testid="thumbnail"
-            />
-          ) : (
-            <FileIcon mimeType={document.mimeType} />
-          )}
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="flex items-center gap-1.5">
-            <span className="truncate font-medium">{document.filename}</span>
-            <LinkIndicator document={document} />
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {t('list.meta', { size: sizeLabel, date: dateLabel })}
-          </span>
-        </div>
-      </Link>
+      <div className="flex items-center gap-2 rounded-md border border-gray-200 bg-white text-sm text-gray-900 hover:border-blue-400 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-blue-500">
+        <Link
+          to={`/documents/${document.id}`}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-md p-3 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:hover:bg-blue-900/20"
+          data-testid={`document-item-link-${document.id}`}
+        >
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
+            {isImage && thumbnailUrl ? (
+              <img
+                src={thumbnailUrl}
+                alt=""
+                className="h-full w-full object-cover"
+                data-testid="thumbnail"
+              />
+            ) : (
+              <FileIcon mimeType={document.mimeType} />
+            )}
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="flex items-center gap-1.5">
+              <span className="truncate font-medium">{document.filename}</span>
+              <LinkIndicator document={document} />
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {t('list.meta', { size: sizeLabel, date: dateLabel })}
+            </span>
+          </div>
+        </Link>
+        {onDeleted && (
+          <div className="pr-2">
+            <DocumentRowDeleteAction document={document} onDeleted={onDeleted} />
+          </div>
+        )}
+      </div>
     </li>
   );
 }
