@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DateRangeFilter } from '../../ui';
+import {
+  DateRangeFilter,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  useModalTitleId,
+} from '../../ui';
 import { buildLabRows, exportLabValuesAsCsv } from './csvExport';
 import { ExportPreview, type PreviewContent } from './ExportPreview';
 import { exportProfileAsMarkdown } from './markdownExport';
@@ -26,7 +33,7 @@ type ExportStatus = { kind: 'idle' } | { kind: 'working' } | { kind: 'error'; me
 export function ExportDialog({ open, onClose }: ExportDialogProps) {
   const { t, i18n } = useTranslation('export');
   const closeRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useModalTitleId();
   const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
   const { loadExportData } = useExportData();
 
@@ -110,41 +117,14 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     includeLinkedDocuments,
   ]);
 
+  // Reset status to idle whenever the dialog is (re)opened. Focus
+  // management for the close button is provided by the Modal primitive
+  // via `initialFocusRef={closeRef}` below.
   useEffect(() => {
     if (open) {
       setStatus({ kind: 'idle' });
-      closeRef.current?.focus();
     }
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-        return;
-      }
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (!first || !last) return;
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [open, onClose]);
 
   async function handleMarkdownExport(): Promise<void> {
     setStatus({ kind: 'working' });
@@ -419,36 +399,33 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     }
   }
 
-  if (!open) return null;
-
   const working = status.kind === 'working';
 
+  // TD-12 migration: composes the shared `<Modal>` + `ModalHeader` /
+  // `Body` / `Footer` from `src/ui/Modal/`. The primitive provides
+  // focus trap, Escape close, backdrop, scroll lock, portal mount,
+  // and the `initialFocusRef={closeRef}` close-focused-on-mount
+  // default. `closeOnEscape` and `closeOnBackdropClick` toggle off
+  // while `working` so an in-flight export cannot be interrupted by
+  // a stray keystroke or background click (preserves the bespoke
+  // pre-migration behaviour).
   return (
-    <div
+    <Modal
+      open={open}
+      onClose={onClose}
+      titleId={titleId}
       role="dialog"
-      aria-modal="true"
-      aria-labelledby="export-dialog-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !working) onClose();
-      }}
+      closeOnEscape={!working}
+      closeOnBackdropClick={!working}
+      initialFocusRef={closeRef}
+      size="md"
     >
-      <div
-        ref={dialogRef}
-        role="document"
-        className="flex w-full max-w-md flex-col overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-900 dark:shadow-black/60"
-      >
-        <header className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h2
-            id="export-dialog-title"
-            className="text-lg font-bold text-gray-900 dark:text-gray-100"
-          >
-            {t('dialog.title')}
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('dialog.description')}</p>
-        </header>
+      <ModalHeader titleId={titleId} description={t('dialog.description')}>
+        {t('dialog.title')}
+      </ModalHeader>
 
-        <div className="flex flex-col gap-3 px-6 py-4">
+      <ModalBody>
+        <div className="flex flex-col gap-3">
           <DateRangeFilter
             from={fromIso}
             to={toIso}
@@ -586,27 +563,32 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
             </p>
           )}
         </div>
+      </ModalBody>
 
-        <footer className="flex justify-end border-t border-gray-200 px-6 py-3 dark:border-gray-700">
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            disabled={working}
-            className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-          >
-            {t('common:action.cancel')}
-          </button>
-        </footer>
-      </div>
+      <ModalFooter>
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          disabled={working}
+          className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        >
+          {t('common:action.cancel')}
+        </button>
+      </ModalFooter>
 
+      {/*
+        ExportPreview renders as a portal'd sibling overlay. It carries
+        its own dialog primitive (not yet migrated; out of TD-12 scope).
+        Both dialogs coexist via the module-level scroll-lock counter.
+       */}
       <ExportPreview
         open={preview !== null}
         onClose={() => setPreview(null)}
         content={preview?.content ?? null}
         onDownload={() => void handlePreviewDownload()}
       />
-    </div>
+    </Modal>
   );
 }
 

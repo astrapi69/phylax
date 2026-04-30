@@ -55,7 +55,13 @@ describe('ExportDialog', () => {
   it('renders the Markdown option and focuses the close button when open', async () => {
     await seedProfile();
     render(<ExportDialog open={true} onClose={vi.fn()} />);
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'export-dialog-title');
+    // TD-12 migration: aria-labelledby points to the auto-generated
+    // ModalHeader id. Resolve via document.getElementById.
+    const dialog = screen.getByRole('dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Profil exportieren/i);
     expect(screen.getByRole('heading', { name: 'Profil exportieren' })).toBeInTheDocument();
     expect(screen.getByTestId('export-markdown-button')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Abbrechen' })).toHaveFocus();

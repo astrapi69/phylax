@@ -30,6 +30,13 @@ describe('ExportButton', () => {
     const user = userEvent.setup();
     render(<ExportButton />);
     await user.click(screen.getByTestId('export-profile-button'));
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'export-dialog-title');
+    // TD-12 migration: aria-labelledby points to the auto-generated
+    // ModalHeader id; resolve via document.getElementById and verify
+    // the referenced heading carries the dialog title text.
+    const dialog = screen.getByRole('dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Profil exportieren/i);
   });
 });
