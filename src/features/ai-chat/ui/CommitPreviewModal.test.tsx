@@ -349,9 +349,16 @@ describe('CommitPreviewModal (diff view)', () => {
     render(<CommitPreviewModal fragment={NEW_OBS_FRAGMENT} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('commit-preview-version')).toBeInTheDocument());
 
+    // TD-12 migration: aria-labelledby now points to the auto-
+    // generated ModalHeader id; resolve it via document.getElementById
+    // and verify the referenced heading carries the dialog title text
+    // instead of pinning to the old hardcoded `commit-preview-title` id.
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
-    expect(dialog).toHaveAttribute('aria-labelledby', 'commit-preview-title');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Profil-Änderungen Vorschau/i);
     expect(screen.getByRole('button', { name: 'Schließen' })).toHaveFocus();
   });
 });

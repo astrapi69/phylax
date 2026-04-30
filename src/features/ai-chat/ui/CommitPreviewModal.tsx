@@ -11,6 +11,13 @@ import {
   SupplementRepository,
 } from '../../../db/repositories';
 import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  useModalTitleId,
+} from '../../../ui';
+import {
   computeDiff,
   commitFragment,
   commitSummaryText,
@@ -85,7 +92,7 @@ export function CommitPreviewModal({
 }: CommitPreviewModalProps) {
   const { t } = useTranslation('ai-chat');
   const closeRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useModalTitleId();
 
   const [state, setState] = useState<ModalState>({ kind: 'loading' });
   const [versionDescription, setVersionDescription] = useState('');
@@ -128,38 +135,6 @@ export function CommitPreviewModal({
     };
   }, [fragment, t]);
 
-  useEffect(() => {
-    closeRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-        return;
-      }
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (!first || !last) return;
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [onClose]);
-
   const canCommit = useMemo(() => {
     if (state.kind !== 'ready') return false;
     if (commitState.kind === 'committing') return false;
@@ -197,97 +172,96 @@ export function CommitPreviewModal({
     }
   }
 
+  // TD-12 migration: composes the shared `<Modal>` primitive (not the
+  // ConfirmDialog convenience wrapper) because this surface needs the
+  // header description, custom commit-state error banner between body
+  // and footer, and bespoke confirm-button label switching that the
+  // wrapper does not expose. Modal primitive provides focus trap,
+  // Escape close, backdrop, scroll lock, portal mount, and the
+  // initialFocusRef hook for the close-button-focused-on-mount default.
+  // closeOnEscape disabled while committing so the irreversible flow
+  // cannot be interrupted mid-flight.
   return (
-    <div
+    <Modal
+      open
+      onClose={onClose}
+      titleId={titleId}
       role="dialog"
-      aria-modal="true"
-      aria-labelledby="commit-preview-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      closeOnEscape={commitState.kind !== 'committing'}
+      closeOnBackdropClick={false}
+      initialFocusRef={closeRef}
+      size="xl"
     >
-      <div
-        ref={dialogRef}
-        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-900 dark:shadow-black/60"
-        role="document"
-      >
-        <header className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h2
-            id="commit-preview-title"
-            className="text-lg font-bold text-gray-900 dark:text-gray-100"
+      <ModalHeader titleId={titleId} description={t('commit-preview.intro')}>
+        {t('commit-preview.heading')}
+      </ModalHeader>
+
+      <ModalBody>
+        {state.kind === 'loading' && (
+          <p
+            data-testid="commit-preview-loading"
+            className="text-sm text-gray-600 dark:text-gray-400"
           >
-            {t('commit-preview.heading')}
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {t('commit-preview.intro')}
+            {t('commit-preview.loading')}
           </p>
-        </header>
-
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          {state.kind === 'loading' && (
-            <p
-              data-testid="commit-preview-loading"
-              className="text-sm text-gray-600 dark:text-gray-400"
-            >
-              {t('commit-preview.loading')}
-            </p>
-          )}
-
-          {state.kind === 'error' && (
-            <p
-              data-testid="commit-preview-error"
-              className="rounded-sm border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
-            >
-              {state.message}
-            </p>
-          )}
-
-          {state.kind === 'ready' && (
-            <ReadyBody
-              diff={state.diff}
-              wrapped={state.wrapped}
-              versionDescription={versionDescription}
-              onVersionDescriptionChange={setVersionDescription}
-              showUnchanged={showUnchanged}
-              onShowUnchangedChange={setShowUnchanged}
-              emptyHint={commitDisabledReason}
-            />
-          )}
-        </div>
-
-        {commitState.kind === 'error' && (
-          <div
-            data-testid="commit-error"
-            className="border-t border-red-300 bg-red-50 px-6 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
-            role="alert"
-          >
-            {commitState.message}
-          </div>
         )}
 
-        <footer className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-3 dark:border-gray-700">
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            disabled={commitState.kind === 'committing'}
-            className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        {state.kind === 'error' && (
+          <p
+            data-testid="commit-preview-error"
+            className="rounded-sm border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
           >
-            {t('common:action.close')}
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleCommit()}
-            disabled={!canCommit}
-            aria-disabled={!canCommit}
-            title={canCommit ? undefined : commitDisabledReason || t('commit-preview.loading')}
-            className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
-          >
-            {commitState.kind === 'committing'
-              ? t('commit-preview.footer.committing')
-              : t('commit-preview.footer.commit')}
-          </button>
-        </footer>
-      </div>
-    </div>
+            {state.message}
+          </p>
+        )}
+
+        {state.kind === 'ready' && (
+          <ReadyBody
+            diff={state.diff}
+            wrapped={state.wrapped}
+            versionDescription={versionDescription}
+            onVersionDescriptionChange={setVersionDescription}
+            showUnchanged={showUnchanged}
+            onShowUnchangedChange={setShowUnchanged}
+            emptyHint={commitDisabledReason}
+          />
+        )}
+      </ModalBody>
+
+      {commitState.kind === 'error' && (
+        <div
+          data-testid="commit-error"
+          className="border-t border-red-300 bg-red-50 px-6 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+          role="alert"
+        >
+          {commitState.message}
+        </div>
+      )}
+
+      <ModalFooter>
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          disabled={commitState.kind === 'committing'}
+          className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        >
+          {t('common:action.close')}
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleCommit()}
+          disabled={!canCommit}
+          aria-disabled={!canCommit}
+          title={canCommit ? undefined : commitDisabledReason || t('commit-preview.loading')}
+          className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-600/60 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-blue-700/50"
+        >
+          {commitState.kind === 'committing'
+            ? t('commit-preview.footer.committing')
+            : t('commit-preview.footer.commit')}
+        </button>
+      </ModalFooter>
+    </Modal>
   );
 }
 

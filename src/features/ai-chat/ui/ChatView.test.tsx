@@ -180,7 +180,14 @@ describe('ChatView', () => {
     render(<ChatView />);
 
     await user.click(screen.getByTestId('commit-preview-button'));
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'commit-preview-title');
+    // TD-12 migration: aria-labelledby resolves through the auto-
+    // generated ModalHeader id; verify the attribute exists and points
+    // to a heading carrying the dialog title text.
+    const dialog = screen.getByRole('dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Profil-Änderungen Vorschau/i);
 
     await user.click(screen.getByRole('button', { name: 'Schließen' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
