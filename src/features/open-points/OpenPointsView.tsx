@@ -1,8 +1,8 @@
-import { useDeferredValue, useMemo } from 'react';
+import { useDeferredValue, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUrlSearchParam } from '../../lib';
-import { EmptyStatePanel, ListSkeleton, SearchInput } from '../../ui';
+import { preferredScrollBehavior, useActiveMatch, useUrlSearchParam } from '../../lib';
+import { EmptyStatePanel, ListSkeleton, MatchNavButton, SearchInput } from '../../ui';
 import { useSearch } from '../search-trigger';
 import { ContextGroup } from './ContextGroup';
 import { useOpenPoints } from './useOpenPoints';
@@ -53,6 +53,21 @@ export function OpenPointsView() {
   }, [state, deferredQuery]);
 
   const isFiltering = deferredQuery.trim() !== '';
+
+  // P-22b/c/d-polish: row-level match navigation. `matchCount` is the
+  // number of retained context groups (group-keep semantic); each
+  // rendered ContextGroup carries `data-match-row` (1-based).
+  const totalMatches = filterResult?.matchCount ?? 0;
+  const { activeIndex, scrollSignal, next, prev } = useActiveMatch(deferredQuery, totalMatches);
+
+  useEffect(() => {
+    if (scrollSignal === 0) return;
+    if (activeIndex === 0) return;
+    const target = document.querySelector(`[data-match-row="${activeIndex}"]`);
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'center' });
+    }
+  }, [scrollSignal, activeIndex]);
 
   if (state.kind === 'loading') {
     return <ListSkeleton variant="card" count={4} ariaLabel={t('loading.aria-label')} />;
@@ -111,11 +126,32 @@ export function OpenPointsView() {
                   >
                     {filterResult.matchCount === 0
                       ? t('search.no-matches-counter')
-                      : t('search.match-count', {
-                          count: filterResult.matchCount,
-                          total: filterResult.totalCount,
-                        })}
+                      : totalMatches >= 2
+                        ? t('search.match-count-active', {
+                            current: activeIndex,
+                            total: totalMatches,
+                          })
+                        : t('search.match-count', {
+                            count: filterResult.matchCount,
+                            total: filterResult.totalCount,
+                          })}
                   </p>
+                )}
+                {isFiltering && totalMatches >= 2 && (
+                  <>
+                    <MatchNavButton
+                      direction="up"
+                      onClick={prev}
+                      ariaLabel={t('search.prev-match')}
+                      testId="open-points-search-prev"
+                    />
+                    <MatchNavButton
+                      direction="down"
+                      onClick={next}
+                      ariaLabel={t('search.next-match')}
+                      testId="open-points-search-next"
+                    />
+                  </>
                 )}
               </div>
               {searchOpen && (
@@ -126,6 +162,8 @@ export function OpenPointsView() {
                     placeholder={t('search.placeholder')}
                     ariaLabel={t('search.aria-label')}
                     clearLabel={t('search.clear')}
+                    onEnter={next}
+                    onShiftEnter={prev}
                     onEscapeWhenEmpty={onEscapeWhenEmpty}
                     onClear={clearAllAndCollapse}
                     autoFocus
@@ -139,14 +177,19 @@ export function OpenPointsView() {
             <NoMatchesState query={deferredQuery} />
           ) : (
             <div className="space-y-8">
-              {filterResult.groups.map((group) => (
-                <ContextGroup
+              {filterResult.groups.map((group, index) => (
+                <div
                   key={group.context}
-                  context={group.context}
-                  items={group.items}
-                  form={form}
-                  highlightQuery={deferredQuery}
-                />
+                  data-match-row={isFiltering ? index + 1 : undefined}
+                  className="scroll-mt-24"
+                >
+                  <ContextGroup
+                    context={group.context}
+                    items={group.items}
+                    form={form}
+                    highlightQuery={deferredQuery}
+                  />
+                </div>
               ))}
             </div>
           )}

@@ -75,6 +75,9 @@
     "aria-label": "Search supplements",
     "clear": "Clear search",
     "match-count": "{{count}} of {{total}} categories",
+    "match-count-active": "{{current}} of {{total}} matches",
+    "next-match": "Next match",
+    "prev-match": "Previous match",
     "no-matches-counter": "No matches",
     "no-matches": "No matches for \"{{query}}\"."
   }

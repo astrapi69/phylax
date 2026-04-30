@@ -1,13 +1,21 @@
-import { useDeferredValue, useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   isDateRangeActive,
   parseDateRange,
+  preferredScrollBehavior,
+  useActiveMatch,
   useUrlSearchParam,
   type DateRange,
 } from '../../lib';
-import { DateRangeFilter, EmptyStatePanel, ListSkeleton, SearchInput } from '../../ui';
+import {
+  DateRangeFilter,
+  EmptyStatePanel,
+  ListSkeleton,
+  MatchNavButton,
+  SearchInput,
+} from '../../ui';
 import { useSearch } from '../search-trigger';
 import { LabReportCard } from './LabReportCard';
 import { useLabValues } from './useLabValues';
@@ -107,6 +115,22 @@ export function LabValuesView() {
 
   const isFiltering = deferredQuery.trim() !== '' || isDateRangeActive(dateRange);
 
+  // P-22b/c/d-polish: row-level match navigation. `matchCount` is the
+  // number of retained reports; each rendered LabReportCard carries a
+  // `data-match-row="N"` attribute (1-based). Up / Down + Enter cycle
+  // through the matched reports.
+  const totalMatches = filterResult?.matchCount ?? 0;
+  const { activeIndex, scrollSignal, next, prev } = useActiveMatch(deferredQuery, totalMatches);
+
+  useEffect(() => {
+    if (scrollSignal === 0) return;
+    if (activeIndex === 0) return;
+    const target = document.querySelector(`[data-match-row="${activeIndex}"]`);
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'center' });
+    }
+  }, [scrollSignal, activeIndex]);
+
   if (state.kind === 'loading') {
     return <ListSkeleton variant="card" count={3} ariaLabel={t('loading.aria-label')} />;
   }
@@ -154,11 +178,32 @@ export function LabValuesView() {
                   >
                     {filterResult.matchCount === 0
                       ? t('search.no-matches-counter')
-                      : t('search.match-count', {
-                          count: filterResult.matchCount,
-                          total: filterResult.totalCount,
-                        })}
+                      : totalMatches >= 2
+                        ? t('search.match-count-active', {
+                            current: activeIndex,
+                            total: totalMatches,
+                          })
+                        : t('search.match-count', {
+                            count: filterResult.matchCount,
+                            total: filterResult.totalCount,
+                          })}
                   </p>
+                )}
+                {isFiltering && totalMatches >= 2 && (
+                  <>
+                    <MatchNavButton
+                      direction="up"
+                      onClick={prev}
+                      ariaLabel={t('search.prev-match')}
+                      testId="lab-values-search-prev"
+                    />
+                    <MatchNavButton
+                      direction="down"
+                      onClick={next}
+                      ariaLabel={t('search.next-match')}
+                      testId="lab-values-search-next"
+                    />
+                  </>
                 )}
               </div>
               {searchOpen && (
@@ -180,6 +225,8 @@ export function LabValuesView() {
                     placeholder={t('search.placeholder')}
                     ariaLabel={t('search.aria-label')}
                     clearLabel={t('search.clear')}
+                    onEnter={next}
+                    onShiftEnter={prev}
                     onEscapeWhenEmpty={onEscapeWhenEmpty}
                     onClear={clearAllAndCollapse}
                     autoFocus
@@ -199,15 +246,20 @@ export function LabValuesView() {
             <NoMatchesState query={deferredQuery} />
           ) : (
             <div className="space-y-6">
-              {reports.map(({ report, valuesByCategory }) => (
-                <LabReportCard
+              {reports.map(({ report, valuesByCategory }, index) => (
+                <div
                   key={report.id}
-                  report={report}
-                  valuesByCategory={valuesByCategory}
-                  form={form}
-                  valueForm={valueForm}
-                  highlightQuery={deferredQuery}
-                />
+                  data-match-row={isFiltering ? index + 1 : undefined}
+                  className="scroll-mt-24"
+                >
+                  <LabReportCard
+                    report={report}
+                    valuesByCategory={valuesByCategory}
+                    form={form}
+                    valueForm={valueForm}
+                    highlightQuery={deferredQuery}
+                  />
+                </div>
               ))}
             </div>
           )}

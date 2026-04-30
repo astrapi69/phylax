@@ -10,6 +10,7 @@ export { DateRangeFilter, type DateRangeFilterProps } from './DateRangeFilter';
 export { Skeleton, ListSkeleton, type SkeletonProps, type ListSkeletonProps } from './Skeleton';
 export { EmptyStatePanel, type EmptyStatePanelProps } from './EmptyStatePanel';
 export { ErrorBoundary } from './ErrorBoundary';
+export { MatchNavButton, type MatchNavButtonProps } from './MatchNavButton';
 export {
   Modal,
   ModalHeader,

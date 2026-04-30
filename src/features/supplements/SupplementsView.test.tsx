@@ -233,6 +233,35 @@ describe('SupplementsView', () => {
       expect(input.value).toBe('Magnesium');
     });
 
+    it('renders prev/next match-nav when matchCount >= 2 (P-22b/c/d-polish)', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Täglich/ })).toBeInTheDocument(),
+      );
+      const user = userEvent.setup();
+      // Broad query hitting both 'Täglich' (Magnesium / Vitamin D3) and
+      // 'Pausiert' (Kreatin) groups via shared letter coverage.
+      await user.type(await screen.findByRole('searchbox'), 'i');
+      await waitFor(() => {
+        expect(screen.queryByTestId('supplements-search-prev')).toBeInTheDocument();
+        expect(screen.queryByTestId('supplements-search-next')).toBeInTheDocument();
+      });
+    });
+
+    it('match-nav hidden when only one group is retained', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'Magnesium');
+      await waitFor(() => {
+        const headings = screen.getAllByRole('heading', { level: 2 });
+        expect(headings).toHaveLength(1);
+      });
+      expect(screen.queryByTestId('supplements-search-prev')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('supplements-search-next')).not.toBeInTheDocument();
+    });
+
     it('clears query when the SearchInput X button is clicked (Q15)', async () => {
       mockTwoGroups();
       renderView({ initialEntries: ['/supplements?q=Magnesium'] });

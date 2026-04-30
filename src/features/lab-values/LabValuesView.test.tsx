@@ -380,6 +380,39 @@ describe('LabValuesView', () => {
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 
+    it('renders prev/next match-nav buttons when the filter retains >= 2 reports (P-22b/c/d-polish)', async () => {
+      // Both reports' labNames contain a literal 'l' (Synlab + Other-via-Lab patch).
+      // Use a date filter to keep both visible regardless of value content: the
+      // YYYY range covers both reportDates. Filter retains both => totalMatches == 2.
+      mockSynlabAndOther();
+      renderView({ initialEntries: ['/lab-values?from=2024-01-01&to=2026-12-31'] });
+      await waitFor(() =>
+        expect(screen.getAllByRole('heading', { level: 2 }).length).toBe(2),
+      );
+      // Date filter alone keeps two reports visible. matchCount == 2 in
+      // filterLabReports' empty-query branch when the date range is active
+      // (filterResult.matchCount equals retained.length).
+      await waitFor(() => {
+        expect(screen.queryByTestId('lab-values-search-prev')).toBeInTheDocument();
+        expect(screen.queryByTestId('lab-values-search-next')).toBeInTheDocument();
+      });
+    });
+
+    it('match-nav buttons hidden when matchCount < 2', async () => {
+      mockSynlabAndOther();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      // Query matches only one report.
+      await user.type(input, 'Kreatinin');
+      await waitFor(() => {
+        const headings = screen.getAllByRole('heading', { level: 2 });
+        expect(headings).toHaveLength(1);
+      });
+      expect(screen.queryByTestId('lab-values-search-prev')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('lab-values-search-next')).not.toBeInTheDocument();
+    });
+
     it('clears query and dates when the SearchInput X button is clicked (Q15)', async () => {
       mockSynlabAndOther();
       renderView({ initialEntries: ['/lab-values?q=Synlab&from=2025-01-01'] });

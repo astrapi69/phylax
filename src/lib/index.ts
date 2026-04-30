@@ -10,3 +10,4 @@ export {
 } from './dateRangeFilter';
 export { useUrlSearchParam } from './useUrlSearchParam';
 export { prefersReducedMotion, preferredScrollBehavior } from './prefersReducedMotion';
+export { useActiveMatch, type UseActiveMatchResult } from './useActiveMatch';

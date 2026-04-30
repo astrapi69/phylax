@@ -7,11 +7,18 @@ import {
   parseDateRange,
   preferredScrollBehavior,
   splitQuery,
+  useActiveMatch,
   useUrlSearchParam,
   type DateRange,
   type MatchRange,
 } from '../../lib';
-import { DateRangeFilter, EmptyStatePanel, ListSkeleton, SearchInput } from '../../ui';
+import {
+  DateRangeFilter,
+  EmptyStatePanel,
+  ListSkeleton,
+  MatchNavButton,
+  SearchInput,
+} from '../../ui';
 import { useSearch } from '../search-trigger';
 import { ThemeGroup } from './ThemeGroup';
 import { useObservations } from './useObservations';
@@ -23,7 +30,6 @@ import { ObservationForm } from './ObservationForm';
 import { ObservationDeleteDialog } from './ObservationDeleteDialog';
 import { AddObservationButton } from './AddObservationButton';
 import { filterObservations } from './filterObservations';
-import { useActiveMatch } from './useActiveMatch';
 
 /** Window (ms) for treating an observation as "just committed" on mount. */
 const HIGHLIGHT_WINDOW_MS = 5000;
@@ -316,17 +322,17 @@ export function ObservationsView() {
                 )}
                 {isFiltering && totalMatches >= 2 && (
                   <>
-                    <NavButton
+                    <MatchNavButton
+                      direction="up"
                       onClick={prev}
                       ariaLabel={t('search.prev-match')}
                       testId="search-prev"
-                      iconRotation="up"
                     />
-                    <NavButton
+                    <MatchNavButton
+                      direction="down"
                       onClick={next}
                       ariaLabel={t('search.next-match')}
                       testId="search-next"
-                      iconRotation="down"
                     />
                   </>
                 )}
@@ -394,39 +400,6 @@ export function ObservationsView() {
   );
 }
 
-function NavButton({
-  onClick,
-  ariaLabel,
-  testId,
-  iconRotation,
-}: {
-  onClick: () => void;
-  ariaLabel: string;
-  testId: string;
-  iconRotation: 'up' | 'down';
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={ariaLabel}
-      title={ariaLabel}
-      data-testid={testId}
-      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm border border-gray-300 text-gray-700 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-    >
-      <svg
-        viewBox="0 0 16 16"
-        width="14"
-        height="14"
-        fill="currentColor"
-        aria-hidden="true"
-        style={{ transform: iconRotation === 'up' ? 'rotate(180deg)' : undefined }}
-      >
-        <path d="M3.204 5h9.592L8 10.481zm-.753.659l4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
-      </svg>
-    </button>
-  );
-}
 
 function CalendarToggle({
   dateOpen,

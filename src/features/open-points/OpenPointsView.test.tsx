@@ -223,6 +223,34 @@ describe('OpenPointsView', () => {
       expect(input.value).toBe('Bluttest');
     });
 
+    it('renders prev/next match-nav when matchCount >= 2 (P-22b/c/d-polish)', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { level: 2, name: /Arztbesuch/ })).toBeInTheDocument(),
+      );
+      const user = userEvent.setup();
+      // Broad query hitting both contexts.
+      await user.type(await screen.findByRole('searchbox'), 'e');
+      await waitFor(() => {
+        expect(screen.queryByTestId('open-points-search-prev')).toBeInTheDocument();
+        expect(screen.queryByTestId('open-points-search-next')).toBeInTheDocument();
+      });
+    });
+
+    it('match-nav hidden when only one group is retained', async () => {
+      mockTwoGroups();
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      await user.type(await screen.findByRole('searchbox'), 'Bluttest');
+      await waitFor(() => {
+        const headings = screen.getAllByRole('heading', { level: 2 });
+        expect(headings).toHaveLength(1);
+      });
+      expect(screen.queryByTestId('open-points-search-prev')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('open-points-search-next')).not.toBeInTheDocument();
+    });
+
     it('clears query when the SearchInput X button is clicked (Q15)', async () => {
       mockTwoGroups();
       renderView({ initialEntries: ['/open-points?q=Bluttest'] });

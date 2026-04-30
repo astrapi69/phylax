@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * State machine for "active match" navigation across the rendered
- * observation list (P-19). Indices are 1-based when at least one
- * match exists; 0 represents "no active match" (empty query or
- * zero-result state).
+ * State machine for "active match" navigation across any rendered
+ * search-result list (P-19, P-22b/c/d-polish). Indices are 1-based
+ * when at least one match exists; 0 represents "no active match"
+ * (empty query or zero-result state).
  *
  * Reset semantics: whenever the search query changes or the total
  * match count changes, the active index resets to the first match
  * (or 0 when there are no matches). The reset deliberately does NOT
- * trigger a scroll — typing should leave the viewport anchored at
+ * trigger a scroll - typing should leave the viewport anchored at
  * the search input per the Q7-refined behaviour. Only explicit
  * navigation (next / prev) advances the scroll signal.
  *
@@ -17,7 +17,8 @@ import { useCallback, useEffect, useState } from 'react';
  *
  * The `scrollSignal` increments on every next / prev call. The
  * caller's effect watches this signal and runs `scrollIntoView` on
- * the DOM mark with `data-match-index="<activeIndex>"`. A signal
+ * the DOM target keyed by `activeIndex` (mark-level uses
+ * `data-match-index`; row-level uses `data-match-row`). A signal
  * (instead of just `activeIndex`) lets the same active-index repeat
  * trigger another scroll, which matters when the user keeps pressing
  * the same direction at the boundary.

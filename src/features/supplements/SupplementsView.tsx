@@ -1,8 +1,8 @@
-import { useDeferredValue, useMemo } from 'react';
+import { useDeferredValue, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUrlSearchParam } from '../../lib';
-import { EmptyStatePanel, ListSkeleton, SearchInput } from '../../ui';
+import { preferredScrollBehavior, useActiveMatch, useUrlSearchParam } from '../../lib';
+import { EmptyStatePanel, ListSkeleton, MatchNavButton, SearchInput } from '../../ui';
 import { useSearch } from '../search-trigger';
 import { SupplementCategoryGroup } from './SupplementCategoryGroup';
 import { useSupplements } from './useSupplements';
@@ -60,6 +60,21 @@ export function SupplementsView() {
 
   const isFiltering = deferredQuery.trim() !== '';
 
+  // P-22b/c/d-polish: row-level match navigation. `matchCount` is the
+  // number of retained groups (group-keep semantic); each rendered
+  // SupplementCategoryGroup carries `data-match-row` (1-based).
+  const totalMatches = filterResult.matchCount;
+  const { activeIndex, scrollSignal, next, prev } = useActiveMatch(deferredQuery, totalMatches);
+
+  useEffect(() => {
+    if (scrollSignal === 0) return;
+    if (activeIndex === 0) return;
+    const target = document.querySelector(`[data-match-row="${activeIndex}"]`);
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'center' });
+    }
+  }, [scrollSignal, activeIndex]);
+
   if (state.kind === 'loading') {
     return <ListSkeleton variant="row" count={6} ariaLabel={t('loading.aria-label')} />;
   }
@@ -103,11 +118,32 @@ export function SupplementsView() {
                   >
                     {filterResult.matchCount === 0
                       ? t('search.no-matches-counter')
-                      : t('search.match-count', {
-                          count: filterResult.matchCount,
-                          total: filterResult.totalCount,
-                        })}
+                      : totalMatches >= 2
+                        ? t('search.match-count-active', {
+                            current: activeIndex,
+                            total: totalMatches,
+                          })
+                        : t('search.match-count', {
+                            count: filterResult.matchCount,
+                            total: filterResult.totalCount,
+                          })}
                   </p>
+                )}
+                {isFiltering && totalMatches >= 2 && (
+                  <>
+                    <MatchNavButton
+                      direction="up"
+                      onClick={prev}
+                      ariaLabel={t('search.prev-match')}
+                      testId="supplements-search-prev"
+                    />
+                    <MatchNavButton
+                      direction="down"
+                      onClick={next}
+                      ariaLabel={t('search.next-match')}
+                      testId="supplements-search-next"
+                    />
+                  </>
                 )}
               </div>
               {searchOpen && (
@@ -118,6 +154,8 @@ export function SupplementsView() {
                     placeholder={t('search.placeholder')}
                     ariaLabel={t('search.aria-label')}
                     clearLabel={t('search.clear')}
+                    onEnter={next}
+                    onShiftEnter={prev}
                     onEscapeWhenEmpty={onEscapeWhenEmpty}
                     onClear={clearAllAndCollapse}
                     autoFocus
@@ -131,15 +169,20 @@ export function SupplementsView() {
             <NoMatchesState query={deferredQuery} />
           ) : (
             <div className="space-y-8">
-              {filterResult.groups.map((group) => (
-                <SupplementCategoryGroup
+              {filterResult.groups.map((group, index) => (
+                <div
                   key={group.category}
-                  category={group.category}
-                  label={group.label}
-                  supplements={group.supplements}
-                  form={form}
-                  highlightQuery={deferredQuery}
-                />
+                  data-match-row={isFiltering ? index + 1 : undefined}
+                  className="scroll-mt-24"
+                >
+                  <SupplementCategoryGroup
+                    category={group.category}
+                    label={group.label}
+                    supplements={group.supplements}
+                    form={form}
+                    highlightQuery={deferredQuery}
+                  />
+                </div>
               ))}
             </div>
           )}

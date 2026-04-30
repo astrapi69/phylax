@@ -99,6 +99,7 @@ boundary.
 | P-06 | [Change master password](p-06-change-password.md) | Pending walk |
 | P-09 | [Error boundary](p-09-error-boundary.md) | Pending walk |
 | P-16 | [Document row delete](p-16-document-row-delete.md) | Pending walk |
+| P-22b/c/d-polish | [Cross-view match-nav](p-22-b-c-d-match-nav.md) | Pending walk |
 
 When more smoke files ship, add rows above. Mark Status as `Pending
 walk` (file created, not yet walked), `In progress` (partial walk),
