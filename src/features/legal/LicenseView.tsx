@@ -14,6 +14,12 @@ import { LICENSE_TEXT } from './licenseText';
  * relying on Markdown rendering (introducing react-markdown for one
  * static file would be needless coupling). `whitespace-pre-wrap`
  * keeps long paragraphs flowing on narrow viewports.
+ *
+ * P-07-a: `tabindex="0"` makes the `<pre>` a keyboard focus stop so
+ * users who navigate by Tab + arrow keys (no scroll wheel, screen-
+ * magnification users) can scroll through the license without a
+ * pointer device. role="region" + aria-label name the focus stop
+ * for assistive tech.
  */
 export function LicenseView() {
   const { t } = useTranslation('legal');
@@ -29,7 +35,10 @@ export function LicenseView() {
       </header>
       <pre
         data-testid="license-text"
-        className="overflow-x-auto rounded-sm border border-gray-200 bg-gray-50 p-4 text-sm whitespace-pre-wrap text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+        tabIndex={0}
+        role="region"
+        aria-label={t('license.heading')}
+        className="overflow-x-auto rounded-sm border border-gray-200 bg-gray-50 p-4 text-sm whitespace-pre-wrap text-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
       >
         {LICENSE_TEXT}
       </pre>

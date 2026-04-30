@@ -27,6 +27,19 @@ describe('LicenseView', () => {
     expect(block.textContent).toContain('AS IS');
   });
 
+  it('license-text region is keyboard-focusable for keyboard scroll (P-07-a)', () => {
+    render(
+      <MemoryRouter>
+        <LicenseView />
+      </MemoryRouter>,
+    );
+    const block = screen.getByTestId('license-text');
+    expect(block.tagName).toBe('PRE');
+    expect(block).toHaveAttribute('tabindex', '0');
+    expect(block).toHaveAttribute('role', 'region');
+    expect(block).toHaveAttribute('aria-label', 'Lizenz');
+  });
+
   it('renders a back-to-settings link', () => {
     render(
       <MemoryRouter>
