@@ -68,11 +68,18 @@ describe('AIDisclaimer', () => {
   });
 
   it('exposes aria-modal dialog role and focuses cancel by default', () => {
+    // TD-12 migration: aria-labelledby now points to the auto-
+    // generated ModalHeader id. Verify the attribute exists and
+    // resolves to a heading carrying the dialog title text instead
+    // of pinning to the old hardcoded `ai-disclaimer-title` id.
     render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
 
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
-    expect(dialog).toHaveAttribute('aria-labelledby', 'ai-disclaimer-title');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/KI-Assistent aktivieren/i);
     expect(screen.getByRole('button', { name: 'Abbrechen' })).toHaveFocus();
   });
 });
