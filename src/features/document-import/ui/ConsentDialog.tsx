@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ConfirmDialog as O20ConfirmDialog } from '../../../ui';
 import type { ConsentRequiredReason } from '../types';
 
 export interface ConsentDialogProps {
@@ -17,78 +18,52 @@ export interface ConsentDialogProps {
  * focus to the Cancel button (safer default per accessibility +
  * privacy heuristics: "no" should never be a single-keystroke
  * mistake).
+ *
+ * TD-12 migration: composes the shared `<ConfirmDialog>` from
+ * `src/ui/Modal/`. The primitive provides the focus trap, Escape
+ * handler, backdrop, cancel-focused-on-mount default, and the
+ * non-destructive (blue confirm + role="dialog") variant chrome.
+ * Backdrop click does NOT close (O-20 `closeOnBackdropClick` default
+ * = false) - consent posture stays conservative; user must click
+ * Cancel or press Escape to decline explicitly.
  */
 export function ConsentDialog({ reason, onGrant, onDecline }: ConsentDialogProps) {
   const { t } = useTranslation('document-import');
-  const cancelRef = useRef<HTMLButtonElement>(null);
   const [remember, setRemember] = useState(false);
   const checkboxId = useId();
 
-  useEffect(() => {
-    cancelRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onDecline();
-      }
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onDecline]);
-
   const prefix = `consent.${reason}` as const;
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="consent-dialog-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      data-testid="consent-dialog"
-    >
-      <div className="flex max-h-[90vh] w-full max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow-xl dark:bg-gray-900 dark:shadow-black/60">
-        <h2
-          id="consent-dialog-title"
-          className="text-lg font-bold text-gray-900 dark:text-gray-100"
-        >
-          {t(`${prefix}.title`)}
-        </h2>
-        <p className="text-sm text-gray-700 dark:text-gray-300">{t(`${prefix}.explanation`)}</p>
-        <p className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-          {t(`${prefix}.consequence`)}
-        </p>
-        <label
-          htmlFor={checkboxId}
-          className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
-        >
-          <input
-            id={checkboxId}
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-          />
-          {t(`${prefix}.remember-checkbox`)}
-        </label>
-        <div className="flex justify-end gap-3 pt-2">
-          <button
-            ref={cancelRef}
-            type="button"
-            onClick={onDecline}
-            className="rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+    <O20ConfirmDialog
+      open
+      onClose={onDecline}
+      title={t(`${prefix}.title`)}
+      body={
+        <div className="flex flex-col gap-4">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {t(`${prefix}.explanation`)}
+          </p>
+          <p className="rounded-sm border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+            {t(`${prefix}.consequence`)}
+          </p>
+          <label
+            htmlFor={checkboxId}
+            className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
           >
-            {t(`${prefix}.cancel-button`)}
-          </button>
-          <button
-            type="button"
-            onClick={() => onGrant(remember)}
-            className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
-          >
-            {t(`${prefix}.confirm-button`)}
-          </button>
+            <input
+              id={checkboxId}
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            {t(`${prefix}.remember-checkbox`)}
+          </label>
         </div>
-      </div>
-    </div>
+      }
+      cancelLabel={t(`${prefix}.cancel-button`)}
+      confirmLabel={t(`${prefix}.confirm-button`)}
+      onConfirm={() => onGrant(remember)}
+      testId="consent-dialog"
+    />
   );
 }
