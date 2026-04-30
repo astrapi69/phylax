@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getLockState, lock, onLockStateChange } from '../../crypto';
 import { ACTIVITY_EVENTS } from './config';
+import { isAutoLockPaused, onAutoLockPauseChange } from './pauseStore';
 
 /**
  * Hook that auto-locks the keyStore after a configurable inactivity timeout.
@@ -35,6 +36,10 @@ export function useAutoLock(timeoutMinutes: number): void {
 
     function startTimer() {
       clearTimer();
+      // Skip the timer entirely while paused. Pause + resume cycles
+      // are handled by the pause-listener below, which restarts the
+      // timer fresh once every consumer releases its pause.
+      if (isAutoLockPaused()) return;
       timerRef.current = setTimeout(() => {
         lock();
       }, timeoutMsRef.current);
@@ -65,7 +70,7 @@ export function useAutoLock(timeoutMinutes: number): void {
     }
 
     // React to lock state changes from any source (manual lock, unlock, etc.)
-    const unsubscribe = onLockStateChange((state) => {
+    const unsubscribeLock = onLockStateChange((state) => {
       if (state === 'unlocked') {
         attachListeners();
         startTimer();
@@ -75,8 +80,20 @@ export function useAutoLock(timeoutMinutes: number): void {
       }
     });
 
+    // React to pause-state transitions. While paused, kill any pending
+    // timer so a long-running operation never trips auto-lock from a
+    // pre-pause setTimeout. On resume, restart fresh from full timeout.
+    const unsubscribePause = onAutoLockPauseChange((paused) => {
+      if (paused) {
+        clearTimer();
+      } else if (getLockState() === 'unlocked') {
+        startTimer();
+      }
+    });
+
     return () => {
-      unsubscribe();
+      unsubscribeLock();
+      unsubscribePause();
       detachListeners();
       clearTimer();
     };

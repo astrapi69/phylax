@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Change master password (P-06): re-encrypts the entire vault under a new key via a three-phase pipeline (decrypt-encrypt outside Dexie tx, atomic bulkPut + meta.put inside one transaction, in-memory keyStore swap). Settings section + confirmation modal + busy-state UI; sudo-pattern verification re-derives the candidate key from the typed current password and decrypts the meta verification token before any work begins. Auto-lock paused for the duration via a new reference-counted pause primitive (`src/features/auto-lock/pauseStore.ts`) reusable for backup-restore and other long-running operations. Same salt preserved (PBKDF2 does not need salt rotation per password). Manual smoke at `docs/manual-smoke/p-06-change-password.md`.
+
+### Security
+
+- Architecture decision: ADR-0018 documents the change-master-password three-phase pipeline, the sudo-pattern verification, the same-salt rationale, the reference-counted auto-lock pause, the no-cancellation policy, the Phase 2 commit + Phase 3 throw recovery path, and the deferred memory-streaming trigger.
+
 ## [1.0.0] - 2026-04-18
 
 First public release. Phylax is a privacy-first, local-first health profile

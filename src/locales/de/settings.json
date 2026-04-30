@@ -20,6 +20,41 @@
       "en": "English"
     }
   },
+  "change-password": {
+    "heading": "Master-Passwort ändern",
+    "description": "Ändere dein Master-Passwort. Dabei wird dein gesamter Datenbestand mit dem neuen Schlüssel neu verschlüsselt. Der Vorgang kann mehrere Sekunden bis Minuten dauern, je nach Datenmenge. Schließe das Fenster während des Vorgangs nicht.",
+    "field": {
+      "current": "Aktuelles Master-Passwort",
+      "new": "Neues Master-Passwort",
+      "new-hint": "Mindestens {{min}} Zeichen.",
+      "confirm": "Passwort bestätigen"
+    },
+    "action": {
+      "submit": "Master-Passwort ändern",
+      "busy": "Vorgang läuft...",
+      "dismiss": "Schließen"
+    },
+    "confirm": {
+      "heading": "Bestätigen",
+      "body": "Möchtest du dein Master-Passwort jetzt ändern? Phylax verschlüsselt deinen gesamten Datenbestand mit dem neuen Schlüssel neu. Der Vorgang kann nicht abgebrochen werden.",
+      "accept": "Ja, ändern"
+    },
+    "status": {
+      "reencrypting": "Daten werden neu verschlüsselt...",
+      "done": "Master-Passwort wurde erfolgreich geändert."
+    },
+    "error": {
+      "wrong-current": "Das aktuelle Master-Passwort ist nicht korrekt.",
+      "empty": "Neues Master-Passwort darf nicht leer sein.",
+      "too-short": "Neues Master-Passwort muss mindestens {{min}} Zeichen lang sein.",
+      "mismatch": "Neues Passwort und Bestätigung stimmen nicht überein.",
+      "same-as-current": "Neues Passwort darf nicht mit dem aktuellen übereinstimmen.",
+      "no-meta": "Vault-Metadaten nicht gefunden. Bitte App neu laden.",
+      "locked": "Phylax ist gesperrt. Bitte zuerst entsperren.",
+      "reencrypt-failed": "Neuverschlüsselung fehlgeschlagen: {{detail}}. Dein Master-Passwort wurde nicht geändert.",
+      "partial-failure": "Datenbestand wurde verschlüsselt, aber Anwendung konnte den neuen Schlüssel nicht aktivieren. Bitte einmal abmelden und mit dem neuen Passwort wieder anmelden."
+    }
+  },
   "auto-lock": {
     "heading": "Automatisch sperren",
     "description": "Phylax sperrt sich nach dieser Zeit ohne Aktivität automatisch. Der Master-Schlüssel wird aus dem Speicher entfernt und du musst dein Passwort erneut eingeben.",

@@ -20,6 +20,41 @@
       "en": "English"
     }
   },
+  "change-password": {
+    "heading": "Change master password",
+    "description": "Change your master password. The whole vault is re-encrypted under the new key. This can take several seconds to minutes depending on vault size. Do not close the window while the operation runs.",
+    "field": {
+      "current": "Current master password",
+      "new": "New master password",
+      "new-hint": "At least {{min}} characters.",
+      "confirm": "Confirm password"
+    },
+    "action": {
+      "submit": "Change master password",
+      "busy": "Operation in progress...",
+      "dismiss": "Dismiss"
+    },
+    "confirm": {
+      "heading": "Confirm",
+      "body": "Change your master password now? Phylax re-encrypts your entire vault under the new key. The operation cannot be cancelled.",
+      "accept": "Yes, change"
+    },
+    "status": {
+      "reencrypting": "Re-encrypting data...",
+      "done": "Master password changed successfully."
+    },
+    "error": {
+      "wrong-current": "The current master password is not correct.",
+      "empty": "New master password must not be empty.",
+      "too-short": "New master password must be at least {{min}} characters long.",
+      "mismatch": "New password and confirmation do not match.",
+      "same-as-current": "New password must differ from the current one.",
+      "no-meta": "Vault metadata not found. Please reload the app.",
+      "locked": "Phylax is locked. Unlock first.",
+      "reencrypt-failed": "Re-encryption failed: {{detail}}. Your master password was not changed.",
+      "partial-failure": "Vault was re-encrypted, but the app could not activate the new key in this session. Please lock and unlock again with the new password."
+    }
+  },
   "auto-lock": {
     "heading": "Auto-lock",
     "description": "Phylax locks automatically after this period of inactivity. The master key is wiped from memory and you have to re-enter your password.",

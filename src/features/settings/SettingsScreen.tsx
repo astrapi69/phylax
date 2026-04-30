@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { ThemeSection } from './ThemeSection';
 import { LanguageSection } from './LanguageSection';
 import { AutoLockSection } from './AutoLockSection';
+import { ChangePasswordSection } from './ChangePasswordSection';
 import { DangerZoneSection } from './DangerZoneSection';
 import { AISettingsSection } from '../ai-config';
 import { DonationSettingsSection } from '../donation';
@@ -25,6 +26,7 @@ export function SettingsScreen() {
       <ThemeSection />
       <LanguageSection />
       <AutoLockSection />
+      <ChangePasswordSection />
       <AISettingsSection />
       <section aria-labelledby="data-management-heading" className="space-y-6">
         <h2
