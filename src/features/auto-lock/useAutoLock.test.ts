@@ -5,6 +5,7 @@ import { getLockState, lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { useAutoLock } from './useAutoLock';
+import { __resetAutoLockPauseStateForTests, pauseAutoLock } from './pauseStore';
 
 const TEST_PASSWORD = 'test-password-12';
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
@@ -15,6 +16,7 @@ let cachedSalt: Uint8Array;
 beforeEach(async () => {
   // Setup with real timers (PBKDF2 needs real async)
   lock();
+  __resetAutoLockPauseStateForTests();
   await setupCompletedOnboarding(TEST_PASSWORD);
   const meta = await readMeta();
   cachedSalt = new Uint8Array(meta?.salt ?? new ArrayBuffer(0));
@@ -24,6 +26,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   lock();
+  __resetAutoLockPauseStateForTests();
   vi.useRealTimers();
 });
 
@@ -184,5 +187,73 @@ describe('useAutoLock', () => {
     expect(getLockState()).toBe('unlocked');
 
     lock();
+  });
+
+  // P-06 / ADR-0018 Section 4: long-running operations (re-encrypt,
+  // backup-restore) call `pauseAutoLock()` to prevent the timer from
+  // firing mid-flight. The hook subscribes to the pause-state listener
+  // so it can clear any pending setTimeout and refrain from starting
+  // new ones. These tests cover the wiring.
+  describe('pause-store integration (P-06)', () => {
+    it('pause clears the pending timer; timer does NOT fire while paused', async () => {
+      await doUnlock();
+      renderHook(() => useAutoLock(5));
+
+      // Half-elapse, then pause. Timer must not fire even after the
+      // remaining time + a buffer elapses.
+      vi.advanceTimersByTime(FIVE_MINUTES_MS / 2);
+      const release = pauseAutoLock();
+      vi.advanceTimersByTime(FIVE_MINUTES_MS * 2);
+      expect(getLockState()).toBe('unlocked');
+      release();
+    });
+
+    it('resume after pause restarts a fresh timer from full timeout', async () => {
+      await doUnlock();
+      renderHook(() => useAutoLock(5));
+
+      // Burn most of the original timeout.
+      vi.advanceTimersByTime(FIVE_MINUTES_MS - 1000);
+      const release = pauseAutoLock();
+      vi.advanceTimersByTime(FIVE_MINUTES_MS * 2);
+      expect(getLockState()).toBe('unlocked');
+
+      // Resume: fresh timer starts. Burn 1 second (the leftover from
+      // pre-pause); should NOT fire because timer reset to full.
+      release();
+      vi.advanceTimersByTime(1000 + 100);
+      expect(getLockState()).toBe('unlocked');
+
+      // Burn the rest of the full timeout from resume; timer fires.
+      vi.advanceTimersByTime(FIVE_MINUTES_MS);
+      expect(getLockState()).toBe('locked');
+    });
+
+    it('startTimer skips during a synchronous activity event while paused', async () => {
+      await doUnlock();
+      renderHook(() => useAutoLock(5));
+
+      // Pause first, then dispatch activity. The pause-aware startTimer
+      // must early-return so no timer is created; advancing past the
+      // full timeout still does not lock.
+      const release = pauseAutoLock();
+      document.dispatchEvent(new MouseEvent('mousemove'));
+      vi.advanceTimersByTime(FIVE_MINUTES_MS * 2);
+      expect(getLockState()).toBe('unlocked');
+      release();
+    });
+
+    it('unsubscribes pause listener on unmount', async () => {
+      await doUnlock();
+      const { unmount } = renderHook(() => useAutoLock(5));
+      unmount();
+
+      // After unmount, calling pauseAutoLock + resume must not affect
+      // the keyStore (no surviving listeners). Trivial assertion: no
+      // throw, state remains unlocked.
+      const release = pauseAutoLock();
+      release();
+      expect(getLockState()).toBe('unlocked');
+    });
   });
 });
