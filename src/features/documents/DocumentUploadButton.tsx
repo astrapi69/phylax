@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ACCEPTED_DOCUMENT_TYPES,
@@ -64,8 +64,24 @@ export function DocumentUploadButton({ onUploaded }: DocumentUploadButtonProps) 
   );
 }
 
+const SUCCESS_AUTO_DISMISS_MS = 5000;
+
 function UploadStatusBlock({ state }: { state: UseDocumentUploadResult }) {
   const { t } = useTranslation('documents');
+  const { reset } = state;
+  const isSuccess = state.status.kind === 'success';
+
+  // BUG-04 (P-16 smoke walk, 2026-04-30): the success message used to
+  // persist forever - if the user deleted the freshly-uploaded row
+  // via the inline trash button, the green "{{filename}} wurde
+  // gespeichert" line stayed on screen referencing a now-deleted
+  // document. Auto-dismiss after 5s + a manual close button on the
+  // banner cover both the row-delete case and general staleness.
+  useEffect(() => {
+    if (!isSuccess) return;
+    const id = setTimeout(() => reset(), SUCCESS_AUTO_DISMISS_MS);
+    return () => clearTimeout(id);
+  }, [isSuccess, reset]);
 
   if (state.status.kind === 'idle' || state.status.kind === 'uploading') {
     return null;
@@ -73,13 +89,22 @@ function UploadStatusBlock({ state }: { state: UseDocumentUploadResult }) {
 
   if (state.status.kind === 'success') {
     return (
-      <p
+      <div
         role="status"
-        className="text-sm text-green-700 dark:text-green-400"
+        className="flex items-start justify-between gap-3 text-sm text-green-700 dark:text-green-400"
         data-testid="upload-success"
       >
-        {t('upload.success', { filename: state.status.document.filename })}
-      </p>
+        <span>{t('upload.success', { filename: state.status.document.filename })}</span>
+        <button
+          type="button"
+          onClick={reset}
+          aria-label={t('upload.success-dismiss')}
+          data-testid="upload-success-dismiss"
+          className="rounded-sm px-1 text-xs leading-none text-green-700 hover:text-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 dark:text-green-400 dark:hover:text-green-200"
+        >
+          ✕
+        </button>
+      </div>
     );
   }
 

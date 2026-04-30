@@ -8,6 +8,7 @@
       "uploading": "Wird hochgeladen..."
     },
     "success": "\"{{filename}}\" wurde verschlüsselt gespeichert.",
+    "success-dismiss": "Bestätigung schließen",
     "error": {
       "no-profile": "Kein Profil ausgewählt. Bitte zuerst ein Profil anlegen.",
       "unsupported-type": "Dateityp \"{{mimeType}}\" wird nicht unterstützt. Erlaubt: PDF, PNG, JPEG, WebP.",

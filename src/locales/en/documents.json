@@ -8,6 +8,7 @@
       "uploading": "Uploading..."
     },
     "success": "\"{{filename}}\" stored encrypted.",
+    "success-dismiss": "Dismiss confirmation",
     "error": {
       "no-profile": "No profile selected. Create a profile first.",
       "unsupported-type": "File type \"{{mimeType}}\" is not supported. Accepted: PDF, PNG, JPEG, WebP.",

@@ -77,4 +77,20 @@ describe('DocumentUploadButton', () => {
     await waitFor(() => expect(screen.getByTestId('upload-success')).toBeInTheDocument());
     expect(screen.getByTestId('upload-success').textContent).toMatch(/doc\.pdf/);
   });
+
+  it('success message has a dismiss button (BUG-04)', async () => {
+    render(<DocumentUploadButton />);
+    const input = screen.getByLabelText(/Datei hochladen/i) as HTMLInputElement;
+    const file = new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'bug04.pdf', {
+      type: 'application/pdf',
+    });
+    await selectFile(input, file);
+    await waitFor(() => expect(screen.getByTestId('upload-success')).toBeInTheDocument());
+
+    const dismiss = screen.getByTestId('upload-success-dismiss');
+    expect(dismiss).toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(dismiss);
+    expect(screen.queryByTestId('upload-success')).not.toBeInTheDocument();
+  });
 });
