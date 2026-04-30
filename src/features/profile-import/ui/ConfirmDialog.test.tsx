@@ -155,7 +155,12 @@ describe('ConfirmDialog', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it('dialog has aria-modal and labelledby', () => {
+  it('dialog has aria-modal and labelledby (destructive variant via O-20 primitive)', () => {
+    // TD-12 migration: destructive variant uses role="alertdialog"
+    // (O-20 ConfirmDialog convention so SR announces irreversible
+    // flows immediately). aria-labelledby points to the auto-generated
+    // ModalHeader id; verify the attribute exists and resolves to a
+    // heading carrying the dialog title.
     render(
       <ConfirmDialog
         existingCounts={NON_EMPTY_COUNTS}
@@ -164,9 +169,12 @@ describe('ConfirmDialog', () => {
         onCancel={vi.fn()}
       />,
     );
-    const dialog = screen.getByRole('dialog');
+    const dialog = screen.getByRole('alertdialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
-    expect(dialog).toHaveAttribute('aria-labelledby', 'confirm-replace-title');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/bestehende Daten ersetzen/i);
   });
 
   it('renders all six toggles when every entity type is non-empty (P-01 Q5: 360px fit)', () => {
@@ -200,8 +208,13 @@ describe('ConfirmDialog', () => {
       />,
     );
     expect(screen.getAllByRole('checkbox')).toHaveLength(6);
-    const dialogShell = container.querySelector('[role="document"]');
-    if (!dialogShell) throw new Error('dialog shell not found');
+    // TD-12 migration: O-20 Modal primitive renders the dialog
+    // container as the role="alertdialog" element directly (no
+    // separate role="document" inside). Q5 invariant still holds:
+    // the container clamps via `w-full max-w-md` (md size) so the
+    // dialog never exceeds the viewport's content box on mobile.
+    void container;
+    const dialogShell = screen.getByRole('alertdialog');
     const cls = dialogShell.className;
     expect(cls).toContain('w-full');
     expect(cls).toContain('max-w-md');
