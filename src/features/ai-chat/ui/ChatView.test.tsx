@@ -249,7 +249,13 @@ describe('ChatView', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     await user.click(iconBtn);
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'privacy-info-title');
+    // TD-12 migration: aria-labelledby resolves through generated
+    // ModalHeader id; verify heading text via document.getElementById.
+    const dialog = screen.getByRole('dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Datenschutz beim KI-Chat/i);
     expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
 

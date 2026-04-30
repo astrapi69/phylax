@@ -11,8 +11,15 @@ describe('PrivacyInfoPopover', () => {
   });
 
   it('renders the privacy info content when open', () => {
+    // TD-12 migration: aria-labelledby points to the auto-generated
+    // ModalHeader id; resolve via document.getElementById and verify
+    // the referenced heading carries the dialog title text.
     render(<PrivacyInfoPopover open={true} onClose={vi.fn()} />);
-    expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'privacy-info-title');
+    const dialog = screen.getByRole('dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    if (!labelledby) throw new Error('aria-labelledby missing on dialog');
+    const heading = document.getElementById(labelledby);
+    expect(heading?.textContent).toMatch(/Datenschutz beim KI-Chat/i);
     expect(screen.getByRole('heading', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was Phylax macht' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was Anthropic macht' })).toBeInTheDocument();
@@ -41,10 +48,17 @@ describe('PrivacyInfoPopover', () => {
   });
 
   it('clicking the backdrop calls onClose', async () => {
+    // TD-12 migration: O-20 Modal renders the backdrop as a separate
+    // div around the role="dialog" panel. Click the backdrop directly
+    // via its data-testid (Modal exposes `${testId}-backdrop` when
+    // `testId` is supplied) instead of clicking the dialog panel
+    // (which under the new structure would not bubble to the
+    // backdrop-close handler because of the `e.target === e.currentTarget`
+    // guard).
     const onClose = vi.fn();
     const user = userEvent.setup();
     render(<PrivacyInfoPopover open={true} onClose={onClose} />);
-    await user.click(screen.getByRole('dialog'));
+    await user.click(screen.getByTestId('privacy-info-popover-backdrop'));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });
