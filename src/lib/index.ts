@@ -11,3 +11,10 @@ export {
 export { useUrlSearchParam } from './useUrlSearchParam';
 export { prefersReducedMotion, preferredScrollBehavior } from './prefersReducedMotion';
 export { useActiveMatch, type UseActiveMatchResult } from './useActiveMatch';
+export {
+  buildFieldMatchPlan,
+  type FieldEntry,
+  type FieldMatch,
+  type MatchPlan,
+  type BuildFieldMatchPlanResult,
+} from './buildFieldMatchPlan';
