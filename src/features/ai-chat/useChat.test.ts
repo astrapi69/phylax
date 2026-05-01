@@ -6,8 +6,9 @@ import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { saveAIConfig } from '../../db/aiConfig';
 import { ProfileRepository } from '../../db/repositories';
-import * as anthropicClient from './api/anthropicClient';
-import type { AnthropicStreamOptions, ChatError } from './api/types';
+import * as aiCallModule from '../ai/aiCall';
+import type { AiStreamOptions } from '../ai/aiCall';
+import type { ChatError } from './api/types';
 import i18n from '../../i18n/config';
 import { useChat, errorMessageFor } from './useChat';
 import type { ProfileDiff } from './commit';
@@ -46,10 +47,10 @@ async function seedConfiguredSession(): Promise<void> {
 }
 
 /** Capture the last call's options so the test can drive the stream. */
-let lastStreamCall: AnthropicStreamOptions | null = null;
+let lastStreamCall: AiStreamOptions | null = null;
 
 function mockStreamSuccess(tokens: string[]): void {
-  vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+  vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
     lastStreamCall = opts;
     for (const t of tokens) {
       opts.onToken(t);
@@ -59,7 +60,7 @@ function mockStreamSuccess(tokens: string[]): void {
 }
 
 function mockStreamError(error: ChatError): void {
-  vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+  vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
     lastStreamCall = opts;
     opts.onError(error);
   });
@@ -117,7 +118,7 @@ describe('useChat', () => {
   });
 
   it('tokens accumulate into the assistant message during streaming', async () => {
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onToken('A');
       opts.onToken('B');
       opts.onComplete('AB');
@@ -153,7 +154,7 @@ describe('useChat', () => {
   it('unconfigured AI config does not call the API and shows a system message', async () => {
     const { deleteAIConfig } = await import('../../db/aiConfig');
     await deleteAIConfig();
-    const streamSpy = vi.spyOn(anthropicClient, 'streamCompletion');
+    const streamSpy = vi.spyOn(aiCallModule, 'aiStream');
 
     const { result } = renderHook(() => useChat());
     await waitForConfigReady();
@@ -200,7 +201,7 @@ describe('useChat', () => {
       await result.current.sendMessage('follow-up');
     });
 
-    if (!lastStreamCall) throw new Error('expected streamCompletion to have been called');
+    if (!lastStreamCall) throw new Error('expected aiStream to have been called');
     expect(lastStreamCall.messages).toEqual([
       { role: 'user', content: 'first question' },
       { role: 'assistant', content: 'first reply' },
@@ -246,7 +247,7 @@ describe('useChat', () => {
   it('cancelStream aborts and leaves partial assistant content visible', async () => {
     // Manual stream: emit a couple tokens, never call onComplete. The user
     // cancels mid-stream; partial content stays in the transcript.
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onToken('part');
       opts.onToken('ial');
       // Hang until the abort signal fires (client is silent on abort).
@@ -278,7 +279,7 @@ describe('useChat', () => {
   });
 
   it('sendMessage ignores whitespace-only input', async () => {
-    const streamSpy = vi.spyOn(anthropicClient, 'streamCompletion');
+    const streamSpy = vi.spyOn(aiCallModule, 'aiStream');
     const { result } = renderHook(() => useChat());
     await waitForConfigReady();
 
@@ -298,12 +299,16 @@ describe('useChat', () => {
     await act(async () => {
       await result.current.sendMessage('hi');
     });
-    expect(lastStreamCall?.apiKey).toBe('sk-ant-configured-key-test-1234');
-    expect(lastStreamCall?.model).toBe('claude-sonnet-4-6');
+    // AI Commit 4a: aiStream receives a `config` object instead of
+    // flat `apiKey` / `model` fields. The active provider's config
+    // pulled by useAIConfig is the same shape stored under the
+    // legacy single-Anthropic path.
+    expect(lastStreamCall?.config.apiKey).toBe('sk-ant-configured-key-test-1234');
+    expect(lastStreamCall?.config.model).toBe('claude-sonnet-4-6');
   });
 
   it('shareProfile appends a context message with counts and does NOT call the API', async () => {
-    const streamSpy = vi.spyOn(anthropicClient, 'streamCompletion');
+    const streamSpy = vi.spyOn(aiCallModule, 'aiStream');
     const { result } = renderHook(() => useChat());
     await waitForConfigReady();
 

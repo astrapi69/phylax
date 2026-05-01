@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { generateId } from '../../crypto';
-import { DEFAULT_ANTHROPIC_MODEL } from '../../db/aiConfig';
 import {
   LabReportRepository,
   LabValueRepository,
@@ -12,8 +11,17 @@ import {
   SupplementRepository,
 } from '../../db/repositories';
 import { useAIConfig, generateSystemPrompt } from '../ai-config';
-import { streamCompletion } from './api';
-import type { AnthropicMessage, ChatError } from './api/types';
+import { aiStream } from '../ai/aiCall';
+import type { ChatError } from './api/types';
+
+/**
+ * Wire shape for the chat-path streaming call. Matches the
+ * `aiStream` `messages` parameter (string content only). The
+ * structured-output / multimodal path lives in the
+ * `requestCompletion` helper and uses the wider `StreamingChatMessage`
+ * type from `./api/types`.
+ */
+type StreamingChatMessage = { role: 'user' | 'assistant'; content: string };
 import { formatProfileShareSummary, type ProfileShareCounts } from './profileSummary';
 import type { ProfileDiff } from './commit';
 import {
@@ -173,9 +181,8 @@ export function useChat(): UseChatResult {
 
       const apiMessages = toApiMessages([...messages, userMsg], t('system.context-framing'));
 
-      await streamCompletion({
-        apiKey: config.apiKey,
-        model: config.model ?? DEFAULT_ANTHROPIC_MODEL,
+      await aiStream({
+        config,
         system: systemPromptRef.current,
         messages: apiMessages,
         signal: controller.signal,
@@ -391,8 +398,8 @@ function makeSystemMessage(content: string): ChatMessage {
  *   repeated roles in a single request; this merge naturally combines a
  *   context message with the next user message.
  */
-function toApiMessages(chatMessages: ChatMessage[], framing: string): AnthropicMessage[] {
-  const projected: AnthropicMessage[] = [];
+function toApiMessages(chatMessages: ChatMessage[], framing: string): StreamingChatMessage[] {
+  const projected: StreamingChatMessage[] = [];
   for (const m of chatMessages) {
     if (m.streaming) continue;
     if (m.content.length === 0) continue;
@@ -404,7 +411,7 @@ function toApiMessages(chatMessages: ChatMessage[], framing: string): AnthropicM
     }
   }
 
-  const merged: AnthropicMessage[] = [];
+  const merged: StreamingChatMessage[] = [];
   for (const m of projected) {
     const last = merged[merged.length - 1];
     if (last && last.role === m.role) {

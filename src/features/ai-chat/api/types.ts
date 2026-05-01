@@ -1,12 +1,21 @@
 /**
- * Wire-format types for Anthropic's Messages API.
+ * Wire-format types for the Anthropic Messages API. Anthropic-only
+ * by design after AI Commit 4a:
  *
- * The chat path (AI-05 through AI-08) uses string-content messages
- * exclusively. The document-import path (Phase 4b IMP-03) uses
- * content-block arrays for multimodal inputs (text + images) and
- * tool_use for structured output. Both shapes are accepted by
- * Anthropic's API; the union keeps the wire format type-safe at
- * call sites without breaking existing chat code.
+ *   - The plain-text streaming path (chat + import cleanup) was
+ *     migrated to the multi-provider `aiStream` helper at
+ *     `src/features/ai/aiCall.ts`, which routes through
+ *     `LLMClient`'s OpenAI-compat + Anthropic adapters.
+ *   - The structured-output path (`requestCompletion` + `tool_use`
+ *     + multimodal content blocks + stop_reason inspection) stays
+ *     Anthropic-specific because tool-call shapes differ across
+ *     providers and a generic abstraction is a deliberate future
+ *     task. `classify.ts` and `extract.ts` (Phase 4b document
+ *     import) consume this surface directly.
+ *
+ * Do NOT extend `aiStream` to carry `tool_use` or multimodal
+ * semantics. Keeping the boundary clean preserves the LLMClient
+ * adapter abstraction.
  */
 
 /** Content block types per Anthropic's Messages API spec. */
@@ -79,23 +88,6 @@ export type ChatError =
   | { kind: 'server' }
   | { kind: 'network' }
   | { kind: 'unknown'; message: string };
-
-export interface AnthropicStreamOptions {
-  apiKey: string;
-  model: string;
-  system: string;
-  messages: AnthropicMessage[];
-  /** Defaults to 4096. Raise only if conversations need longer replies. */
-  maxTokens?: number;
-  /** Fires for every text delta received via the SSE stream. */
-  onToken: (token: string) => void;
-  /** Fires exactly once when the stream ends cleanly (message_stop or EOF). */
-  onComplete: (fullText: string) => void;
-  /** Fires at most once when the call fails before or during streaming. */
-  onError: (error: ChatError) => void;
-  /** AbortSignal-triggered cancellation. Silent (no onError, no onComplete). */
-  signal?: AbortSignal;
-}
 
 /**
  * Options for `requestCompletion` (IMP-03 non-streaming path).

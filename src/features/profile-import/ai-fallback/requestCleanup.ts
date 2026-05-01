@@ -1,6 +1,6 @@
-import { streamCompletion } from '../../ai-chat/api/anthropicClient';
+import { aiStream } from '../../ai/aiCall';
 import type { ChatError } from '../../ai-chat/api/types';
-import { readAIConfig, DEFAULT_ANTHROPIC_MODEL } from '../../../db/aiConfig';
+import { readAIConfig } from '../../../db/aiConfig';
 import { CLEANUP_SYSTEM_PROMPT, isImpossibleResponse } from './cleanupPrompt';
 
 /**
@@ -33,9 +33,8 @@ export async function requestCleanup(
   if (!config) return { kind: 'not-configured' };
 
   return new Promise<CleanupResult>((resolve) => {
-    void streamCompletion({
-      apiKey: config.apiKey,
-      model: config.model ?? DEFAULT_ANTHROPIC_MODEL,
+    void aiStream({
+      config,
       system: CLEANUP_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: brokenMarkdown }],
       maxTokens: 4096,

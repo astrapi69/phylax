@@ -4,8 +4,8 @@ import { lock, unlock } from '../../../crypto';
 import { setupCompletedOnboarding } from '../../../db/test-helpers';
 import { readMeta } from '../../../db/meta';
 import { saveAIConfig, deleteAIConfig } from '../../../db/aiConfig';
-import * as anthropicClient from '../../ai-chat/api/anthropicClient';
-import type { AnthropicStreamOptions } from '../../ai-chat/api/types';
+import * as aiCallModule from '../../ai/aiCall';
+import type { AiStreamOptions } from '../../ai/aiCall';
 import { requestCleanup } from './requestCleanup';
 import { CLEANUP_SYSTEM_PROMPT } from './cleanupPrompt';
 
@@ -16,7 +16,7 @@ async function unlockSession(): Promise<void> {
   await unlock(TEST_PASSWORD, new Uint8Array(meta?.salt ?? new ArrayBuffer(0)));
 }
 
-let lastCall: AnthropicStreamOptions | null = null;
+let lastCall: AiStreamOptions | null = null;
 
 beforeEach(async () => {
   lastCall = null;
@@ -31,7 +31,7 @@ afterEach(() => {
 
 describe('requestCleanup', () => {
   it('returns not-configured when no AI config is stored', async () => {
-    const spy = vi.spyOn(anthropicClient, 'streamCompletion');
+    const spy = vi.spyOn(aiCallModule, 'aiStream');
     const result = await requestCleanup('### [Thema] irgendwas');
     expect(result).toEqual({ kind: 'not-configured' });
     expect(spy).not.toHaveBeenCalled();
@@ -43,7 +43,7 @@ describe('requestCleanup', () => {
       apiKey: 'sk-ant-test-key-xxxxxxxxx',
       model: 'claude-sonnet-4-6',
     });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       lastCall = opts;
       opts.onComplete('### Knie\n- Status: Akut');
     });
@@ -53,12 +53,12 @@ describe('requestCleanup', () => {
     expect(result).toEqual({ kind: 'ok', cleaned: '### Knie\n- Status: Akut' });
     expect(lastCall?.system).toBe(CLEANUP_SYSTEM_PROMPT);
     expect(lastCall?.messages).toEqual([{ role: 'user', content: 'knie schmerzt seit 3 wochen' }]);
-    expect(lastCall?.apiKey).toBe('sk-ant-test-key-xxxxxxxxx');
+    expect(lastCall?.config.apiKey).toBe('sk-ant-test-key-xxxxxxxxx');
   });
 
   it('returns impossible when the AI response matches the sentinel', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete('NICHT_VERARBEITBAR');
     });
 
@@ -68,7 +68,7 @@ describe('requestCleanup', () => {
 
   it('recognizes fuzzy sentinel variants (e.g. spaced, lowercase)', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete('Das ist leider NICHT VERARBEITBAR.');
     });
 
@@ -78,7 +78,7 @@ describe('requestCleanup', () => {
 
   it('returns error when streamCompletion reports an auth failure', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onError({ kind: 'auth' });
     });
 
@@ -88,7 +88,7 @@ describe('requestCleanup', () => {
 
   it('trims surrounding whitespace from the cleaned response', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete('\n\n### Knie\n- Status: Akut\n\n');
     });
 
@@ -99,7 +99,7 @@ describe('requestCleanup', () => {
   it('forwards the abort signal to streamCompletion', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
     const controller = new AbortController();
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       lastCall = opts;
       opts.onComplete('### ok');
     });
@@ -112,7 +112,7 @@ describe('requestCleanup', () => {
     // Regression guard: readAIConfig must not have side effects.
     expect((await requestCleanup('x')).kind).toBe('not-configured');
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete('### Knie\n- Status: ok');
     });
     const result = await requestCleanup('x');

@@ -6,7 +6,7 @@ import { setupCompletedOnboarding } from '../../../db/test-helpers';
 import { readMeta } from '../../../db/meta';
 import { ProfileRepository, ObservationRepository } from '../../../db/repositories';
 import { saveAIConfig } from '../../../db/aiConfig';
-import * as anthropicClient from '../../ai-chat/api/anthropicClient';
+import * as aiCallModule from '../../ai/aiCall';
 import { useImport } from './useImport';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -266,7 +266,7 @@ describe('useImport AI cleanup flow (AI-09)', () => {
 
   it('requestAICleanup lands on profile-selection when cleaned markdown parses', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete(
         ['# Medizinisches Profil - Version 1.0', '', '## 1. Basisdaten', '- **Alter:** 40'].join(
           '\n',
@@ -284,7 +284,7 @@ describe('useImport AI cleanup flow (AI-09)', () => {
 
   it('requestAICleanup sets impossible when the AI returns the sentinel', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onComplete('NICHT_VERARBEITBAR');
     });
 
@@ -301,7 +301,7 @@ describe('useImport AI cleanup flow (AI-09)', () => {
 
   it('requestAICleanup records the raw output when cleaned markdown still fails to parse', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       // Non-sentinel response that also does not parse (no recognized sections).
       opts.onComplete('not a real profile, just prose that the parser ignores');
     });
@@ -322,7 +322,7 @@ describe('useImport AI cleanup flow (AI-09)', () => {
 
   it('requestAICleanup surfaces API errors via the cleanup sub-state', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-test-key-xxxxxxxxx' });
-    vi.spyOn(anthropicClient, 'streamCompletion').mockImplementation(async (opts) => {
+    vi.spyOn(aiCallModule, 'aiStream').mockImplementation(async (opts) => {
       opts.onError({ kind: 'rate-limit' });
     });
 

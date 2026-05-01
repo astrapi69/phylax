@@ -240,6 +240,14 @@ export class LLMClient {
         signal,
       });
     } catch (e) {
+      // Preserve AbortError so callers can distinguish a deliberate
+      // cancellation (silent path: no UI error rendered) from a
+      // genuine network failure. Wrapping into LLMError('offline')
+      // would hide the abort semantics from `aiCall` and from any
+      // future cancellation-aware caller.
+      if (e instanceof DOMException && e.name === 'AbortError') {
+        throw e;
+      }
       const msg = e instanceof Error ? e.message : String(e);
       throw new LLMError('offline', `Cannot reach ${this.baseUrl}: ${msg}`);
     }
