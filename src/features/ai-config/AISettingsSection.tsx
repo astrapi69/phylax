@@ -191,44 +191,54 @@ function UnconfiguredForm({
           <input
             id="ai-api-key"
             name="api-key"
-            type={keyVisible ? 'text' : 'password'}
+            // BUG-08 + BUG-09 + BUG-10: browser password managers
+            // (Chrome built-in, 1Password, LastPass, Bitwarden) treat
+            // ANY `type=password` input as a credentials field. They
+            // (a) prompt to save on submit, (b) propose existing
+            // saved credentials on focus, (c) ignore most autocomplete
+            // / data-* opt-out hints. Even the readonly trick has
+            // become unreliable in recent Chromium. Three escalations
+            // (BUG-08, BUG-09) failed to fully suppress the focus
+            // popup; the remaining root cause is `type=password`
+            // itself.
+            //
+            // The fix: render as `type="text"` always - so password
+            // managers never classify it as credentials - and mask
+            // visually via `-webkit-text-security: disc` when the
+            // user wants the key hidden. The CSS property is widely
+            // supported in Chromium + WebKit; Firefox does not
+            // honour it (the key would render in plaintext when the
+            // toggle is in "hidden" mode), which is an accepted
+            // trade-off until Firefox's `-moz-text-security`
+            // proposal lands - the eye-toggle stays the canonical
+            // user gesture for inspecting / hiding the key.
+            //
+            // Retain the autocomplete + data-* opt-out stack so
+            // managers that DO scan `type=text` fields heuristically
+            // (Bitwarden notably) also skip this input.
+            type="text"
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
-            // BUG-08 + BUG-09: browser password managers (Chrome
-            // built-in, 1Password, LastPass, Bitwarden) treat
-            // type=password inputs as login / change-password fields
-            // and (a) prompt to save on submit, (b) propose existing
-            // saved credentials on focus. Both behaviours are wrong
-            // for an API key field - the key is not a website
-            // password, suggesting unrelated saved passwords leaks
-            // them visually into the wrong context, and persisting
-            // the key in the user's manager pollutes their vault.
-            //
-            // Opt-out stack:
-            //   - autoComplete="one-time-code": Chrome classifies as
-            //     OTP, suppresses both save prompt and credential
-            //     suggestions on focus.
-            //   - data-1p-ignore / data-lpignore / data-bwignore:
-            //     extension-specific autofill opt-outs.
-            //   - data-form-type="other": generic "not a creds form".
-            //   - name avoids the substring "password" so heuristic
-            //     matchers do not classify it as a password field.
-            //   - readOnly + onFocus removeAttribute is the
-            //     widely-used "readonly trick" to defeat Chrome's
-            //     autofill suggestion popup, which fires on focus
-            //     events for type=password fields regardless of
-            //     autocomplete hints. The attribute is removed the
-            //     instant the user actually focuses the field, so
-            //     typing is unaffected.
             autoComplete="one-time-code"
             data-1p-ignore="true"
             data-lpignore="true"
             data-bwignore="true"
             data-form-type="other"
-            readOnly
-            onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
             spellCheck={false}
             placeholder="sk-ant-..."
+            // -webkit-text-security is non-standard so React's
+            // CSSProperties type does not include it; the cast lets
+            // us pass the property through to the rendered style
+            // attribute. Recognised in Chromium + WebKit; Firefox
+            // ignores (acceptable per BUG-10 trade-off note above).
+            style={
+              keyVisible
+                ? undefined
+                : ({
+                    WebkitTextSecurity: 'disc',
+                    fontFamily: 'monospace',
+                  } as React.CSSProperties)
+            }
             className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
           <PasswordVisibilityToggle

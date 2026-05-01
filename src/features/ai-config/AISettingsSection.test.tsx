@@ -217,19 +217,24 @@ describe('AISettingsSection', () => {
     expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
 
-  it('unconfigured form: API key visibility toggle uses api-key labels and flips type', async () => {
+  it('unconfigured form: API key visibility toggle uses api-key labels and flips CSS masking', async () => {
+    // BUG-10: input renders as `type="text"` always (so password
+    // managers do not classify it as credentials); masking is applied
+    // via `-webkit-text-security: disc` when the toggle is hidden.
     const user = userEvent.setup();
     render(<AISettingsSection />);
     await waitFor(() => expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument());
     const input = screen.getByLabelText('API-Schlüssel') as HTMLInputElement;
     const toggle = screen.getByTestId('password-visibility-toggle');
 
-    expect(input).toHaveAttribute('type', 'password');
+    expect(input).toHaveAttribute('type', 'text');
+    expect(input.style.getPropertyValue('-webkit-text-security')).toBe('disc');
     expect(toggle).toHaveAttribute('aria-label', 'API-Key anzeigen');
 
     await user.click(toggle);
 
     expect(input).toHaveAttribute('type', 'text');
+    expect(input.style.getPropertyValue('-webkit-text-security')).toBe('');
     expect(toggle).toHaveAttribute('aria-label', 'API-Key verbergen');
   });
 
