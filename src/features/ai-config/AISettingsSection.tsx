@@ -194,22 +194,39 @@ function UnconfiguredForm({
             type={keyVisible ? 'text' : 'password'}
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
-            // BUG-08: browser password managers (Chrome built-in,
-            // 1Password, LastPass, Bitwarden) detect a sequence of
-            // type=password inputs as a "change password" gesture and
-            // prompt the user to save / update credentials. The API
-            // key is NOT a website password and the prompt is
-            // confusing + privacy-leaking (the key would land in the
-            // user's password vault unrelated to Phylax). The fix
-            // stack: `autocomplete="one-time-code"` makes Chrome
-            // treat the field as an OTP (no save prompt); `data-*`
-            // opt-outs target the major manager extensions; the
-            // `name` deliberately avoids the substring "password".
+            // BUG-08 + BUG-09: browser password managers (Chrome
+            // built-in, 1Password, LastPass, Bitwarden) treat
+            // type=password inputs as login / change-password fields
+            // and (a) prompt to save on submit, (b) propose existing
+            // saved credentials on focus. Both behaviours are wrong
+            // for an API key field - the key is not a website
+            // password, suggesting unrelated saved passwords leaks
+            // them visually into the wrong context, and persisting
+            // the key in the user's manager pollutes their vault.
+            //
+            // Opt-out stack:
+            //   - autoComplete="one-time-code": Chrome classifies as
+            //     OTP, suppresses both save prompt and credential
+            //     suggestions on focus.
+            //   - data-1p-ignore / data-lpignore / data-bwignore:
+            //     extension-specific autofill opt-outs.
+            //   - data-form-type="other": generic "not a creds form".
+            //   - name avoids the substring "password" so heuristic
+            //     matchers do not classify it as a password field.
+            //   - readOnly + onFocus removeAttribute is the
+            //     widely-used "readonly trick" to defeat Chrome's
+            //     autofill suggestion popup, which fires on focus
+            //     events for type=password fields regardless of
+            //     autocomplete hints. The attribute is removed the
+            //     instant the user actually focuses the field, so
+            //     typing is unaffected.
             autoComplete="one-time-code"
             data-1p-ignore="true"
             data-lpignore="true"
             data-bwignore="true"
             data-form-type="other"
+            readOnly
+            onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
             spellCheck={false}
             placeholder="sk-ant-..."
             className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
