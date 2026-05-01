@@ -18,8 +18,11 @@ const NEW_PASSWORD = 'next-password-345';
 test('change master password: full lock-unlock cycle', async ({ page }) => {
   await setupAuthenticatedSession(page);
 
-  // Navigate to /settings via the nav drawer / sidebar link.
-  await page.goto('/settings');
+  // Navigate to /settings via the in-app NavBar link. `page.goto`
+  // would trigger a full reload that clears the in-memory keyStore
+  // key and lands on the unlock screen; SPA-internal navigation via
+  // a click preserves the unlocked session.
+  await page.getByRole('link', { name: 'Einstellungen' }).click();
   await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
 
   // Fill the change-password form.
