@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import type { LabValue } from '../../domain';
-import { findMatchRanges } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { LabValueActions } from './LabValueActions';
 import type { UseLabValueFormResult } from './useLabValueForm';
 
 interface LabValuesTableProps {
+  /** Parent report id; used to scope match-plan keys per cell. */
+  reportId: string;
   category: string;
   values: LabValue[];
   /**
@@ -15,12 +17,15 @@ interface LabValuesTableProps {
    */
   valueForm?: UseLabValueFormResult;
   /**
-   * P-22b cell highlighting. Pre-split query terms (so the parent
-   * computes `splitQuery(...)` once instead of every cell repeating
-   * the work). Empty array => no highlighting; cells render bare
-   * text.
+   * P-22b/c/d-polish-2: optional match plan keyed by
+   * `${reportId}:val:${valueId}:<field>`. When supplied, every
+   * matching cell gets a `<mark>` with a sequential global
+   * `data-match-index` so the view-level Up/Down nav can scroll
+   * per mark.
    */
-  queryTerms?: string[];
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -31,13 +36,17 @@ interface LabValuesTableProps {
  * appended with edit + delete buttons per row.
  */
 export function LabValuesTable({
+  reportId,
   category,
   values,
   valueForm,
-  queryTerms = [],
+  matchPlan,
+  activeMatchIndex = null,
 }: LabValuesTableProps) {
   const { t } = useTranslation('lab-values');
   const showActions = !!valueForm;
+  const lookup = (valueId: string, field: string): FieldMatch | undefined =>
+    matchPlan?.get(`${reportId}:val:${valueId}:${field}`);
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -70,19 +79,39 @@ export function LabValuesTable({
           {values.map((v) => (
             <tr key={v.id} className="border-b border-gray-100 last:border-0 dark:border-gray-800">
               <td className="py-1.5 pr-4 font-medium text-gray-900 dark:text-gray-100">
-                <Cell text={v.parameter} terms={queryTerms} />
+                <Cell
+                  text={v.parameter}
+                  fieldMatch={lookup(v.id, 'parameter')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </td>
               <td className="py-1.5 pr-4 text-gray-800 dark:text-gray-200">
-                <Cell text={v.result} terms={queryTerms} />
+                <Cell
+                  text={v.result}
+                  fieldMatch={lookup(v.id, 'result')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </td>
               <td className="py-1.5 pr-4 text-gray-600 dark:text-gray-400">
-                <Cell text={v.unit ?? '-'} terms={queryTerms} />
+                <Cell
+                  text={v.unit ?? '-'}
+                  fieldMatch={lookup(v.id, 'unit')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </td>
               <td className="py-1.5 pr-4 text-gray-600 dark:text-gray-400">
-                <Cell text={v.referenceRange ?? '-'} terms={queryTerms} />
+                <Cell
+                  text={v.referenceRange ?? '-'}
+                  fieldMatch={lookup(v.id, 'reference')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </td>
               <td className={`py-1.5 ${assessmentStyle(v.assessment)}`}>
-                <Cell text={v.assessment ?? '-'} terms={queryTerms} />
+                <Cell
+                  text={v.assessment ?? '-'}
+                  fieldMatch={lookup(v.id, 'assessment')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </td>
               {valueForm && (
                 <td className="py-1 pl-2 text-right">
@@ -97,11 +126,23 @@ export function LabValuesTable({
   );
 }
 
-function Cell({ text, terms }: { text: string; terms: string[] }) {
-  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
-  if (ranges.length === 0) return <>{text}</>;
+function Cell({
+  text,
+  fieldMatch,
+  activeMatchIndex,
+}: {
+  text: string;
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
+}) {
+  if (!fieldMatch || fieldMatch.ranges.length === 0) return <>{text}</>;
   return (
-    <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />
+    <HighlightedText
+      text={text}
+      ranges={fieldMatch.ranges}
+      startMatchIndex={fieldMatch.startIndex}
+      activeMatchIndex={activeMatchIndex}
+    />
   );
 }
 

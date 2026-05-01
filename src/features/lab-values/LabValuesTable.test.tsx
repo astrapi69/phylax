@@ -20,7 +20,7 @@ function makeValueFormStub(overrides: Partial<UseLabValueFormResult> = {}): UseL
 
 describe('LabValuesTable', () => {
   it('renders table with column headers', () => {
-    render(<LabValuesTable category="Blutbild" values={[makeLabValue()]} />);
+    render(<LabValuesTable reportId="r1" category="Blutbild" values={[makeLabValue()]} />);
     expect(screen.getByRole('columnheader', { name: 'Parameter' })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: 'Ergebnis' })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: 'Einheit' })).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('LabValuesTable', () => {
       makeLabValue({ id: '2', parameter: 'Leukozyten', result: '6,04' }),
       makeLabValue({ id: '3', parameter: 'Thrombozyten', result: '244' }),
     ];
-    render(<LabValuesTable category="Blutbild" values={values} />);
+    render(<LabValuesTable reportId="r1" category="Blutbild" values={values} />);
     const rows = screen.getAllByRole('row');
     // 1 header row + 3 data rows
     expect(rows).toHaveLength(4);
@@ -43,6 +43,7 @@ describe('LabValuesTable', () => {
   it('displays non-numeric results verbatim', () => {
     render(
       <LabValuesTable
+        reportId="r1"
         category="Serologie"
         values={[makeLabValue({ parameter: 'HIV', result: 'negativ' })]}
       />,
@@ -53,6 +54,7 @@ describe('LabValuesTable', () => {
   it('shows dash for missing optional fields', () => {
     render(
       <LabValuesTable
+        reportId="r1"
         category="Blutbild"
         values={[
           makeLabValue({ unit: undefined, referenceRange: undefined, assessment: undefined }),
@@ -65,7 +67,11 @@ describe('LabValuesTable', () => {
 
   it('applies default styling for "normal" assessment', () => {
     render(
-      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'normal' })]} />,
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'normal' })]}
+      />,
     );
     const cell = screen.getByText('normal');
     expect(cell.className).not.toMatch(/amber/);
@@ -74,6 +80,7 @@ describe('LabValuesTable', () => {
   it('applies accent styling for "erhoht" assessment', () => {
     render(
       <LabValuesTable
+        reportId="r1"
         category="Blutbild"
         values={[makeLabValue({ assessment: 'leicht erhoht' })]}
       />,
@@ -84,21 +91,33 @@ describe('LabValuesTable', () => {
 
   it('applies accent styling for "erhöht" (Unicode umlaut) assessment', () => {
     render(
-      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'erhöht' })]} />,
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'erhöht' })]}
+      />,
     );
     expect(screen.getByText('erhöht').className).toMatch(/amber/);
   });
 
   it('applies accent styling for "erniedrigt" assessment', () => {
     render(
-      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'erniedrigt' })]} />,
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'erniedrigt' })]}
+      />,
     );
     expect(screen.getByText('erniedrigt').className).toMatch(/amber/);
   });
 
   it('applies destructive red styling for "kritisch" assessment (O-13)', () => {
     render(
-      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'kritisch' })]} />,
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'kritisch' })]}
+      />,
     );
     const cell = screen.getByText('kritisch');
     expect(cell.className).toMatch(/text-red-700/);
@@ -110,6 +129,7 @@ describe('LabValuesTable', () => {
   it('kritisch wins over erhöht when both terms appear (severity precedence)', () => {
     render(
       <LabValuesTable
+        reportId="r1"
         category="Blutbild"
         values={[makeLabValue({ assessment: 'KRITISCH erhöht' })]}
       />,
@@ -119,7 +139,11 @@ describe('LabValuesTable', () => {
 
   it('falls through to neutral styling for unrecognized assessment values', () => {
     render(
-      <LabValuesTable category="Blutbild" values={[makeLabValue({ assessment: 'unklar' })]} />,
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={[makeLabValue({ assessment: 'unklar' })]}
+      />,
     );
     const cell = screen.getByText('unklar');
     expect(cell.className).not.toMatch(/amber/);
@@ -128,7 +152,7 @@ describe('LabValuesTable', () => {
   });
 
   it('omits action column when no valueForm prop is supplied (read-only mode)', () => {
-    render(<LabValuesTable category="Blutbild" values={[makeLabValue()]} />);
+    render(<LabValuesTable reportId="r1" category="Blutbild" values={[makeLabValue()]} />);
     expect(screen.queryByTestId('lab-value-actions')).toBeNull();
     // Header row should still have only 5 columns.
     const headers = screen.getAllByRole('columnheader');
@@ -140,7 +164,14 @@ describe('LabValuesTable', () => {
       makeLabValue({ id: 'v1', parameter: 'Hb' }),
       makeLabValue({ id: 'v2', parameter: 'Leukozyten' }),
     ];
-    render(<LabValuesTable category="Blutbild" values={values} valueForm={makeValueFormStub()} />);
+    render(
+      <LabValuesTable
+        reportId="r1"
+        category="Blutbild"
+        values={values}
+        valueForm={makeValueFormStub()}
+      />,
+    );
     expect(screen.getByTestId('lab-value-edit-btn-v1')).toBeInTheDocument();
     expect(screen.getByTestId('lab-value-delete-btn-v1')).toBeInTheDocument();
     expect(screen.getByTestId('lab-value-edit-btn-v2')).toBeInTheDocument();

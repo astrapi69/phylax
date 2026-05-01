@@ -108,7 +108,9 @@ describe('LabValuesView', () => {
     vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
 
     renderView();
-    await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument(),
+    );
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
   });
@@ -225,7 +227,9 @@ describe('LabValuesView', () => {
       vi.spyOn(LabReportRepository.prototype, 'listByProfileDateDescending').mockResolvedValue([]);
 
       renderView({ defaultOpen: true });
-      await waitFor(() => expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText(/Noch keine Laborwerte erfasst/)).toBeInTheDocument(),
+      );
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
@@ -252,9 +256,7 @@ describe('LabValuesView', () => {
     it('shows the no-matches state when the date range excludes every report', async () => {
       mockTwoReports();
       renderView({ initialEntries: ['/lab-values?from=2030-01-01&to=2030-12-31'] });
-      await waitFor(() =>
-        expect(screen.getByTestId('lab-values-no-matches')).toBeInTheDocument(),
-      );
+      await waitFor(() => expect(screen.getByTestId('lab-values-no-matches')).toBeInTheDocument());
       expect(screen.queryAllByRole('heading', { level: 2 })).toHaveLength(0);
     });
 
@@ -380,31 +382,32 @@ describe('LabValuesView', () => {
       expect(screen.queryByTestId('date-range-filter')).not.toBeInTheDocument();
     });
 
-    it('renders prev/next match-nav buttons when the filter retains >= 2 reports (P-22b/c/d-polish)', async () => {
-      // Both reports' labNames contain a literal 'l' (Synlab + Other-via-Lab patch).
-      // Use a date filter to keep both visible regardless of value content: the
-      // YYYY range covers both reportDates. Filter retains both => totalMatches == 2.
+    it('renders prev/next match-nav buttons when the query produces >= 2 marks (P-22b/c/d-polish-2)', async () => {
+      // Mark-level counter: nav buttons gate on `totalMatches >= 2`
+      // where totalMatches counts highlight marks (not retained
+      // reports). Query 'n' hits 'Synlab' + 'Kreatinin' (twice) +
+      // 'Nierenwerte' (twice) for 5 marks across the syn report,
+      // comfortably above the threshold.
       mockSynlabAndOther();
-      renderView({ initialEntries: ['/lab-values?from=2024-01-01&to=2026-12-31'] });
-      await waitFor(() =>
-        expect(screen.getAllByRole('heading', { level: 2 }).length).toBe(2),
-      );
-      // Date filter alone keeps two reports visible. matchCount == 2 in
-      // filterLabReports' empty-query branch when the date range is active
-      // (filterResult.matchCount equals retained.length).
+      renderView({ defaultOpen: true });
+      const user = userEvent.setup();
+      const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
+      await user.type(input, 'n');
       await waitFor(() => {
         expect(screen.queryByTestId('lab-values-search-prev')).toBeInTheDocument();
         expect(screen.queryByTestId('lab-values-search-next')).toBeInTheDocument();
       });
     });
 
-    it('match-nav buttons hidden when matchCount < 2', async () => {
+    it('match-nav buttons hidden when totalMatches < 2', async () => {
+      // 'TSH' matches exactly one cell (syn:val:v2:parameter) and no
+      // header / category / other-value field, so totalMatches === 1
+      // and the nav buttons stay hidden.
       mockSynlabAndOther();
       renderView({ defaultOpen: true });
       const user = userEvent.setup();
       const input = (await screen.findByRole('searchbox')) as HTMLInputElement;
-      // Query matches only one report.
-      await user.type(input, 'Kreatinin');
+      await user.type(input, 'TSH');
       await waitFor(() => {
         const headings = screen.getAllByRole('heading', { level: 2 });
         expect(headings).toHaveLength(1);

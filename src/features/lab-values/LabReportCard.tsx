@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { LabReport, LabValue } from '../../domain';
-import { findMatchRanges, splitQuery } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { MarkdownContent } from '../profile-view';
 import { CategoryAssessment } from './CategoryAssessment';
@@ -41,6 +41,19 @@ interface LabReportCardProps {
    * exactly as before.
    */
   highlightQuery?: string;
+  /**
+   * P-22b/c/d-polish-2: optional match plan from
+   * `buildFieldMatchPlan` keyed by `${reportId}:<fieldKey>`. When
+   * supplied, every rendered mark gets a sequential global
+   * `data-match-index` so the view-level Up/Down nav can
+   * `scrollIntoView` per mark. Omitted in read-only mounts; per-cell
+   * highlight ranges still render but with `startMatchIndex=0`
+   * (inert global indices, no nav).
+   */
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). Null means no
+   *  active mark and `<HighlightedText>` paints all marks passively. */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -58,6 +71,8 @@ export function LabReportCard({
   form,
   valueForm,
   highlightQuery,
+  matchPlan,
+  activeMatchIndex = null,
 }: LabReportCardProps) {
   const { t } = useTranslation('lab-values');
   const {
@@ -75,10 +90,7 @@ export function LabReportCard({
   const categories = Array.from(valuesByCategory.entries());
   const hasValues = categories.length > 0;
   const allValues = useMemo(() => Array.from(valuesByCategory.values()).flat(), [valuesByCategory]);
-  const queryTerms = useMemo(
-    () => (highlightQuery ? splitQuery(highlightQuery) : []),
-    [highlightQuery],
-  );
+  const lookup = (key: string): FieldMatch | undefined => matchPlan?.get(`${report.id}:${key}`);
 
   return (
     <section
@@ -98,16 +110,27 @@ export function LabReportCard({
           </div>
           <dl className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
             {labName && (
-              <MetaItem label={t('report.meta.lab')} value={labName} terms={queryTerms} />
+              <MetaItem
+                label={t('report.meta.lab')}
+                value={labName}
+                fieldMatch={lookup('labName')}
+                activeMatchIndex={activeMatchIndex}
+              />
             )}
             {doctorName && (
-              <MetaItem label={t('report.meta.doctor')} value={doctorName} terms={queryTerms} />
+              <MetaItem
+                label={t('report.meta.doctor')}
+                value={doctorName}
+                fieldMatch={lookup('doctorName')}
+                activeMatchIndex={activeMatchIndex}
+              />
             )}
             {reportNumber && (
               <MetaItem
                 label={t('report.meta.report-number')}
                 value={reportNumber}
-                terms={queryTerms}
+                fieldMatch={lookup('reportNumber')}
+                activeMatchIndex={activeMatchIndex}
               />
             )}
           </dl>
@@ -115,9 +138,15 @@ export function LabReportCard({
         {form ? <LabReportActions report={report} form={form} /> : null}
       </header>
 
-      {contextNote && (
+      {contextNote && contextNote.trim() !== '' && (
         <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-          <MarkdownContent highlightQuery={highlightQuery}>{contextNote}</MarkdownContent>
+          <MarkdownContent
+            highlightQuery={highlightQuery}
+            startMatchIndex={lookup('contextNote')?.startIndex ?? 0}
+            activeMatchIndex={activeMatchIndex}
+          >
+            {contextNote}
+          </MarkdownContent>
         </div>
       )}
 
@@ -126,18 +155,26 @@ export function LabReportCard({
           categories.map(([category, values]) => (
             <div key={category}>
               <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
-                <HighlightCell text={category} terms={queryTerms} />
+                <HighlightCell
+                  text={category}
+                  fieldMatch={lookup(`cat:${category}:heading`)}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </h3>
               <LabValuesTable
+                reportId={report.id}
                 category={category}
                 values={values}
                 valueForm={valueForm}
-                queryTerms={queryTerms}
+                matchPlan={matchPlan}
+                activeMatchIndex={activeMatchIndex}
               />
               <CategoryAssessment
                 category={category}
                 assessment={categoryAssessments[category]}
                 highlightQuery={highlightQuery}
+                startMatchIndex={lookup(`cat:${category}:assessment`)?.startIndex ?? 0}
+                activeMatchIndex={activeMatchIndex}
               />
             </div>
           ))
@@ -164,7 +201,13 @@ export function LabReportCard({
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
               {t('report.section.overall')}
             </h3>
-            <MarkdownContent highlightQuery={highlightQuery}>{overallAssessment}</MarkdownContent>
+            <MarkdownContent
+              highlightQuery={highlightQuery}
+              startMatchIndex={lookup('overall')?.startIndex ?? 0}
+              activeMatchIndex={activeMatchIndex}
+            >
+              {overallAssessment}
+            </MarkdownContent>
           </div>
         )}
 
@@ -173,7 +216,13 @@ export function LabReportCard({
             <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">
               {t('report.section.relevance')}
             </h3>
-            <MarkdownContent highlightQuery={highlightQuery}>{relevanceNotes}</MarkdownContent>
+            <MarkdownContent
+              highlightQuery={highlightQuery}
+              startMatchIndex={lookup('relevance')?.startIndex ?? 0}
+              activeMatchIndex={activeMatchIndex}
+            >
+              {relevanceNotes}
+            </MarkdownContent>
           </div>
         )}
 
@@ -186,35 +235,51 @@ export function LabReportCard({
 function MetaItem({
   label,
   value,
-  terms,
+  fieldMatch,
+  activeMatchIndex,
 }: {
   label: string;
   value: string;
-  terms: string[];
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
 }) {
   return (
     <div className="flex gap-1">
       <dt className="font-medium">{label}:</dt>
       <dd>
-        <HighlightCell text={value} terms={terms} />
+        <HighlightCell text={value} fieldMatch={fieldMatch} activeMatchIndex={activeMatchIndex} />
       </dd>
     </div>
   );
 }
 
 /**
- * Wraps a plain-text string with `<HighlightedText>` when the query
- * matches any range; otherwise renders the bare string. Used for
- * every value-table cell + lab-report meta field. Match indexing is
- * intentionally per-cell (no global cursor) because P-22b ships
- * highlighting only — Up/Down match navigation is registered as
- * P-22b polish and would need a global match plan threaded through
- * the entire LabReportCard subtree.
+ * Wraps a plain-text string with `<HighlightedText>` when the field
+ * has a match plan entry; otherwise renders the bare string. Each
+ * mark gets a sequential global `data-match-index` derived from the
+ * plan's `startIndex` so the view-level Up/Down nav can scroll to
+ * the right `<mark>`. P-22b/c/d-polish-2 swap from per-cell ranges
+ * + zero-index marks (inert) to plan-driven global indices
+ * (navigable).
  */
-function HighlightCell({ text, terms }: { text: string; terms: string[] }) {
-  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
-  if (ranges.length === 0) return <>{text}</>;
-  return <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />;
+function HighlightCell({
+  text,
+  fieldMatch,
+  activeMatchIndex,
+}: {
+  text: string;
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
+}) {
+  if (!fieldMatch || fieldMatch.ranges.length === 0) return <>{text}</>;
+  return (
+    <HighlightedText
+      text={text}
+      ranges={fieldMatch.ranges}
+      startMatchIndex={fieldMatch.startIndex}
+      activeMatchIndex={activeMatchIndex}
+    />
+  );
 }
 
 function formatGermanDate(isoDate: string): string {

@@ -2,6 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  buildFieldMatchPlan,
   isDateRangeActive,
   parseDateRange,
   preferredScrollBehavior,
@@ -9,6 +10,7 @@ import {
   useUrlSearchParam,
   type DateRange,
 } from '../../lib';
+import { extractLabReportFields } from './extractLabReportFields';
 import {
   DateRangeFilter,
   EmptyStatePanel,
@@ -115,17 +117,28 @@ export function LabValuesView() {
 
   const isFiltering = deferredQuery.trim() !== '' || isDateRangeActive(dateRange);
 
-  // P-22b/c/d-polish: row-level match navigation. `matchCount` is the
-  // number of retained reports; each rendered LabReportCard carries a
-  // `data-match-row="N"` attribute (1-based). Up / Down + Enter cycle
-  // through the matched reports.
-  const totalMatches = filterResult?.matchCount ?? 0;
+  // P-22b/c/d-polish-2: mark-level match navigation. The smoke for
+  // P-22b/c/d surfaced that the row-level counter ("X von N
+  // Befunden") did not match what the user counts visually
+  // (highlight marks). `buildFieldMatchPlan` walks every searchable
+  // field of every retained report in display order and emits one
+  // mark per range; the counter shows "K von M Treffer" where M is
+  // the total mark count. Up / Down nav advances per mark; scrolling
+  // targets `mark[data-match-index="N"]` like ObservationsView.
+  const matchFields = useMemo(
+    () => (filterResult ? extractLabReportFields(filterResult.reports) : []),
+    [filterResult],
+  );
+  const { matchPlan, totalMatches } = useMemo(
+    () => buildFieldMatchPlan(matchFields, deferredQuery),
+    [matchFields, deferredQuery],
+  );
   const { activeIndex, scrollSignal, next, prev } = useActiveMatch(deferredQuery, totalMatches);
 
   useEffect(() => {
     if (scrollSignal === 0) return;
     if (activeIndex === 0) return;
-    const target = document.querySelector(`[data-match-row="${activeIndex}"]`);
+    const target = document.querySelector(`mark[data-match-index="${activeIndex}"]`);
     if (target instanceof HTMLElement) {
       target.scrollIntoView({ behavior: preferredScrollBehavior(), block: 'center' });
     }
@@ -169,24 +182,17 @@ export function LabValuesView() {
           {(searchOpen || isFiltering) && (
             <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
               <div className="flex flex-wrap items-center gap-3">
-                {isFiltering && (
+                {isFiltering && totalMatches > 0 && (
                   <p
                     role="status"
                     aria-live="polite"
                     data-testid="lab-values-match-count"
                     className="text-xs text-gray-600 dark:text-gray-400"
                   >
-                    {filterResult.matchCount === 0
-                      ? t('search.no-matches-counter')
-                      : totalMatches >= 2
-                        ? t('search.match-count-active', {
-                            current: activeIndex,
-                            total: totalMatches,
-                          })
-                        : t('search.match-count', {
-                            count: filterResult.matchCount,
-                            total: filterResult.totalCount,
-                          })}
+                    {t('search.match-count-active', {
+                      current: activeIndex,
+                      total: totalMatches,
+                    })}
                   </p>
                 )}
                 {isFiltering && totalMatches >= 2 && (
@@ -246,18 +252,16 @@ export function LabValuesView() {
             <NoMatchesState query={deferredQuery} />
           ) : (
             <div className="space-y-6">
-              {reports.map(({ report, valuesByCategory }, index) => (
-                <div
-                  key={report.id}
-                  data-match-row={isFiltering ? index + 1 : undefined}
-                  className="scroll-mt-24"
-                >
+              {reports.map(({ report, valuesByCategory }) => (
+                <div key={report.id} className="scroll-mt-24">
                   <LabReportCard
                     report={report}
                     valuesByCategory={valuesByCategory}
                     form={form}
                     valueForm={valueForm}
                     highlightQuery={deferredQuery}
+                    matchPlan={matchPlan}
+                    activeMatchIndex={activeIndex === 0 ? null : activeIndex}
                   />
                 </div>
               ))}
