@@ -51,22 +51,22 @@ describe('NavDrawer (BUG-02 mobile hamburger)', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('X button click invokes onClose', async () => {
-    const onClose = vi.fn();
-    renderDrawer(true, onClose);
-    const user = userEvent.setup();
-    await user.click(screen.getByTestId('nav-drawer-close'));
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
   it('top-left burger button invokes onClose (BUG-06)', async () => {
     // Mirrors the Header's hamburger position so users tapping
     // top-left to dismiss the drawer get the expected behaviour.
+    // The previous right-side X button was removed in BUG-06
+    // follow-up; backdrop + Escape remain as alternative dismiss
+    // paths.
     const onClose = vi.fn();
     renderDrawer(true, onClose);
     const user = userEvent.setup();
     await user.click(screen.getByTestId('nav-drawer-burger-close'));
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('right-side X button is no longer rendered (BUG-06 follow-up)', () => {
+    renderDrawer(true);
+    expect(screen.queryByTestId('nav-drawer-close')).toBeNull();
   });
 
   it('Escape key invokes onClose', async () => {

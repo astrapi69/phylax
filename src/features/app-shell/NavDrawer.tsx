@@ -94,10 +94,11 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
             BUG-06: tapping the top-left of the drawer (where the
             Header's hamburger button sits) is the natural mobile
             gesture to close the drawer - same position as the open
-            trigger. Mirror the Header's hamburger icon here as a
-            second close affordance alongside the X on the right;
-            users who reach for the burger position to dismiss now
-            get the expected behaviour without hunting for the X.
+            trigger. Burger here mirrors that position. The previous
+            right-side X button was removed in BUG-06 follow-up:
+            two redundant close affordances were UX clutter and the
+            burger position is what users reach for. Backdrop click
+            + Escape remain as alternative dismiss paths.
            */}
           <button
             type="button"
@@ -114,15 +115,6 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
           >
             {t('drawer.title')}
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={t('drawer.close')}
-            data-testid="nav-drawer-close"
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-          >
-            <CloseIcon />
-          </button>
         </div>
         <nav aria-label={t('nav.aria-label')} className="flex flex-col gap-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
@@ -140,14 +132,6 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
       </div>
     </div>,
     document.body,
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-    </svg>
   );
 }
 

@@ -32,13 +32,16 @@ describe('AppShell', () => {
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
-  it('hamburger button opens NavDrawer; X button closes it (BUG-02)', async () => {
+  it('hamburger button opens NavDrawer; in-drawer burger closes it (BUG-02 + BUG-06)', async () => {
+    // BUG-06 follow-up: drawer's right-side X was removed; close
+    // affordance is the burger at the top-left of the drawer
+    // (mirrors the Header's open trigger position).
     renderShell();
     const user = userEvent.setup();
     expect(screen.queryByTestId('nav-drawer')).not.toBeInTheDocument();
     await user.click(screen.getByTestId('header-hamburger'));
     expect(screen.getByTestId('nav-drawer')).toBeInTheDocument();
-    await user.click(screen.getByTestId('nav-drawer-close'));
+    await user.click(screen.getByTestId('nav-drawer-burger-close'));
     expect(screen.queryByTestId('nav-drawer')).not.toBeInTheDocument();
   });
 });
