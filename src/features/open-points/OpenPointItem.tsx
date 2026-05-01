@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OpenPoint } from '../../domain';
-import { findMatchRanges, splitQuery } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { MarkdownContent } from '../profile-view';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
@@ -19,14 +18,24 @@ interface OpenPointItemProps {
    */
   form?: UseOpenPointFormResult;
   /**
-   * P-22d search query. When non-empty, plain-text fields (text,
-   * priority, timeHorizon) wrap matching substrings via
-   * `<HighlightedText>`; the markdown details field threads the
-   * query through `<MarkdownContent highlightQuery>` (rehype
-   * plugin from P-19). Read-only mounts that omit the prop render
-   * bare text.
+   * P-22d search query. Forwarded to `<MarkdownContent>` so the
+   * rehype walk can find matches in the rendered hast text of the
+   * `details` field (Markdown formatting markers are not in the
+   * source-level scan, so MarkdownContent does its own walk). For
+   * plain-text fields the matchPlan ranges drive highlights instead.
    */
   highlightQuery?: string;
+  /**
+   * P-22b/c/d-polish-2: optional match plan keyed by
+   * `op:<itemId>:<field>`. Provides per-field range + startIndex
+   * for plain-text fields (text, priority, timeHorizon) and the
+   * starting global index for the Markdown details field. When
+   * omitted, the item renders bare text and forwards
+   * `highlightQuery` to MarkdownContent with `startMatchIndex=0`.
+   */
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -39,13 +48,16 @@ interface OpenPointItemProps {
  * Strikethrough text on resolved items is the standard checklist
  * convention.
  */
-export function OpenPointItem({ point, form, highlightQuery }: OpenPointItemProps) {
+export function OpenPointItem({
+  point,
+  form,
+  highlightQuery,
+  matchPlan,
+  activeMatchIndex = null,
+}: OpenPointItemProps) {
   const { t } = useTranslation('open-points');
   const { id, text, resolved, priority, timeHorizon, details } = point;
-  const terms = useMemo(
-    () => (highlightQuery ? splitQuery(highlightQuery) : []),
-    [highlightQuery],
-  );
+  const lookup = (field: string): FieldMatch | undefined => matchPlan?.get(`op:${id}:${field}`);
   const containerClass = resolved
     ? 'rounded-sm border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50'
     : 'rounded-sm border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800';
@@ -78,16 +90,28 @@ export function OpenPointItem({ point, form, highlightQuery }: OpenPointItemProp
                     : 'text-sm text-gray-900 dark:text-gray-100'
                 }
               >
-                <HighlightCell text={text} terms={terms} />
+                <HighlightCell
+                  text={text}
+                  fieldMatch={lookup('text')}
+                  activeMatchIndex={activeMatchIndex}
+                />
               </span>
               {priority && (
                 <Badge>
-                  <HighlightCell text={priority} terms={terms} />
+                  <HighlightCell
+                    text={priority}
+                    fieldMatch={lookup('priority')}
+                    activeMatchIndex={activeMatchIndex}
+                  />
                 </Badge>
               )}
               {timeHorizon && (
                 <Badge>
-                  <HighlightCell text={timeHorizon} terms={terms} />
+                  <HighlightCell
+                    text={timeHorizon}
+                    fieldMatch={lookup('timeHorizon')}
+                    activeMatchIndex={activeMatchIndex}
+                  />
                 </Badge>
               )}
               {resolved && (
@@ -101,7 +125,13 @@ export function OpenPointItem({ point, form, highlightQuery }: OpenPointItemProp
           </div>
           {details && details.trim() !== '' && (
             <div className="mt-2 pl-0">
-              <MarkdownContent highlightQuery={highlightQuery}>{details}</MarkdownContent>
+              <MarkdownContent
+                highlightQuery={highlightQuery}
+                startMatchIndex={lookup('details')?.startIndex ?? 0}
+                activeMatchIndex={activeMatchIndex}
+              >
+                {details}
+              </MarkdownContent>
             </div>
           )}
         </div>
@@ -118,10 +148,22 @@ function Badge({ children }: { children: React.ReactNode }) {
   );
 }
 
-function HighlightCell({ text, terms }: { text: string; terms: string[] }) {
-  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
-  if (ranges.length === 0) return <>{text}</>;
+function HighlightCell({
+  text,
+  fieldMatch,
+  activeMatchIndex,
+}: {
+  text: string;
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
+}) {
+  if (!fieldMatch || fieldMatch.ranges.length === 0) return <>{text}</>;
   return (
-    <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />
+    <HighlightedText
+      text={text}
+      ranges={fieldMatch.ranges}
+      startMatchIndex={fieldMatch.startIndex}
+      activeMatchIndex={activeMatchIndex}
+    />
   );
 }

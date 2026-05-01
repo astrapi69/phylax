@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import type { OpenPoint } from '../../domain';
-import { findMatchRanges, splitQuery } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { OpenPointItem } from './OpenPointItem';
 import type { UseOpenPointFormResult } from './useOpenPointForm';
@@ -11,26 +10,39 @@ interface ContextGroupProps {
   /** Threaded through to each `OpenPointItem`. */
   form?: UseOpenPointFormResult;
   /**
-   * P-22d: forwarded to each item for in-row highlighting AND used
-   * to highlight the context heading itself when the query matches
-   * the label text.
+   * P-22d search query. Forwarded to OpenPointItem so the markdown
+   * `details` field can run its rehype highlight walk.
    */
   highlightQuery?: string;
+  /**
+   * P-22b/c/d-polish-2: optional match plan from
+   * `buildFieldMatchPlan` keyed by `ctx:<context>:label` for the
+   * heading and `op:<itemId>:<field>` for each item cell. When
+   * supplied, every rendered mark gets a sequential global
+   * `data-match-index` so the view-level Up/Down nav can scroll per
+   * mark. Read-only mounts that omit it render bare text.
+   */
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). */
+  activeMatchIndex?: number | null;
 }
 
 /**
  * Section heading with count plus a list of open point items.
  * Renders nothing when the items list is empty.
  */
-export function ContextGroup({ context, items, form, highlightQuery }: ContextGroupProps) {
-  const terms = useMemo(
-    () => (highlightQuery ? splitQuery(highlightQuery) : []),
-    [highlightQuery],
-  );
+export function ContextGroup({
+  context,
+  items,
+  form,
+  highlightQuery,
+  matchPlan,
+  activeMatchIndex = null,
+}: ContextGroupProps) {
   if (items.length === 0) return null;
 
   const headingId = `context-${slugify(context)}-heading`;
-  const headingRanges = terms.length === 0 ? [] : findMatchRanges(context, terms);
+  const labelMatch: FieldMatch | undefined = matchPlan?.get(`ctx:${context}:label`);
 
   return (
     <section aria-labelledby={headingId}>
@@ -39,12 +51,12 @@ export function ContextGroup({ context, items, form, highlightQuery }: ContextGr
         className="mb-3 flex items-baseline gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
         <span>
-          {headingRanges.length > 0 ? (
+          {labelMatch && labelMatch.ranges.length > 0 ? (
             <HighlightedText
               text={context}
-              ranges={headingRanges}
-              startMatchIndex={0}
-              activeMatchIndex={null}
+              ranges={labelMatch.ranges}
+              startMatchIndex={labelMatch.startIndex}
+              activeMatchIndex={activeMatchIndex}
             />
           ) : (
             context
@@ -57,7 +69,13 @@ export function ContextGroup({ context, items, form, highlightQuery }: ContextGr
       <ul className="space-y-2">
         {items.map((p) => (
           <li key={p.id}>
-            <OpenPointItem point={p} form={form} highlightQuery={highlightQuery} />
+            <OpenPointItem
+              point={p}
+              form={form}
+              highlightQuery={highlightQuery}
+              matchPlan={matchPlan}
+              activeMatchIndex={activeMatchIndex}
+            />
           </li>
         ))}
       </ul>
@@ -69,7 +87,7 @@ function slugify(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
