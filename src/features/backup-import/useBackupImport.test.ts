@@ -77,7 +77,11 @@ describe('useBackupImport', () => {
       // auth-state transition (unlockWithKey or replaceStoredKey
       // depending on context).
       expect(runResult.key).toBeDefined();
-      expect(runResult.key).toBeInstanceOf(CryptoKey);
+      // jsdom does not always expose `CryptoKey` as a global. The
+      // toString-tag check is portable across jsdom + Node + browser
+      // and verifies the underlying class without relying on the
+      // global symbol being defined.
+      expect(Object.prototype.toString.call(runResult.key)).toBe('[object CryptoKey]');
     }
     expect(result.current.status).toBe('done');
     expect(result.current.error).toBeNull();
