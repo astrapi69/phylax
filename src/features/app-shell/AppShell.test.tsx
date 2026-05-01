@@ -1,9 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '../theme';
 import { AppShell } from './AppShell';
+
+// BUG-07: NavBar + NavDrawer call useAIConfig. Mock returns
+// `configured` so the chat link renders by default in this suite.
+vi.mock('../ai-config', () => ({
+  useAIConfig: () => ({ state: { status: 'configured' } }),
+}));
 
 function renderShell() {
   return render(

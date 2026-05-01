@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { NAV_ITEMS } from './navItems';
+import { useAIConfig } from '../ai-config';
+import { NAV_ITEMS, filterNavItems } from './navItems';
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   const base = 'block rounded-sm px-3 py-2 text-sm transition-colors no-underline';
@@ -21,12 +23,18 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
  */
 export function NavBar() {
   const { t } = useTranslation('app-shell');
+  // BUG-07: hide AI-gated items until the user has saved an API key.
+  const { state: aiState } = useAIConfig();
+  const items = useMemo(
+    () => filterNavItems(NAV_ITEMS, { aiConfigured: aiState.status === 'configured' }),
+    [aiState.status],
+  );
   return (
     <nav
       aria-label={t('nav.aria-label')}
       className="hidden md:fixed md:top-14 md:bottom-0 md:left-0 md:flex md:w-48 md:flex-col md:gap-1 md:border-r md:border-gray-200 md:bg-white md:p-3 md:dark:border-gray-700 md:dark:bg-gray-900"
     >
-      {NAV_ITEMS.map((item) => (
+      {items.map((item) => (
         <NavLink key={item.to} to={item.to} className={navLinkClass}>
           {t(item.i18n)}
         </NavLink>

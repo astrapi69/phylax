@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap, useReturnFocus, useBodyScrollLock } from '../../ui';
-import { NAV_ITEMS } from './navItems';
+import { useAIConfig } from '../ai-config';
+import { NAV_ITEMS, filterNavItems } from './navItems';
 
 interface NavDrawerProps {
   open: boolean;
@@ -55,6 +56,12 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
   const { t } = useTranslation('app-shell');
   const panelRef = useRef<HTMLDivElement | null>(null);
   const titleId = useId();
+  // BUG-07: hide AI-gated items until the user has saved an API key.
+  const { state: aiState } = useAIConfig();
+  const items = useMemo(
+    () => filterNavItems(NAV_ITEMS, { aiConfigured: aiState.status === 'configured' }),
+    [aiState.status],
+  );
 
   useFocusTrap(panelRef, open);
   useReturnFocus(open);
@@ -117,7 +124,7 @@ export function NavDrawer({ open, onClose }: NavDrawerProps) {
           </h2>
         </div>
         <nav aria-label={t('nav.aria-label')} className="flex flex-col gap-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => (
+          {items.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

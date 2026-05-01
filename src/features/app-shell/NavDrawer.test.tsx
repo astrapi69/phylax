@@ -1,8 +1,26 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { NavDrawer } from './NavDrawer';
+import { useAIConfig } from '../ai-config';
+
+// BUG-07: NavDrawer filters /chat when AI not configured.
+vi.mock('../ai-config', () => ({
+  useAIConfig: vi.fn(),
+}));
+
+const useAIConfigMock = vi.mocked(useAIConfig);
+
+function setAiStatus(status: 'configured' | 'unconfigured' | 'loading' | 'error') {
+  useAIConfigMock.mockReturnValue({
+    state: { status },
+  } as unknown as ReturnType<typeof useAIConfig>);
+}
+
+beforeEach(() => {
+  setAiStatus('configured');
+});
 
 function renderDrawer(open: boolean, onClose = vi.fn()) {
   return render(
@@ -67,6 +85,14 @@ describe('NavDrawer (BUG-02 mobile hamburger)', () => {
   it('right-side X button is no longer rendered (BUG-06 follow-up)', () => {
     renderDrawer(true);
     expect(screen.queryByTestId('nav-drawer-close')).toBeNull();
+  });
+
+  it('hides KI-Assistent link when AI is unconfigured (BUG-07)', () => {
+    setAiStatus('unconfigured');
+    renderDrawer(true);
+    expect(screen.queryByText('KI-Assistent')).toBeNull();
+    // Other items still rendered.
+    expect(screen.getByText('Profil')).toBeInTheDocument();
   });
 
   it('Escape key invokes onClose', async () => {
