@@ -741,4 +741,243 @@ describe('importProfile', () => {
       expect((await opRepo.listByProfile(profileId)).map((o) => o.text)).toEqual(['old']);
     });
   });
+
+  // IM-05 Option B (2026-05-01): three modes per type — replace, add,
+  // skip. Tests cover the new 'add' path and the type-string form of
+  // PerTypeMode while the legacy boolean form remains green via the
+  // describe block above.
+  describe('IM-05 Option B three-mode (add path + string form)', () => {
+    async function seedTarget(): Promise<void> {
+      const obsRepo = new ObservationRepository();
+      await obsRepo.create({
+        profileId,
+        theme: 'OldTheme',
+        fact: 'old fact',
+        pattern: 'old pattern',
+        selfRegulation: 'old self',
+        status: 'Stabil',
+        source: 'user',
+        extraSections: {},
+      });
+    }
+
+    it("observations='add' keeps existing AND writes imported (both coexist)", async () => {
+      await seedTarget();
+      const obsRepo = new ObservationRepository();
+
+      const result = await importProfile(
+        emptyParseResult({ observations: [obs('NewTheme')] }),
+        profileId,
+        { replaceExisting: { observations: 'add' } },
+      );
+
+      // `replaced=false` because no existing rows were deleted; only
+      // 'replace' counts toward the replaced field semantic.
+      expect(result.replaced).toBe(false);
+      expect(result.created.observations).toBe(1);
+
+      const stored = await obsRepo.listByProfile(profileId);
+      const themes = stored.map((o) => o.theme).sort();
+      expect(themes).toEqual(['NewTheme', 'OldTheme']);
+    });
+
+    it("observations='replace' explicit string form deletes existing then writes imported", async () => {
+      await seedTarget();
+      const obsRepo = new ObservationRepository();
+
+      const result = await importProfile(
+        emptyParseResult({ observations: [obs('NewTheme')] }),
+        profileId,
+        { replaceExisting: { observations: 'replace' } },
+      );
+
+      expect(result.replaced).toBe(true);
+      expect(result.created.observations).toBe(1);
+      const stored = await obsRepo.listByProfile(profileId);
+      expect(stored.map((o) => o.theme)).toEqual(['NewTheme']);
+    });
+
+    it("observations='skip' keeps existing AND drops imported", async () => {
+      await seedTarget();
+      const obsRepo = new ObservationRepository();
+
+      // Pair with another type set to 'replace' so the throw guard
+      // passes; supplements has no existing data, so 'replace' is a
+      // no-op delete + write.
+      const result = await importProfile(
+        emptyParseResult({
+          observations: [obs('Dropped')],
+          supplements: [{ name: 'NewSupp', category: 'daily' }],
+        }),
+        profileId,
+        { replaceExisting: { observations: 'skip', supplements: 'replace' } },
+      );
+
+      expect(result.created.observations).toBe(0);
+      expect(result.created.supplements).toBe(1);
+      const stored = await obsRepo.listByProfile(profileId);
+      expect(stored.map((o) => o.theme)).toEqual(['OldTheme']);
+    });
+
+    it("labData='add' keeps existing reports + values AND writes imported with FK consistency", async () => {
+      const labReportRepo = new LabReportRepository(new LabValueRepository());
+      const labValueRepo = new LabValueRepository();
+      const seededReport = await labReportRepo.create({
+        profileId,
+        reportDate: '2024-01-01',
+        labName: 'OldLab',
+        categoryAssessments: {},
+      });
+      await labValueRepo.create({
+        profileId,
+        reportId: seededReport.id,
+        category: 'Old',
+        parameter: 'OldParam',
+        result: 'x',
+      });
+
+      await importProfile(
+        emptyParseResult({
+          labReports: [{ reportDate: '2026-04-15', labName: 'NewLab', categoryAssessments: {} }],
+          labValues: [
+            {
+              reportIndex: 0,
+              reportId: '',
+              category: 'New',
+              parameter: 'NewParam',
+              result: 'y',
+            },
+          ],
+        }),
+        profileId,
+        { replaceExisting: { labData: 'add' } },
+      );
+
+      const reports = await labReportRepo.listByProfileDateDescending(profileId);
+      expect(reports.map((r) => r.labName).sort()).toEqual(['NewLab', 'OldLab']);
+      const newReport = reports.find((r) => r.labName === 'NewLab');
+      const oldReport = reports.find((r) => r.labName === 'OldLab');
+      expect(newReport).toBeDefined();
+      expect(oldReport).toBeDefined();
+
+      // FK consistency: each value points at its own report. The new
+      // value's reportId matches the new report; the old value's
+      // reportId still matches the old report.
+      const values = await labValueRepo.listByProfile(profileId);
+      expect(values).toHaveLength(2);
+      const newValue = values.find((v) => v.parameter === 'NewParam');
+      const oldValue = values.find((v) => v.parameter === 'OldParam');
+      expect(newValue?.reportId).toBe(newReport?.id);
+      expect(oldValue?.reportId).toBe(oldReport?.id);
+    });
+
+    it("profileVersions='add' keeps existing + writes parsed source + synthesized marker", async () => {
+      const versionRepo = new ProfileVersionRepository();
+      await versionRepo.create({
+        profileId,
+        version: '0.5',
+        changeDescription: 'Existing snapshot',
+        changeDate: '2025-12-01',
+      });
+
+      await importProfile(
+        emptyParseResult({
+          profileVersions: [
+            { version: '0.9', changeDescription: 'From source', changeDate: '2026-01-01' },
+          ],
+        }),
+        profileId,
+        { replaceExisting: { profileVersions: 'add' } },
+      );
+
+      const versions = await versionRepo.listByProfile(profileId);
+      const descriptions = versions.map((v) => v.changeDescription).sort();
+      expect(descriptions).toEqual([
+        'Existing snapshot',
+        'From source',
+        'Profil aus Datei importiert',
+      ]);
+    });
+
+    it('any-add authorises the throw guard (non-empty target writes succeed)', async () => {
+      await seedTarget();
+      const obsRepo = new ObservationRepository();
+
+      // 'add' alone authorises a write to a non-empty target. The
+      // throw guard fires only when no key is replace OR add.
+      const result = await importProfile(
+        emptyParseResult({ observations: [obs('Extra')] }),
+        profileId,
+        { replaceExisting: { observations: 'add' } },
+      );
+      expect(result.created.observations).toBe(1);
+      const stored = await obsRepo.listByProfile(profileId);
+      expect(stored.map((o) => o.theme).sort()).toEqual(['Extra', 'OldTheme']);
+    });
+
+    it('all-skip on a non-empty target throws ImportTargetNotEmptyError', async () => {
+      await seedTarget();
+      await expect(
+        importProfile(emptyParseResult({ observations: [obs('Whatever')] }), profileId, {
+          replaceExisting: { observations: 'skip' },
+        }),
+      ).rejects.toBeInstanceOf(ImportTargetNotEmptyError);
+    });
+
+    it('same MD imported twice with all-add yields two copies of every entity (duplicate hint case)', async () => {
+      const obsRepo = new ObservationRepository();
+      // First import: empty target, replace works as no-op delete +
+      // write. Two observations land.
+      await importProfile(emptyParseResult({ observations: [obs('A'), obs('B')] }), profileId, {
+        replaceExisting: true,
+      });
+      expect(await obsRepo.listByProfile(profileId)).toHaveLength(2);
+
+      // Second import with 'add' against the now-non-empty target:
+      // both old and new survive. Total goes to 4 (the duplicate
+      // hint case the ConfirmDialog warning calls out).
+      await importProfile(emptyParseResult({ observations: [obs('A'), obs('B')] }), profileId, {
+        replaceExisting: { observations: 'add' },
+      });
+      const stored = await obsRepo.listByProfile(profileId);
+      expect(stored).toHaveLength(4);
+      const themes = stored.map((o) => o.theme).sort();
+      expect(themes).toEqual(['A', 'A', 'B', 'B']);
+    });
+
+    it('mixed three-mode map: replace observations, add supplements, skip openPoints', async () => {
+      await seedTarget();
+      const suppRepo = new SupplementRepository();
+      const opRepo = new OpenPointRepository();
+      await suppRepo.create({ profileId, name: 'OldSupp', category: 'daily' });
+      await opRepo.create({ profileId, text: 'old op', context: 'ctx', resolved: false });
+
+      const obsRepo = new ObservationRepository();
+      await importProfile(
+        emptyParseResult({
+          observations: [obs('NewObs')],
+          supplements: [{ name: 'NewSupp', category: 'daily' }],
+          openPoints: [{ text: 'new op', context: 'ctx', resolved: false }],
+        }),
+        profileId,
+        {
+          replaceExisting: {
+            observations: 'replace',
+            supplements: 'add',
+            openPoints: 'skip',
+          },
+        },
+      );
+
+      // Observations: replaced => only NewObs.
+      expect((await obsRepo.listByProfile(profileId)).map((o) => o.theme)).toEqual(['NewObs']);
+      // Supplements: added => OldSupp + NewSupp coexist.
+      expect((await suppRepo.listByProfile(profileId)).map((s) => s.name).sort()).toEqual([
+        'NewSupp',
+        'OldSupp',
+      ]);
+      // Open points: skipped => only old.
+      expect((await opRepo.listByProfile(profileId)).map((o) => o.text)).toEqual(['old op']);
+    });
+  });
 });

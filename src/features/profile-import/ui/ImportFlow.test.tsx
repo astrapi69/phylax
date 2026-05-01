@@ -107,7 +107,7 @@ describe('ImportFlow', () => {
     await pasteAndContinue(user);
     await user.click(await screen.findByRole('button', { name: 'Diesem Profil zuordnen' }));
     expect(
-      await screen.findByRole('heading', { name: /Bestehende Daten ersetzen/i }),
+      await screen.findByRole('heading', { name: /Import in bestehendes Profil/i }),
     ).toBeInTheDocument();
   });
 
@@ -128,7 +128,10 @@ describe('ImportFlow', () => {
     renderFlow();
     await pasteAndContinue(user);
     await user.click(await screen.findByRole('button', { name: 'Diesem Profil zuordnen' }));
-    await user.click(await screen.findByRole('button', { name: 'Ja, ersetzen' }));
+    // IM-05 Option B: pick replace for the only visible row
+    // (observations) before Übernehmen enables.
+    await user.click(await screen.findByTestId('confirm-row-observations-replace'));
+    await user.click(await screen.findByRole('button', { name: 'Übernehmen' }));
     // now on preview screen
     await user.click(await screen.findByRole('button', { name: 'Import starten' }));
     await waitFor(() =>

@@ -63,27 +63,26 @@
     "start": "Import starten"
   },
   "confirm": {
-    "heading": "Bestehende Daten ersetzen?",
-    "body": "\"{{name}}\" enthält bereits Daten. Wähle aus, welche Bereiche durch den Import ersetzt werden sollen. Nicht ausgewählte Bereiche bleiben unverändert.",
-    "warning": "Ausgewählte Bereiche werden beim Import unwiderruflich gelöscht und durch die neuen ersetzt. Nicht angehakte Bereiche bleiben erhalten und ihre importierten Inhalte werden verworfen.",
-    "lab-report-line_one": "{{count}} Laborbefund ({{values}} Werte)",
-    "lab-report-line_other": "{{count}} Laborbefunde ({{values}} Werte)",
-    "toggle-legend": "Welche Bereiche ersetzen?",
-    "toggle": {
-      "observations_one": "{{count}} Beobachtung ersetzen",
-      "observations_other": "{{count}} Beobachtungen ersetzen",
-      "lab-data_one": "{{count}} Laborbefund ({{values}} Werte) ersetzen",
-      "lab-data_other": "{{count}} Laborbefunde ({{values}} Werte) ersetzen",
-      "supplements_one": "{{count}} Supplement ersetzen",
-      "supplements_other": "{{count}} Supplemente ersetzen",
-      "open-points_one": "{{count}} offenen Punkt ersetzen",
-      "open-points_other": "{{count}} offene Punkte ersetzen",
-      "timeline-entries_one": "{{count}} Verlaufsnotiz ersetzen",
-      "timeline-entries_other": "{{count}} Verlaufsnotizen ersetzen",
-      "profile-versions_one": "{{count}} Profilversion ersetzen",
-      "profile-versions_other": "{{count}} Profilversionen ersetzen"
+    "heading": "Import in bestehendes Profil",
+    "body": "\"{{name}}\" enthält bereits Daten. Wähle für jeden Bereich, wie der Import damit umgehen soll.",
+    "modes-explainer": "Ersetzen: bestehende Daten löschen und durch Import ersetzen. Zusammenführen: bestehende Daten behalten und Import zusätzlich hinzufügen. Überspringen: bestehende Daten behalten und Import-Daten verwerfen.",
+    "warning": "Ersetzen löscht bestehende Daten unwiderruflich. Zusammenführen kann Duplikate erzeugen. Überspringen verwirft die Import-Daten dieses Bereichs.",
+    "add-warning": "Hinweis: Beim Zusammenführen können Duplikate entstehen, wenn dieselbe Datei mehrfach importiert wird. Phylax prüft Inhalte nicht auf Doppelung.",
+    "toggle-legend": "Pro Bereich entscheiden",
+    "mode": {
+      "replace": "Ersetzen",
+      "add": "Zusammenführen",
+      "skip": "Überspringen"
     },
-    "replace": "Ja, ersetzen"
+    "row": {
+      "observations": "Beobachtungen: {{existing}} bestehend, {{parsed}} im Import",
+      "lab-data": "Laborbefunde: {{existing}} ({{existingValues}} Werte) bestehend, {{parsed}} ({{parsedValues}} Werte) im Import",
+      "supplements": "Supplemente: {{existing}} bestehend, {{parsed}} im Import",
+      "open-points": "Offene Punkte: {{existing}} bestehend, {{parsed}} im Import",
+      "timeline-entries": "Verlaufsnotizen: {{existing}} bestehend, {{parsed}} im Import",
+      "profile-versions": "Profilversionen: {{existing}} bestehend, {{parsed}} im Import"
+    },
+    "confirm": "Übernehmen"
   },
   "result": {
     "success": {

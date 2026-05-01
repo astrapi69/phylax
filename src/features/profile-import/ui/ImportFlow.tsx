@@ -4,13 +4,33 @@ import { useTranslation } from 'react-i18next';
 import { getDisplayName } from '../../../domain';
 import type { Profile } from '../../../domain';
 import { ProfileRepository } from '../../../db/repositories';
-import { useImport } from '../import';
+import { useImport, EMPTY_COUNTS, type EntityCounts } from '../import';
+import type { ParseResult } from '../parser/types';
 import { ImportCleanupScreen } from '../ai-fallback';
 import { ImportEntryScreen } from './ImportEntryScreen';
 import { ProfileSelectionScreen } from './ProfileSelectionScreen';
 import { PreviewScreen } from './PreviewScreen';
 import { ConfirmDialog } from './ConfirmDialog';
 import { ResultScreen } from './ResultScreen';
+
+/**
+ * IM-05 Option B: derive an EntityCounts shape from a ParseResult
+ * for the ConfirmDialog. Mirrors how `countEntities` reports the
+ * existing rows so the dialog can render rows with both sides of
+ * the picture (existing + parsed) and gate available modes.
+ */
+function parsedCountsFromResult(parseResult: ParseResult): EntityCounts {
+  return {
+    ...EMPTY_COUNTS,
+    observations: parseResult.observations.length,
+    labReports: parseResult.labReports.length,
+    labValues: parseResult.labValues.length,
+    supplements: parseResult.supplements.length,
+    openPoints: parseResult.openPoints.length,
+    profileVersions: parseResult.profileVersions.length,
+    timelineEntries: parseResult.timelineEntries.length,
+  };
+}
 
 /**
  * Orchestrator for the import flow. Renders one screen per state kind.
@@ -139,6 +159,7 @@ export function ImportFlow() {
           />
           <ConfirmDialog
             existingCounts={state.existingCounts}
+            parsedCounts={parsedCountsFromResult(state.parseResult)}
             targetProfileName={targetName(state.targetProfileId)}
             onConfirm={importState.confirmReplace}
             onCancel={importState.cancel}

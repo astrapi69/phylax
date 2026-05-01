@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ConfirmDialog } from './ConfirmDialog';
 import { EMPTY_COUNTS } from '../import';
 
-const NON_EMPTY_COUNTS = {
+const EXISTING = {
   ...EMPTY_COUNTS,
   observations: 3,
   labReports: 1,
@@ -12,52 +12,159 @@ const NON_EMPTY_COUNTS = {
   supplements: 2,
 };
 
-describe('ConfirmDialog', () => {
-  it('renders the heading and target name', () => {
+const PARSED = {
+  ...EMPTY_COUNTS,
+  observations: 5,
+  labReports: 2,
+  labValues: 8,
+  supplements: 1,
+};
+
+describe('ConfirmDialog (IM-05 Option B)', () => {
+  it('renders heading + target name', () => {
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="Mein Profil"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.getByRole('heading', { name: /bestehende Daten ersetzen/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Import in bestehendes Profil/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/"Mein Profil"/)).toBeInTheDocument();
   });
 
-  it('renders one toggle per type with count > 0 and none for zeros', () => {
+  it('renders one row per type with non-zero existing or parsed; hides zero-zero types', () => {
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.getByRole('checkbox', { name: /3 Beobachtungen ersetzen/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole('checkbox', { name: /1 Laborbefund \(12 Werte\) ersetzen/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: /2 Supplemente ersetzen/i })).toBeInTheDocument();
-    // No toggles for the zero-count types.
-    expect(screen.queryByRole('checkbox', { name: /offen/i })).toBeNull();
-    expect(screen.queryByRole('checkbox', { name: /Verlaufsnotiz/i })).toBeNull();
-    expect(screen.queryByRole('checkbox', { name: /Profilversion/i })).toBeNull();
+    expect(screen.getByTestId('confirm-row-observations')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-labData')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-supplements')).toBeInTheDocument();
+    expect(screen.queryByTestId('confirm-row-openPoints')).toBeNull();
+    expect(screen.queryByTestId('confirm-row-timelineEntries')).toBeNull();
+    expect(screen.queryByTestId('confirm-row-profileVersions')).toBeNull();
   });
 
-  it('all visible toggles default to checked (legacy replace-all default)', () => {
+  it('renders three radios per row: replace, add, skip', () => {
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.getByRole('checkbox', { name: /Beobachtungen/i })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: /Laborbefund/i })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: /Supplemente/i })).toBeChecked();
+    expect(screen.getByTestId('confirm-row-observations-replace')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-observations-add')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-observations-skip')).toBeInTheDocument();
+  });
+
+  it('no default mode: confirm disabled until every visible row has a mode picked', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmDialog
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    const confirmBtn = screen.getByRole('button', { name: /Übernehmen/i });
+    expect(confirmBtn).toBeDisabled();
+
+    await user.click(screen.getByTestId('confirm-row-observations-replace'));
+    expect(confirmBtn).toBeDisabled();
+    await user.click(screen.getByTestId('confirm-row-labData-replace'));
+    expect(confirmBtn).toBeDisabled();
+    await user.click(screen.getByTestId('confirm-row-supplements-replace'));
+    expect(confirmBtn).toBeEnabled();
+  });
+
+  it('confirm passes the picked modes to onConfirm', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+    render(
+      <ConfirmDialog
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
+        targetProfileName="X"
+        onConfirm={onConfirm}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('confirm-row-observations-add'));
+    await user.click(screen.getByTestId('confirm-row-labData-replace'));
+    await user.click(screen.getByTestId('confirm-row-supplements-skip'));
+    await user.click(screen.getByRole('button', { name: /Übernehmen/i }));
+    expect(onConfirm).toHaveBeenCalledOnce();
+    expect(onConfirm).toHaveBeenCalledWith({
+      observations: 'add',
+      labData: 'replace',
+      supplements: 'skip',
+    });
+  });
+
+  it('warning hint surfaces when any row is set to add; hidden otherwise', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmDialog
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
+    await user.click(screen.getByTestId('confirm-row-observations-replace'));
+    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
+    await user.click(screen.getByTestId('confirm-row-labData-add'));
+    expect(screen.getByTestId('confirm-add-warning')).toBeInTheDocument();
+    // Toggling labData away from add hides the warning again.
+    await user.click(screen.getByTestId('confirm-row-labData-replace'));
+    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
+  });
+
+  it('replace radio disabled when existing is zero (nothing to replace)', () => {
+    render(
+      <ConfirmDialog
+        existingCounts={{ ...EMPTY_COUNTS, observations: 0 }}
+        parsedCounts={{ ...EMPTY_COUNTS, observations: 4 }}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId('confirm-row-observations-replace')).toBeDisabled();
+    expect(screen.getByTestId('confirm-row-observations-add')).toBeEnabled();
+    expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
+  });
+
+  it('add radio disabled when parsed is zero (nothing to add)', () => {
+    render(
+      <ConfirmDialog
+        existingCounts={{ ...EMPTY_COUNTS, observations: 4 }}
+        parsedCounts={{ ...EMPTY_COUNTS }}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId('confirm-row-observations-replace')).toBeEnabled();
+    expect(screen.getByTestId('confirm-row-observations-add')).toBeDisabled();
+    expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
   });
 
   it('cancel button calls onCancel', async () => {
@@ -65,7 +172,8 @@ describe('ConfirmDialog', () => {
     const onCancel = vi.fn();
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={onCancel}
@@ -75,77 +183,13 @@ describe('ConfirmDialog', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it('confirm button passes the default selection map to onConfirm', async () => {
-    const user = userEvent.setup();
-    const onConfirm = vi.fn();
-    render(
-      <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
-        targetProfileName="X"
-        onConfirm={onConfirm}
-        onCancel={vi.fn()}
-      />,
-    );
-    await user.click(screen.getByRole('button', { name: 'Ja, ersetzen' }));
-    expect(onConfirm).toHaveBeenCalledOnce();
-    expect(onConfirm).toHaveBeenCalledWith({
-      observations: true,
-      labData: true,
-      supplements: true,
-      openPoints: false,
-      timelineEntries: false,
-      profileVersions: false,
-    });
-  });
-
-  it('unchecking a toggle propagates to the onConfirm payload', async () => {
-    const user = userEvent.setup();
-    const onConfirm = vi.fn();
-    render(
-      <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
-        targetProfileName="X"
-        onConfirm={onConfirm}
-        onCancel={vi.fn()}
-      />,
-    );
-    await user.click(screen.getByRole('checkbox', { name: /Supplemente/i }));
-    await user.click(screen.getByRole('button', { name: 'Ja, ersetzen' }));
-    expect(onConfirm).toHaveBeenCalledWith(
-      expect.objectContaining({
-        observations: true,
-        labData: true,
-        supplements: false,
-      }),
-    );
-  });
-
-  it('confirm button is disabled when every toggle is off', async () => {
-    const user = userEvent.setup();
-    const onConfirm = vi.fn();
-    render(
-      <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
-        targetProfileName="X"
-        onConfirm={onConfirm}
-        onCancel={vi.fn()}
-      />,
-    );
-    await user.click(screen.getByRole('checkbox', { name: /Beobachtungen/i }));
-    await user.click(screen.getByRole('checkbox', { name: /Laborbefund/i }));
-    await user.click(screen.getByRole('checkbox', { name: /Supplemente/i }));
-    const confirmBtn = screen.getByRole('button', { name: 'Ja, ersetzen' });
-    expect(confirmBtn).toBeDisabled();
-    await user.click(confirmBtn);
-    expect(onConfirm).not.toHaveBeenCalled();
-  });
-
   it('Escape key cancels', async () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={onCancel}
@@ -155,15 +199,11 @@ describe('ConfirmDialog', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it('dialog has aria-modal and labelledby (destructive variant via O-20 primitive)', () => {
-    // TD-12 migration: destructive variant uses role="alertdialog"
-    // (O-20 ConfirmDialog convention so SR announces irreversible
-    // flows immediately). aria-labelledby points to the auto-generated
-    // ModalHeader id; verify the attribute exists and resolves to a
-    // heading carrying the dialog title.
+  it('dialog has aria-modal + aria-labelledby (destructive variant via O-20 primitive)', () => {
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
@@ -174,23 +214,11 @@ describe('ConfirmDialog', () => {
     const labelledby = dialog.getAttribute('aria-labelledby');
     if (!labelledby) throw new Error('aria-labelledby missing on dialog');
     const heading = document.getElementById(labelledby);
-    expect(heading?.textContent).toMatch(/bestehende Daten ersetzen/i);
+    expect(heading?.textContent).toMatch(/Import in bestehendes Profil/i);
   });
 
-  it('renders all six toggles when every entity type is non-empty (P-01 Q5: 360px fit)', () => {
-    // P-01 mobile-first sweep: the IM-05 dialog can show up to 6 toggles
-    // (observations, labData, supplements, openPoints, timelineEntries,
-    // profileVersions). On a 360px viewport the dialog's `max-w-md`
-    // (28rem = 448px) clamps to the parent's content box (360 - 32px
-    // outer p-4 padding = 328px). This test asserts the full-stack
-    // payload renders without breaking the layout's structural rules:
-    // dialog uses `w-full max-w-md` (no fixed pixel width that would
-    // overflow), and every toggle row is a flex row with an inline
-    // checkbox + wrapping label (no `whitespace-nowrap` that would
-    // force horizontal scroll). Real-pixel "fits" is verified by the
-    // Tier 1 Playwright spec; this guards against accidental fixed
-    // widths or nowrap labels at the React level.
-    const ALL_TYPES_COUNTS = {
+  it('renders all six rows when every type is non-empty (P-01 Q5: 360 px fit invariants)', () => {
+    const ALL_EXISTING = {
       observations: 99,
       labReports: 99,
       labValues: 999,
@@ -199,28 +227,30 @@ describe('ConfirmDialog', () => {
       timelineEntries: 99,
       profileVersions: 99,
     };
+    const ALL_PARSED = {
+      observations: 50,
+      labReports: 50,
+      labValues: 500,
+      supplements: 50,
+      openPoints: 50,
+      timelineEntries: 50,
+      profileVersions: 50,
+    };
     const { container } = render(
       <ConfirmDialog
-        existingCounts={ALL_TYPES_COUNTS}
+        existingCounts={ALL_EXISTING}
+        parsedCounts={ALL_PARSED}
         targetProfileName="Sehr-langer-Profilname-der-nicht-umbrechen-soll"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.getAllByRole('checkbox')).toHaveLength(6);
-    // TD-12 migration: O-20 Modal primitive renders the dialog
-    // container as the role="alertdialog" element directly (no
-    // separate role="document" inside). Q5 invariant still holds:
-    // the container clamps via `w-full max-w-md` (md size) so the
-    // dialog never exceeds the viewport's content box on mobile.
-    void container;
+    expect(screen.getAllByRole('radiogroup')).toHaveLength(6);
     const dialogShell = screen.getByRole('alertdialog');
     const cls = dialogShell.className;
     expect(cls).toContain('w-full');
     expect(cls).toContain('max-w-md');
-    // No fixed pixel width override that would defeat max-w-md clamp.
     expect(cls).not.toMatch(/\bw-\[\d+px\]/);
-    // No whitespace-nowrap on toggle labels: long German plurals must wrap.
     container.querySelectorAll('label').forEach((label) => {
       expect(label.className).not.toContain('whitespace-nowrap');
     });
@@ -229,7 +259,8 @@ describe('ConfirmDialog', () => {
   it('focuses the cancel button on mount', () => {
     render(
       <ConfirmDialog
-        existingCounts={NON_EMPTY_COUNTS}
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}

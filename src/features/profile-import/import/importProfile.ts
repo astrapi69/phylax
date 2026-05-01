@@ -27,8 +27,9 @@ import {
   EMPTY_COUNTS,
   ImportTargetNotEmptyError,
   countsAreEmpty,
-  resolvePerTypeReplace,
+  resolvePerTypeMode,
   userAuthorisedAnyReplace,
+  userAuthorisedAnyWrite,
   type EntityCounts,
   type ImportOptions,
   type ImportResult,
@@ -72,16 +73,24 @@ export async function importProfile(
   targetProfileId: string,
   options: ImportOptions = {},
 ): Promise<ImportResult> {
-  // IM-05: replaceExisting accepts boolean (legacy) OR PerTypeReplace
-  // object (selective merge). Two helpers split the policy:
-  //   resolvePerTypeReplace(...) -> per-type write-decision map
-  //   userAuthorisedAnyReplace(...) -> throw-guard authorisation
+  // IM-05 Option B: replaceExisting accepts boolean (legacy) OR
+  // PerTypeMode object (selective merge with three modes). Three
+  // helpers split the policy:
+  //   resolvePerTypeMode(...)         -> per-type 'replace' / 'add' /
+  //                                      'skip' decision map
+  //   userAuthorisedAnyWrite(...)     -> throw-guard authorisation
+  //                                      (any non-skip authorises a
+  //                                      write to a non-empty target)
+  //   userAuthorisedAnyReplace(...)   -> drives `replaced` field on
+  //                                      the ImportResult (only
+  //                                      destructive 'replace' counts)
   //
-  // The map is all-true for legacy boolean / undefined inputs so the
-  // legacy write-everything-on-empty-target contract is preserved.
-  // The throw guard is independent: undefined / false default-deny
-  // on a non-empty target, true and object-with-any-true authorise.
-  const replaceMap = resolvePerTypeReplace(options.replaceExisting);
+  // The map is ALL_REPLACE for legacy boolean / undefined inputs so
+  // the legacy write-everything-on-empty-target contract is preserved.
+  // The throw guard is independent: undefined / false default-deny on
+  // a non-empty target, true and object-with-any-non-skip authorise.
+  const modeMap = resolvePerTypeMode(options.replaceExisting);
+  const userAuthorisedWrite = userAuthorisedAnyWrite(options.replaceExisting);
   const userAuthorisedReplace = userAuthorisedAnyReplace(options.replaceExisting);
 
   const profileRepo = new ProfileRepository();
@@ -99,7 +108,7 @@ export async function importProfile(
   }
 
   const existingCounts = await countEntities(targetProfileId);
-  if (!userAuthorisedReplace && !countsAreEmpty(existingCounts)) {
+  if (!userAuthorisedWrite && !countsAreEmpty(existingCounts)) {
     throw new ImportTargetNotEmptyError(targetProfileId, existingCounts);
   }
 
@@ -189,19 +198,20 @@ export async function importProfile(
     changeDescription: IMPORT_CHANGE_DESCRIPTION,
     changeDate: importedChangeDate,
   };
-  // IM-05: profileVersions has two write modes depending on the
-  // per-type replace flag.
-  //   replaceMap.profileVersions=true   -> wipe existing + write
+  // IM-05 Option B: profileVersions has three write modes.
+  //   modeMap.profileVersions='replace' -> wipe existing + write
   //                                         [parsed source rows
   //                                          + synthesized marker]
-  //   replaceMap.profileVersions=false  -> keep existing + write
-  //                                         [synthesized marker
-  //                                          only]
+  //   modeMap.profileVersions='add'     -> keep existing + write
+  //                                         [parsed source rows
+  //                                          + synthesized marker]
+  //   modeMap.profileVersions='skip'    -> keep existing + write
+  //                                         [synthesized marker only]
   // The synthesized "Profil aus Datei importiert" row writes
   // unconditionally because it records the import-gesture itself,
-  // not data being imported (Q5 lock). The pre-encrypted row arrays
-  // for both modes are prepared up-front so the transaction body
-  // only does Dexie I/O.
+  // not data being imported (Q5 lock from original IM-05). The pre-
+  // encrypted row arrays for both modes are prepared up-front so
+  // the transaction body only does Dexie I/O.
   const synthesizedImportVersionRow = await profileVersionRepo.serialize(
     wrapEntity<ProfileVersion>(synthesizedImportVersion, targetProfileId, now),
   );
@@ -222,15 +232,25 @@ export async function importProfile(
     ),
   );
 
-  // IM-05 per-type branching. For each type:
-  //   replaceMap.X = true  -> deleteByProfileId + bulkPut(imported)
-  //   replaceMap.X = false -> no delete + no bulkPut (existing kept,
-  //                            imported dropped)
-  // Lab data (LabReport + LabValue) is a single combined toggle (Q6
-  // lock) because the FK from LabValue to LabReport means split
-  // toggles would either orphan child rows or insert empty reports.
-  // ProfileVersions has its own special mode handled above.
-  // Profile.profiles is always written via mergeProfile() (Q4 lock —
+  // IM-05 Option B per-type branching. For each type:
+  //   modeMap.X = 'replace' -> deleteByProfileId + bulkPut(imported)
+  //   modeMap.X = 'add'     -> no delete; bulkPut(imported) only
+  //                            (existing rows untouched; imported
+  //                            entities have fresh IDs from
+  //                            generateId() in wrapEntity, so PK
+  //                            collisions are impossible by
+  //                            construction)
+  //   modeMap.X = 'skip'    -> no delete + no bulkPut (existing
+  //                            kept, imported dropped)
+  //
+  // Lab data (LabReport + LabValue) stays a single combined toggle
+  // (Q6 lock from original IM-05): the LabValue.reportId FK is
+  // assigned up-front from `labReportIds[]`, so 'add' mode preserves
+  // FK consistency for the new reports while the old reports + their
+  // values stay intact under their existing IDs.
+  // ProfileVersions has its own three-mode handler below
+  // (synthesized marker writes unconditionally per Q5).
+  // Profile.profiles is always written via mergeProfile() (Q4 lock --
   // identity-level data is never wiped by per-type toggles).
   await db.transaction(
     'rw',
@@ -247,39 +267,36 @@ export async function importProfile(
     async () => {
       const ops: Promise<unknown>[] = [db.profiles.put(profileRow)];
 
-      if (replaceMap.observations) {
-        ops.push(deleteByProfileId(db.observations, targetProfileId));
-        ops.push(bulkPut(db.observations, observationRows));
-      }
+      applyMode(ops, modeMap.observations, db.observations, observationRows, targetProfileId);
 
-      if (replaceMap.labData) {
+      if (modeMap.labData === 'replace') {
         ops.push(deleteByProfileId(db.labReports, targetProfileId));
         ops.push(deleteByProfileId(db.labValues, targetProfileId));
         ops.push(bulkPut(db.labReports, labReportRows));
         ops.push(bulkPut(db.labValues, labValueRows));
+      } else if (modeMap.labData === 'add') {
+        ops.push(bulkPut(db.labReports, labReportRows));
+        ops.push(bulkPut(db.labValues, labValueRows));
       }
 
-      if (replaceMap.supplements) {
-        ops.push(deleteByProfileId(db.supplements, targetProfileId));
-        ops.push(bulkPut(db.supplements, supplementRows));
-      }
+      applyMode(ops, modeMap.supplements, db.supplements, supplementRows, targetProfileId);
+      applyMode(ops, modeMap.openPoints, db.openPoints, openPointRows, targetProfileId);
+      applyMode(
+        ops,
+        modeMap.timelineEntries,
+        db.timelineEntries,
+        timelineEntryRows,
+        targetProfileId,
+      );
 
-      if (replaceMap.openPoints) {
-        ops.push(deleteByProfileId(db.openPoints, targetProfileId));
-        ops.push(bulkPut(db.openPoints, openPointRows));
-      }
-
-      if (replaceMap.timelineEntries) {
-        ops.push(deleteByProfileId(db.timelineEntries, targetProfileId));
-        ops.push(bulkPut(db.timelineEntries, timelineEntryRows));
-      }
-
-      if (replaceMap.profileVersions) {
+      if (modeMap.profileVersions === 'replace') {
         ops.push(deleteByProfileId(db.profileVersions, targetProfileId));
         ops.push(bulkPut(db.profileVersions, profileVersionRowsForReplaceMode));
+      } else if (modeMap.profileVersions === 'add') {
+        // Add: keep existing + write parsed source rows + synthesized marker.
+        ops.push(bulkPut(db.profileVersions, profileVersionRowsForReplaceMode));
       } else {
-        // Q5: synthesized marker still writes even when existing
-        // ProfileVersion rows are preserved.
+        // Skip: synthesized marker still writes (Q5).
         ops.push(bulkPut(db.profileVersions, profileVersionRowsForKeepMode));
       }
 
@@ -287,22 +304,24 @@ export async function importProfile(
     },
   );
 
-  // IM-05: counts reflect what was actually written. Skipped types
-  // contribute zero to `created` (their parsed rows were dropped).
-  // ProfileVersions count: parsed rows + synthesized in replace mode,
-  // synthesized only in keep mode (mirrors the transaction body
-  // above).
+  // IM-05 Option B: counts reflect what was actually written. Skipped
+  // types contribute zero to `created` (their parsed rows were
+  // dropped). 'replace' and 'add' both write the full parsed batch so
+  // they count the same. ProfileVersions count: parsed + synthesized
+  // in 'replace' / 'add', synthesized only in 'skip' (mirrors the
+  // transaction body above).
+  const wrote = (m: typeof modeMap.observations): boolean => m !== 'skip';
   const created: EntityCounts = {
     ...EMPTY_COUNTS,
-    observations: replaceMap.observations ? parseResult.observations.length : 0,
-    labReports: replaceMap.labData ? parseResult.labReports.length : 0,
-    labValues: replaceMap.labData ? parseResult.labValues.length : 0,
-    supplements: replaceMap.supplements ? parseResult.supplements.length : 0,
-    openPoints: replaceMap.openPoints ? parseResult.openPoints.length : 0,
-    profileVersions: replaceMap.profileVersions
+    observations: wrote(modeMap.observations) ? parseResult.observations.length : 0,
+    labReports: wrote(modeMap.labData) ? parseResult.labReports.length : 0,
+    labValues: wrote(modeMap.labData) ? parseResult.labValues.length : 0,
+    supplements: wrote(modeMap.supplements) ? parseResult.supplements.length : 0,
+    openPoints: wrote(modeMap.openPoints) ? parseResult.openPoints.length : 0,
+    profileVersions: wrote(modeMap.profileVersions)
       ? profileVersionRowsForReplaceMode.length
       : profileVersionRowsForKeepMode.length,
-    timelineEntries: replaceMap.timelineEntries ? parseResult.timelineEntries.length : 0,
+    timelineEntries: wrote(modeMap.timelineEntries) ? parseResult.timelineEntries.length : 0,
   };
 
   return {
@@ -385,6 +404,31 @@ async function bulkPut(
 ): Promise<void> {
   if (rows.length === 0) return;
   await table.bulkPut(rows);
+}
+
+/**
+ * Per-type three-mode dispatcher for the simple single-table cases
+ * (observations, supplements, openPoints, timelineEntries). Lab data
+ * has its own custom branch above because the LabReport+LabValue FK
+ * grouping prevents reuse of this helper.
+ */
+function applyMode(
+  ops: Promise<unknown>[],
+  mode: 'replace' | 'add' | 'skip',
+  table: {
+    bulkPut(rows: EncryptedRow[]): Promise<unknown>;
+    where(index: string): { equals(value: string): { delete(): Promise<number> } };
+  },
+  rows: EncryptedRow[],
+  profileId: string,
+): void {
+  if (mode === 'replace') {
+    ops.push(deleteByProfileId(table, profileId));
+    ops.push(bulkPut(table, rows));
+  } else if (mode === 'add') {
+    ops.push(bulkPut(table, rows));
+  }
+  // 'skip' = no-op
 }
 
 async function deleteByProfileId(

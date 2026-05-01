@@ -14,7 +14,7 @@ import {
   countsAreEmpty,
   type EntityCounts,
   type ImportResult,
-  type PerTypeReplace,
+  type PerTypeMode,
 } from './types';
 
 export type ImportState =
@@ -37,7 +37,7 @@ export type ImportState =
        * case the import passes legacy `replaceExisting: true` since per-type
        * deletes are no-ops on an empty target.
        */
-      replaceSelection?: PerTypeReplace;
+      replaceSelection?: PerTypeMode;
     }
   | {
       kind: 'confirm-replace';
@@ -49,7 +49,7 @@ export type ImportState =
       kind: 'importing';
       parseResult: ParseResult;
       targetProfileId: string;
-      replaceSelection?: PerTypeReplace;
+      replaceSelection?: PerTypeMode;
     }
   | { kind: 'done'; importResult: ImportResult }
   | { kind: 'error'; detail: string };
@@ -58,7 +58,7 @@ export interface ImportHook {
   state: ImportState;
   loadMarkdown: (markdown: string) => Promise<void>;
   selectProfile: (targetProfileId: string) => Promise<void>;
-  confirmReplace: (selection: PerTypeReplace) => void;
+  confirmReplace: (selection: PerTypeMode) => void;
   startImport: () => Promise<void>;
   /**
    * Trigger AI-09 cleanup on a parse-failure state. Reads the original
@@ -140,7 +140,7 @@ export function useImport(): ImportHook {
   );
 
   const confirmReplace = useCallback(
-    (selection: PerTypeReplace): void => {
+    (selection: PerTypeMode): void => {
       if (state.kind !== 'confirm-replace') return;
       setState({
         kind: 'preview',
