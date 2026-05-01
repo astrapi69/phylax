@@ -79,9 +79,16 @@ describe('ChangePasswordSection', () => {
       expect(screen.getByText(/Master-Passwort wurde erfolgreich geändert/i)).toBeInTheDocument(),
     );
 
-    expect(screen.getByLabelText(/aktuelles master-passwort/i)).toHaveValue('');
-    expect(screen.getByLabelText(/neues master-passwort/i)).toHaveValue('');
-    expect(screen.getByLabelText(/passwort bestätigen/i)).toHaveValue('');
+    // Form-clear runs in a useEffect that fires on the same `status.kind === 'done'`
+    // transition as the success banner. Banner-visible and form-cleared
+    // are separate React renders, so under load (coverage-instrumented
+    // CI in particular) the assertion below races the cleanup. waitFor
+    // retries until the form actually clears.
+    await waitFor(() => {
+      expect(screen.getByLabelText(/aktuelles master-passwort/i)).toHaveValue('');
+      expect(screen.getByLabelText(/neues master-passwort/i)).toHaveValue('');
+      expect(screen.getByLabelText(/passwort bestätigen/i)).toHaveValue('');
+    });
   });
 
   it('wrong current password shows inline error and keeps form populated', async () => {

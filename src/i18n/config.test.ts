@@ -182,19 +182,12 @@ describe('import plural forms (I18N-02-c)', () => {
     expect(tEn('preview.unrecognized-summary', { count: 5 })).toBe('5 unrecognized blocks');
   });
 
-  it('confirm.lab-report-line: count=1 renders singular', () => {
-    expect(tDe('confirm.lab-report-line', { count: 1, values: 3 })).toBe('1 Laborbefund (3 Werte)');
-    expect(tEn('confirm.lab-report-line', { count: 1, values: 3 })).toBe('1 lab report (3 values)');
-  });
-
-  it('confirm.lab-report-line: count=5 renders plural', () => {
-    expect(tDe('confirm.lab-report-line', { count: 5, values: 30 })).toBe(
-      '5 Laborbefunde (30 Werte)',
-    );
-    expect(tEn('confirm.lab-report-line', { count: 5, values: 30 })).toBe(
-      '5 lab reports (30 values)',
-    );
-  });
+  // confirm.lab-report-line plural-form tests removed when the IM-05
+  // ConfirmDialog was rewritten to the three-mode `confirm.row.lab-data`
+  // shape (commit `8e93964`); the new key uses 4 interpolation params
+  // (existing/existingValues/parsed/parsedValues) and no plural variant.
+  // Per-row count formatting now lives in the German and English
+  // interpolation strings directly.
 
   it('counts.open-points: count=1 renders singular', () => {
     expect(tDe('counts.open-points', { count: 1 })).toBe('1 offener Punkt');
