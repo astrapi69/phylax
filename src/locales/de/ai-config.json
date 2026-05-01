@@ -32,6 +32,7 @@
     "model-label": "Modell",
     "model-custom-suffix": "(benutzerdefiniert)",
     "deactivate-button": "KI deaktivieren",
+    "manage-button": "Anbieter verwalten",
     "provider-label": "Anbieter"
   },
   "privacy-info": {

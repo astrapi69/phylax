@@ -1,92 +1,89 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ANTHROPIC_MODELS,
-  DEFAULT_ANTHROPIC_MODEL,
-  type AIProviderConfig,
-} from '../../db/aiConfig';
-import { PasswordVisibilityToggle } from '../../ui';
+import type { AIProviderConfig } from '../../db/aiConfig';
+import { getProviderPreset } from '../ai/providers';
 import { useAIConfig } from './useAIConfig';
 import { AIDisclaimer } from './AIDisclaimer';
 import { PrivacyInfoPopover } from './PrivacyInfoPopover';
 
-type FormMode = 'idle' | 'entering';
+// Lazy-loaded wizard. Pulls the wizard module only when the user
+// clicks "AI aktivieren" or "Anbieter verwalten"; the Settings
+// screen never bundles the wizard chrome at first paint.
+const AiSetupWizard = lazy(() => import('../ai/AiSetupWizard'));
 
-function maskKey(apiKey: string): string {
+function maskKey(provider: string, apiKey: string): string {
+  if (apiKey.length === 0) return '';
   const tail = apiKey.slice(-4);
-  return `sk-ant-...${tail}`;
+  if (provider === 'anthropic') return `sk-ant-...${tail}`;
+  if (apiKey.startsWith('sk-')) return `sk-...${tail}`;
+  return `...${tail}`;
 }
 
 /**
- * Settings UI for the AI assistant. Three states:
- * - loading: brief placeholder
- * - unconfigured: provider + key input + activate button (routes through disclaimer)
- * - configured: masked key, model dropdown, change and disable actions
+ * Settings UI for the AI assistant after the multi-provider rewrite
+ * (AI Commit 4b). The inline forms from the foundation task are
+ * gone; provider creation + editing now happens in the lazy-loaded
+ * `AiSetupWizard`.
  *
- * The API key is never re-displayed after it is saved: the UI shows only a
- * masked preview. Editing the key requires entering a new value.
+ * States:
+ *   - loading / error: brief placeholder.
+ *   - unconfigured: "AI aktivieren" button. First click routes
+ *     through the AIDisclaimer (one-shot per vault) before the
+ *     wizard opens. Returning users with the disclaimer already
+ *     accepted skip straight to the wizard.
+ *   - configured: summary card showing the active provider's
+ *     label, masked API key, and model. Two actions:
+ *       * "Anbieter verwalten" -> opens the wizard pre-filled
+ *         with the active provider's fields for editing
+ *       * "KI deaktivieren" -> calls `deleteConfig()` to clear
+ *         the entire multi-provider list
+ *
+ * Existing single-shape Anthropic users hit the configured branch
+ * via `useAIConfig` -> `readAIConfig()`, which derives the active
+ * single from the multi shape (Commit 2 back-compat) and renders
+ * the summary without forcing them through the wizard.
+ *
+ * The wizard mounts under a `<Suspense fallback={null}>` boundary
+ * inside the same Settings tree; the Settings screen does not need
+ * a Suspense wrapper of its own. The fallback renders nothing
+ * (blank space for the few hundred ms before the wizard chunk
+ * resolves) because the trigger is a deliberate user click — no
+ * empty-content flash on first Settings paint.
  */
 export function AISettingsSection() {
   const { t } = useTranslation('ai-config');
-  const { state, saveConfig, deleteConfig, acceptDisclaimer } = useAIConfig();
+  const { state, deleteConfig, acceptDisclaimer } = useAIConfig();
 
-  const [mode, setMode] = useState<FormMode>('idle');
-  const [apiKeyInput, setApiKeyInput] = useState('');
-  const [modelInput, setModelInput] = useState(DEFAULT_ANTHROPIC_MODEL);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [pending, setPending] = useState<AIProviderConfig | null>(null);
   const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
 
-  const status = state.status;
-  const suspicious =
-    apiKeyInput.length > 0 && (!apiKeyInput.startsWith('sk-ant-') || apiKeyInput.length < 20);
-
-  function prepareConfig(): AIProviderConfig {
-    return {
-      provider: 'anthropic',
-      apiKey: apiKeyInput,
-      model: modelInput,
-    };
-  }
-
-  async function handleActivate() {
-    if (apiKeyInput.length === 0) return;
-    const config = prepareConfig();
+  function handleActivate() {
     if (state.disclaimerAccepted) {
-      await saveConfig(config);
-      setApiKeyInput('');
-      setMode('idle');
-    } else {
-      setPending(config);
-      setShowDisclaimer(true);
+      setWizardOpen(true);
+      return;
     }
+    setShowDisclaimer(true);
   }
 
-  async function handleDisclaimerConfirm() {
-    if (!pending) return;
+  function handleDisclaimerConfirm() {
     acceptDisclaimer();
-    await saveConfig(pending);
-    setApiKeyInput('');
-    setPending(null);
     setShowDisclaimer(false);
-    setMode('idle');
+    setWizardOpen(true);
   }
 
   function handleDisclaimerCancel() {
-    setPending(null);
     setShowDisclaimer(false);
   }
 
-  async function handleDelete() {
-    await deleteConfig();
-    setMode('idle');
-    setApiKeyInput('');
-    setModelInput(DEFAULT_ANTHROPIC_MODEL);
+  function handleManage() {
+    // The disclaimer was already accepted on first activation; do
+    // not force it again on subsequent edits.
+    setWizardOpen(true);
   }
 
-  function handleChangeKey() {
-    setApiKeyInput('');
-    setMode('entering');
+  async function handleDeactivate() {
+    await deleteConfig();
   }
 
   return (
@@ -107,49 +104,45 @@ export function AISettingsSection() {
         </button>
       </p>
 
-      {status === 'loading' && (
+      {state.status === 'loading' && (
         <p className="text-sm text-gray-600 dark:text-gray-400">{t('settings-section.loading')}</p>
       )}
 
-      {status === 'error' && (
+      {state.status === 'error' && (
         <p className="text-sm text-red-700 dark:text-red-300">{t('settings-section.error')}</p>
       )}
 
-      {status === 'unconfigured' && (
-        <UnconfiguredForm
-          apiKey={apiKeyInput}
-          onApiKeyChange={setApiKeyInput}
-          suspicious={suspicious}
-          onActivate={handleActivate}
-        />
-      )}
+      {state.status === 'unconfigured' && <UnconfiguredView onActivate={handleActivate} />}
 
-      {status === 'configured' && state.config && (
-        <ConfiguredFormWrapper
+      {state.status === 'configured' && state.config && (
+        <ConfiguredView
           config={state.config}
-          modelInput={modelInput || state.config.model || DEFAULT_ANTHROPIC_MODEL}
-          setModelInput={setModelInput}
-          saveConfig={saveConfig}
-          isEntering={mode === 'entering'}
-          newKey={apiKeyInput}
-          onNewKeyChange={setApiKeyInput}
-          suspicious={suspicious}
-          onChangeKey={handleChangeKey}
-          onKeySaved={() => {
-            setApiKeyInput('');
-            setMode('idle');
-          }}
-          onDelete={handleDelete}
+          onManage={handleManage}
+          onDeactivate={() => void handleDeactivate()}
         />
       )}
 
       {showDisclaimer && (
-        <AIDisclaimer
-          onConfirm={() => {
-            void handleDisclaimerConfirm();
-          }}
-          onCancel={handleDisclaimerCancel}
-        />
+        <AIDisclaimer onConfirm={handleDisclaimerConfirm} onCancel={handleDisclaimerCancel} />
+      )}
+
+      {wizardOpen && (
+        <Suspense fallback={null}>
+          <AiSetupWizard
+            open={wizardOpen}
+            onClose={() => setWizardOpen(false)}
+            initial={
+              state.status === 'configured' && state.config
+                ? {
+                    provider: state.config.provider,
+                    apiKey: state.config.apiKey,
+                    model: state.config.model,
+                    baseUrl: state.config.baseUrl,
+                  }
+                : undefined
+            }
+          />
+        </Suspense>
       )}
 
       <PrivacyInfoPopover open={showPrivacyInfo} onClose={() => setShowPrivacyInfo(false)} />
@@ -157,109 +150,18 @@ export function AISettingsSection() {
   );
 }
 
-interface UnconfiguredFormProps {
-  apiKey: string;
-  onApiKeyChange: (value: string) => void;
-  suspicious: boolean;
-  onActivate: () => void;
-}
-
-function UnconfiguredForm({
-  apiKey,
-  onApiKeyChange,
-  suspicious,
-  onActivate,
-}: UnconfiguredFormProps) {
+function UnconfiguredView({ onActivate }: { onActivate: () => void }) {
   const { t } = useTranslation('ai-config');
-  const [keyVisible, setKeyVisible] = useState(false);
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600 dark:text-gray-400">
         <span aria-hidden>○</span> {t('settings-section.status-inactive')}
       </p>
-
-      <ProviderSelect />
-
-      <div>
-        <label
-          htmlFor="ai-api-key"
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          {t('settings-section.api-key-label')}
-        </label>
-        <div className="relative">
-          <input
-            id="ai-api-key"
-            name="api-key"
-            // BUG-08 + BUG-09 + BUG-10: browser password managers
-            // (Chrome built-in, 1Password, LastPass, Bitwarden) treat
-            // ANY `type=password` input as a credentials field. They
-            // (a) prompt to save on submit, (b) propose existing
-            // saved credentials on focus, (c) ignore most autocomplete
-            // / data-* opt-out hints. Even the readonly trick has
-            // become unreliable in recent Chromium. Three escalations
-            // (BUG-08, BUG-09) failed to fully suppress the focus
-            // popup; the remaining root cause is `type=password`
-            // itself.
-            //
-            // The fix: render as `type="text"` always - so password
-            // managers never classify it as credentials - and mask
-            // visually via `-webkit-text-security: disc` when the
-            // user wants the key hidden. The CSS property is widely
-            // supported in Chromium + WebKit; Firefox does not
-            // honour it (the key would render in plaintext when the
-            // toggle is in "hidden" mode), which is an accepted
-            // trade-off until Firefox's `-moz-text-security`
-            // proposal lands - the eye-toggle stays the canonical
-            // user gesture for inspecting / hiding the key.
-            //
-            // Retain the autocomplete + data-* opt-out stack so
-            // managers that DO scan `type=text` fields heuristically
-            // (Bitwarden notably) also skip this input.
-            type="text"
-            value={apiKey}
-            onChange={(e) => onApiKeyChange(e.target.value)}
-            autoComplete="one-time-code"
-            data-1p-ignore="true"
-            data-lpignore="true"
-            data-bwignore="true"
-            data-form-type="other"
-            spellCheck={false}
-            placeholder="sk-ant-..."
-            // -webkit-text-security is non-standard so React's
-            // CSSProperties type does not include it; the cast lets
-            // us pass the property through to the rendered style
-            // attribute. Recognised in Chromium + WebKit; Firefox
-            // ignores (acceptable per BUG-10 trade-off note above).
-            style={
-              keyVisible
-                ? undefined
-                : ({
-                    WebkitTextSecurity: 'disc',
-                    fontFamily: 'monospace',
-                  } as React.CSSProperties)
-            }
-            className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-          />
-          <PasswordVisibilityToggle
-            visible={keyVisible}
-            onToggle={() => setKeyVisible((v) => !v)}
-            labelShow={t('common:password-toggle.api-key-show')}
-            labelHide={t('common:password-toggle.api-key-hide')}
-          />
-        </div>
-        {suspicious && (
-          <p className="mt-1 text-xs text-amber-700 dark:text-amber-400" role="alert">
-            {t('settings-section.suspicious-warning')}
-          </p>
-        )}
-      </div>
-
       <button
         type="button"
         onClick={onActivate}
-        disabled={apiKey.length === 0}
-        className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
+        data-testid="ai-settings-activate-btn"
+        className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
       >
         {t('settings-section.activate-button')}
       </button>
@@ -267,233 +169,82 @@ function UnconfiguredForm({
   );
 }
 
-interface ConfiguredFormWrapperProps {
-  config: AIProviderConfig;
-  modelInput: string;
-  setModelInput: (model: string) => void;
-  saveConfig: (config: AIProviderConfig) => Promise<void>;
-  isEntering: boolean;
-  newKey: string;
-  onNewKeyChange: (value: string) => void;
-  suspicious: boolean;
-  onChangeKey: () => void;
-  onKeySaved: () => void;
-  onDelete: () => Promise<void>;
-}
-
-/**
- * Wraps ConfiguredForm so the inner closures can reference the narrowed
- * AIProviderConfig without non-null assertions on the parent state.
- */
-function ConfiguredFormWrapper({
+function ConfiguredView({
   config,
-  modelInput,
-  setModelInput,
-  saveConfig,
-  isEntering,
-  newKey,
-  onNewKeyChange,
-  suspicious,
-  onChangeKey,
-  onKeySaved,
-  onDelete,
-}: ConfiguredFormWrapperProps) {
-  async function onModelChange(model: string) {
-    setModelInput(model);
-    await saveConfig({ ...config, model });
-  }
-
-  async function onSaveNewKey() {
-    if (newKey.length === 0) return;
-    await saveConfig({ ...config, apiKey: newKey });
-    onKeySaved();
-  }
-
-  function onCancelChangeKey() {
-    onKeySaved();
-  }
-
-  return (
-    <ConfiguredForm
-      config={config}
-      modelInput={modelInput}
-      onModelChange={onModelChange}
-      isEntering={isEntering}
-      newKey={newKey}
-      onNewKeyChange={onNewKeyChange}
-      suspicious={suspicious}
-      onChangeKey={onChangeKey}
-      onSaveNewKey={onSaveNewKey}
-      onCancelChangeKey={onCancelChangeKey}
-      onDelete={onDelete}
-    />
-  );
-}
-
-interface ConfiguredFormProps {
+  onManage,
+  onDeactivate,
+}: {
   config: AIProviderConfig;
-  modelInput: string;
-  onModelChange: (model: string) => void | Promise<void>;
-  isEntering: boolean;
-  newKey: string;
-  onNewKeyChange: (value: string) => void;
-  suspicious: boolean;
-  onChangeKey: () => void;
-  onSaveNewKey: () => Promise<void>;
-  onCancelChangeKey: () => void;
-  onDelete: () => Promise<void>;
-}
-
-function ConfiguredForm({
-  config,
-  modelInput,
-  onModelChange,
-  isEntering,
-  newKey,
-  onNewKeyChange,
-  suspicious,
-  onChangeKey,
-  onSaveNewKey,
-  onCancelChangeKey,
-  onDelete,
-}: ConfiguredFormProps) {
+  onManage: () => void;
+  onDeactivate: () => void;
+}) {
   const { t } = useTranslation('ai-config');
-  const [newKeyVisible, setNewKeyVisible] = useState(false);
+  const preset = getProviderPreset(config.provider);
+  const providerLabel = preset?.label ?? config.provider;
   return (
     <div className="space-y-4">
       <p className="text-sm text-green-700 dark:text-green-400">
         <span aria-hidden>✓</span> {t('settings-section.status-configured')}
       </p>
 
-      <ProviderSelect />
-
-      <div>
-        <label
-          htmlFor="ai-api-key-masked"
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          {t('settings-section.api-key-label')}
-        </label>
-        {isEntering ? (
-          <div className="space-y-2">
-            <div className="relative">
-              <input
-                id="ai-api-key-masked"
-                type={newKeyVisible ? 'text' : 'password'}
-                value={newKey}
-                onChange={(e) => onNewKeyChange(e.target.value)}
-                autoComplete="off"
-                spellCheck={false}
-                placeholder="sk-ant-..."
-                className="w-full rounded-sm border border-gray-300 px-3 py-2 pr-12 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-              />
-              <PasswordVisibilityToggle
-                visible={newKeyVisible}
-                onToggle={() => setNewKeyVisible((v) => !v)}
-                labelShow={t('common:password-toggle.api-key-show')}
-                labelHide={t('common:password-toggle.api-key-hide')}
-              />
-            </div>
-            {suspicious && (
-              <p className="text-xs text-amber-700 dark:text-amber-400" role="alert">
-                {t('settings-section.suspicious-warning')}
-              </p>
-            )}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => void onSaveNewKey()}
-                disabled={newKey.length === 0}
-                className="rounded-sm bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600"
-              >
-                {t('settings-section.save-button')}
-              </button>
-              <button
-                type="button"
-                onClick={onCancelChangeKey}
-                className="rounded-sm border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-              >
-                {t('common:action.cancel')}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
+      <dl
+        data-testid="ai-settings-summary"
+        className="space-y-1 rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm dark:border-gray-700 dark:bg-gray-800/50"
+      >
+        <div className="flex gap-2">
+          <dt className="font-medium text-gray-700 dark:text-gray-300">
+            {t('settings-section.provider-label')}:
+          </dt>
+          <dd data-testid="ai-settings-provider-label" className="text-gray-900 dark:text-gray-100">
+            {providerLabel}
+          </dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="font-medium text-gray-700 dark:text-gray-300">
+            {t('settings-section.api-key-label')}:
+          </dt>
+          <dd>
             <code
-              id="ai-api-key-masked"
-              data-testid="ai-api-key-masked"
-              className="flex-1 rounded-sm border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+              data-testid="ai-settings-key-masked"
+              className="text-xs text-gray-700 dark:text-gray-300"
             >
-              {maskKey(config.apiKey)}
+              {maskKey(config.provider, config.apiKey)}
             </code>
-            <button
-              type="button"
-              onClick={onChangeKey}
-              className="rounded-sm border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          </dd>
+        </div>
+        {config.model ? (
+          <div className="flex gap-2">
+            <dt className="font-medium text-gray-700 dark:text-gray-300">
+              {t('settings-section.model-label')}:
+            </dt>
+            <dd
+              data-testid="ai-settings-model"
+              className="font-mono text-xs text-gray-900 dark:text-gray-100"
             >
-              {t('settings-section.change-button')}
-            </button>
+              {config.model}
+            </dd>
           </div>
-        )}
-      </div>
+        ) : null}
+      </dl>
 
-      <div>
-        <label
-          htmlFor="ai-model"
-          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onManage}
+          data-testid="ai-settings-manage-btn"
+          className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
-          {t('settings-section.model-label')}
-        </label>
-        <select
-          id="ai-model"
-          value={ANTHROPIC_MODELS.includes(modelInput) ? modelInput : ''}
-          onChange={(e) => void onModelChange(e.target.value)}
-          className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          {t('settings-section.manage-button')}
+        </button>
+        <button
+          type="button"
+          onClick={onDeactivate}
+          data-testid="ai-settings-deactivate-btn"
+          className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
         >
-          {!ANTHROPIC_MODELS.includes(modelInput) && modelInput && (
-            <option value="">
-              {modelInput} {t('settings-section.model-custom-suffix')}
-            </option>
-          )}
-          {ANTHROPIC_MODELS.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+          {t('settings-section.deactivate-button')}
+        </button>
       </div>
-
-      <button
-        type="button"
-        onClick={() => void onDelete()}
-        className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
-      >
-        {t('settings-section.deactivate-button')}
-      </button>
-    </div>
-  );
-}
-
-function ProviderSelect() {
-  const { t } = useTranslation('ai-config');
-  return (
-    <div>
-      <label
-        htmlFor="ai-provider"
-        className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-      >
-        {t('settings-section.provider-label')}
-      </label>
-      <select
-        id="ai-provider"
-        value="anthropic"
-        onChange={() => {
-          /* Only Anthropic is supported in this task. */
-        }}
-        className="w-full rounded-sm border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-      >
-        <option value="anthropic">Anthropic</option>
-      </select>
     </div>
   );
 }

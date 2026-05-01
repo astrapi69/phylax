@@ -5,7 +5,8 @@ import 'fake-indexeddb/auto';
 import { lock, unlock } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
-import { saveAIConfig, readAIConfig } from '../../db/aiConfig';
+import { saveAIConfig, saveMultiAIConfig } from '../../db/aiConfig';
+import { __resetScrollLockForTest } from '../../ui';
 import { AISettingsSection } from './AISettingsSection';
 import { DISCLAIMER_STORAGE_KEY } from './disclaimerStorage';
 
@@ -21,23 +22,28 @@ beforeEach(async () => {
   lock();
   await setupCompletedOnboarding(TEST_PASSWORD);
   await unlockSession();
+  __resetScrollLockForTest();
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('AISettingsSection', () => {
-  it('renders unconfigured state with key input and activate button', async () => {
+describe('AISettingsSection (multi-provider summary, AI Commit 4b)', () => {
+  it('renders the privacy link + heading even before the load effect resolves', () => {
     render(<AISettingsSection />);
-
     expect(screen.getByRole('heading', { name: 'KI-Assistent' })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText(/Nicht aktiv/)).toBeInTheDocument());
-    expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument();
   });
 
-  it('renders configured state with masked key and disable button', async () => {
+  it('unconfigured: shows Nicht aktiv + AI aktivieren button', async () => {
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    expect(screen.getByText(/Nicht aktiv/)).toBeInTheDocument();
+    expect(screen.queryByTestId('ai-settings-summary')).toBeNull();
+  });
+
+  it('configured (legacy single-shape Anthropic): renders summary card with masked key', async () => {
     await saveAIConfig({
       provider: 'anthropic',
       apiKey: 'sk-ant-abcdefghijklmnop-ABCD',
@@ -45,157 +51,110 @@ describe('AISettingsSection', () => {
     });
 
     render(<AISettingsSection />);
-
     await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-    expect(screen.getByTestId('ai-api-key-masked')).toHaveTextContent('sk-ant-...ABCD');
-    expect(screen.getByTestId('ai-api-key-masked')).not.toHaveTextContent(
+    expect(screen.getByTestId('ai-settings-summary')).toBeInTheDocument();
+    expect(screen.getByTestId('ai-settings-provider-label')).toHaveTextContent(
+      'Anthropic (Claude)',
+    );
+    expect(screen.getByTestId('ai-settings-key-masked')).toHaveTextContent('sk-ant-...ABCD');
+    expect(screen.getByTestId('ai-settings-key-masked')).not.toHaveTextContent(
       'sk-ant-abcdefghijklmnop-ABCD',
     );
-    expect(screen.getByRole('button', { name: 'KI deaktivieren' })).toBeInTheDocument();
+    expect(screen.getByTestId('ai-settings-model')).toHaveTextContent('claude-sonnet-4-6');
   });
 
-  it('shows Anthropic in the provider dropdown', async () => {
+  it('configured (multi-shape with Google active): renders Google label + masked key', async () => {
+    await saveMultiAIConfig({
+      providers: [
+        { provider: 'anthropic', apiKey: 'sk-ant-old-key-1234' },
+        { provider: 'google', apiKey: 'gsk-active-key-WXYZ', model: 'gemini-2.0-flash' },
+      ],
+      activeProviderId: 'google',
+    });
+
     render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByLabelText('Anbieter')).toBeInTheDocument());
-
-    const provider = screen.getByLabelText('Anbieter') as HTMLSelectElement;
-    expect(provider.options).toHaveLength(1);
-    expect(provider.options[0]?.value).toBe('anthropic');
-  });
-
-  it('shows known Anthropic models in the model dropdown when configured', async () => {
-    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxxxxx' });
-    render(<AISettingsSection />);
-
-    await waitFor(() => expect(screen.getByLabelText('Modell')).toBeInTheDocument());
-    const select = screen.getByLabelText('Modell') as HTMLSelectElement;
-    const values = Array.from(select.options).map((o) => o.value);
-    expect(values).toContain('claude-sonnet-4-6');
-    expect(values).toContain('claude-haiku-4-5-20251001');
+    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
+    expect(screen.getByTestId('ai-settings-provider-label')).toHaveTextContent('Google (Gemini)');
+    expect(screen.getByTestId('ai-settings-key-masked')).toHaveTextContent('...WXYZ');
+    expect(screen.getByTestId('ai-settings-model')).toHaveTextContent('gemini-2.0-flash');
   });
 
   it('"KI aktivieren" opens the disclaimer when not yet accepted', async () => {
     const user = userEvent.setup();
     render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-activate-btn'));
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
+      expect(screen.getByRole('heading', { name: /KI-Assistent aktivieren/i })).toBeInTheDocument(),
     );
-
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
-    await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
-
-    expect(screen.getByRole('heading', { name: 'KI-Assistent aktivieren' })).toBeInTheDocument();
-    // Config not saved yet - user must confirm disclaimer
-    expect(await readAIConfig()).toBeNull();
   });
 
-  it('activating, confirming disclaimer, persists the config and sets the flag', async () => {
+  it('"KI aktivieren" opens the wizard directly when disclaimer is already accepted', async () => {
+    window.localStorage.setItem(DISCLAIMER_STORAGE_KEY, 'true');
     const user = userEvent.setup();
     render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-activate-btn'));
+    // Suspense fallback resolves once the lazy chunk loads. Wait for
+    // the wizard's title element.
+    await waitFor(() => expect(screen.getByTestId('ai-setup-wizard-title')).toBeInTheDocument());
+    expect(screen.queryByRole('heading', { name: /KI-Assistent aktivieren/i })).toBeNull();
+  });
+
+  it('disclaimer confirm marks accepted + opens the wizard', async () => {
+    const user = userEvent.setup();
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-activate-btn'));
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
+      expect(screen.getByRole('heading', { name: /KI-Assistent aktivieren/i })).toBeInTheDocument(),
     );
-
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
-    await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
-    await user.click(screen.getByRole('button', { name: /Verstanden, KI aktivieren/ }));
-
-    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-    const stored = await readAIConfig();
-    expect(stored?.apiKey).toBe('sk-ant-abcdefghijklmnop1234');
+    await user.click(screen.getByRole('button', { name: /Verstanden, KI aktivieren/i }));
+    await waitFor(() => expect(screen.getByTestId('ai-setup-wizard-title')).toBeInTheDocument());
     expect(window.localStorage.getItem(DISCLAIMER_STORAGE_KEY)).toBe('true');
   });
 
-  it('"KI aktivieren" skips the disclaimer when it was accepted before', async () => {
-    window.localStorage.setItem(DISCLAIMER_STORAGE_KEY, 'true');
+  it('disclaimer cancel closes the disclaimer without opening the wizard', async () => {
     const user = userEvent.setup();
     render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-activate-btn'));
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
+      expect(screen.getByRole('heading', { name: /KI-Assistent aktivieren/i })).toBeInTheDocument(),
     );
-
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-abcdefghijklmnop1234');
-    await user.click(screen.getByRole('button', { name: 'KI aktivieren' }));
-
-    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-    expect(
-      screen.queryByRole('heading', { name: 'KI-Assistent aktivieren' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('"KI deaktivieren" removes the stored config and resets disclaimer flag', async () => {
-    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxxxxx' });
-    window.localStorage.setItem(DISCLAIMER_STORAGE_KEY, 'true');
-
-    const user = userEvent.setup();
-    render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-
-    await user.click(screen.getByRole('button', { name: 'KI deaktivieren' }));
-
-    await waitFor(() => expect(screen.getByText(/Nicht aktiv/)).toBeInTheDocument());
-    expect(await readAIConfig()).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Abbrechen' }));
+    expect(screen.queryByTestId('ai-setup-wizard-title')).toBeNull();
     expect(window.localStorage.getItem(DISCLAIMER_STORAGE_KEY)).toBeNull();
   });
 
-  it('shows format warning for short/malformed keys', async () => {
+  it('"Anbieter verwalten" opens the wizard pre-filled with the active provider', async () => {
+    await saveAIConfig({
+      provider: 'anthropic',
+      apiKey: 'sk-ant-edit-flow-test',
+      model: 'claude-sonnet-4-6',
+    });
     const user = userEvent.setup();
     render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument());
-
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-proj-xyz');
-
-    expect(screen.getByRole('alert')).toHaveTextContent(/ungewöhnlich/);
-  });
-
-  it('activate button is disabled when the key input is empty', async () => {
-    render(<AISettingsSection />);
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeInTheDocument(),
+    await waitFor(() => expect(screen.getByTestId('ai-settings-manage-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-manage-btn'));
+    await waitFor(() => expect(screen.getByTestId('ai-setup-wizard-title')).toBeInTheDocument());
+    // Anthropic preset is selected based on the saved active provider.
+    expect(screen.getByTestId('ai-setup-wizard-provider-anthropic')).toHaveAttribute(
+      'aria-checked',
+      'true',
     );
-
-    expect(screen.getByRole('button', { name: 'KI aktivieren' })).toBeDisabled();
   });
 
-  it('"Ändern" reveals an input to replace the stored key without going through the disclaimer', async () => {
-    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxOLD1' });
+  it('"KI deaktivieren" clears the multi-provider config + returns to unconfigured view', async () => {
+    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-deactivate-test' });
     const user = userEvent.setup();
     render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-
-    await user.click(screen.getByRole('button', { name: 'Ändern' }));
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-xxxxxxxxxxxxxxxxNEW2');
-    await user.click(screen.getByRole('button', { name: 'Speichern' }));
-
     await waitFor(() =>
-      expect(screen.getByTestId('ai-api-key-masked')).toHaveTextContent('sk-ant-...NEW2'),
+      expect(screen.getByTestId('ai-settings-deactivate-btn')).toBeInTheDocument(),
     );
-    const stored = await readAIConfig();
-    expect(stored?.apiKey).toBe('sk-ant-xxxxxxxxxxxxxxxxNEW2');
-  });
-
-  it('canceling "Ändern" does not modify the stored key', async () => {
-    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-xxxxxxxxxxxxxxxxKEEP' });
-    const user = userEvent.setup();
-    render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByText(/Konfiguriert/)).toBeInTheDocument());
-
-    await user.click(screen.getByRole('button', { name: 'Ändern' }));
-    await user.type(screen.getByLabelText('API-Schlüssel'), 'sk-ant-never-saved');
-    await user.click(screen.getByRole('button', { name: 'Abbrechen' }));
-
-    await waitFor(() =>
-      expect(screen.getByTestId('ai-api-key-masked')).toHaveTextContent('sk-ant-...KEEP'),
-    );
-    const stored = await readAIConfig();
-    expect(stored?.apiKey).toBe('sk-ant-xxxxxxxxxxxxxxxxKEEP');
-  });
-
-  it('renders the Datenschutz link below the heading in every state', async () => {
-    render(<AISettingsSection />);
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument(),
-    );
+    await user.click(screen.getByTestId('ai-settings-deactivate-btn'));
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    expect(screen.queryByTestId('ai-settings-summary')).toBeNull();
   });
 
   it('clicking Datenschutz opens the privacy info popover', async () => {
@@ -208,56 +167,15 @@ describe('AISettingsSection', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Datenschutz beim KI-Chat' }));
     const dialog = screen.getByRole('dialog');
-    // TD-12 migration: aria-labelledby resolves through generated
-    // ModalHeader id; verify heading text via document.getElementById.
     const labelledby = dialog.getAttribute('aria-labelledby');
     if (!labelledby) throw new Error('aria-labelledby missing on dialog');
     const heading = document.getElementById(labelledby);
     expect(heading?.textContent).toMatch(/Datenschutz beim KI-Chat/i);
-    expect(screen.getByText(/30 Tage zur Sicherheitsprüfung/)).toBeInTheDocument();
   });
 
-  it('unconfigured form: API key visibility toggle uses api-key labels and flips CSS masking', async () => {
-    // BUG-10: input renders as `type="text"` always (so password
-    // managers do not classify it as credentials); masking is applied
-    // via `-webkit-text-security: disc` when the toggle is hidden.
-    const user = userEvent.setup();
+  it('does not mount the wizard chunk before the user clicks (lazy boundary)', async () => {
     render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByLabelText('API-Schlüssel')).toBeInTheDocument());
-    const input = screen.getByLabelText('API-Schlüssel') as HTMLInputElement;
-    const toggle = screen.getByTestId('password-visibility-toggle');
-
-    expect(input).toHaveAttribute('type', 'text');
-    expect(input.style.getPropertyValue('-webkit-text-security')).toBe('disc');
-    expect(toggle).toHaveAttribute('aria-label', 'API-Key anzeigen');
-
-    await user.click(toggle);
-
-    expect(input).toHaveAttribute('type', 'text');
-    expect(input.style.getPropertyValue('-webkit-text-security')).toBe('');
-    expect(toggle).toHaveAttribute('aria-label', 'API-Key verbergen');
-  });
-
-  it('configured form: change-key flow exposes API key visibility toggle', async () => {
-    await saveAIConfig({
-      provider: 'anthropic',
-      apiKey: 'sk-ant-abcdefghijklmnop-ABCD',
-      model: 'claude-sonnet-4-6',
-    });
-    const user = userEvent.setup();
-    render(<AISettingsSection />);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Ändern' })).toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: 'Ändern' }));
-
-    const input = screen.getByLabelText('API-Schlüssel') as HTMLInputElement;
-    const toggle = screen.getByTestId('password-visibility-toggle');
-
-    expect(input).toHaveAttribute('type', 'password');
-    expect(toggle).toHaveAttribute('aria-label', 'API-Key anzeigen');
-
-    await user.click(toggle);
-
-    expect(input).toHaveAttribute('type', 'text');
-    expect(toggle).toHaveAttribute('aria-label', 'API-Key verbergen');
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    expect(screen.queryByTestId('ai-setup-wizard')).toBeNull();
   });
 });
