@@ -50,3 +50,6 @@ playwright/.cache/
 
 # Claude Code scheduler artifacts
 .claude/scheduled_tasks.lock
+
+# Temp files
+tmp/
