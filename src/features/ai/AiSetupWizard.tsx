@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, ModalBody, ModalFooter, ModalHeader, useModalTitleId } from '../../ui';
 import { saveAIConfig, type AIProvider, type AIProviderConfig } from '../../db/aiConfig';
+import { notifyAIConfigChange } from '../ai-config/useAIConfig';
 import { PROVIDER_IDS, PROVIDER_PRESETS, getProviderPreset } from './providers';
 import { verifyKey } from './verifyKey';
 
@@ -127,6 +128,14 @@ export default function AiSetupWizard({ open, onClose, initial, onSaved }: AiSet
     try {
       const cfg = buildConfig();
       await saveAIConfig(cfg);
+      // Storage write succeeded; broadcast on the cross-instance
+      // change bus so every `useAIConfig` subscriber (notably
+      // AISettingsSection's summary view) refetches and reflects
+      // the new active provider without a reload. Without this
+      // the wizard saves to the DB but the surrounding Settings
+      // UI stays on the pre-save view because the hook's load
+      // effect only re-runs when the bus fires.
+      notifyAIConfigChange();
       onSaved?.(cfg);
       onClose();
     } catch (err) {

@@ -18,7 +18,22 @@ import type { AIConfigState, KeyFormatWarning } from './types';
 type ConfigChangeListener = () => void;
 const configChangeListeners = new Set<ConfigChangeListener>();
 
-function notifyConfigChange(): void {
+/**
+ * Fan-out notification to every subscribed `useAIConfig` instance
+ * after a write to the encrypted AI config storage. Exported so
+ * non-hook callers (notably the lazy-loaded `AiSetupWizard`, which
+ * calls `saveAIConfig` from the storage layer directly) can trigger
+ * the bus without going through the hook's `saveConfig` path.
+ *
+ * Without this, a wizard-driven save updates the DB but every hook
+ * instance keeps showing the pre-save state until the user reloads
+ * - the AISettingsSection summary stays on "unconfigured" while
+ * the vault clearly holds a fresh provider entry. Calling
+ * `notifyAIConfigChange()` after a successful out-of-band save
+ * fires every subscriber's refetch effect and the UI snaps into
+ * the configured branch.
+ */
+export function notifyAIConfigChange(): void {
   for (const listener of configChangeListeners) {
     try {
       listener();
@@ -110,7 +125,7 @@ export function useAIConfig(): UseAIConfigResult {
       config,
       disclaimerAccepted: isDisclaimerAccepted(),
     });
-    notifyConfigChange();
+    notifyAIConfigChange();
   }, []);
 
   const deleteConfig = useCallback(async () => {
@@ -120,7 +135,7 @@ export function useAIConfig(): UseAIConfigResult {
       status: 'unconfigured',
       disclaimerAccepted: false,
     });
-    notifyConfigChange();
+    notifyAIConfigChange();
   }, []);
 
   const acceptDisclaimer = useCallback(() => {
