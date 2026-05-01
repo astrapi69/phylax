@@ -19,13 +19,24 @@ import type { PlaywrightTestConfig } from '@playwright/test';
  */
 export const baseConfig: Pick<
   PlaywrightTestConfig,
-  'fullyParallel' | 'forbidOnly' | 'retries' | 'workers' | 'reporter'
+  'fullyParallel' | 'forbidOnly' | 'retries' | 'workers' | 'reporter' | 'timeout'
 > = {
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  // Per-test timeout. Default 30 s is tight for the production
+  // smoke matrix because heavy onboarding (zxcvbn dictionary load
+  // on first run, IndexedDB seeding, service-worker activation in
+  // production preview) plus a multi-step click flow has to fit
+  // inside the budget. Webkit's slower input-event handling
+  // pushes some tests into the >30 s zone with the explicit
+  // `toBeEnabled` waits added in `06b5f63` / `314f1ae` /
+  // `a907219`. CI runs 1 worker (no parallelism multiplier), so
+  // doubling to 60 s buys headroom without inflating wall-clock
+  // duration for tests that pass quickly.
+  timeout: process.env.CI ? 60_000 : 30_000,
 };
 
 /**
