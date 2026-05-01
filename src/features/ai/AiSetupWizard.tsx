@@ -244,15 +244,56 @@ export default function AiSetupWizard({ open, onClose, initial, onSaved }: AiSet
                     id="ai-setup-wizard-key"
                     name="ai-key"
                     data-testid="ai-setup-wizard-key-input"
-                    type={showKey ? 'text' : 'password'}
+                    // BUG-08/09/10 carry-over: browser password
+                    // managers (Chrome built-in, 1Password,
+                    // LastPass, Bitwarden) treat ANY `type=password`
+                    // input as a credentials field and (a) prompt
+                    // to save on submit, (b) propose existing
+                    // saved credentials on focus, (c) ignore most
+                    // autocomplete / data-* opt-out hints.
+                    // AISettingsSection's pre-multi-provider form
+                    // hit the same wall and resolved it via
+                    // type=text + CSS masking; the wizard inherits
+                    // the same fix because the wizard now owns
+                    // every API-key entry in Phylax.
+                    //
+                    // Render as `type="text"` always so password
+                    // managers never classify the field as
+                    // credentials; mask visually via
+                    // `-webkit-text-security: disc` when the user
+                    // wants the key hidden. Chromium + WebKit
+                    // honour the property; Firefox does not (key
+                    // renders plaintext when toggle is in
+                    // "hidden" mode), accepted trade-off until
+                    // Firefox's `-moz-text-security` proposal
+                    // lands. The eye-toggle stays the canonical
+                    // user gesture.
+                    //
+                    // Retain the autocomplete + data-* opt-out
+                    // stack so heuristic password managers that
+                    // scan `type=text` fields (Bitwarden notably)
+                    // also skip this input.
+                    type="text"
                     value={apiKey}
                     onChange={(e) => {
                       setApiKey(e.target.value);
                       setTestResult('idle');
                     }}
-                    autoComplete="off"
+                    autoComplete="one-time-code"
+                    data-1p-ignore="true"
+                    data-lpignore="true"
+                    data-bwignore="true"
+                    data-form-type="other"
                     spellCheck={false}
                     placeholder={t('setup-wizard.step2.api-key-placeholder')}
+                    style={
+                      showKey
+                        ? undefined
+                        : ({
+                            WebkitTextSecurity: 'disc',
+                            fontFamily: 'monospace',
+                          } as React.CSSProperties)
+                    }
                     className="flex-1 rounded-sm border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                   />
                   <button
