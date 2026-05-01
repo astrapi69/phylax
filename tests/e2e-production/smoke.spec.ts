@@ -81,11 +81,45 @@ async function setupAuthenticatedState(page: Page, theme: ThemeMode, sysPref: Sy
   await createDefaultProfile(page);
 }
 
+/**
+ * Configure an AI provider via the wizard click flow so chat-related
+ * smoke tests can navigate to /chat. Required after BUG-07 (commit
+ * `215a6a5`) gated the "KI-Assistent" nav link behind an active AI
+ * config. The fake key never triggers a real API call: the chat
+ * empty-state test only renders the welcome view, not a streaming
+ * conversation.
+ */
+async function configureFakeAi(page: Page) {
+  await page.getByRole('link', { name: 'Einstellungen' }).click();
+  await page.getByTestId('ai-settings-activate-btn').click();
+  // First-time: disclaimer modal opens before the wizard. Confirm if
+  // present; skip if the user already accepted in this session.
+  const disclaimerConfirm = page.getByRole('button', { name: /Verstanden, KI aktivieren/i });
+  if (await disclaimerConfirm.isVisible().catch(() => false)) {
+    await disclaimerConfirm.click();
+  }
+  // Wizard step 0 -> Anthropic preset preselected, advance.
+  await page.getByTestId('ai-setup-wizard-next').click();
+  // Step 1 -> paste a fake key. The wizard does not validate the key
+  // format; saveAIConfig accepts any non-empty string for cloud
+  // providers. Tests assert the empty-state UI, not a live call.
+  await page.getByTestId('ai-setup-wizard-key-input').fill('sk-ant-fake-smoke-key-123456');
+  await page.getByTestId('ai-setup-wizard-next').click();
+  // Step 2 -> finish without testing the connection.
+  await page.getByTestId('ai-setup-wizard-finish').click();
+}
+
 async function importFixture(page: Page) {
   const content = readFileSync(FIXTURE_PATH, 'utf-8');
   await page.getByRole('link', { name: 'Import', exact: true }).click();
   await page.getByLabel(/markdown-text einfügen/i).fill(content);
-  await page.getByRole('button', { name: 'Weiter' }).click();
+  // "Weiter" gates on the textarea content reaching a non-empty
+  // settled state; webkit's input-event timing sometimes leaves
+  // it disabled past Playwright's auto-actionability window.
+  // Mirrors the dev-side `tests/e2e/import.spec.ts` fix.
+  const weiter = page.getByRole('button', { name: 'Weiter' });
+  await expect(weiter).toBeEnabled({ timeout: 10000 });
+  await weiter.click();
   await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
   await expect(page.getByRole('heading', { name: 'Vorschau' })).toBeVisible();
   await page.getByRole('button', { name: 'Import starten' }).click();
@@ -236,6 +270,11 @@ matrixTests('Smoke: settings', 'settings', async (page, { theme, sysPref }) => {
 
 matrixTests('Smoke: chat empty', 'chat', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
+  // BUG-07 (commit `215a6a5`) gates the "KI-Assistent" nav link
+  // behind an active AI config. The empty-state smoke needs a
+  // configured provider to render the link; configure a fake one
+  // up-front (no live API call needed for empty-state assertions).
+  await configureFakeAi(page);
   await page.getByRole('link', { name: 'KI-Assistent' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'KI-Assistent' })).toBeVisible();
   await expect(page.getByText(/Willkommen beim KI-Assistenten/)).toBeVisible();
