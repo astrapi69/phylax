@@ -88,36 +88,38 @@ describe('DocumentViewer', () => {
 
     renderAtPath(`/documents/${id}`);
 
-    const iframe = await waitFor(() => screen.getByTestId('pdf-viewer-iframe'));
-    expect(iframe.tagName).toBe('IFRAME');
-    expect(iframe.getAttribute('src')).toMatch(/^blob:/);
-    expect(iframe).toHaveAttribute('title', 'report.pdf');
+    const viewer = await waitFor(() => screen.getByTestId('pdf-viewer-iframe'));
+    // BUG-03 part 3: viewer is now an <object> element, not <iframe>.
+    expect(viewer.tagName).toBe('OBJECT');
+    expect(viewer.getAttribute('data')).toMatch(/^blob:/);
+    expect(viewer).toHaveAttribute('aria-label', 'report.pdf');
     expect(screen.getByTestId('viewer-title')).toHaveTextContent('report.pdf');
   });
 
-  it('sandboxes the PDF iframe with allow-scripts + allow-same-origin (BUG-03)', async () => {
-    // BUG-03 (manual smoke during P-16, 2026-04-30): Chromium 115+
-    // silently blocks blob: URL navigation in sandboxed iframes
-    // without `allow-same-origin` and surfaces it as "Diese Seite
-    // wurde von Chrome blockiert". Granting `allow-same-origin`
-    // unblocks the browser's built-in PDF viewer; the security
-    // trade-off is documented inline in DocumentViewer.tsx
-    // (PDF-embedded JS runs in a restricted Acrobat-style context
-    // that does not expose web-storage APIs; master key lives in
-    // module-level memory not IndexedDB).
+  it('renders the PDF viewer as an <object> element with type=application/pdf (BUG-03)', async () => {
+    // BUG-03 part 3: <object data> instead of <iframe src> because
+    // Chromium refuses to navigate iframes to blob: URLs in
+    // SW-mediated contexts ("Not allowed to load local resource:
+    // blob:..."). The <object> element routes the blob directly to
+    // the browser's PDF plugin (PDFium / pdf.js / WebKit PDF). See
+    // DocumentViewer.tsx for the security trade-off rationale.
     const profileId = await seedProfile();
     const id = await seedDocument(
       profileId,
-      'sandboxed.pdf',
+      'object-pdf.pdf',
       'application/pdf',
       new Uint8Array([0x25, 0x50, 0x44, 0x46]),
     );
 
     renderAtPath(`/documents/${id}`);
 
-    const iframe = await waitFor(() => screen.getByTestId('pdf-viewer-iframe'));
-    const sandbox = iframe.getAttribute('sandbox');
-    expect(sandbox).toBe('allow-scripts allow-same-origin');
+    const viewer = await waitFor(() => screen.getByTestId('pdf-viewer-iframe'));
+    expect(viewer.tagName).toBe('OBJECT');
+    expect(viewer).toHaveAttribute('type', 'application/pdf');
+    expect(viewer).toHaveAttribute('aria-label', 'object-pdf.pdf');
+    // Must NOT carry a sandbox attribute - <object> has no such attr,
+    // and the security comment explains why we accept this trade-off.
+    expect(viewer).not.toHaveAttribute('sandbox');
   });
 
   it('surfaces the localized not-found error for an unknown id', async () => {
