@@ -58,6 +58,17 @@ jobs:
     # cause subtle driver-vs-browser incompatibilities.
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
+    # F-06b cross-browser follow-up: Firefox refuses to launch when
+    # `$HOME` is owned by a different user than the one running the
+    # process ("Firefox is unable to launch if the $HOME folder isn't
+    # owned by the current user"). The Playwright container runs the
+    # job as root but GitHub Actions sets `$HOME=/github/home` which
+    # is owned by `pwuser`. Pin HOME to `/root` (the actual home of
+    # the in-container user) so Firefox + Chromium + WebKit all start
+    # cleanly. Documented in the Playwright Docker docs as the
+    # supported workaround.
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -120,6 +131,10 @@ jobs:
     # workspace and exercised against preview.
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
+    # F-06b cross-browser follow-up: Firefox HOME-ownership workaround.
+    # See E2E (Dev) for the rationale.
+    env:
+      HOME: /root
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
