@@ -76,6 +76,18 @@ export default defineConfig(({ mode }) => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           navigateFallback: `${base}index.html`,
+          // BUG-03 follow-up: workbox's `navigateFallback` defaults
+          // to intercepting every navigation request (including
+          // iframe / object src loads of blob: URLs created by the
+          // document viewer) and returning index.html when no
+          // precache match exists. Chromium then refuses the
+          // resulting cross-scheme load and surfaces "Not allowed to
+          // load local resource: blob:..." in the console; the iframe
+          // never paints. Excluding blob: URLs from the fallback
+          // routes the SW back to its no-op default (let the browser
+          // resolve the blob URL natively against the document's
+          // origin), which is exactly what the document viewer needs.
+          navigateFallbackDenylist: [/^blob:/],
           // No runtime caching: Phylax has no external resources.
           // All assets are bundled and cached via precaching.
           //
