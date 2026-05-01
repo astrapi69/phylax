@@ -30,7 +30,15 @@ export type DocumentUploadStatus =
 
 export interface UseDocumentUploadResult {
   status: DocumentUploadStatus;
-  upload: (file: File) => Promise<void>;
+  /**
+   * Run the upload pipeline. Returns the resolved status so callers
+   * that need to react after the await (e.g., bumping a refresh key
+   * on the parent list) do not have to read `status` from the
+   * captured closure - which is stale by definition because React
+   * has not re-rendered yet between the setState inside `upload` and
+   * the line after the `await` in the caller.
+   */
+  upload: (file: File) => Promise<DocumentUploadStatus>;
   reset: () => void;
 }
 
@@ -56,16 +64,24 @@ export function useDocumentUpload(): UseDocumentUploadResult {
   }, []);
 
   const upload = useCallback(
-    async (file: File): Promise<void> => {
+    async (file: File): Promise<DocumentUploadStatus> => {
+      // Helper: write to local + state and return the same value so
+      // every exit path produces a single resolved status the caller
+      // can await without re-reading the captured `status` (which is
+      // stale until React re-renders).
+      const finalize = (next: DocumentUploadStatus): DocumentUploadStatus => {
+        setStatus(next);
+        return next;
+      };
+
       if (!isAcceptedDocumentType(file.type)) {
-        setStatus({
+        return finalize({
           kind: 'error',
           error: { kind: 'unsupported-type', mimeType: file.type },
         });
-        return;
       }
       if (file.size > DOCUMENT_SIZE_LIMIT_BYTES) {
-        setStatus({
+        return finalize({
           kind: 'error',
           error: {
             kind: 'file-too-large',
@@ -73,7 +89,6 @@ export function useDocumentUpload(): UseDocumentUploadResult {
             limitBytes: DOCUMENT_SIZE_LIMIT_BYTES,
           },
         });
-        return;
       }
 
       setStatus({ kind: 'uploading', filename: file.name });
@@ -82,33 +97,30 @@ export function useDocumentUpload(): UseDocumentUploadResult {
       try {
         content = await file.arrayBuffer();
       } catch (err) {
-        setStatus({
+        return finalize({
           kind: 'error',
           error: {
             kind: 'read-failed',
             detail: err instanceof Error ? err.message : String(err),
           },
         });
-        return;
       }
 
       let profileId: string;
       try {
         const profile = await new ProfileRepository().getCurrentProfile();
         if (!profile) {
-          setStatus({ kind: 'error', error: { kind: 'no-profile' } });
-          return;
+          return finalize({ kind: 'error', error: { kind: 'no-profile' } });
         }
         profileId = profile.id;
       } catch (err) {
-        setStatus({
+        return finalize({
           kind: 'error',
           error: {
             kind: 'generic',
             detail: err instanceof Error ? err.message : String(err),
           },
         });
-        return;
       }
 
       try {
@@ -120,16 +132,16 @@ export function useDocumentUpload(): UseDocumentUploadResult {
           sizeBytes: file.size,
           content,
         });
-        setStatus({ kind: 'success', document });
         // Fire-and-forget: request persistent-storage permission on
         // every upload whose persistence is still transient. Internal
         // session guard in the hook prevents double-calls per page
         // load; awaiting would block upload-success propagation
         // because `persist()` can prompt (Firefox) or take a moment.
         requestPersistence();
+        return finalize({ kind: 'success', document });
       } catch (err) {
         if (err instanceof DocumentSizeLimitError) {
-          setStatus({
+          return finalize({
             kind: 'error',
             error: {
               kind: 'file-too-large',
@@ -137,9 +149,8 @@ export function useDocumentUpload(): UseDocumentUploadResult {
               limitBytes: err.limitBytes,
             },
           });
-          return;
         }
-        setStatus({
+        return finalize({
           kind: 'error',
           error: {
             kind: 'generic',

@@ -78,6 +78,25 @@ describe('DocumentUploadButton', () => {
     expect(screen.getByTestId('upload-success').textContent).toMatch(/doc\.pdf/);
   });
 
+  it('fires onUploaded with the document id after a successful upload (BUG-05)', async () => {
+    // Regression guard: previously the handler read `upload.status`
+    // from the captured closure right after `await upload.upload()`,
+    // which was stale (still `idle`) so onUploaded never fired and
+    // the parent list never refreshed without a route navigation.
+    // The hook now returns the final status; the consumer reads it
+    // directly.
+    const onUploaded = vi.fn();
+    render(<DocumentUploadButton onUploaded={onUploaded} />);
+    const input = screen.getByLabelText(/Datei hochladen/i) as HTMLInputElement;
+    const file = new File([new Uint8Array([0x25, 0x50, 0x44, 0x46])], 'bug05.pdf', {
+      type: 'application/pdf',
+    });
+    await selectFile(input, file);
+    await waitFor(() => expect(onUploaded).toHaveBeenCalledOnce());
+    const arg = onUploaded.mock.calls[0]?.[0] as string | undefined;
+    expect(arg).toBeTruthy();
+  });
+
   it('success message has a dismiss button (BUG-04)', async () => {
     render(<DocumentUploadButton />);
     const input = screen.getByLabelText(/Datei hochladen/i) as HTMLInputElement;

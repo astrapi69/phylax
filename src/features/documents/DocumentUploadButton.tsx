@@ -32,9 +32,17 @@ export function DocumentUploadButton({ onUploaded }: DocumentUploadButtonProps) 
     // identical selections by default).
     e.target.value = '';
     if (!file) return;
-    await upload.upload(file);
-    if (upload.status.kind === 'success') {
-      onUploaded?.(upload.status.document.id);
+    // BUG-05: read the resolved status from the awaited upload result,
+    // NOT from the captured `upload.status` closure. Between
+    // setStatus({success}) inside upload() and this line, React has
+    // not re-rendered yet, so `upload.status` here still references
+    // whatever it was at the render that produced this handler
+    // (typically `idle`). Result: onUploaded never fired and the
+    // parent list never refetched until the user navigated away and
+    // back. The hook now returns the final status; depend on that.
+    const result = await upload.upload(file);
+    if (result.kind === 'success') {
+      onUploaded?.(result.document.id);
     }
   };
 
