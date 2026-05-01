@@ -59,5 +59,37 @@
       "bullet-5": "Remove the chat at any time with \"Clear\"",
       "bullet-6": "Revoke the API key directly at Anthropic (takes effect immediately)"
     }
+  },
+  "setup-wizard": {
+    "title": "Set up AI provider",
+    "steps-aria": "Setup steps",
+    "cors-blocked-warning": "Note: this provider blocks direct browser requests. You can save the configuration, but calls will fail until Phylax supports a proxy or you configure your own CORS workaround.",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "saving": "Saving...",
+    "step1": {
+      "hint": "Pick your AI provider. You can change the selection later in Settings.",
+      "aria-label": "Pick provider"
+    },
+    "step2": {
+      "api-key-label": "API key",
+      "api-key-placeholder": "sk-...",
+      "api-key-hint": "Stored encrypted in the browser. Sent only to the chosen provider.",
+      "show-key": "Show key",
+      "hide-key": "Hide key",
+      "base-url-label": "Base URL",
+      "model-label": "Model",
+      "model-placeholder-local": "Provided by the local server",
+      "no-key-hint": "Local providers do not need an API key. Make sure your local server is running."
+    },
+    "step3": {
+      "hint": "Test the connection to the selected provider.",
+      "test-button": "Test connection",
+      "testing": "Testing...",
+      "ok": "Connection OK",
+      "fail": "Failed: {{detail}}"
+    }
   }
 }

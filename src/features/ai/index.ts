@@ -28,3 +28,8 @@ export {
 } from './llmClient';
 
 export { verifyKey, type AiVerifyConfig, type VerifyResult } from './verifyKey';
+
+// AiSetupWizard is exported as a default for `React.lazy()` consumers
+// (Commit 4 wires it via dynamic import). Named re-export retained
+// for tests + non-lazy consumers.
+export { default as AiSetupWizard } from './AiSetupWizard';

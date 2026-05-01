@@ -59,5 +59,37 @@
       "bullet-5": "Chat jederzeit mit \"Leeren\" entfernen",
       "bullet-6": "API-Schlüssel direkt bei Anthropic widerrufen (sofortige Wirkung)"
     }
+  },
+  "setup-wizard": {
+    "title": "KI-Anbieter einrichten",
+    "steps-aria": "Einrichtungsschritte",
+    "cors-blocked-warning": "Hinweis: Dieser Anbieter blockiert direkte Browser-Anfragen. Du kannst die Konfiguration speichern, aber Anfragen werden fehlschlagen, bis Phylax einen Proxy unterstützt oder du eine eigene CORS-Lösung einrichtest.",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "finish": "Fertigstellen",
+    "saving": "Speichern...",
+    "step1": {
+      "hint": "Wähle deinen KI-Anbieter. Du kannst die Auswahl später in den Einstellungen ändern.",
+      "aria-label": "Anbieter auswählen"
+    },
+    "step2": {
+      "api-key-label": "API-Schlüssel",
+      "api-key-placeholder": "sk-...",
+      "api-key-hint": "Verschlüsselt im Browser gespeichert. Wird nur an den gewählten Anbieter gesendet.",
+      "show-key": "Schlüssel anzeigen",
+      "hide-key": "Schlüssel verbergen",
+      "base-url-label": "Basis-URL",
+      "model-label": "Modell",
+      "model-placeholder-local": "Vom lokalen Server bereitgestellt",
+      "no-key-hint": "Lokale Anbieter benötigen keinen API-Schlüssel. Stelle sicher, dass dein lokaler Server läuft."
+    },
+    "step3": {
+      "hint": "Verbindung zum gewählten Anbieter testen.",
+      "test-button": "Verbindung testen",
+      "testing": "Teste...",
+      "ok": "Verbindung erfolgreich",
+      "fail": "Fehlgeschlagen: {{detail}}"
+    }
   }
 }
