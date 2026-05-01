@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import type { Supplement, SupplementCategory } from '../../domain';
-import { findMatchRanges, splitQuery } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { SupplementCard } from './SupplementCard';
 import type { UseSupplementFormResult } from './useSupplementForm';
@@ -12,11 +11,16 @@ interface SupplementCategoryGroupProps {
   /** Threaded through to each `SupplementCard`. */
   form?: UseSupplementFormResult;
   /**
-   * P-22c: forwarded to each card for in-card highlighting AND used
-   * to highlight the group label itself when the query matches the
-   * category text.
+   * P-22b/c/d-polish-2: optional match plan from
+   * `buildFieldMatchPlan` keyed by `cat:<category>:label` for the
+   * group heading and `sup:<supplementId>:<field>` for each card.
+   * When supplied, every rendered mark gets a sequential global
+   * `data-match-index` so the view-level Up/Down nav can scroll per
+   * mark. Read-only mounts that omit it render bare text.
    */
-  highlightQuery?: string;
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -28,17 +32,14 @@ export function SupplementCategoryGroup({
   label,
   supplements,
   form,
-  highlightQuery,
+  matchPlan,
+  activeMatchIndex = null,
 }: SupplementCategoryGroupProps) {
-  const terms = useMemo(
-    () => (highlightQuery ? splitQuery(highlightQuery) : []),
-    [highlightQuery],
-  );
   if (supplements.length === 0) return null;
 
   const muted = category === 'paused';
   const headingId = `supplements-${category}-heading`;
-  const labelRanges = terms.length === 0 ? [] : findMatchRanges(label, terms);
+  const labelMatch: FieldMatch | undefined = matchPlan?.get(`cat:${category}:label`);
 
   return (
     <section aria-labelledby={headingId}>
@@ -47,12 +48,12 @@ export function SupplementCategoryGroup({
         className="mb-3 flex items-baseline gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100"
       >
         <span>
-          {labelRanges.length > 0 ? (
+          {labelMatch && labelMatch.ranges.length > 0 ? (
             <HighlightedText
               text={label}
-              ranges={labelRanges}
-              startMatchIndex={0}
-              activeMatchIndex={null}
+              ranges={labelMatch.ranges}
+              startMatchIndex={labelMatch.startIndex}
+              activeMatchIndex={activeMatchIndex}
             />
           ) : (
             label
@@ -69,7 +70,8 @@ export function SupplementCategoryGroup({
               supplement={s}
               muted={muted}
               form={form}
-              highlightQuery={highlightQuery}
+              matchPlan={matchPlan}
+              activeMatchIndex={activeMatchIndex}
             />
           </li>
         ))}

@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Supplement } from '../../domain';
-import { findMatchRanges, splitQuery } from '../../lib';
+import type { FieldMatch, MatchPlan } from '../../lib';
 import { HighlightedText } from '../../ui';
 import { ProvenanceBadge } from '../document-import/ui/ProvenanceBadge';
 import { SupplementActions } from './SupplementActions';
@@ -17,12 +16,16 @@ interface SupplementCardProps {
    */
   form?: UseSupplementFormResult;
   /**
-   * P-22c search query. When non-empty, plain-text fields (name,
-   * brand, recommendation, rationale) wrap matching substrings in
-   * `<mark>` via `<HighlightedText>`. Read-only mounts that omit
-   * the prop render bare text (no perf cost when search is unused).
+   * P-22b/c/d-polish-2: optional match plan keyed by
+   * `sup:<supplementId>:<field>`. When supplied, plain-text fields
+   * (name, brand, recommendation, rationale) wrap matching
+   * substrings in `<mark>` with a sequential global
+   * `data-match-index` so the view-level Up/Down nav can scroll
+   * per mark. Read-only mounts that omit it render bare text.
    */
-  highlightQuery?: string;
+  matchPlan?: MatchPlan;
+  /** Currently focused mark global index (1-based). */
+  activeMatchIndex?: number | null;
 }
 
 /**
@@ -37,14 +40,12 @@ export function SupplementCard({
   supplement,
   muted = false,
   form,
-  highlightQuery,
+  matchPlan,
+  activeMatchIndex = null,
 }: SupplementCardProps) {
   const { t } = useTranslation('supplements');
-  const { name, brand, recommendation, rationale } = supplement;
-  const terms = useMemo(
-    () => (highlightQuery ? splitQuery(highlightQuery) : []),
-    [highlightQuery],
-  );
+  const { id, name, brand, recommendation, rationale } = supplement;
+  const lookup = (field: string): FieldMatch | undefined => matchPlan?.get(`sup:${id}:${field}`);
   // Muted variant uses a subtle gray background tint and shows a
   // "Pausiert" badge. We deliberately do NOT reduce opacity, because
   // that blends small text below WCAG AA contrast on the tinted
@@ -58,11 +59,19 @@ export function SupplementCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-2">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            <HighlightCell text={name} terms={terms} />
+            <HighlightCell
+              text={name}
+              fieldMatch={lookup('name')}
+              activeMatchIndex={activeMatchIndex}
+            />
           </h3>
           {brand && (
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              <HighlightCell text={brand} terms={terms} />
+              <HighlightCell
+                text={brand}
+                fieldMatch={lookup('brand')}
+                activeMatchIndex={activeMatchIndex}
+              />
             </span>
           )}
           {muted && (
@@ -78,29 +87,57 @@ export function SupplementCard({
         <FieldLine
           label={t('card.field.recommendation')}
           value={recommendation}
-          terms={terms}
+          fieldMatch={lookup('recommendation')}
+          activeMatchIndex={activeMatchIndex}
         />
       )}
       {rationale && (
-        <FieldLine label={t('card.field.rationale')} value={rationale} terms={terms} />
+        <FieldLine
+          label={t('card.field.rationale')}
+          value={rationale}
+          fieldMatch={lookup('rationale')}
+          activeMatchIndex={activeMatchIndex}
+        />
       )}
     </div>
   );
 }
 
-function FieldLine({ label, value, terms }: { label: string; value: string; terms: string[] }) {
+function FieldLine({
+  label,
+  value,
+  fieldMatch,
+  activeMatchIndex,
+}: {
+  label: string;
+  value: string;
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
+}) {
   return (
     <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
       <span className="font-medium text-gray-600 dark:text-gray-400">{label}:</span>{' '}
-      <HighlightCell text={value} terms={terms} />
+      <HighlightCell text={value} fieldMatch={fieldMatch} activeMatchIndex={activeMatchIndex} />
     </p>
   );
 }
 
-function HighlightCell({ text, terms }: { text: string; terms: string[] }) {
-  const ranges = terms.length === 0 ? [] : findMatchRanges(text, terms);
-  if (ranges.length === 0) return <>{text}</>;
+function HighlightCell({
+  text,
+  fieldMatch,
+  activeMatchIndex,
+}: {
+  text: string;
+  fieldMatch: FieldMatch | undefined;
+  activeMatchIndex: number | null;
+}) {
+  if (!fieldMatch || fieldMatch.ranges.length === 0) return <>{text}</>;
   return (
-    <HighlightedText text={text} ranges={ranges} startMatchIndex={0} activeMatchIndex={null} />
+    <HighlightedText
+      text={text}
+      ranges={fieldMatch.ranges}
+      startMatchIndex={fieldMatch.startIndex}
+      activeMatchIndex={activeMatchIndex}
+    />
   );
 }
