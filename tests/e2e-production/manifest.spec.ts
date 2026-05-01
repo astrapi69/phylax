@@ -11,10 +11,17 @@ test.describe('PWA manifest (production build)', () => {
 
     expect(manifestHref).toBeTruthy();
 
-    const response = await page.goto(manifestHref ?? 'manifest.webmanifest');
-    expect(response?.status()).toBe(200);
+    // Fetch via the page's request context instead of `page.goto`.
+    // Firefox classifies `application/manifest+json` as a download
+    // and rejects the navigation with "Download is starting".
+    // `request.fetch` bypasses navigation/download UI entirely
+    // while still validating status + body. Mirrors the dev-side
+    // `tests/e2e/pwa.spec.ts` fix.
+    const url = new URL(manifestHref ?? 'manifest.webmanifest', page.url()).toString();
+    const response = await page.request.fetch(url);
+    expect(response.status()).toBe(200);
 
-    const manifest = await response?.json();
+    const manifest = await response.json();
     expect(manifest.name).toBe('Phylax');
     expect(manifest.short_name).toBe('Phylax');
     expect(manifest.display).toBe('standalone');

@@ -47,7 +47,15 @@ async function completeOnboarding(page: Page) {
   await page.getByLabel('Master-Passwort').first().fill(DEFAULT_PASSWORD);
   await page.getByLabel('Passwort wiederholen').fill(DEFAULT_PASSWORD);
   await page.getByLabel('Ich habe verstanden').check();
-  await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+  // Submit gates on the @zxcvbn-ts strength score (ADR-0014). The
+  // dictionary chunk is async-loaded; on webkit it sometimes lands
+  // later than Playwright's auto-actionability window so the click
+  // times out with "element is not enabled". Wait explicitly with
+  // a generous budget. Mirrors the dev-side `tests/e2e/helpers.ts`
+  // fix.
+  const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
+  await expect(submitBtn).toBeEnabled({ timeout: 30000 });
+  await submitBtn.click();
   await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
     timeout: 10000,
   });
