@@ -4,7 +4,7 @@ import {
   decodeMetaPayload,
   DEFAULT_SETTINGS,
   type MetaPayload,
-  type AIProviderConfig,
+  type MultiProviderAIConfig,
 } from './settings';
 import { VERIFICATION_TOKEN } from './meta';
 
@@ -87,11 +87,13 @@ describe('MetaPayload encoding/decoding', () => {
     expect(decodedHigh.settings.autoLockMinutes).toBe(60);
   });
 
-  it('round-trips aiConfig alongside settings', () => {
-    const aiConfig: AIProviderConfig = {
-      provider: 'anthropic',
-      apiKey: 'sk-ant-abc123',
-      model: 'claude-sonnet-4-6',
+  it('round-trips multi-provider aiConfig alongside settings', () => {
+    const aiConfig: MultiProviderAIConfig = {
+      providers: [
+        { provider: 'anthropic', apiKey: 'sk-ant-abc123', model: 'claude-sonnet-4-6' },
+        { provider: 'google', apiKey: 'gsk-xyz', model: 'gemini-2.0-flash' },
+      ],
+      activeProviderId: 'anthropic',
     };
     const payload: MetaPayload = {
       verificationToken: VERIFICATION_TOKEN,
@@ -116,11 +118,11 @@ describe('MetaPayload encoding/decoding', () => {
     expect(decoded.aiConfig).toBeUndefined();
   });
 
-  it('rejects malformed aiConfig (missing apiKey)', () => {
+  it('rejects malformed aiConfig (missing apiKey on cloud provider)', () => {
     const raw = JSON.stringify({
       verificationToken: VERIFICATION_TOKEN,
       settings: { autoLockMinutes: 5 },
-      aiConfig: { provider: 'anthropic' },
+      aiConfig: { providers: [{ provider: 'anthropic' }], activeProviderId: 'anthropic' },
     });
     const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
 
@@ -136,5 +138,112 @@ describe('MetaPayload encoding/decoding', () => {
     const encoded = new TextDecoder().decode(encodeMetaPayload(payload));
 
     expect(encoded).not.toContain('aiConfig');
+  });
+
+  // Multi-provider migration + repair tests (AI Commit 2)
+
+  it('migrates legacy single-shape aiConfig to a one-element multi shape', () => {
+    // Vault stored under the foundation task wrote the single shape
+    // directly. Read-side translates to multi automatically; the
+    // `activeProviderId` is the migrated provider.
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: {
+        provider: 'anthropic',
+        apiKey: 'sk-ant-legacy',
+        model: 'claude-sonnet-4-6',
+      },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+
+    expect(decoded.aiConfig).toEqual({
+      providers: [{ provider: 'anthropic', apiKey: 'sk-ant-legacy', model: 'claude-sonnet-4-6' }],
+      activeProviderId: 'anthropic',
+    });
+  });
+
+  it('legacy migration is idempotent: re-encoding the migrated shape yields the same result', () => {
+    const legacy = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: { provider: 'anthropic', apiKey: 'sk-ant' },
+    });
+    const firstPass = decodeMetaPayload(new TextEncoder().encode(legacy));
+    const secondPass = decodeMetaPayload(encodeMetaPayload(firstPass));
+
+    expect(secondPass.aiConfig).toEqual(firstPass.aiConfig);
+  });
+
+  it('accepts an empty apiKey for local providers (lmstudio / ollama / custom)', () => {
+    const aiConfig: MultiProviderAIConfig = {
+      providers: [{ provider: 'lmstudio', apiKey: '' }],
+      activeProviderId: 'lmstudio',
+    };
+    const payload: MetaPayload = {
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig,
+    };
+    const decoded = decodeMetaPayload(encodeMetaPayload(payload));
+    expect(decoded.aiConfig).toEqual(aiConfig);
+  });
+
+  it('drops malformed entries inside providers[] but keeps the valid ones', () => {
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: {
+        providers: [
+          { provider: 'anthropic', apiKey: 'sk-ant' },
+          { provider: 'unknown-provider', apiKey: 'whatever' },
+          { provider: 'google' /* missing apiKey */ },
+        ],
+        activeProviderId: 'anthropic',
+      },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+    expect(decoded.aiConfig?.providers).toEqual([{ provider: 'anthropic', apiKey: 'sk-ant' }]);
+  });
+
+  it('deduplicates duplicate provider ids inside providers[] (last write wins)', () => {
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: {
+        providers: [
+          { provider: 'anthropic', apiKey: 'older' },
+          { provider: 'anthropic', apiKey: 'newer' },
+        ],
+        activeProviderId: 'anthropic',
+      },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+    expect(decoded.aiConfig?.providers).toEqual([{ provider: 'anthropic', apiKey: 'newer' }]);
+  });
+
+  it('repairs activeProviderId pointing at a non-existent entry', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: {
+        providers: [{ provider: 'anthropic', apiKey: 'sk-ant' }],
+        activeProviderId: 'google',
+      },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+    expect(decoded.aiConfig?.activeProviderId).toBe('anthropic');
+    warn.mockRestore();
+  });
+
+  it('returns undefined for a fully-empty providers[]', () => {
+    const raw = JSON.stringify({
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig: { providers: [], activeProviderId: 'anthropic' },
+    });
+    const decoded = decodeMetaPayload(new TextEncoder().encode(raw));
+    expect(decoded.aiConfig).toBeUndefined();
   });
 });

@@ -258,4 +258,53 @@ describe('reencryptVault', () => {
     if (!meta) throw new Error('meta missing');
     await expect(decrypt(newKey, new Uint8Array(meta.payload))).resolves.toBeTruthy();
   });
+
+  it('preserves multi-provider AI config across master-password change (AI Commit 2)', async () => {
+    // Multi-AI config rides along on the existing meta.payload blob
+    // (Q11 from the AI multi-provider spec: no TABLES_TO_REENCRYPT
+    // change needed). This test pins the contract: configure two
+    // providers under OLD_PASSWORD, re-encrypt the vault, then read
+    // the multi config back. Expectation: every provider entry,
+    // model field, and the activeProviderId survive the migration.
+    const { saveMultiAIConfig, readMultiAIConfig } = await import('./aiConfig');
+    await saveMultiAIConfig({
+      providers: [
+        {
+          provider: 'anthropic',
+          apiKey: 'sk-ant-survives-rotation',
+          model: 'claude-sonnet-4-6',
+        },
+        {
+          provider: 'google',
+          apiKey: 'gsk-survives-rotation',
+          model: 'gemini-2.0-flash',
+        },
+      ],
+      activeProviderId: 'google',
+    });
+
+    const oldKey = await deriveKeyFor(OLD_PASSWORD);
+    const newKey = await deriveKeyFromPassword(NEW_PASSWORD, await metaSalt());
+    await reencryptVault(oldKey, newKey);
+
+    if (getLockState() === 'unlocked') lock();
+    unlockWithKey(newKey);
+
+    const multi = await readMultiAIConfig();
+    expect(multi).toEqual({
+      providers: [
+        {
+          provider: 'anthropic',
+          apiKey: 'sk-ant-survives-rotation',
+          model: 'claude-sonnet-4-6',
+        },
+        {
+          provider: 'google',
+          apiKey: 'gsk-survives-rotation',
+          model: 'gemini-2.0-flash',
+        },
+      ],
+      activeProviderId: 'google',
+    });
+  });
 });
