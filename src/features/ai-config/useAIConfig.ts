@@ -8,6 +8,33 @@ import {
 } from './disclaimerStorage';
 import type { AIConfigState, KeyFormatWarning } from './types';
 
+// BUG-07 follow-up: each `useAIConfig()` instance maintains its own
+// `state`, so the NavBar / NavDrawer copies never noticed when
+// AISettingsSection wrote a new key (or deleted the old one) - the
+// chat link stayed hidden until a full reload re-ran the load
+// effect. Wire a module-level subscription bus: every save / delete
+// notifies the bus, every hook instance subscribes and refetches.
+// Mirrors the `onLockStateChange` pattern in `src/crypto/keyStore.ts`.
+type ConfigChangeListener = () => void;
+const configChangeListeners = new Set<ConfigChangeListener>();
+
+function notifyConfigChange(): void {
+  for (const listener of configChangeListeners) {
+    try {
+      listener();
+    } catch (err) {
+      console.error('[useAIConfig] config-change listener threw:', err);
+    }
+  }
+}
+
+function onAIConfigChange(listener: ConfigChangeListener): () => void {
+  configChangeListeners.add(listener);
+  return () => {
+    configChangeListeners.delete(listener);
+  };
+}
+
 export interface UseAIConfigResult {
   state: AIConfigState;
   saveConfig: (config: AIProviderConfig) => Promise<void>;
@@ -62,8 +89,17 @@ export function useAIConfig(): UseAIConfigResult {
 
     void load();
 
+    // Subscribe to cross-instance config changes so NavBar /
+    // NavDrawer / useChat / ImportCleanupScreen all reflect a save
+    // or delete that originated in AISettingsSection.
+    const unsubscribe = onAIConfigChange(() => {
+      if (cancelled) return;
+      void load();
+    });
+
     return () => {
       cancelled = true;
+      unsubscribe();
     };
   }, []);
 
@@ -74,6 +110,7 @@ export function useAIConfig(): UseAIConfigResult {
       config,
       disclaimerAccepted: isDisclaimerAccepted(),
     });
+    notifyConfigChange();
   }, []);
 
   const deleteConfig = useCallback(async () => {
@@ -83,6 +120,7 @@ export function useAIConfig(): UseAIConfigResult {
       status: 'unconfigured',
       disclaimerAccepted: false,
     });
+    notifyConfigChange();
   }, []);
 
   const acceptDisclaimer = useCallback(() => {

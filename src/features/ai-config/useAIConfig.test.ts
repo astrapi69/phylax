@@ -126,4 +126,57 @@ describe('useAIConfig', () => {
     expect(result.current.checkKeyFormat('sk-ant-short')).toBe('suspicious');
     expect(result.current.checkKeyFormat('')).toBe('suspicious');
   });
+
+  it('cross-instance sync: saveConfig propagates to sibling instances (BUG-07 follow-up)', async () => {
+    // Two hook instances render independently (e.g., NavBar +
+    // AISettingsSection). When AISettingsSection saves a config,
+    // NavBar's instance must observe the change without a reload
+    // because the chat-link nav gate depends on `state.status`.
+    const a = renderHook(() => useAIConfig());
+    const b = renderHook(() => useAIConfig());
+    await waitFor(() => expect(a.result.current.state.status).toBe('unconfigured'));
+    await waitFor(() => expect(b.result.current.state.status).toBe('unconfigured'));
+
+    // Mock the DB read so the listener-driven refetch in instance B
+    // sees the saved value.
+    vi.spyOn(aiConfigDb, 'readAIConfig').mockResolvedValue({
+      provider: 'anthropic',
+      apiKey: 'sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      model: 'claude-sonnet-4-5-20250929',
+    });
+
+    await act(async () => {
+      await a.result.current.saveConfig({
+        provider: 'anthropic',
+        apiKey: 'sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        model: 'claude-sonnet-4-5-20250929',
+      });
+    });
+
+    await waitFor(() => expect(a.result.current.state.status).toBe('configured'));
+    await waitFor(() => expect(b.result.current.state.status).toBe('configured'));
+  });
+
+  it('cross-instance sync: deleteConfig propagates to sibling instances (BUG-07 follow-up)', async () => {
+    vi.spyOn(aiConfigDb, 'readAIConfig').mockResolvedValue({
+      provider: 'anthropic',
+      apiKey: 'sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      model: 'claude-sonnet-4-5-20250929',
+    });
+    const a = renderHook(() => useAIConfig());
+    const b = renderHook(() => useAIConfig());
+    await waitFor(() => expect(a.result.current.state.status).toBe('configured'));
+    await waitFor(() => expect(b.result.current.state.status).toBe('configured'));
+
+    // Switch the spy back so instance B's listener-driven refetch
+    // lands on the empty path.
+    vi.spyOn(aiConfigDb, 'readAIConfig').mockResolvedValue(null);
+
+    await act(async () => {
+      await a.result.current.deleteConfig();
+    });
+
+    await waitFor(() => expect(a.result.current.state.status).toBe('unconfigured'));
+    await waitFor(() => expect(b.result.current.state.status).toBe('unconfigured'));
+  });
 });
