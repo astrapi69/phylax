@@ -65,7 +65,17 @@ export async function setupAuthenticatedSession(
   await page.getByLabel('Master-Passwort').first().fill(password);
   await page.getByLabel('Passwort wiederholen').fill(password);
   await page.getByLabel('Ich habe verstanden').check();
-  await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+  // Submit gates on the @zxcvbn-ts strength score, which relies on
+  // an async-loaded dictionary chunk (ADR-0014). On chromium the
+  // chunk lands in a few ms and the submit enables in time for
+  // Playwright's auto-actionability wait. On webkit the chunk
+  // sometimes lands later than Playwright's 30s click-actionability
+  // window, so the click times out with "element is not enabled".
+  // Wait explicitly with a generous budget so the dictionary has a
+  // chance to settle before we click.
+  const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
+  await expect(submitBtn).toBeEnabled({ timeout: 30000 });
+  await submitBtn.click();
 
   // Wait for profile-create redirect
   await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({

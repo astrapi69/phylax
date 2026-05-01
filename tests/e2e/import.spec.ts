@@ -60,7 +60,13 @@ test.describe('Import flow', () => {
     await setupAuthenticatedSession(page);
     await page.getByRole('link', { name: 'Import', exact: true }).click();
     await page.getByLabel(/markdown-text einfügen/i).fill(SHORT_FIXTURE);
-    await page.getByRole('button', { name: 'Weiter' }).click();
+    // "Weiter" gates on the textarea content reaching a non-empty
+    // settled state. Webkit's input-event timing sometimes leaves
+    // the button disabled past Playwright's auto-actionability
+    // window. Wait explicitly so the click does not timeout.
+    const weiter = page.getByRole('button', { name: 'Weiter' });
+    await expect(weiter).toBeEnabled({ timeout: 10000 });
+    await weiter.click();
     await expect(
       page.getByRole('heading', { name: /In welches Profil importieren/i }),
     ).toBeVisible();
@@ -73,7 +79,9 @@ test.describe('Import flow', () => {
     await setupAuthenticatedSession(page);
     await page.getByRole('link', { name: 'Import', exact: true }).click();
     await page.getByLabel(/markdown-text einfügen/i).fill(fullFixture);
-    await page.getByRole('button', { name: 'Weiter' }).click();
+    const weiter = page.getByRole('button', { name: 'Weiter' });
+    await expect(weiter).toBeEnabled({ timeout: 10000 });
+    await weiter.click();
     await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
     await expect(page.getByRole('heading', { name: 'Vorschau' })).toBeVisible();
     await page.getByRole('button', { name: 'Import starten' }).click();

@@ -12,11 +12,19 @@ test.describe('PWA', () => {
 
     expect(manifestHref).toBeTruthy();
 
-    // Fetch the manifest
-    const response = await page.goto(manifestHref ?? '/manifest.webmanifest');
-    expect(response?.status()).toBe(200);
+    // Fetch the manifest via the page's request context instead of
+    // `page.goto`. Firefox decides whether `.webmanifest` is inline
+    // or a download based on Content-Type sniffing; vite-plugin-pwa's
+    // dev server serves the file with `application/manifest+json`,
+    // which Firefox flags as a download and the navigation rejects
+    // with "Download is starting". `request.fetch` is a page-less
+    // fetch that bypasses navigation/download UI entirely while
+    // still validating status + body.
+    const url = new URL(manifestHref ?? '/manifest.webmanifest', page.url()).toString();
+    const response = await page.request.fetch(url);
+    expect(response.status()).toBe(200);
 
-    const manifest = await response?.json();
+    const manifest = await response.json();
     expect(manifest.name).toBe('Phylax');
     expect(manifest.short_name).toBe('Phylax');
     expect(manifest.display).toBe('standalone');
