@@ -49,7 +49,14 @@ jobs:
   e2e-dev:
     name: E2E (Dev)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Steady-state suite runtime is ~13-14 min (3 browsers x 1 worker x
+    # ~91 tests x retries=2). The original 15 min cap left no headroom
+    # and consistently killed runs at exactly 15:04 once the webkit /
+    # firefox explicit waits added in 06b5f63 / 314f1ae / a907219
+    # pushed per-test wall time up. Raise to 25 to absorb the steady
+    # state plus a flake retry. Structural fix (shard browsers across
+    # parallel jobs) is tracked separately.
+    timeout-minutes: 25
     # TD-10 (b+c): Playwright's official container image ships with
     # browsers and all system deps pre-baked. Running the job inside
     # the container eliminates the apt-install flake class that TD-10
@@ -125,7 +132,10 @@ jobs:
     name: E2E (Production)
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 15
+    # See timeout-minutes comment on e2e-dev above. Same suite size,
+    # same browser matrix; production additionally pays the preview
+    # server start + service-worker activation cost on first nav.
+    timeout-minutes: 25
     # TD-10 (b+c): see comment on e2e-dev. Same container image; the
     # production build artifact is downloaded into the container
     # workspace and exercised against preview.
