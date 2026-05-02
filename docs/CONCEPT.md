@@ -140,7 +140,7 @@ Die KI in Phylax ist der **primäre Eingabeweg** für die Profilerstellung. Der 
 
 ### Workflow
 
-1. Nutzer hinterlegt seinen eigenen API-Key (OpenAI oder Anthropic), verschlüsselt gespeichert
+1. Nutzer hinterlegt seinen eigenen API-Key bei einem Anbieter seiner Wahl (Anthropic, OpenAI, Google, Mistral, oder lokale Modelle via LM Studio / Ollama / ein eigenes OpenAI-kompatibles Endpoint, siehe ADR-0019), verschlüsselt gespeichert
 2. Nutzer startet eine geführte Profilsitzung
 3. Die KI folgt dem **Prompt-Vertrag**: sie fragt, strukturiert, markiert Unsicherheiten
 4. Chat-Nachrichten sind **ephemeral** - sie werden nicht von Phylax gespeichert
@@ -193,15 +193,16 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 
 ## Tech-Stack
 
-- **Frontend**: React 18, TypeScript, Vite
+- **Frontend**: React 19 (siehe ADR-0021), TypeScript, Vite
 - **Storage**: IndexedDB via Dexie.js
-- **Verschlüsselung**: Web Crypto API (AES-256-GCM), PBKDF2 für Key-Derivation (1.200.000 Iterationen, siehe ADR-0001)
+- **Verschlüsselung**: Web Crypto API (AES-256-GCM), PBKDF2 für Key-Derivation (1.200.000 Iterationen, siehe ADR-0001); atomare Re-Encryption beim Master-Passwort-Wechsel (siehe ADR-0018)
 - **Styling**: Tailwind CSS
-- **PDF-Export**: jsPDF
+- **PDF-Export**: jsPDF + jspdf-autotable (siehe ADR-0020)
+- **PDF-Import**: pdfjs-dist (siehe ADR-0017)
 - **PWA**: vite-plugin-pwa (Workbox)
 - **Testing**: Vitest, Playwright (E2E)
 - **i18n**: i18next (DE/EN im MVP, später ES/FR/EL)
-- **KI-Integration**: Über API-Key des Nutzers (OpenAI / Anthropic), kein eigener Backend-Service
+- **KI-Integration**: Über API-Key des Nutzers, Multi-Provider (Anthropic, OpenAI, Google, Mistral, LM Studio, Ollama, custom OpenAI-kompatibel) per ADR-0019. Kein eigener Backend-Service
 
 ## Sicherheitsmodell
 
@@ -221,6 +222,12 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 - Dokumente (PDF/Bilder) werden als verschlüsselte Blobs gespeichert
 - API-Keys werden verschlüsselt gespeichert (gleicher Mechanismus wie Profildaten)
 
+### Master-Passwort-Wechsel (P-06, ADR-0018)
+
+- Re-Encryption ist atomar: alle Datensätze werden mit dem neuen Schlüssel neu verschlüsselt, bevor der alte Schlüssel aus dem Speicher entfernt wird.
+- Bei einem Fehler während der Re-Encryption bleibt der alte Schlüssel aktiv und der vorherige Zustand erhalten; es gibt keinen halb-migrierten Zwischenzustand.
+- Der In-Memory-Schlüssel-Wechsel ist eng begrenzt; alte Schlüsselbytes werden nicht logged und nicht persistiert.
+
 ### Threat Model
 
 - **Schützt vor**: Diebstahl des Geräts (bei gesperrter App), neugierige Dritte, Cloud-Breaches (weil keine Cloud), Telemetrie-Leaks (weil keine Telemetrie)
@@ -232,6 +239,17 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 - Chat-Nachrichten werden nicht in Phylax gespeichert. Nur das vom Nutzer bestätigte Profil-Fragment wird persistiert.
 - Der API-Key verlässt das Gerät nur in verschlüsselten HTTPS-Requests an den gewählten Anbieter.
 - Der Nutzer kann den API-Key jederzeit löschen und die KI-Funktion deaktivieren.
+
+### KI-Anbieterwahl (AIP-01..05, ADR-0019)
+
+Phylax unterstützt mehrere KI-Anbieter; jeder hat seine eigene Retentions- und Trainings-Policy:
+
+- **Anthropic**: 30 Tage Retention für Safety-Review, anschliessend Auto-Delete; keine Trainingsverwendung.
+- **OpenAI / Google / Mistral**: jeweils eigene Policies; im Wizard wird die anbieterspezifische Hinweistexte angezeigt, bevor der Nutzer den Anbieter aktiviert.
+- **LM Studio / Ollama**: lokale Inferenz; Daten verlassen das Gerät nicht.
+- **Custom OpenAI-kompatibles Endpoint**: der Nutzer trägt selbst Verantwortung für die Wahl des Endpoints.
+
+Threat-Model-Delta: jeder API-Key gehört dem Nutzer, nicht Phylax. Die Wahl des Anbieters verlagert das Vertrauensziel; der Nutzer muss pro Anbieter selbst entscheiden, welche Inhalte er in den Chat überträgt.
 
 ## Datenmodell
 
@@ -250,17 +268,17 @@ Alle Datensätze (ausser meta) tragen ein `profileId`-Feld. Im MVP existiert gen
 
 ## Phasenplan
 
-| Phase       | Scope                | Deliverable                                                                                                                     |
-| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 1           | Foundation           | Vite-Setup, PWA-Config, Dexie-Schema, Crypto-Layer, Master-Passwort-Flow, Auto-Lock                                             |
-| 2           | Profil               | Profilstruktur, Beobachtungs-CRUD nach Themen, Profil-Versionierung, Markdown-Rendering                                         |
-| 3           | KI-gestützte Eingabe | API-Key-Verwaltung (verschlüsselt), Prompt-Vertrag, geführte Sitzung, Paste-in-Modus                                            |
-| 4           | Dokumente            | Upload (PDF/Bild), verschlüsselte Blob-Speicherung, Viewer, Verknüpfung mit Profilbereichen                                     |
-| 4b          | ePA-Import           | Manueller Import von Krankenkassen-App-Exports, Bildern, PDFs; AI-gestützte Klassifikation und Extraktion in das lebende Profil |
-| 5           | Export               | PDF-/Markdown-Export des Profils, CSV-Export der Laborwerte, Datumsbereich-Filter                                               |
-| 6           | Backup               | Verschlüsselte Backup-Datei, Restore-Import                                                                                     |
-| 7           | Polish               | Mobile-First, Onboarding, i18n DE/EN, Dark Mode, Accessibility                                                                  |
-| 8 (Zukunft) | Multi-Profil         | Stellvertreterprofil-Unterstützung, Profil-Wechsel                                                                              |
+| Phase       | Scope                | Deliverable                                                                                                                                                                                                   |
+| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1           | Foundation           | Vite-Setup, PWA-Config, Dexie-Schema, Crypto-Layer, Master-Passwort-Flow, Auto-Lock                                                                                                                           |
+| 2           | Profil               | Profilstruktur, Beobachtungs-CRUD nach Themen, Profil-Versionierung, Markdown-Rendering                                                                                                                       |
+| 3           | KI-gestützte Eingabe | API-Key-Verwaltung (verschlüsselt), Prompt-Vertrag, geführte Sitzung, Paste-in-Modus                                                                                                                          |
+| 4           | Dokumente            | Upload (PDF/Bild), verschlüsselte Blob-Speicherung, Viewer, Verknüpfung mit Profilbereichen                                                                                                                   |
+| 4b          | ePA-Import           | Manueller Import von Krankenkassen-App-Exports, Bildern, PDFs; AI-gestützte Klassifikation und Extraktion in das lebende Profil                                                                               |
+| 5           | Export               | PDF-/Markdown-Export des Profils, CSV-Export der Laborwerte, Datumsbereich-Filter                                                                                                                             |
+| 6           | Backup               | Verschlüsselte Backup-Datei, Restore-Import                                                                                                                                                                   |
+| 7           | Polish               | Manual-Edit Polish, Search (P-22), Error Boundary (P-09), Change Master Password (P-06), Mobile-First Sweep, Dark Mode, Accessibility (Onboarding ist als Phase ONB ausgegliedert; i18n DE/EN als I18N-Serie) |
+| 8 (Zukunft) | Multi-Profil         | Stellvertreterprofil-Unterstützung, Profil-Wechsel                                                                                                                                                            |
 
 ## Nicht-Ziele (explizit)
 
