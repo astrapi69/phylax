@@ -15,6 +15,7 @@ in front of a real browser. Don't write one for changes that automated
 tests already cover.
 
 Common triggers:
+
 - New UI surface: visual fit, hit targets, focus traps
 - Service worker / PWA install / update flows: cross-tab + cold-load
 - Real-network behavior: AI cleanup, backup round-trip on slow links
@@ -48,6 +49,7 @@ Browser, device, fixtures, environment toggles.
 ## Scenarios
 
 Numbered list. Each scenario:
+
 - **Steps** - what to do, in order
 - **Expected** - what should happen
 - **Result** - pass / fail / partial, filled in by walker
@@ -93,13 +95,15 @@ Pending smoke files, ordered by ship date. User-driven; CC may suggest
 when shipping a feature whose verification crosses the automated/human
 boundary.
 
-| Feature | Description | Status |
-| ------- | ----------- | ------ |
-| P-01 | [Mobile-first viewport sweep](p-01-mobile-sweep.md) | Pending walk |
-| P-06 | [Change master password](p-06-change-password.md) | Complete (2026-04-30; P-06a fixed inline) |
-| P-09 | [Error boundary](p-09-error-boundary.md) | Complete (2026-04-30; P-09a fixed inline) |
-| P-16 | [Document row delete](p-16-document-row-delete.md) | Complete (2026-04-30; BUG-03/04/05/06 fixed inline) |
-| P-22b/c/d-polish | [Cross-view match-nav](p-22-b-c-d-match-nav.md) | Pending walk |
+| Feature          | Description                                                  | Status                                              |
+| ---------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| P-01             | [Mobile-first viewport sweep](p-01-mobile-sweep.md)          | Pending walk                                        |
+| P-06             | [Change master password](p-06-change-password.md)            | Complete (2026-04-30; P-06a fixed inline)           |
+| P-09             | [Error boundary](p-09-error-boundary.md)                     | Complete (2026-04-30; P-09a fixed inline)           |
+| P-16             | [Document row delete](p-16-document-row-delete.md)           | Complete (2026-04-30; BUG-03/04/05/06 fixed inline) |
+| P-22b/c/d-polish | [Cross-view match-nav](p-22-b-c-d-match-nav.md)              | Pending walk                                        |
+| IM-05 Option B   | [Per-type merge confirm dialog](im-05-option-b-merge.md)     | Pending walk                                        |
+| AIP-01..05       | [Multi-AI-provider wizard + streaming](ai-multi-provider.md) | Pending walk                                        |
 
 When more smoke files ship, add rows above. Mark Status as `Pending
 walk` (file created, not yet walked), `In progress` (partial walk),
