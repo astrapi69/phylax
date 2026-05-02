@@ -12,18 +12,18 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-| #   | Task                                                   | Why it's first                                                                                                                                                                        | Effort                         |
-| --- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| 1   | **Coverage P0 - `features/backup-import` error paths** | 82.10%; backup restore is data-integrity critical (half-applied restore = inconsistent vault). Add partial-decrypt and quota-exceeded mid-restore tests.                              | ~1 h                           |
-| 2   | **P-05 ChangePassword Settings layout polish**         | The P-06 flow is shipped; the Settings page placeholder is the visible gap. Small UI cleanup, no new behaviour.                                                                       | ~30 min                        |
-| 3   | **AIP-polish-1 explicit Add-Provider button**          | Currently the wizard opens pre-filled with the active provider; an explicit "Add provider" CTA removes the implicit-radio-switch confusion. Small, ships without an upstream trigger. | ~1 h                           |
-| 4   | **D-02 Custom domain** (optional, deployment polish)   | One-time DNS work plus a CNAME. Only do this if the user has a domain in mind.                                                                                                        | ~30 min once domain is decided |
-| 5   | **D-03 PWABuilder packaging**                          | Needs the live URL from D-01 (already shipped). One-shot upload to PWABuilder, generates Play Store / Microsoft Store packages.                                                       | ~1 h                           |
+| #   | Task                                                   | Why it's first                                                                                                                                                                                                  | Effort  |
+| --- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1   | **Coverage P0 - `features/backup-import` error paths** | 82.10%; backup restore is data-integrity critical (half-applied restore = inconsistent vault). Add partial-decrypt and quota-exceeded mid-restore tests. Closes the last P0 row in `current-coverage.md`.       | ~1 h    |
+| 2   | **AIP-polish-1 explicit Add-Provider button**          | The "Anbieter verwalten" wizard opens pre-filled with the active provider; an explicit "Add provider" CTA removes the implicit-radio-switch confusion. Real UX clarity gain, ships without an upstream trigger. | ~1 h    |
+| 3   | **D-03 PWABuilder packaging**                          | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner.                                                        | ~1 h    |
+| 4   | **P-05 ChangePassword Settings layout polish**         | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                                                                            | ~30 min |
 
-After Tier 1 closes, four of the five "Coverage P0" rows in
-`docs/audits/current-coverage.md` are gone, the Settings page is
-visually consistent, and the AI-provider wizard has a clean
-add-flow.
+After Tier 1 closes, all four "Coverage P0" rows in
+`docs/audits/current-coverage.md` are resolved, the AI-provider
+wizard has a clean add-flow, the app ships as installable
+Play Store / Microsoft Store packages, and the Settings page is
+visually consistent.
 
 ## Tier 2 - User-blocked (can only be done by the maintainer)
 
@@ -42,6 +42,9 @@ real human in front of a real browser / a screen reader / a market.
   ([`manual-smoke/ai-multi-provider.md`](manual-smoke/ai-multi-provider.md)).
 - **P-22b/c/d-polish** Tier 2 sign-off
   ([`manual-smoke/p-22-b-c-d-match-nav.md`](manual-smoke/p-22-b-c-d-match-nav.md)).
+- **D-02 Custom domain** - blocked on the user picking a domain. Once
+  the registrar + name are decided, the work itself is ~30 min (DNS
+  CNAME + Pages config). Until then it cannot proceed.
 
 ## Tier 3 - Trigger-bound (wait for an external signal before shipping)
 
