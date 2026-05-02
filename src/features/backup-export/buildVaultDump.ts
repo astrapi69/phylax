@@ -42,6 +42,11 @@ export type BuildDumpResult = { ok: true; dump: VaultDump } | { ok: false; error
 function toDomainRows<
   T extends { id: string; profileId: string; createdAt: number; updatedAt: number },
 >(entities: T[]): DomainRow[] {
+  // Reason: every entity table satisfies the DomainRow shape (id +
+  // profileId + createdAt + updatedAt) by construction in the
+  // repository layer. The double-cast acknowledges that TS cannot
+  // see this structural equivalence across the heterogeneous T
+  // generic without a runtime check we do not need.
   return entities as unknown as DomainRow[];
 }
 

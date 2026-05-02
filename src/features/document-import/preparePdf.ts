@@ -170,6 +170,11 @@ async function loadPdfDocument(data: ArrayBuffer): Promise<PdfDocumentLike> {
     useSystemFonts: false,
   });
   const document = await loadingTask.promise;
+  // Reason: PdfDocumentLike is a structural subset of the pdfjs-dist
+  // PDFDocumentProxy (only the fields and methods we actually use),
+  // declared locally to avoid leaking the full pdfjs type graph into
+  // the import-pipeline domain. The double-cast acknowledges the
+  // intentional narrowing.
   return document as unknown as PdfDocumentLike;
 }
 

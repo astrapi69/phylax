@@ -195,6 +195,12 @@ void i18n
     },
     partialBundledLanguages: true,
     lng: detectInitialLanguage(),
+    // Reason: SUPPORTED_LANGUAGES / NAMESPACES are `readonly` tuple
+    // literals (`as const`) for exhaustive `Namespace` /
+    // `SupportedLanguage` derivations elsewhere. i18next's `init`
+    // signature wants a mutable `string[]`. The double-cast widens the
+    // tuple to a string array without losing the strong literal types
+    // upstream.
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     fallbackLng: false,
     defaultNS: 'common',
