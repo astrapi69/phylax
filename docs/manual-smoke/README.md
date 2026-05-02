@@ -26,8 +26,8 @@ Common triggers:
 
 `<feature-id>-<short-description>.md`
 
-Examples: `p-01-mobile-sweep.md`, `bug-01-silent-update.md`,
-`im-05-confirm-dialog-toggles.md`.
+Examples: `p-01-mobile-sweep.md`, `im-05-option-b-merge.md`,
+`ai-multi-provider.md`.
 
 The feature ID matches the ROADMAP task ID. The description is two to
 four words, kebab-case.

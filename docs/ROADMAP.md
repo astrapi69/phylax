@@ -445,24 +445,36 @@ Iteration 2 (in-app help links + opt-in onboarding tour) and Iteration 3 (full b
 
 ## Next Steps
 
-Phases 1 through 3 plus Phase 2b/2c/2d, the I-series, and Phase S are
-complete. The v1.0.0 public release is in progress via the R-series.
+v1.0.0 shipped 2026-04-18. Closed phases since: Phase 4 Documents,
+Phase 4b ePA Import, Phase 5 Export, Phase 6 Backup, Phase ONB,
+DOC-01 Iteration 1, AIP-01..05 Multi-AI-Provider (ADR-0019), and
+the bulk of Phase 7 polish (P-01 audit, P-05/06/07/08/09/12/16/17,
+P-19, P-22). Phase 2 manual-entry forms (O-10..O-19) plus the shared
+modal primitive O-20 are complete.
 
-v1.0.0 shipped. D-01 (GitHub Pages deployment) landed. Verify live at
-https://astrapi69.github.io/phylax/ once the `Deploy to GitHub Pages`
-workflow completes for this commit, then update repo `homepageUrl` and
-edit the v1.0.0 release notes to link the live URL.
+Open near-term:
 
-Phase 2 manual-entry CRUD (O-10..O-15) and the shared modal primitive
-(O-20) are complete. Remaining Phase 2 tasks: O-16 (profile base data
-editor), O-17 (in-memory observation search), O-18 (date range filter),
-O-19 (empty states and loading skeletons).
+- **P-01** Tier 2 mobile-sweep walk-through (manual smoke, sign-off
+  pending).
+- **P-07-d** screen-reader sweep across the polished surfaces.
+- **AIP-polish-1..3** deferred markers from the multi-provider
+  shipment.
+- **P-22b/c/d-polish** Tier 2 sign-off.
+- **IM-05 Option B** + **AIP-01..05** smoke walks (`docs/manual-smoke/`
+  files exist; sign-off pending).
 
-Open backlog (deferred; not part of v1.0.0):
+Deferred:
 
-- **O-16 through O-19**: remaining Phase 2 manual-entry forms (base-data
-  editor, in-memory search, date range filter, empty states)
-- **Phase 4** (Documents) through **Phase 9** (Derived plans): all future
+- **P-11** ES / FR / EL translations (postponed until DE+EN UX
+  stabilises).
+- **Phase 8** Multi-Profile (deprioritized 2026-05-01).
+- **Phase 9** Derived Plans (DP-series, future).
+
+Audit-driven backlog (post-publication of
+`docs/audits/codebase-audit-2026-05-02.md` and
+`/tmp/docs-freshness-audit-2026-04-30.md`): see the per-section
+findings; Cat A and Cat B items have been worked through, Cat C
+items closed in the same arc.
 
 When a phase is complete:
 
