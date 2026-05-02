@@ -47,7 +47,7 @@
 
 ## Forbidden in production code
 
-- `console.log` for user-facing information. Use the toast system.
+- `console.log` for user-facing information. Use the modal-first error display (`<ConfirmDialog>` / `<ModalBody>` banner) or in-form inline messages. The legacy toast system was retired (ROADMAP P-10 superseded by the modal-first error pattern).
 - `alert()`, `confirm()`, `prompt()`. Use modal components.
 - `any`, `as unknown as`, `// @ts-ignore` without an explanatory comment.
 - Em-dashes in comments, strings, or documentation. Use hyphens or commas.

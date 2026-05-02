@@ -2,32 +2,32 @@
 
 Each task is prefixed with a series identifier that indicates its scope.
 
-| Prefix | Name           | Scope                                                         | Status      |
-| ------ | -------------- | ------------------------------------------------------------- | ----------- |
-| F-     | Foundation     | Phase 1 infrastructure (crypto, auth, routing, app shell)     | Complete    |
-| O-     | Object/Domain  | Domain types, repositories, Dexie schema                      | Complete    |
-| IM-    | Import         | Markdown import pipeline (parser, transaction, UI)            | Complete    |
-| V-     | View           | Read-only UI screens for imported entities                    | In progress |
-| T-     | Testing        | Test infrastructure (theme, smoke, bundle-size, mutation)     | In progress |
-| I-     | Infrastructure | Runtime, platform, build tools, rules                         | In progress |
-| AI-    | AI-Guided      | AI-assisted profile creation and updates (Phase 3)            | Planned     |
-| D-     | Document       | Document management features (Phase 4)                        | Planned     |
-| X-     | Export         | PDF export and related features (Phase 5)                     | Planned     |
-| B-     | Backup         | Backup and restore features (Phase 6)                         | Planned     |
-| P-     | Polish         | UI/UX refinement, performance, accessibility (Phase 7)        | Planned     |
-| M-     | Multi-Profile  | Multi-profile support (Phase 8)                               | Planned     |
-| DP-    | Derived Plans  | AI-derived health plans (Phase 9)                             | Planned     |
-| E-     | Edit           | Manual entity creation and editing                            | Planned     |
-| R-     | Release        | Repository-level release prep (icons, README, CHANGELOG, tag) | Complete    |
-| I18N-  | i18n           | Internationalization: extract strings, switcher, add langs    | In progress |
-| IMP-   | ePA Import     | Phase 4b ePA / document import pipeline (distinct from IM-)   | Complete    |
-| AIP-   | AI Provider    | Multi-AI-provider polish (ADR-0019 follow-ups)                | In progress |
-| ONB-   | Onboarding     | Onboarding UX restructure (Phase 1.5)                         | In progress |
-| DOC-   | User Docs      | End-user-facing documentation site                            | In progress |
-| S-     | Sustainability | Donation / sustainability integration                         | Planned     |
-| BUG-   | Bug Fix        | Regression fixes registered out-of-phase                      | Ongoing     |
-| TD-    | Tech Debt      | Tech-debt cleanup tracked outside the phase plan              | Ongoing     |
-| DEPS-  | Dependencies   | Dependency upgrades tracked outside the phase plan            | Ongoing     |
+| Prefix | Name           | Scope                                                         | Status        |
+| ------ | -------------- | ------------------------------------------------------------- | ------------- |
+| F-     | Foundation     | Phase 1 infrastructure (crypto, auth, routing, app shell)     | Complete      |
+| O-     | Object/Domain  | Domain types, repositories, Dexie schema                      | Complete      |
+| IM-    | Import         | Markdown import pipeline (parser, transaction, UI)            | Complete      |
+| V-     | View           | Read-only UI screens for imported entities                    | In progress   |
+| T-     | Testing        | Test infrastructure (theme, smoke, bundle-size, mutation)     | In progress   |
+| I-     | Infrastructure | Runtime, platform, build tools, rules                         | In progress   |
+| AI-    | AI-Guided      | AI-assisted profile creation and updates (Phase 3)            | Planned       |
+| D-     | Document       | Document management features (Phase 4)                        | Planned       |
+| X-     | Export         | PDF export and related features (Phase 5)                     | Planned       |
+| B-     | Backup         | Backup and restore features (Phase 6)                         | Planned       |
+| P-     | Polish         | UI/UX refinement, performance, accessibility (Phase 7)        | Planned       |
+| M-     | Multi-Profile  | Multi-profile support (Phase 8)                               | Deprioritized |
+| DP-    | Derived Plans  | AI-derived health plans (Phase 9)                             | Planned       |
+| E-     | Edit           | Manual entity creation and editing                            | Planned       |
+| R-     | Release        | Repository-level release prep (icons, README, CHANGELOG, tag) | Complete      |
+| I18N-  | i18n           | Internationalization: extract strings, switcher, add langs    | In progress   |
+| IMP-   | ePA Import     | Phase 4b ePA / document import pipeline (distinct from IM-)   | Complete      |
+| AIP-   | AI Provider    | Multi-AI-provider polish (ADR-0019 follow-ups)                | In progress   |
+| ONB-   | Onboarding     | Onboarding UX restructure (Phase 1.5)                         | In progress   |
+| DOC-   | User Docs      | End-user-facing documentation site                            | In progress   |
+| S-     | Sustainability | Donation / sustainability integration                         | Planned       |
+| BUG-   | Bug Fix        | Regression fixes registered out-of-phase                      | Ongoing       |
+| TD-    | Tech Debt      | Tech-debt cleanup tracked outside the phase plan              | Ongoing       |
+| DEPS-  | Dependencies   | Dependency upgrades tracked outside the phase plan            | Ongoing       |
 
 ## Naming rules
 

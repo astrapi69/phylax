@@ -23,14 +23,17 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      'no-restricted-imports': ['error', {
-        patterns: [
-          {
-            group: ['**/crypto/internal/*'],
-            message: 'Import from src/crypto only via the public index.',
-          },
-        ],
-      }],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/crypto/internal/*'],
+              message: 'Import from src/crypto only via the public index.',
+            },
+          ],
+        },
+      ],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
     },
@@ -100,6 +103,7 @@ If a feature needs crypto or storage, it goes through the public API of `src/cry
 ## Imports
 
 Order enforced by ESLint + Prettier:
+
 1. Node builtins (rare in browser code).
 2. Third-party packages.
 3. Absolute imports from `@/` (configured as alias for `src/`).
@@ -118,4 +122,4 @@ Blank line between groups.
 - No moment.js. Use native `Intl.DateTimeFormat` or date-fns if needed.
 - No lodash. Use native methods or write a five-line utility.
 - No icon libraries beyond `lucide-react` if and when an icon library is added.
-- Check bundle size on every PR with `npm run build && du -sh dist/`.
+- Check bundle size on every PR with `make test-bundle-size`. The size-limit budgets in `.size-limit.json` are the operative gate (T-03, ADR-0010 / 0012 / 0013 / 0015 / 0017 / 0020).

@@ -44,7 +44,7 @@ This file collects lessons that come from real development. It starts small and 
 ### Service worker updates
 
 - A new service worker only takes effect after all tabs of the app are closed. Users will see stale UI until then.
-- Use `vite-plugin-pwa`'s `autoUpdate` mode and show a "New version available, reload" toast.
+- Use `vite-plugin-pwa`'s `registerType: 'prompt'` mode together with `skipWaiting: true` and `clientsClaim: false` (BUG-01 third iteration). The new SW activates silently in the background; users get the new version on the next reload without an in-app toast. The retired `autoUpdate` + reload-toast combination caused user-confusion regressions; the regression-guard test in `src/pwa/viteConfigPwa.test.ts` locks the current options.
 - NEVER cache the HTML shell with a long max-age. Otherwise updates never reach users.
 
 ### iOS Safari quirks
