@@ -20,6 +20,14 @@ Each task is prefixed with a series identifier that indicates its scope.
 | E-     | Edit           | Manual entity creation and editing                            | Planned     |
 | R-     | Release        | Repository-level release prep (icons, README, CHANGELOG, tag) | Complete    |
 | I18N-  | i18n           | Internationalization: extract strings, switcher, add langs    | In progress |
+| IMP-   | ePA Import     | Phase 4b ePA / document import pipeline (distinct from IM-)   | Complete    |
+| AIP-   | AI Provider    | Multi-AI-provider polish (ADR-0019 follow-ups)                | In progress |
+| ONB-   | Onboarding     | Onboarding UX restructure (Phase 1.5)                         | In progress |
+| DOC-   | User Docs      | End-user-facing documentation site                            | In progress |
+| S-     | Sustainability | Donation / sustainability integration                         | Planned     |
+| BUG-   | Bug Fix        | Regression fixes registered out-of-phase                      | Ongoing     |
+| TD-    | Tech Debt      | Tech-debt cleanup tracked outside the phase plan              | Ongoing     |
+| DEPS-  | Dependencies   | Dependency upgrades tracked outside the phase plan            | Ongoing     |
 
 ## Naming rules
 
