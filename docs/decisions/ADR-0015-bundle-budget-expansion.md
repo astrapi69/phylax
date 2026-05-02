@@ -2,6 +2,7 @@
 
 **Date:** 2026-04-21
 **Status:** Accepted
+**Supersedes:** [ADR-0013](ADR-0013-bundle-size-budget-v3.md) (main JS + total JS+CSS budgets only; Workbox-chunk and CSS-bundle budgets from ADR-0013 remain in force)
 
 ## Context
 

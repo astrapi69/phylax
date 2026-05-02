@@ -2,6 +2,8 @@
 
 **Date:** 2026-04-18
 **Status:** Accepted
+**Supersedes:** [ADR-0010](ADR-0010-bundle-size-budgets.md)
+**Superseded by:** [ADR-0013](ADR-0013-bundle-size-budget-v3.md)
 
 ## Context
 

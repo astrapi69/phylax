@@ -2,6 +2,7 @@
 
 **Date:** 2026-04-15
 **Status:** Accepted
+**Superseded by:** [ADR-0012](ADR-0012-bundle-size-budget-v2.md), then [ADR-0013](ADR-0013-bundle-size-budget-v3.md), then [ADR-0015](ADR-0015-bundle-budget-expansion.md). The per-commit gating mechanism (size-limit, `make test-bundle-size`) introduced here remains in force; only the numeric budgets evolved.
 
 ## Context
 
