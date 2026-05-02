@@ -1,7 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Offline support (production build)', () => {
-  test('app loads offline after first visit', async ({ context, page }) => {
+  test('app loads offline after first visit', async ({ browserName, context, page }) => {
+    // WebKit's Playwright driver throws "WebKit encountered an internal
+    // error" on any page navigation (reload or goto) while
+    // context.setOffline(true) is active. An in-page fetch() does not
+    // help either, because setOffline cuts the request at the network
+    // layer before Workbox's NavigationRoute can intercept it (the
+    // route only fires for request.mode === 'navigate'). Until the
+    // upstream webkit driver bug is fixed, skip on webkit; chromium and
+    // firefox still cover the offline-cache contract.
+    test.skip(browserName === 'webkit', 'WebKit driver bug on navigation while offline');
+
     // First visit: service worker installs and precaches assets
     await page.goto('./');
     await expect(page.locator('h1')).toBeVisible();
@@ -23,19 +33,11 @@ test.describe('Offline support (production build)', () => {
     // Simulate offline
     await context.setOffline(true);
 
-    // Verify the service worker serves the app shell from cache while
-    // offline. We assert via in-page fetch instead of page.reload() /
-    // page.goto() because WebKit's Playwright driver throws "WebKit
-    // encountered an internal error" on any navigation while
-    // context.setOffline(true) is active. The fetch() call still goes
-    // through the registered service worker, so this exercises the same
-    // SW cache path without triggering the driver bug.
-    const result = await page.evaluate(async () => {
-      const response = await fetch('./');
-      return { status: response.status, body: await response.text() };
-    });
-    expect(result.status).toBe(200);
-    expect(result.body).toContain('id="root"');
+    // Reload: should load entirely from service worker cache
+    await page.reload();
+
+    // The app should still render (onboarding screen on fresh install)
+    await expect(page.locator('h1')).toBeVisible();
 
     // Restore online
     await context.setOffline(false);
