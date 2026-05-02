@@ -1,5 +1,8 @@
 # ADR-0021: React 19 Upgrade
 
+**Date:** 2026-05-02
+**Status:** Accepted
+
 ## Context
 
 Phylax was bootstrapped on React 18 (see CLAUDE.md "Tech-Stack (fix)"

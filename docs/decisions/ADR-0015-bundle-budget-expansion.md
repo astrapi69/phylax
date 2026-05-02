@@ -1,5 +1,8 @@
 # ADR-0015: Bundle Budget Expansion for Multilingual Support
 
+**Date:** 2026-04-21
+**Status:** Accepted
+
 ## Context
 
 ADR-0013 set the main-JS gzipped budget at 250 KB with a 300 KB

@@ -1,5 +1,8 @@
 # ADR-0009: Theme State Management
 
+**Date:** 2026-04-14
+**Status:** Accepted
+
 ## Context
 
 Phylax needs a dark mode to be comfortable to use on mobile devices and in low-light environments. The theme choice must persist across reloads, respect the system preference when the user has not expressed one, and apply without a visible flash of the wrong theme on load. It also needs to work on screens that render before the IndexedDB database is available (onboarding and unlock), because asking someone to unlock the app with a bright white flash is both irritating and, for some users, accessibility-breaking.

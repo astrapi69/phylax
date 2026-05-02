@@ -1,5 +1,8 @@
 # ADR-0014: zxcvbn-ts for Password Strength Estimation
 
+**Date:** 2026-04-20
+**Status:** Accepted
+
 ## Context
 
 The master password is the sole protection for every encrypted row in

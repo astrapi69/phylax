@@ -1,5 +1,8 @@
 # ADR-0011: Mutation Testing Strategy
 
+**Date:** 2026-04-16
+**Status:** Accepted
+
 ## Context
 
 Phylax has 590 unit tests with 95%+ line coverage across crypto, DB,

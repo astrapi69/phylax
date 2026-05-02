@@ -1,5 +1,8 @@
 # ADR-0002: Defer extraction of crypto module
 
+**Date:** 2026-04-13
+**Status:** Accepted
+
 ## Context
 
 The crypto module (src/crypto/) is self-contained, fully tested, and has a stable API.

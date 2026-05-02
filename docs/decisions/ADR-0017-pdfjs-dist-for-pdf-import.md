@@ -1,5 +1,8 @@
 # ADR-0017: pdfjs-dist for PDF Import
 
+**Date:** 2026-04-24
+**Status:** Accepted
+
 ## Context
 
 Phase 4b (ePA Import) needs to extract text from user-uploaded PDFs and

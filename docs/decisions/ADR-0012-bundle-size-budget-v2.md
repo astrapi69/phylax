@@ -1,5 +1,8 @@
 # ADR-0012: Bundle Size Budget v2
 
+**Date:** 2026-04-18
+**Status:** Accepted
+
 ## Context
 
 ADR-0010 set per-chunk bundle budgets (main JS 180 KB gzipped, CSS

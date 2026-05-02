@@ -1,5 +1,8 @@
 # ADR-0010: Bundle Size Budgets
 
+**Date:** 2026-04-15
+**Status:** Accepted
+
 ## Context
 
 Phylax is a PWA targeting mobile users on potentially slow or metered

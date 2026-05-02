@@ -1,5 +1,8 @@
 # ADR-0020: jspdf-autotable for PDF Export Tables
 
+**Date:** 2026-05-02
+**Status:** Accepted
+
 ## Context
 
 Phase 5 PDF export (X-02 onward) renders the user's profile as a print-

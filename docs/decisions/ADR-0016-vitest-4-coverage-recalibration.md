@@ -1,5 +1,8 @@
 # ADR-0016: Vitest 4 V8 Coverage Provider Threshold Recalibration
 
+**Date:** 2026-04-22
+**Status:** Accepted
+
 ## Context
 
 DEPS-02 upgraded Vitest 3.2.4 to 4.1.5 as part of the Q2 2026 major

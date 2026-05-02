@@ -1,5 +1,8 @@
 # ADR-0008: Markdown Rendering Stack
 
+**Date:** 2026-04-14
+**Status:** Accepted
+
 ## Context
 
 Phylax stores significant portions of profile content as Markdown: observations have Markdown-formatted fact/pattern/self-regulation fields, BaseData carries a free-form `contextNotes` Markdown field, timeline entries have Markdown bodies, and the import format is a Markdown document in the "Lebende Gesundheit" convention. Starting with the V-01 read-only profile overview, the UI needs to render these fields visually rather than showing raw Markdown source.

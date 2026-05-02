@@ -1,5 +1,8 @@
 # ADR-0013: Bundle Size Budget v3
 
+**Date:** 2026-04-18
+**Status:** Accepted
+
 > **Status**: main-JS and total-JS+CSS budgets **superseded by
 > [ADR-0015](ADR-0015-bundle-budget-expansion.md)** (2026-04-21).
 > Workbox chunk and CSS bundle budgets from this ADR **remain in
