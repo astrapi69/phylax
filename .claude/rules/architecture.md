@@ -3,7 +3,7 @@
 ## Layered model (3 layers, ALWAYS enforced)
 
 ```
-1. UI            React 18 + TypeScript + Tailwind + Vite
+1. UI            React 19 + TypeScript + Tailwind + Vite (ADR-0021)
 2. Domain        Repositories, services, validation (pure TS, no React, no Dexie imports)
 3. Storage       Dexie (IndexedDB) + Web Crypto wrapper
 ```

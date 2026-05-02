@@ -302,7 +302,7 @@ make icons        # Reads public/icons/source.svg, writes all PWA icon sizes
 
 Phylax uses a three-layer architecture enforced by ESLint:
 
-**UI layer** (React 18 + TypeScript + Tailwind + Vite): functional
+**UI layer** (React 19 + TypeScript + Tailwind + Vite): functional
 components, hooks, feature folders. Never imports `crypto.subtle` or Dexie
 directly.
 

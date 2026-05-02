@@ -18,7 +18,7 @@ Phylax ist eine persönliche, datensouveräne Gesundheitsplattform als Progressi
 
 ## Tech-Stack (fix)
 
-- React 18 + TypeScript + Vite
+- React 19 + TypeScript + Vite (siehe ADR-0021)
 - Dexie.js für IndexedDB
 - Web Crypto API (nativ, keine Crypto-Library)
 - Tailwind CSS
