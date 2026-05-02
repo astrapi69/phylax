@@ -1,7 +1,7 @@
 {
   "error": {
     "unsupported-type": "File type \"{{mimeType}}\" is not supported.",
-    "heic-not-supported": "HEIC and HEIF images are not directly supported. Please export as JPEG before upload — the iOS share sheet does this automatically in most apps.",
+    "heic-not-supported": "HEIC and HEIF images are not directly supported. Please export as JPEG before upload. The iOS share sheet does this automatically in most apps.",
     "size-too-large": "File too large ({{sizeMb}} MB). Maximum: {{limitMb}} MB.",
     "pdf-page-limit": "PDF too long ({{actualPages}} pages). Maximum: {{limitPages}} pages. Please split the document before upload.",
     "image-dimension-limit": "Image too large ({{width}}×{{height}} px). Maximum: {{limitPx}} px per edge.",
