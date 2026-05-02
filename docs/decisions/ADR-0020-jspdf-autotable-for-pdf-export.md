@@ -117,5 +117,12 @@ co-load.
 ## References
 
 - X-02 ROADMAP entry (PDF export with date-range filter).
-- ADR-0017 (lazy-load pattern for `pdfjs-dist`, mirrored here).
 - `.size-limit.json:40` (lazy chunk budget).
+
+## Related ADRs
+
+- [ADR-0017](ADR-0017-pdfjs-dist-for-pdf-import.md): companion
+  decision for PDF import. The lazy-load pattern is shared.
+- [ADR-0010](ADR-0010-bundle-size-budgets.md) /
+  [ADR-0015](ADR-0015-bundle-budget-expansion.md): bundle-budget
+  framework that the jsPDF lazy-chunk slot fits into.

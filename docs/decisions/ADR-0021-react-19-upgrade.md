@@ -107,3 +107,14 @@ specific APIs, so a rollback is an `npm install` and a CI re-run.
   as this ADR.
 - `CLAUDE.md` "Tech-Stack (fix)" - updated in same commit as this ADR.
 - `README.md` "UI layer" - updated in same commit as this ADR.
+
+## Related ADRs
+
+- [ADR-0014](ADR-0014-zxcvbn-password-strength.md): exact-pin
+  precedent for runtime npm packages mirrored here for React 19.
+- [ADR-0001](ADR-0001-pbkdf2-iterations.md): key-derivation
+  contract; React 19 changes to the rendering surface do not
+  affect the in-memory master-key boundary in `src/crypto/`.
+- [ADR-0019](ADR-0019-multi-ai-provider.md): the multi-provider
+  AI integration relies on the same React functional-component
+  surface, unchanged across the React 19 upgrade.

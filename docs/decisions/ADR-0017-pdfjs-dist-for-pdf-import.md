@@ -143,3 +143,12 @@ If pdf.js becomes unmaintained or surfaces a serious vulnerability,
 the dependency is contained behind one feature folder
 (`src/features/document-import/preparePdf.ts`). Replacement requires
 swapping that single module's implementation.
+
+## Related ADRs
+
+- [ADR-0020](ADR-0020-jspdf-autotable-for-pdf-export.md): companion
+  decision for PDF export. The lazy-load pattern adopted here is
+  mirrored on the export side.
+- [ADR-0010](ADR-0010-bundle-size-budgets.md) /
+  [ADR-0015](ADR-0015-bundle-budget-expansion.md): bundle-budget
+  framework that the dedicated pdf.js lazy-chunk slot fits into.
