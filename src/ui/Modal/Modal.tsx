@@ -25,7 +25,7 @@ export interface ModalProps {
    * `role` attribute. Default `dialog`. Use `alertdialog` for
    * destructive irreversible flows where the screen reader should
    * announce content immediately rather than wait for focus. The
-   * primitive does NOT auto-pick — caller decides per-use.
+   * primitive does NOT auto-pick - caller decides per-use.
    */
   role?: ModalRole;
   /**
@@ -85,7 +85,7 @@ const SIZE_CLASS: Record<ModalSize, string> = {
  * avoidance), focus lands on first-focusable not last action button
  * (HTML5 native dialog semantics).
  *
- * Renders nothing when `open` is false — no hidden DOM, no portal
+ * Renders nothing when `open` is false - no hidden DOM, no portal
  * mount, no scroll lock. Toggling `open` mounts/unmounts the entire
  * subtree; transient state inside the modal does not persist across
  * close/reopen cycles by design.

@@ -15,7 +15,7 @@ import viteConfigSource from '../../vite.config.ts?raw';
  *  - workbox `clientsClaim: false` keeps the new SW from taking
  *    over the running tab. Combined with `skipWaiting: true` the new
  *    SW activates the moment it finishes installing, but only for
- *    fresh navigations — the existing tab keeps running on the old
+ *    fresh navigations - the existing tab keeps running on the old
  *    SW until the user reloads. That is the silent-update UX:
  *    install in the background, apply on the user's next F5.
  *

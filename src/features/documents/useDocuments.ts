@@ -16,7 +16,7 @@ export interface UseDocumentsResult {
 /**
  * Load metadata for every document on the current profile, newest first.
  *
- * Metadata only — no blob decryption. Image thumbnails are loaded
+ * Metadata only - no blob decryption. Image thumbnails are loaded
  * on-demand by the item component so the list render stays cheap
  * even with many docs. `versionKey` is a refetch trigger: bump it to
  * force a reload, e.g. after a successful upload.

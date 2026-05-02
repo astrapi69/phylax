@@ -28,6 +28,7 @@ A person who wants to structurally document their own health data. Medium to hig
 - Input is efficient enough for daily use
 
 What this person needs:
+
 - Quick "First Steps" (from "open Phylax" to "first profile created" in 5-10 minutes)
 - Clear explanations of what happens when (e.g., "what if I forget my password")
 - Workflows for common tasks: add an entry, import a report, create a backup
@@ -64,9 +65,9 @@ This audience often hits the docs as their first touchpoint. The first 30 second
 
 Phylax is freshly v1.0.0, user base is presumably small. Doc investments need to pay off. Priority order:
 
-1. **1.4 (Curious) and 1.1 (Self-managers)** — combined ~80% of doc traffic
-2. **1.2 (Power users)** — link existing material, don't duplicate
-3. **1.3 (Trusted person)** — stub for later
+1. **1.4 (Curious) and 1.1 (Self-managers)** - combined ~80% of doc traffic
+2. **1.2 (Power users)** - link existing material, don't duplicate
+3. **1.3 (Trusted person)** - stub for later
 
 The doc architecture should make 1.4 → 1.1 the main path with clear branches for 1.2.
 
@@ -83,15 +84,18 @@ These materials are an asset, not a risk. They provide the theoretical depth tha
 **Confirmed article URLs (from README):**
 
 English (Parts 1-2 translated, 3-4 in progress):
+
 - Part 1: https://asterios-raptis.medium.com/living-health-from-patient-to-partner-9fff311a8c45
 - Part 2: https://asterios-raptis.medium.com/living-health-in-practice-d53964053500
 
 German (original, full series):
+
 - Series overview: https://asterios-raptis.medium.com/lebende-gesundheit-die-serie-0193f66df9a3
 
 These are publicly linkable on Medium. No paywall consideration needed for linking.
 
 **Implication for docs:**
+
 - DE docs can link to all four DE articles directly
 - EN docs link to Parts 1-2 directly; Parts 3-4 get "translation in progress" disclaimer with a link to the German originals as fallback
 - When the planned fifth article (synthesis) ships, both DE and EN docs gain a "deep dive" entry point
@@ -101,12 +105,14 @@ These are publicly linkable on Medium. No paywall consideration needed for linki
 Structured by user journey rather than feature list:
 
 **A. Getting Started**
+
 - What is Phylax (1 page, clear, narrative)
 - Why Living Health (link to article series for depth)
 - First Steps (5 minutes, guided first impression)
 - Understanding Concepts (Profile, Observation, Timeline, Encryption)
 
 **B. Daily Use**
+
 - Recording observations
 - Entering lab values
 - Managing supplements
@@ -114,18 +120,21 @@ Structured by user journey rather than feature list:
 - Maintaining profile base data
 
 **C. Data Work**
+
 - Importing existing profiles (Markdown format)
 - Importing findings via ePA import (Phase 4b)
 - Exporting data (Markdown / encrypted)
 - Creating and restoring backups
 
 **D. AI Support**
+
 - AI chat for guided input
 - When AI helps, when it doesn't
 - Configuring API key
 - What happens with the data (Privacy)
 
 **E. App Management**
+
 - Switching language
 - Setting theme
 - Configuring auto-lock
@@ -133,12 +142,14 @@ Structured by user journey rather than feature list:
 - Master password
 
 **F. Background** (linked external, not extensive in docs)
+
 - Article series on Medium (DE + EN)
 - Threat model (link to README/repo)
 - Architecture (link to repo docs)
 - Roadmap (link to ROADMAP.md)
 
 **G. Help**
+
 - FAQ
 - Troubleshooting
 - What to do in case of data loss
@@ -156,13 +167,13 @@ Structured by user journey rather than feature list:
 
 ### 3.1 Options Comparison
 
-| Option | Advantages | Disadvantages |
-|---|---|---|
-| Markdown in repo | Version control, PR reviews, Phylax-stack-consistent | Rendered only on GitHub, no search, no in-app access |
-| MkDocs Static Site | Search, nice navigation, mobile-friendly, multi-language possible | Build pipeline needed, external URL |
-| In-app help view | Contextual, no tab switch, offline | Double maintenance, app bundle grows, no SEO |
-| Notion/GitBook | Quick to start, collab features | Lock-in, external dependency, against Phylax privacy-first ethos |
-| Onboarding tour | Just-in-time learning, low threshold | Only explains the first step, no reference work |
+| Option             | Advantages                                                        | Disadvantages                                                    |
+| ------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Markdown in repo   | Version control, PR reviews, Phylax-stack-consistent              | Rendered only on GitHub, no search, no in-app access             |
+| MkDocs Static Site | Search, nice navigation, mobile-friendly, multi-language possible | Build pipeline needed, external URL                              |
+| In-app help view   | Contextual, no tab switch, offline                                | Double maintenance, app bundle grows, no SEO                     |
+| Notion/GitBook     | Quick to start, collab features                                   | Lock-in, external dependency, against Phylax privacy-first ethos |
+| Onboarding tour    | Just-in-time learning, low threshold                              | Only explains the first step, no reference work                  |
 
 ### 3.2 Recommendation: Hybrid Approach Analogous to Bibliogon
 
@@ -171,23 +182,26 @@ Structured by user journey rather than feature list:
 Three components that work together:
 
 **Component 1: MkDocs site as canonical reference work.**
+
 - Hosting: GitHub Pages, either at `astrapi69.github.io/phylax-docs/` (separate repo) or as subpath in the Phylax repo
 - All content from the backbone (Section 2.2)
 - Search, navigation, mobile-responsive
 - Versioned via Git
 - DE and EN parallel from day one
-- Bibliogon-MkDocs setup from `help/` as the starting template — clone, adjust theming/colors/navigation for Phylax, populate content
+- Bibliogon-MkDocs setup from `help/` as the starting template - clone, adjust theming/colors/navigation for Phylax, populate content
 
 **Component 2: In-app help links.**
+
 - Small "Help" icon in header or Settings section
 - Links to the matching page of the MkDocs site
 - Context-sensitive where useful (e.g., from BackupImportSection a "How does backup import work?" link to the corresponding doc page)
 - External links instead of in-app rendering: no bundle bloat, no dual maintenance
 
 **Component 3: Opt-in onboarding tour for first-time users.**
+
 - After first setup completion (master password created), offer a tour as opt-in
 - 3-4 steps: profile overview, observation entry, backup hint
-- Skippable from the start (no "press X to skip" — explicit "Skip tour" button as primary alternative to "Start tour")
+- Skippable from the start (no "press X to skip" - explicit "Skip tour" button as primary alternative to "Start tour")
 - Refers to the full doc site at the end
 - Implementation: own feature in `src/features/onboarding-tour/` or as extension of the existing onboarding flow
 - **User-confirmed: tour must be offered, not forced.** Setup completion does not block on tour completion.
@@ -219,6 +233,7 @@ FR/ES/EL can join later when the app translations progress and user requests jus
 ### 4.2 Language Consistency Discipline
 
 When DE content changes, EN must catch up before the DE update merges. Otherwise EN docs slowly drift to outdated. This can be enforced by:
+
 - Pre-commit hook checking that DE/EN page pairs both have updated `last_modified` timestamps
 - Review checklist on doc PRs
 - Or, more pragmatically: a brief CONTRIBUTING note about the convention
@@ -258,6 +273,7 @@ The exploration document proposes a hybrid approach. The first iteration should 
 ### 6.1 Iteration-1 Scope (Minimum Viable Docs)
 
 **What goes in:**
+
 - MkDocs site setup using Bibliogon's `help/` as template
 - Basic navigation analogous to content backbone (Sections A-G), but initially only:
   - A.1 "What is Phylax" (1 page, freshly written)
@@ -270,6 +286,7 @@ The exploration document proposes a hybrid approach. The first iteration should 
 - Linking to existing article series
 
 **What stays out:**
+
 - Full feature docs (B/C/D complete)
 - In-app help link implementation (later step)
 - Onboarding tour implementation (own feature)
@@ -309,6 +326,7 @@ Before Iteration 1 starts, small steps could deliver value immediately:
 ### 7.1 Privacy-First Consistency
 
 The doc site must not undermine its own privacy promise:
+
 - No Google Analytics
 - No tracking pixel
 - No newsletter form
@@ -319,6 +337,7 @@ GitHub Pages itself logs accesses, which is acceptable and transparent.
 ### 7.2 No Medical Advice
 
 Phylax-ROADMAP explicitly lists "Medical advice, treatment recommendations, or interpretation of health data" as out-of-scope. The docs must hold this line:
+
 - Docs show **how** to record data, not **which** data to record
 - Examples in docs are generic, no "this is good diabetes tracking"
 - Disclaimer on doc landing page analogous to Bibliogon style if relevant
@@ -332,6 +351,7 @@ For EN docs: same discipline, glossary defines canonical English terms ("Observa
 ### 7.4 Version Awareness
 
 Phylax v1.0.0 just landed, but features keep coming. Docs must clarify which version they describe:
+
 - Footer with "As of: Phylax v1.0.x" or similar
 - For larger version jumps, a version switcher (MkDocs supports this) or noted doc state per phase
 
@@ -362,7 +382,7 @@ Not: start building immediately.
 Instead:
 
 1. **Review this exploration with user.** Are the assumptions right? Does the recommendation hold?
-2. **Resolve remaining open questions from Section 8.** Especially Question 1 (hosting domain) and Question 4 (onboarding tour format — can defer).
+2. **Resolve remaining open questions from Section 8.** Especially Question 1 (hosting domain) and Question 4 (onboarding tour format - can defer).
 3. **Decide Iteration-0+ immediate measures.** What should happen before MkDocs setup?
 4. **Finalize Iteration-1 plan.** With clear content list, effort estimate, definition-of-done.
 5. **Only then implement.**
@@ -375,7 +395,7 @@ Phylax needs user docs. The recommendation is a hybrid approach with:
 
 - **MkDocs site** as canonical work, analogous to Bibliogon (`help/` template reusable)
 - **In-app help links** for context access without bundle bloat
-- **Opt-in onboarding tour** for first-time user guidance — offered, not forced
+- **Opt-in onboarding tour** for first-time user guidance - offered, not forced
 - **DE+EN parallel** matched to the app
 - **Existing article series as theoretical anchor**, not as doc replacement (Parts 1-2 EN, full DE, Parts 3-4 EN in progress, Part 5 planned)
 - **Iteration-based build-up** instead of big bang

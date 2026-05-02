@@ -345,7 +345,7 @@ describe('DocumentRepository (D-01 foundation)', () => {
       const mineList = await repo.listByProfile(profileId);
       expect(mineList.map((d) => d.id)).toContain(inMine.id);
       expect(mineList.map((d) => d.id)).not.toContain(inTheirs.id);
-      // getContent doesn't enforce profileId scoping by design — list is
+      // getContent doesn't enforce profileId scoping by design - list is
       // the boundary. Documented behavior; an `assertOwnership(id, profileId)`
       // helper can layer on top later if a viewer needs hard isolation.
       expect(await repo.getContent(inMine.id)).not.toBeNull();
@@ -507,7 +507,7 @@ describe('DocumentRepository (D-01 foundation)', () => {
     });
 
     it('update with a link field on a non-existent id delegates to the base update (which throws)', async () => {
-      // Exercises the `if (existing)` false branch in the override —
+      // Exercises the `if (existing)` false branch in the override -
       // validator is skipped, base update raises "not found".
       await expect(repo.update('does-not-exist', { linkedObservationId: 'obs-x' })).rejects.toThrow(
         /not found/,

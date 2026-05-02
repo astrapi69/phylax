@@ -9,7 +9,7 @@ export interface EmptyStatePanelProps {
   body: ReactNode;
   /**
    * Call-to-action shown below the body. Pass an inline link, button,
-   * or arbitrary node. Optional — some empty states are pure
+   * or arbitrary node. Optional - some empty states are pure
    * informational with no next action.
    */
   cta?: ReactNode;

@@ -139,7 +139,7 @@ describe('useSupplementForm', () => {
     });
     act(() => {
       result.current.setField('name', 'Magnesium');
-      // category intentionally left at '' — placeholder option
+      // category intentionally left at '' - placeholder option
     });
     await act(async () => {
       await result.current.submit();

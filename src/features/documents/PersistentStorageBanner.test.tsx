@@ -123,7 +123,7 @@ describe('PersistentStorageBanner', () => {
     // session state: simplest path is to use __resetPersistentStorageSession()
     // then call requestPersistence through a fresh hook mount that we
     // trigger via rerender. However the banner component does not
-    // expose requestPersistence — so tests that need the denied banner
+    // expose requestPersistence - so tests that need the denied banner
     // exercise the state through the useDocumentUpload integration
     // test path. Here we verify via stubbing persisted() to always
     // return false AND manually setting the module session via a direct

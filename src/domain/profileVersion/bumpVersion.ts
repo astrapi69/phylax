@@ -5,7 +5,7 @@
  * stays monotonically increasing without corrupting the original.
  *
  * Shared between profile-version-creating paths (AI-chat commit,
- * manual base-data edit). Pure function — same input, same output,
+ * manual base-data edit). Pure function - same input, same output,
  * no side effects.
  *
  * The `-aiN` suffix is a historical fallback for non-dotted versions

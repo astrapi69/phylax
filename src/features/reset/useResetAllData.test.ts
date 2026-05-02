@@ -24,7 +24,7 @@ function installDeleteDbStub(behavior: 'success' | 'error' | 'blocked'): {
   };
 
   const spy = vi.fn(() => request);
-  // Cast at the assignment boundary — the test stub does not need to
+  // Cast at the assignment boundary - the test stub does not need to
   // implement the full `IDBOpenDBRequest` surface (EventTarget + many
   // unused fields); the orchestrator only consumes onsuccess /
   // onerror / onblocked / error.
@@ -96,7 +96,7 @@ describe('useResetAllData', () => {
     expect(replace).toHaveBeenCalledWith(import.meta.env.BASE_URL);
   });
 
-  it('redirect target follows BASE_URL — subpath regression guard', async () => {
+  it('redirect target follows BASE_URL - subpath regression guard', async () => {
     // Stub BASE_URL to the GitHub Pages production value so a future
     // refactor that hardcodes `/` again would fail this test
     // independently of which env Vitest happens to run under.

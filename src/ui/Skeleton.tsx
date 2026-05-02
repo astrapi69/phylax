@@ -10,7 +10,7 @@ export interface SkeletonProps {
 }
 
 /**
- * Single skeleton shape — a theme-aware gray rectangle with a
+ * Single skeleton shape - a theme-aware gray rectangle with a
  * subtle pulse animation. Building block for list skeletons. Pure
  * Tailwind, zero JS, zero bundle (no `react-loading-skeleton`-style
  * library).
@@ -58,7 +58,12 @@ export interface ListSkeletonProps {
  * `aria-label` mean screen readers receive the same information they
  * got from the previous `Loading…` text indicator.
  */
-export function ListSkeleton({ count, variant, ariaLabel, testId = 'list-skeleton' }: ListSkeletonProps) {
+export function ListSkeleton({
+  count,
+  variant,
+  ariaLabel,
+  testId = 'list-skeleton',
+}: ListSkeletonProps) {
   return (
     <div
       role="status"

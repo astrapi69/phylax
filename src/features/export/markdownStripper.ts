@@ -32,7 +32,7 @@ export function stripMarkdown(input: string): string {
   // opening fence + optional language + newline up to closing fence.
   s = s.replace(/```[a-zA-Z]*\n?([\s\S]*?)```/g, '$1');
 
-  // Images (must precede links — share `[alt](url)` shape with leading `!`).
+  // Images (must precede links - share `[alt](url)` shape with leading `!`).
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '[$1] ($2)');
 
   // Links.

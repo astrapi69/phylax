@@ -99,7 +99,7 @@ describe('ResetDialog', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it('does not auto-confirm on Enter — must explicitly activate Confirm', async () => {
+  it('does not auto-confirm on Enter - must explicitly activate Confirm', async () => {
     installDeleteDbAutoSuccess();
     const { replace } = stubLocation();
 
@@ -109,7 +109,7 @@ describe('ResetDialog', () => {
     fireEvent.change(input, { target: { value: 'RESET' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
-    // Brief wait — Enter must NOT have triggered the wipe.
+    // Brief wait - Enter must NOT have triggered the wipe.
     await new Promise((r) => setTimeout(r, 30));
     expect(replace).not.toHaveBeenCalled();
   });

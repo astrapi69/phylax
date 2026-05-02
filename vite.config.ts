@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
         // surfaces the existing <UpdatePrompt> toast wired in
         // App.tsx; the user reloads at a safe time of their
         // choosing. Trade-off: users may run a slightly stale build
-        // until they accept the prompt — acceptable for a
+        // until they accept the prompt - acceptable for a
         // local-first app with no server-side state.
         registerType: 'prompt',
         manifest: {
@@ -94,10 +94,10 @@ export default defineConfig(({ mode }) => {
           // BUG-01 follow-up: silent update strategy.
           //
           // Two distinct skipWaiting mechanisms exist:
-          //   1. workbox `skipWaiting: true` — bakes
+          //   1. workbox `skipWaiting: true` - bakes
           //      `self.skipWaiting()` into the SW install handler so
           //      the new SW activates immediately, no waiting state.
-          //   2. `updateSW(true)` from `virtual:pwa-register` — sends
+          //   2. `updateSW(true)` from `virtual:pwa-register` - sends
           //      a SKIP_WAITING postMessage at runtime AND reloads
           //      the page programmatically.
           //

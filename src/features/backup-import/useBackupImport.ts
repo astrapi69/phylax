@@ -26,7 +26,7 @@ export interface UseBackupImportResult {
    * are populated on the hook state for UI rendering).
    *
    * The hook deliberately does NOT call `unlockWithKey` /
-   * `replaceStoredKey` itself — auth-state transitions are
+   * `replaceStoredKey` itself - auth-state transitions are
    * context-dependent: the pre-auth `/backup/import/unlock` route
    * is locked at the time of run and calls `unlockWithKey(key)`
    * after success; the post-auth Settings section is already
@@ -36,7 +36,7 @@ export interface UseBackupImportResult {
    * locked-state redirect).
    *
    * Both consumers share this pipeline including the rate-limiter
-   * (`BACKUP_IMPORT_STORAGE_KEY`) — brute-force attempts across both
+   * (`BACKUP_IMPORT_STORAGE_KEY`) - brute-force attempts across both
    * surfaces share one lockout budget. Independent limiters would
    * let an attacker double their attempts by alternating surfaces.
    */
@@ -63,7 +63,7 @@ export interface UseBackupImportResult {
  * identically across surfaces.
  *
  * Auth-state transition + navigation are the caller's responsibility
- * — the hook returns `key` and `hasProfile` on success so the
+ * - the hook returns `key` and `hasProfile` on success so the
  * caller can call `unlockWithKey` (pre-auth) or `replaceStoredKey`
  * (Settings) and route to `/profile` vs `/profile/create`
  * accordingly.
@@ -130,7 +130,7 @@ export function useBackupImport(): UseBackupImportResult {
         return { ok: false };
       }
 
-      // Auth-state transition is the caller's responsibility — see
+      // Auth-state transition is the caller's responsibility - see
       // the run() doc comment above for the rationale.
       limiter.recordSuccessfulAttempt();
       setStatus('done');

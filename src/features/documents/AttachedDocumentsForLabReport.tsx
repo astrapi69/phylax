@@ -15,7 +15,7 @@ export interface AttachedDocumentsForLabReportProps {
  * Loads all documents for the current profile once, filters to those
  * whose `linkedLabValueId` is one of the values in this report, and
  * groups the results by parameter name. Renders nothing when no
- * value in the report has any attached document — empty reports
+ * value in the report has any attached document - empty reports
  * stay clean.
  *
  * Layout decision: the lab-values table is dense (5 columns) and

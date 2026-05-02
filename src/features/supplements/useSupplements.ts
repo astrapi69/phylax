@@ -19,7 +19,7 @@ export interface UseSupplementsResult {
   /**
    * Re-run the load. Used by O-14 form/delete success paths to refresh
    * the list without a full route navigation. Direct call (not pub/sub)
-   * for traceability — mirrors the O-10/O-12a pattern.
+   * for traceability - mirrors the O-10/O-12a pattern.
    */
   refetch: () => void;
 }

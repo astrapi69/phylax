@@ -18,8 +18,8 @@ import { useLocation, useSearchParams } from 'react-router-dom';
  * the views themselves.
  *
  * Hardcoded list per Q-A of the P-22 architecture pivot. The
- * alternative — per-view registration via a `useRegisterSearch()`
- * hook — adds coordination overhead that is not warranted while
+ * alternative - per-view registration via a `useRegisterSearch()`
+ * hook - adds coordination overhead that is not warranted while
  * the list stays at four entries. If the surface grows beyond ~6
  * routes, refactor to registration.
  */
@@ -124,7 +124,7 @@ export function SearchProvider({ children, defaultOpen }: SearchProviderProps) {
  *
  * Returns inert defaults outside the provider so isolated unit
  * tests for views can mount without provider boilerplate. The
- * fallback reports `hasSearch=false`, `isOpen=false` — views that
+ * fallback reports `hasSearch=false`, `isOpen=false` - views that
  * gate inline rendering on `isOpen` simply hide their search bar.
  */
 export function useSearch(): SearchContextValue {

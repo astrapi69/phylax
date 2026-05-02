@@ -9,7 +9,7 @@ export interface ObservationActionsProps {
 
 /**
  * Edit + delete cluster shown inside the `ObservationCard` summary.
- * Always visible (no hover-only) per Q5 — touch + keyboard
+ * Always visible (no hover-only) per Q5 - touch + keyboard
  * accessibility. `min-h-[44px]` per WCAG 2.5.5 AAA touch target.
  *
  * `event.stopPropagation()` on each handler prevents the click from

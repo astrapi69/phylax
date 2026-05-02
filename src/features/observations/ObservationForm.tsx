@@ -15,7 +15,7 @@ export interface ObservationFormProps {
  * Layout: theme (with native datalist suggestions) + status row, then
  * the three Markdown textareas (fact / pattern / selfRegulation).
  * Optional fields (medicalFinding, relevanceNotes) live inside a
- * `<details>` disclosure — collapsed by default in create mode,
+ * `<details>` disclosure - collapsed by default in create mode,
  * expanded when editing an observation that already has data in
  * either optional field (Q2).
  *
@@ -54,7 +54,7 @@ function OpenForm({
 
   // Reset optional disclosure default when the form mode changes
   // (e.g., closing one edit and opening another). Not a separate
-  // useEffect on every state change — only on mode/observation change.
+  // useEffect on every state change - only on mode/observation change.
   useEffect(() => {
     setOptionalOpen(hasOptionalData);
   }, [hasOptionalData, state.mode.kind]);

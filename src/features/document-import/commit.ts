@@ -22,7 +22,7 @@ import type {
  * Per-draft selection map. The IMP-04 review UI tracks which drafts
  * the user accepted; arrays of indices into the corresponding
  * `ExtractedDrafts` arrays. Unspecified arrays default to "none
- * accepted" (safer than "all accepted" — explicit opt-in matches
+ * accepted" (safer than "all accepted" - explicit opt-in matches
  * the local-first principle).
  */
 export interface DraftSelection {
@@ -42,8 +42,8 @@ export interface CommitTypeResult {
 /**
  * Aggregate result of `commitDrafts`. Best-effort: a failure in one
  * type does not abort the others. The pipeline writes in a
- * deterministic order — observations → labValues → supplements →
- * openPoints — so partial-success states are interpretable to the
+ * deterministic order - observations → labValues → supplements →
+ * openPoints - so partial-success states are interpretable to the
  * user ("3 observations, 2 lab values; supplements not reached").
  *
  * `labReportId` is set when ≥1 lab value was selected: the synthetic
@@ -147,7 +147,7 @@ export interface CommitOptions {
  *
  * Best-effort within each type: per-write failures are tallied,
  * not raised. Cross-type pipeline aborts only on missing profile.
- * AbortSignal is intentionally not threaded through — writes are
+ * AbortSignal is intentionally not threaded through - writes are
  * fast (encryption per record, single-table puts) and a partial
  * commit must finish what it started rather than half-write a type.
  */
@@ -275,7 +275,7 @@ export async function commitDrafts(
     try {
       await repos.document.delete(result.sourceDocument.documentId);
     } catch {
-      // Silently ignore — the orphan survives but is visible to the user
+      // Silently ignore - the orphan survives but is visible to the user
       // who can delete it manually via D-08.
     }
     result.sourceDocument = { kind: 'skipped', reason: 'unknown' };

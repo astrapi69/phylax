@@ -9,7 +9,7 @@ import { ResetDialog } from '../reset';
  *
  * Conventionally placed last in the settings layout so users do not
  * see it on first-click. The trigger button uses red-outline
- * styling consistent with D-08's delete document button — destructive
+ * styling consistent with D-08's delete document button - destructive
  * intent visible without overstating the action's frequency.
  */
 export function DangerZoneSection() {

@@ -11,7 +11,7 @@ interface SupplementCardProps {
   muted?: boolean;
   /**
    * Optional form-state hook result. When omitted, no edit/delete
-   * actions render — keeps the card usable in read-only contexts
+   * actions render - keeps the card usable in read-only contexts
    * (e.g., profile-view summary panes, export previews).
    */
   form?: UseSupplementFormResult;

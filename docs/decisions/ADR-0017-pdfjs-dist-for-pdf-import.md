@@ -12,7 +12,7 @@ A PDF without a text layer (a scanned doctor letter, a phone-photo
 saved as PDF) cannot be text-extracted client-side; it must be
 rasterized page by page and sent to a multimodal AI provider as image
 content. A PDF with a text layer should be extracted locally and sent
-as text — cheaper, faster, and keeps the original image data on
+as text - cheaper, faster, and keeps the original image data on
 device.
 
 No existing dependency in Phylax can read PDFs.
@@ -21,7 +21,7 @@ No existing dependency in Phylax can read PDFs.
 
 - **Option A (no client-side PDF support)**: reject PDFs entirely,
   require user to extract text or screenshot pages first. Unacceptable
-  UX — users cannot reasonably preprocess every doctor's PDF.
+  UX - users cannot reasonably preprocess every doctor's PDF.
 - **Option B (pdfjs-dist, Mozilla)**: canonical PDF rendering library
   for browsers. Includes text extraction + page rendering. Active
   maintenance, MIT-licensed. ~250 KB gzip estimated.
@@ -70,7 +70,7 @@ preserves this headroom for other features.
 
 ### Per-page rasterization at 150 DPI
 
-When a PDF lacks a text layer (or has insufficient text per page —
+When a PDF lacks a text layer (or has insufficient text per page -
 see threshold below), pdf.js renders each page to a `<canvas>` at
 **150 DPI** (constant `RASTERIZATION_DPI` in `preparePdf.ts`). The
 canvas is then converted to a JPEG ArrayBuffer for inclusion in the
@@ -89,9 +89,9 @@ average**. A 5-page PDF needs >500 total extracted characters to be
 treated as text-mode; otherwise rasterize.
 
 Threshold rationale: a one-page PDF with a single watermark string
-(40 chars) extracts cleanly but is functionally a scan — rasterize
+(40 chars) extracts cleanly but is functionally a scan - rasterize
 it. A 10-page lab report with full text layers extracts thousands of
-characters per page — text mode. The 100-chars-per-page boundary is
+characters per page - text mode. The 100-chars-per-page boundary is
 a reasonable default that handles the common edge case (mixed-page
 PDFs); future tuning lands on the named constant
 `MIN_CHARS_PER_PAGE_FOR_TEXT_MODE` in `preparePdf.ts`.

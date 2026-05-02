@@ -47,7 +47,7 @@ function maskKey(provider: string, apiKey: string): string {
  * inside the same Settings tree; the Settings screen does not need
  * a Suspense wrapper of its own. The fallback renders nothing
  * (blank space for the few hundred ms before the wizard chunk
- * resolves) because the trigger is a deliberate user click — no
+ * resolves) because the trigger is a deliberate user click - no
  * empty-content flash on first Settings paint.
  */
 export function AISettingsSection() {

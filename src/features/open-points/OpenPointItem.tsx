@@ -13,7 +13,7 @@ interface OpenPointItemProps {
    * Optional form-state hook result. When supplied, the checkbox
    * becomes interactive (toggles `resolved`) and an edit/delete
    * cluster renders next to the item title. Omitted in read-only
-   * contexts (e.g., profile-view summary panes) — checkbox stays
+   * contexts (e.g., profile-view summary panes) - checkbox stays
    * disabled and no actions render.
    */
   form?: UseOpenPointFormResult;

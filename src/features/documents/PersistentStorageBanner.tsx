@@ -24,7 +24,7 @@ function dismissKey(profileId: string): string {
 
 /**
  * Banner shown when the browser denied persistent-storage permission.
- * Amber (degraded-state) styling — data is still stored, just
+ * Amber (degraded-state) styling - data is still stored, just
  * evictable under storage pressure. Not a red alert; red is
  * reserved for hard failures (upload failed, decrypt failed).
  *

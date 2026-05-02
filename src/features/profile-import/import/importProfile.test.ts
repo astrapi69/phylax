@@ -742,7 +742,7 @@ describe('importProfile', () => {
     });
   });
 
-  // IM-05 Option B (2026-05-01): three modes per type — replace, add,
+  // IM-05 Option B (2026-05-01): three modes per type - replace, add,
   // skip. Tests cover the new 'add' path and the type-string form of
   // PerTypeMode while the legacy boolean form remains green via the
   // describe block above.

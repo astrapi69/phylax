@@ -84,7 +84,7 @@ function fieldsFrom(observation: Observation): ObservationFormFields {
 /**
  * State machine for the O-10 observation form. Drives create + edit +
  * delete. Owns the form fields locally + the theme suggestions list
- * (refreshed on every open per Q1 — newly-created themes appear next
+ * (refreshed on every open per Q1 - newly-created themes appear next
  * time the form opens).
  *
  * Closure paths: `close` from cancel button or successful submit.

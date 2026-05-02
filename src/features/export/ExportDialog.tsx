@@ -42,7 +42,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   // the O-18 `<DateRangeFilter>` semantic. Both bounds are optional;
   // empty inputs mean "no bound on that side". Dialog returns null
   // while closed (see below), so React's natural lifecycle resets
-  // these on dialog close — no explicit clearing logic.
+  // these on dialog close - no explicit clearing logic.
   const [fromIso, setFromIso] = useState('');
   const [toIso, setToIso] = useState('');
   // X-04 theme filter. Themes load on dialog mount via `useThemes`
@@ -97,25 +97,14 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     // Pass `themes` only when user has actively excluded at least one.
     // Per Q3 lock, empty selection is treated as no filter - so we only
     // populate the option when the selection is a strict subset.
-    if (
-      availableThemes.length > 0 &&
-      excludedThemes.length > 0 &&
-      selectedThemes.length > 0
-    ) {
+    if (availableThemes.length > 0 && excludedThemes.length > 0 && selectedThemes.length > 0) {
       opts.themes = selectedThemes;
     }
     if (includeLinkedDocuments) {
       opts.includeLinkedDocuments = true;
     }
     return opts;
-  }, [
-    fromIso,
-    toIso,
-    availableThemes,
-    excludedThemes,
-    selectedThemes,
-    includeLinkedDocuments,
-  ]);
+  }, [fromIso, toIso, availableThemes, excludedThemes, selectedThemes, includeLinkedDocuments]);
 
   // Reset status to idle whenever the dialog is (re)opened. Focus
   // management for the close button is provided by the Modal primitive
@@ -284,15 +273,8 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     if (!loaded.ok) return;
     try {
       const { exportProfileAsPdf } = await import('./pdfExport');
-      const {
-        profile,
-        observations,
-        labReports,
-        labValues,
-        supplements,
-        openPoints,
-        documents,
-      } = loaded.data;
+      const { profile, observations, labReports, labValues, supplements, openPoints, documents } =
+        loaded.data;
       const blob = await exportProfileAsPdf({
         profile,
         observations,
@@ -367,15 +349,8 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     }
     try {
       const { exportProfileAsPdf } = await import('./pdfExport');
-      const {
-        profile,
-        observations,
-        labReports,
-        labValues,
-        supplements,
-        openPoints,
-        documents,
-      } = result.data;
+      const { profile, observations, labReports, labValues, supplements, openPoints, documents } =
+        result.data;
       const blob = await exportProfileAsPdf({
         profile,
         observations,
@@ -445,9 +420,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
               <legend className="mb-1 text-xs font-semibold text-gray-700 dark:text-gray-300">
                 {t('themes.label')}
               </legend>
-              <p className="mb-1 text-xs text-gray-600 dark:text-gray-400">
-                {t('themes.hint')}
-              </p>
+              <p className="mb-1 text-xs text-gray-600 dark:text-gray-400">{t('themes.hint')}</p>
               <div className="flex flex-col gap-1">
                 {availableThemes.map((theme) => {
                   const checked = !excludedThemes.includes(theme);

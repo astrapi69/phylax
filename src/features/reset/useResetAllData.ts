@@ -69,14 +69,14 @@ export interface UseResetAllDataResult {
  * 2. Dexie `db.close()` to release IndexedDB connection locks.
  * 3. `indexedDB.deleteDatabase('phylax')` with `onsuccess` / `onerror` /
  *    `onblocked` Promise wrapping. `onblocked` surfaces via the
- *    `blocked` flag — caller's UI shows a "close other Phylax tabs"
+ *    `blocked` flag - caller's UI shows a "close other Phylax tabs"
  *    message and lets the user retry.
  * 4. Iterate `localStorage` and `sessionStorage`, remove every key
  *    matching the Phylax prefix convention.
  * 5. Iterate `caches.keys()` and delete each.
  * 6. `navigator.serviceWorker.getRegistration()?.unregister()`.
  * 7. `window.location.replace(import.meta.env.BASE_URL)` for clean
- *    fresh-start navigation (NOT `.reload()` — we want history cleared
+ *    fresh-start navigation (NOT `.reload()` - we want history cleared
  *    so back-button does not return to a dead viewer URL).
  *    `BASE_URL` resolves to `/` in dev and `/phylax/` in production
  *    builds (GitHub Pages subpath); hardcoded `/` would exit the

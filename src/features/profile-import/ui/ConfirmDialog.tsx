@@ -64,7 +64,7 @@ function rowsFromCounts(existing: EntityCounts, parsed: EntityCounts): RowDescri
  * destructive-variant chrome (red confirm button + role="alertdialog")
  * provided by the primitive.
  *
- * IM-05 Option B (2026-05-01): three modes per type — replace, add,
+ * IM-05 Option B (2026-05-01): three modes per type - replace, add,
  * skip. No defaults; user must explicitly pick a mode for every
  * visible row before Confirm enables. Add-mode surfaces a warning
  * hint about possible duplicates because this build does not

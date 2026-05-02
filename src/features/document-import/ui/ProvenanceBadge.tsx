@@ -28,7 +28,7 @@ type LoadState =
  * Distinct from D-07's `AttachedDocumentsForObservation` /
  * `AttachedDocumentsForLabReport`, which surface user-curated
  * attachments. `ProvenanceBadge` surfaces the import-time source,
- * a separate semantic channel — different color, different icon,
+ * a separate semantic channel - different color, different icon,
  * different tooltip to keep the two mental models apart.
  *
  * Gracefully handles stale references: if the referenced Document
@@ -114,7 +114,7 @@ function truncate(s: string, max: number): string {
 
 /**
  * Inline SVG for the provenance badge. Distinct from the D-07
- * link-chain icon — this one is an arrow-into-document motif to
+ * link-chain icon - this one is an arrow-into-document motif to
  * signal "came from" rather than "linked to".
  */
 function SourceIcon() {

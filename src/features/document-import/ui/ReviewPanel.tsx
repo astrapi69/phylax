@@ -258,8 +258,8 @@ function ObservationRow({
       onToggle={onToggle}
       summary={
         <div>
-          <strong className="font-semibold">{draft.theme || '—'}</strong>
-          {draft.fact && <span> — {draft.fact}</span>}
+          <strong className="font-semibold">{draft.theme || '-'}</strong>
+          {draft.fact && <span> - {draft.fact}</span>}
         </div>
       }
       editToggleLabel={editing ? t('import.review.edit-done') : t('import.review.edit')}
@@ -351,10 +351,10 @@ function LabValueRow({
       summary={
         <div>
           <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            {draft.category || '—'}
+            {draft.category || '-'}
           </span>
           <div>
-            <strong>{draft.parameter || '—'}</strong>: {draft.result || '—'}
+            <strong>{draft.parameter || '-'}</strong>: {draft.result || '-'}
             {draft.unit ? ` ${draft.unit}` : ''}
             {draft.assessment ? ` (${draft.assessment})` : ''}
           </div>
@@ -443,9 +443,9 @@ function SupplementRow({
       onToggle={onToggle}
       summary={
         <div>
-          <strong>{draft.name || '—'}</strong>
+          <strong>{draft.name || '-'}</strong>
           {draft.brand ? <span className="ml-1 text-xs text-gray-500">({draft.brand})</span> : null}
-          <span className="ml-2 text-xs text-gray-500">— {categoryLabel}</span>
+          <span className="ml-2 text-xs text-gray-500">- {categoryLabel}</span>
         </div>
       }
       editToggleLabel={editing ? t('import.review.edit-done') : t('import.review.edit')}
@@ -526,9 +526,9 @@ function OpenPointRow({
       summary={
         <div>
           <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            {draft.context || '—'}
+            {draft.context || '-'}
           </span>
-          <div>{draft.text || '—'}</div>
+          <div>{draft.text || '-'}</div>
         </div>
       }
       editToggleLabel={editing ? t('import.review.edit-done') : t('import.review.edit')}

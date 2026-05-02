@@ -19,7 +19,7 @@ const BINARY_GB = BINARY_MB * 1024;
 
 /**
  * Small progress bar + usage text below the documents list. Renders
- * nothing when the browser API is unavailable or throws — the
+ * nothing when the browser API is unavailable or throws - the
  * indicator is an optional signal, not a required UI element.
  *
  * Accessibility:

@@ -10,7 +10,7 @@ import { getLockState, onLockStateChange } from '../../crypto';
  * Default value (`DEFAULT_SETTINGS.autoLockMinutes`) holds while the
  * keystore is locked or before the first read resolves. The hook
  * subscribes to lock-state changes so the value re-reads on every
- * unlock — including the first unlock of a session — without
+ * unlock - including the first unlock of a session - without
  * forcing the caller to know about the encrypted-meta lifecycle.
  *
  * P-05 trade-off (per Q-lock): apply-on-reload for v1. The
@@ -20,7 +20,7 @@ import { getLockState, onLockStateChange } from '../../crypto';
  * session would need an event emitter on the saver; deferred until
  * a real complaint surfaces.
  *
- * Hook is no-op when keystore is locked — `decryptWithStoredKey`
+ * Hook is no-op when keystore is locked - `decryptWithStoredKey`
  * would throw, which we catch and ignore so the hook can be safely
  * mounted at App.tsx top level (App is constructed before unlock).
  */

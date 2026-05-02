@@ -22,13 +22,13 @@ export interface ImageViewerProps {
  */
 type ZoomState = 'fit' | number;
 
-/** Minimum explicit zoom level — 25% of natural image size. */
+/** Minimum explicit zoom level - 25% of natural image size. */
 const MIN_SCALE = 0.25;
-/** Maximum explicit zoom level — 500% of natural image size. */
+/** Maximum explicit zoom level - 500% of natural image size. */
 const MAX_SCALE = 5;
 /** Multiplier applied per zoom-in step; 1/STEP per zoom-out. */
 const ZOOM_STEP = 1.25;
-/** Snap-in target when zooming up out of `'fit'` — pixel accurate. */
+/** Snap-in target when zooming up out of `'fit'` - pixel accurate. */
 const ZOOM_IN_FROM_FIT = 1;
 /** Snap-out target when zooming down out of `'fit'`. */
 const ZOOM_OUT_FROM_FIT = 0.5;

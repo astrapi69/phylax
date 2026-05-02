@@ -10,7 +10,7 @@ export interface ClassificationConfirmProps {
 
 /**
  * Banner shown when classification confidence falls below
- * `MIN_CLASSIFICATION_CONFIDENCE`. Binary choice — confirm and
+ * `MIN_CLASSIFICATION_CONFIDENCE`. Binary choice - confirm and
  * proceed to extraction, or reject and abort the session. Type
  * override (e.g., user picks a different DocumentType) is deferred
  * to IMP-06 once real-world uncertainty data is in.

@@ -18,7 +18,7 @@ interface LabReportCardProps {
   valuesByCategory: Map<string, LabValue[]>;
   /**
    * Optional report-form hook result. When omitted, no edit/delete
-   * actions render — keeps the card usable in read-only contexts
+   * actions render - keeps the card usable in read-only contexts
    * (e.g., profile-view summary panes) without requiring a form
    * provider in the surrounding tree.
    */

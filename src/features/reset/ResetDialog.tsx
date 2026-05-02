@@ -14,7 +14,7 @@ export interface ResetDialogProps {
 
 /**
  * The string the user must type, character-for-character, to enable
- * the destructive confirm button. Stays English across all locales —
+ * the destructive confirm button. Stays English across all locales -
  * a fixed, recognizable test target with no localization drift.
  * Parallels how git command names are not translated.
  */
@@ -33,14 +33,14 @@ const CHALLENGE_STRING = 'RESET';
  *   `RESET` (case-sensitive, no whitespace, no locale variants).
  *   Type-challenge is industry standard for irreversible destructive
  *   actions (GitHub repo deletion, Stripe account deletion).
- * - Cancel button is focused on mount — keyboard users entering this
+ * - Cancel button is focused on mount - keyboard users entering this
  *   dialog should not have the destructive Confirm pre-focused.
  * - Escape cancels (now via Modal primitive; suppressed while reset
  *   is in flight).
  * - No master-password guard. The most common reset trigger is
  *   forgotten password, so requiring the password to wipe data after
  *   forgetting it would be paradoxical.
- * - Wipe orchestration delegated to `useResetAllData` — this
+ * - Wipe orchestration delegated to `useResetAllData` - this
  *   component is presentation only.
  */
 export function ResetDialog({ onCancel }: ResetDialogProps) {

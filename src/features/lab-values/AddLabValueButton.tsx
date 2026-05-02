@@ -12,7 +12,7 @@ export interface AddLabValueButtonProps {
  * pre-bound, so the value lands in the right report regardless of
  * which card was clicked.
  *
- * Single button per card (Q3 — not per-category) keeps the surface
+ * Single button per card (Q3 - not per-category) keeps the surface
  * compact; the user picks category from the form's category datalist.
  */
 export function AddLabValueButton({ reportId, form }: AddLabValueButtonProps) {

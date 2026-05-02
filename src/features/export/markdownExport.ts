@@ -337,7 +337,7 @@ function renderLinkTargetsGerman(
     }
     return 'unbekannte Verknüpfung';
   });
-  return ` — ${parts.join(' · ')}`;
+  return ` - ${parts.join(' · ')}`;
 }
 
 function buildFooter(version: string, lastUpdateReason: string | undefined): string {

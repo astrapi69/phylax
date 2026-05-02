@@ -64,7 +64,7 @@ export class PhylaxDb extends Dexie {
       timeline_entries: '&id, profileId, [profileId+createdAt]',
     });
 
-    // v3: Phase 4 D-01 — split encrypted binary blobs off the
+    // v3: Phase 4 D-01 - split encrypted binary blobs off the
     // `documents` metadata row. `document_blobs` carries only `id`
     // (matching the owning document) + `payload`; no profileId index
     // because both rows are always created/deleted atomically under

@@ -15,7 +15,7 @@ export interface LabReportFormProps {
  * Layout: required `reportDate` (native `<input type="date">`) on row 1,
  * lab/doctor metadata row, then optional fields (reportNumber,
  * contextNote, overallAssessment, relevanceNotes) collapsed in a
- * `<details>` disclosure — collapsed by default in create mode,
+ * `<details>` disclosure - collapsed by default in create mode,
  * expanded when editing a report that already has data in any optional
  * field.
  *

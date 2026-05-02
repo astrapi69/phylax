@@ -54,7 +54,7 @@ Pattern per content batch:
 1. Implementation commit in `phylax-docs/main` (e.g., DOC-01b: Getting
    Started topics). CI deploys to https://astrapi69.github.io/phylax-docs/.
 2. Manual smoke verifies the deployed pages render and link correctly.
-3. Follow-up commit in this repo updates ROADMAP — ticks the relevant
+3. Follow-up commit in this repo updates ROADMAP - ticks the relevant
    DOC-01x sub-bullet, references the `phylax-docs` commit hash in the
    commit message body for cross-repo traceability.
 

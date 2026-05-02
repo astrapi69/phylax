@@ -77,7 +77,7 @@ export function unlockWithKey(key: CryptoKey): void {
  * Swap the currently-stored key with a new one without transitioning
  * the lock state. Used by the Settings backup-restore flow where the
  * user is already unlocked but the vault has been re-encrypted under
- * a backup-derived key — the in-memory key must update to match the
+ * a backup-derived key - the in-memory key must update to match the
  * new on-disk encryption, and the user remains authenticated.
  *
  * Asserts the store is currently unlocked; throws otherwise.

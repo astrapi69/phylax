@@ -19,7 +19,7 @@ export interface UseLabValuesResult {
   /**
    * Re-run the load. Used by O-12a form/delete success paths to refresh
    * the list without a full route navigation. Direct call (not pub/sub)
-   * for traceability — mirrors the O-10 pattern on `useObservations`.
+   * for traceability - mirrors the O-10 pattern on `useObservations`.
    */
   refetch: () => void;
 }

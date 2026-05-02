@@ -17,7 +17,7 @@ import { composeExtractorPrompt, type ExtractorName } from './promptTemplates';
 
 export const STRUCTURE_ONLY = `Du strukturierst medizinische Dokumente. Du stellst keine
 Diagnosen, gibst keine Therapieempfehlungen und übernimmst keine
-klinische Verantwortung. Du extrahierst, was im Dokument steht —
+klinische Verantwortung. Du extrahierst, was im Dokument steht -
 nicht mehr, nicht weniger. Bei Unsicherheit lieber leer lassen als
 raten.`;
 

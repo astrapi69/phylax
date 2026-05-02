@@ -8,7 +8,7 @@ export interface AddSupplementButtonProps {
 /**
  * O-14 trigger button on the `SupplementsView` header. Opens the form
  * in create mode via the shared `useSupplementForm` hook. Always
- * rendered regardless of populated state — empty-state surfaces still
+ * rendered regardless of populated state - empty-state surfaces still
  * show the button so users can add their first supplement.
  */
 export function AddSupplementButton({ form }: AddSupplementButtonProps) {

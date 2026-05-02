@@ -7,13 +7,7 @@ import type { CommitResult, DraftSelection } from '../commit';
 import { totalCommitted } from '../commit';
 import type { AiCallError } from '../aiCallError';
 import { isRetryableAiCallError } from '../aiCallError';
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  useModalTitleId,
-} from '../../../ui';
+import { Modal, ModalBody, ModalFooter, ModalHeader, useModalTitleId } from '../../../ui';
 import { ConsentDialog } from './ConsentDialog';
 import { ClassificationConfirm } from './ClassificationConfirm';
 import { ReviewPanel } from './ReviewPanel';
@@ -23,7 +17,7 @@ export interface ImportFlowProps {
   initialFile: File;
   /** Called whenever the modal needs to close (cancel, success, decline). */
   onClose: (result?: CommitResult) => void;
-  /** Test seam — overrides for the underlying pipeline functions. */
+  /** Test seam - overrides for the underlying pipeline functions. */
   pipelineOverrides?: UseImportSessionOptions['pipeline'];
 }
 

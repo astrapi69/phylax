@@ -88,7 +88,7 @@ describe('useBackupImport', () => {
     lock();
   });
 
-  it('does NOT call unlockWithKey internally — caller owns auth-state transition', async () => {
+  it('does NOT call unlockWithKey internally - caller owns auth-state transition', async () => {
     const cryptoModule = await import('../../crypto');
     const spy = vi.spyOn(cryptoModule, 'unlockWithKey');
     const parsed = await makeBackup('correct-password');

@@ -1,9 +1,4 @@
-import {
-  isDateRangeActive,
-  isInDateRangeIso,
-  normalizeForSearch,
-  type DateRange,
-} from '../../lib';
+import { isDateRangeActive, isInDateRangeIso, normalizeForSearch, type DateRange } from '../../lib';
 import type { LabReportWithValues } from './useLabValues';
 
 /**
@@ -14,7 +9,7 @@ import type { LabReportWithValues } from './useLabValues';
  * Q10 row-keep semantic: a report is retained when EITHER any of
  * its header fields matches the query OR any of its child values
  * matches. When retained, ALL the report's values render
- * unchanged — the table row layout is preserved so neighbour
+ * unchanged - the table row layout is preserved so neighbour
  * values stay visible for clinical context. Highlighting (handled
  * by the rendering layer, not this filter) shows only the actual
  * matches.
@@ -33,7 +28,7 @@ import type { LabReportWithValues } from './useLabValues';
  * unchanged. Either filter being active narrows the result.
  *
  * `matchCount` counts retained reports (not individual cell
- * matches) — sufficient for the "X von Y Befunden" header counter.
+ * matches) - sufficient for the "X von Y Befunden" header counter.
  * Cell-level match counting + Browser-Find Up/Down nav lives in a
  * P-22b-polish follow-up if a real use case surfaces.
  */
@@ -83,7 +78,10 @@ export function filterLabReports(
   return { reports: matched, matchCount: matched.length, totalCount };
 }
 
-function matchesAnyField({ report, valuesByCategory }: LabReportWithValues, terms: string[]): boolean {
+function matchesAnyField(
+  { report, valuesByCategory }: LabReportWithValues,
+  terms: string[],
+): boolean {
   // Build a single haystack per report covering header + every
   // value cell + every category-assessment + the category names
   // themselves. AND-combine terms over the joined haystack so a

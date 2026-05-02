@@ -79,7 +79,7 @@ function fieldsFrom(supplement: Supplement): SupplementFormFields {
 /**
  * State machine for the O-14 supplement form. Drives create + edit +
  * delete. Owns form fields locally; no datalists (closed enum for
- * `category` via `<select>`, free text for the rest — no useful
+ * `category` via `<select>`, free text for the rest - no useful
  * profile-wide suggestion sets per Q4 of the locked plan).
  *
  * Closure paths: `close` from cancel button or successful submit.
@@ -172,7 +172,7 @@ export function useSupplementForm(options: UseSupplementFormOptions = {}): UseSu
           recommendation: emptyToUndefined(state.fields.recommendation),
           rationale: emptyToUndefined(state.fields.rationale),
           // sourceDocumentId preserved by NOT including it in the
-          // patch — provenance round-trip stays verbatim.
+          // patch - provenance round-trip stays verbatim.
         });
       }
       options.onCommitted?.();

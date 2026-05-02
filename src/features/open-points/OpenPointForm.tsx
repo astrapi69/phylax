@@ -15,7 +15,7 @@ export interface OpenPointFormProps {
  * Layout: required `text` row, then `context` (with profile-wide
  * datalist) + `priority` row, then `timeHorizon` row, then optional
  * `details` (Markdown textarea) collapsed under a `<details>`
- * disclosure — auto-expanded in edit mode when details has content.
+ * disclosure - auto-expanded in edit mode when details has content.
  *
  * Submit gating: `text` + `context` both non-empty after trim.
  * Submit button stays disabled otherwise. Submit error stays in-modal.

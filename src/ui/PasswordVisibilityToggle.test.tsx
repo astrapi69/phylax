@@ -49,7 +49,7 @@ describe('PasswordVisibilityToggle', () => {
     const mouseDown = fireEvent.mouseDown(button);
     expect(mouseDown).toBe(false); // event was preventDefaulted
     // Browsers don't fire focus-shift in jsdom from mouseDown alone, but
-    // the assertion above proves the preventDefault hook is wired —
+    // the assertion above proves the preventDefault hook is wired -
     // which is what the focus-management contract requires.
   });
 

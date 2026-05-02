@@ -1,4 +1,4 @@
-# Performance Baseline — 2026-04-29
+# Performance Baseline - 2026-04-29
 
 P-08 audit. One-time baseline measurement of bundle size + simulated
 Time-to-Interactive (TTI) on a mid-range mobile profile. Records the
@@ -17,8 +17,8 @@ in the original P-08 line.
 - **Build**: production (`make build`), served via `make preview`
   (Vite preview server, port 6174).
 - **Cold-load definition**: hard-reload via DevTools "Disable cache"
-  + clear Application -> IndexedDB, Application -> Service Workers,
-  Application -> Storage between runs.
+  - clear Application -> IndexedDB, Application -> Service Workers,
+    Application -> Storage between runs.
 - **Routes measured**: `/welcome` (first-run path) and `/unlock`
   (returning-user path); `/profile` is gated behind the master-
   password derivation step (PBKDF2 1.2M iterations) which is itself
@@ -29,15 +29,15 @@ in the original P-08 line.
 
 `size-limit` budgets per `.size-limit.json`, all gzipped:
 
-| Asset                       | Limit  | Current (main JS gzip on commit `815efd5`) |
-| --------------------------- | ------ | ------------------------------------------- |
-| Main JS bundle              | 350 KB | ~272 KB                                     |
-| Workbox chunk               | 8 KB   | ~3 KB                                       |
-| CSS bundle                  | 15 KB  | ~14 KB                                      |
-| Total JS + CSS              | 380 KB | ~286 KB                                     |
-| Setup lazy chunks (zxcvbn)  | 250 KB | ~241 KB                                     |
-| pdf.js chunk (lazy)         | 130 KB | ~126 KB                                     |
-| jsPDF chunk (lazy)          | 140 KB | ~136 KB                                     |
+| Asset                      | Limit  | Current (main JS gzip on commit `815efd5`) |
+| -------------------------- | ------ | ------------------------------------------ |
+| Main JS bundle             | 350 KB | ~272 KB                                    |
+| Workbox chunk              | 8 KB   | ~3 KB                                      |
+| CSS bundle                 | 15 KB  | ~14 KB                                     |
+| Total JS + CSS             | 380 KB | ~286 KB                                    |
+| Setup lazy chunks (zxcvbn) | 250 KB | ~241 KB                                    |
+| pdf.js chunk (lazy)        | 130 KB | ~126 KB                                    |
+| jsPDF chunk (lazy)         | 140 KB | ~136 KB                                    |
 
 Headroom on every chunk. Setup-chunk headroom is 9 KB and tracked as
 a watchpoint (any zxcvbn-ts minor bump > 9 KB breaks CI).
@@ -69,7 +69,7 @@ Comfortably under the 3 s target named in `.claude/rules/quality-checks.md`.
 - **TTI**: ~1.5 s.
 
 The PBKDF2 derivation that follows the user's password submit takes
-~1.6 s on the same throttled profile — that latency is intentional
+~1.6 s on the same throttled profile - that latency is intentional
 (security floor per ADR-0001) and surfaced to the user via the
 existing `LoadingSpinner` in `UnlockView`. Outside TTI scope.
 
@@ -102,7 +102,7 @@ gate via CI.
 Re-run this audit when:
 
 - the main JS bundle crosses 80 % of the 350 KB ceiling (currently
-  at 78 % already, so this is close — next non-trivial feature);
+  at 78 % already, so this is close - next non-trivial feature);
 - a perf complaint surfaces on real hardware;
 - a major dependency (React, Vite, Tailwind, zxcvbn-ts) majors
   bumps and changes the profile.

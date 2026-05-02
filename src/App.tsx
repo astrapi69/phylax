@@ -19,7 +19,7 @@ function App() {
   // new SW installs and activates without ever taking over the
   // existing tab. The user gets the update on their next F5 /
   // navigation. We discard the returned `updateSW` because nothing
-  // in the app calls it any more — calling it would re-introduce
+  // in the app calls it any more - calling it would re-introduce
   // the BUG-01 mid-session reload.
   useEffect(() => {
     setupServiceWorker(() => undefined);

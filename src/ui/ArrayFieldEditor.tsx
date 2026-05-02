@@ -24,14 +24,14 @@ export interface ArrayFieldEditorProps {
  * per array entry plus an "add row" button. Each row has a delete button
  * (44x44 touch target, WCAG 2.5.5).
  *
- * Empty rows are NOT auto-trimmed here — the caller decides when to trim
+ * Empty rows are NOT auto-trimmed here - the caller decides when to trim
  * (typically on form submit, via the same `emptyToUndefined`-style helper
  * that all CRUD form hooks use).
  *
  * Enter inside a row's `<input>` does NOT submit the parent form. Pressing
  * Enter while focused on the input is a no-op so users adding multiple
  * rows can keep going without accidentally committing the form. Backspace
- * inside an empty row does NOT auto-remove the row — explicit delete via
+ * inside an empty row does NOT auto-remove the row - explicit delete via
  * the button keeps the destructive action intentional.
  *
  * Used by the O-16 base-data form for the three string arrays

@@ -8,7 +8,7 @@
  *
  * Touch target: 44×44px minimum per WCAG 2.5.5 (matches the project
  * a11y discipline established in O-10..O-14). `min-h-[44px]` may
- * cause the toggle to overflow short input wrappers slightly — that's
+ * cause the toggle to overflow short input wrappers slightly - that's
  * the trade-off accepted here over fighting `inset-y-0` positioning.
  *
  * Focus management: `onMouseDown={preventDefault}` keeps focus inside
@@ -28,7 +28,7 @@
 export interface PasswordVisibilityToggleProps {
   /** True when password text is currently revealed. */
   visible: boolean;
-  /** Click / activation handler — caller flips `visible` state. */
+  /** Click / activation handler - caller flips `visible` state. */
   onToggle: () => void;
   /** aria-label and `title` text when password is hidden. */
   labelShow: string;

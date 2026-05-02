@@ -30,7 +30,7 @@ export type LinkableEntitiesState =
  * recently edited; newest-first minimizes scroll distance.
  *
  * Observation labels: theme + first 40 chars of `fact`.
- * Lab-value labels: "<parameter> (<reportDate>) — <result><unit>".
+ * Lab-value labels: "<parameter> (<reportDate>) - <result><unit>".
  */
 export function useLinkableEntities(): LinkableEntitiesState {
   const [state, setState] = useState<LinkableEntitiesState>({ kind: 'loading' });
@@ -87,12 +87,12 @@ export function useLinkableEntities(): LinkableEntitiesState {
 
 function formatObservationLabel(o: Observation): string {
   const fact = o.fact ? firstLineTruncated(o.fact, 40) : '';
-  return fact ? `${o.theme} — ${fact}` : o.theme;
+  return fact ? `${o.theme} - ${fact}` : o.theme;
 }
 
 function formatLabValueLabel(v: LabValue): string {
   const result = v.unit ? `${v.result} ${v.unit}` : v.result;
-  return `${v.parameter} — ${result}`;
+  return `${v.parameter} - ${result}`;
 }
 
 function firstLineTruncated(text: string, max: number): string {

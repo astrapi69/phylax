@@ -12,12 +12,12 @@ import { encryptWithStoredKey, decryptWithStoredKey } from '../crypto';
  *
  * Returns DEFAULT_SETTINGS when the meta row is missing (caller is
  * pre-onboarding / vault is empty). The keystore must be unlocked
- * — `decryptWithStoredKey` throws otherwise; the caller wraps the
+ * - `decryptWithStoredKey` throws otherwise; the caller wraps the
  * call in an unlock guard or accepts the throw.
  *
  * Mirrors the read half of `src/db/aiConfig.ts` for consistency.
  * Both functions sit on the same encrypted MetaPayload, so a future
- * generic `readMetaPayload()` helper could replace both — kept
+ * generic `readMetaPayload()` helper could replace both - kept
  * separate for now so each lifecycle (settings vs AI config) is
  * easy to read in isolation.
  */
@@ -33,7 +33,7 @@ export async function readAppSettings(): Promise<AppSettings> {
 /**
  * Persist a new AppSettings value, preserving every other field on
  * the encrypted MetaPayload (verification token, AI config). Requires
- * an unlocked keystore and an existing meta row — throws otherwise
+ * an unlocked keystore and an existing meta row - throws otherwise
  * (mirrors `saveAIConfig` semantics).
  *
  * Settings are clamped to valid ranges by `encodeMetaPayload` /

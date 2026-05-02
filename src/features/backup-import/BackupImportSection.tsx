@@ -80,7 +80,7 @@ function renderImportError(error: BackupImportError, t: TFunction<'backup-import
  *
  * Shares the underlying `useBackupImport` hook + the
  * `BACKUP_IMPORT_STORAGE_KEY` rate-limiter with the pre-auth
- * surface — both consumers see identical errors, share one
+ * surface - both consumers see identical errors, share one
  * lockout budget, and rely on the same decrypt + populate
  * pipeline. Independent rate-limiters would let an attacker
  * double their attempts by alternating surfaces.

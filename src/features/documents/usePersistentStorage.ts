@@ -24,7 +24,7 @@ export interface UsePersistentStorageResult {
    * be blocked.
    *
    * Internally de-duplicated via a module-level guard so a second
-   * call in the same page load is a no-op — prevents re-prompting
+   * call in the same page load is a no-op - prevents re-prompting
    * after a denial.
    */
   requestPersistence: () => void;
@@ -66,7 +66,7 @@ let lastRequestResult: 'granted' | 'denied' | null = null;
  *   refused. The banner surfaces this. Survives across re-mounts
  *   of the hook.
  * - `unavailable`: API is missing (old browsers, insecure
- *   contexts). Component treats the same as `persisted` — silent.
+ *   contexts). Component treats the same as `persisted` - silent.
  */
 export function usePersistentStorage(
   options: UsePersistentStorageOptions = {},

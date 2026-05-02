@@ -8,7 +8,7 @@ export interface AddOpenPointButtonProps {
 /**
  * O-15 trigger button on the OpenPointsView header. Opens the form
  * in create mode via the shared `useOpenPointForm` hook. Always
- * rendered — empty-state surfaces still expose the button so users
+ * rendered - empty-state surfaces still expose the button so users
  * can add their first item.
  */
 export function AddOpenPointButton({ form }: AddOpenPointButtonProps) {

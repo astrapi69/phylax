@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
  * Settings section that links to the in-app legal pages.
  *
  * Two anchors:
- *   - `/privacy` — the existing first-run PrivacyView (ONB-01b).
+ *   - `/privacy` - the existing first-run PrivacyView (ONB-01b).
  *     Reachable from `/welcome` on first run; this section gives
  *     post-onboarding users a way back to the same content.
- *   - `/license` — the new MIT license verbatim render (P-12).
+ *   - `/license` - the new MIT license verbatim render (P-12).
  *
  * Anchors are real `<Link>` elements so keyboard activation,
  * right-click "open in new tab", and browser preloading all behave

@@ -81,7 +81,7 @@ interface PdfPageLike {
  *   `text`-mode `PreparedInput` with the extracted text. No page
  *   images uploaded; cheap.
  * - **Rasterization required**: PDF lacks a text layer (or has too
- *   little text per page — see `MIN_CHARS_PER_PAGE_FOR_TEXT_MODE`).
+ *   little text per page - see `MIN_CHARS_PER_PAGE_FOR_TEXT_MODE`).
  *   Returns `null` here; the orchestrator surfaces a
  *   `consent-required` state so the user explicitly accepts the
  *   page-image upload to a multimodal AI provider before
@@ -96,7 +96,7 @@ export async function preparePdfNoConsentNeeded(file: File): Promise<PreparedInp
   if (analysis.kind === 'text-mode') {
     return makeTextPreparedInput(analysis.text, file);
   }
-  // Rasterization path — caller orchestrator surfaces consent-required.
+  // Rasterization path - caller orchestrator surfaces consent-required.
   return null;
 }
 
@@ -146,7 +146,7 @@ async function analyzePdf(file: File): Promise<PdfAnalysis> {
 /**
  * Dynamic-import pdf.js with the worker bundled via Vite's
  * `?worker` suffix (per ADR-0017). Top-level static import would
- * pull pdf.js into the main JS bundle — this dynamic boundary is
+ * pull pdf.js into the main JS bundle - this dynamic boundary is
  * the entire reason main JS stays small.
  */
 async function loadPdfDocument(data: ArrayBuffer): Promise<PdfDocumentLike> {
@@ -163,7 +163,7 @@ async function loadPdfDocument(data: ArrayBuffer): Promise<PdfDocumentLike> {
   /* v8 ignore stop */
   const loadingTask = pdfjs.getDocument({
     data,
-    // Disable runtime font fetches — Phylax forbids third-party
+    // Disable runtime font fetches - Phylax forbids third-party
     // network calls. Worst case: missing-font glyphs render with
     // OS substitutes. Acceptable.
     disableFontFace: true,

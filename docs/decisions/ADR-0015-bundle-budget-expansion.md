@@ -78,7 +78,7 @@ That remains a hard check point.
 ## Consequences
 
 - Main JS can grow up to 350 KB gzipped before CI fails. Current
-  measurement: 231.44 KB leaves 118.56 KB headroom — sufficient for
+  measurement: 231.44 KB leaves 118.56 KB headroom - sufficient for
   four additional languages (~32-40 KB), Phase 4 ePA-integration work
   (uncertain cost), and general feature growth.
 - Less precise signal from size-limit CI for future bundle-growth

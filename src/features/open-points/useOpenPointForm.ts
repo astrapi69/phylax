@@ -6,7 +6,7 @@ import { OpenPointRepository, ProfileRepository } from '../../db/repositories';
  * Mode the form opens in. `create` starts blank; `edit` prefills
  * from the supplied open point and preserves provenance fields
  * (`sourceDocumentId`, `id`, `profileId`, `createdAt`, `resolved`)
- * verbatim across the round-trip — `resolved` is owned by the toggle
+ * verbatim across the round-trip - `resolved` is owned by the toggle
  * path, not the edit form.
  */
 export type OpenPointFormMode =
@@ -99,7 +99,7 @@ function fieldsFrom(point: OpenPoint): OpenPointFormFields {
  * Re-categorization: edit mode allows changing `context`; the parent
  * groups reshuffle on save through the `onCommitted` refetch.
  *
- * Toggle path is independent of the modal lifecycle — a checkbox
+ * Toggle path is independent of the modal lifecycle - a checkbox
  * click inside the list fires `toggle(point)` directly without
  * opening anything. Phylax convention: await-confirm (no optimistic
  * UI). The brief in-flight window is exposed via `togglingId` so the
@@ -207,7 +207,7 @@ export function useOpenPointForm(options: UseOpenPointFormOptions = {}): UseOpen
           timeHorizon: emptyToUndefined(state.fields.timeHorizon),
           details: emptyToUndefined(state.fields.details),
           // sourceDocumentId + resolved preserved by NOT including
-          // them in the patch — provenance round-trip stays verbatim;
+          // them in the patch - provenance round-trip stays verbatim;
           // resolved flag is owned by the toggle path.
         });
       }

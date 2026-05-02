@@ -24,7 +24,7 @@ export interface UseAttachedDocumentsOptions {
  * Thin wrapper over `DocumentRepository.listByObservation` /
  * `.listByLabValue` that additionally resolves the current profile
  * and surfaces loading / error state. Returns an empty list (not an
- * error) when nothing is linked — the caller decides whether to
+ * error) when nothing is linked - the caller decides whether to
  * render an empty heading or nothing at all.
  */
 export function useAttachedDocuments({

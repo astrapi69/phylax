@@ -115,7 +115,7 @@ export interface PrepareWithConsentOptions {
 
 /**
  * Document classes the AI classifier (IMP-03) routes into. String
- * literal union, not a TypeScript enum — lighter, tree-shakeable,
+ * literal union, not a TypeScript enum - lighter, tree-shakeable,
  * no import overhead at consumption sites. Adding a new class is a
  * one-line edit here plus extractor + prompt entries in IMP-03 /
  * IMP-06.

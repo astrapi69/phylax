@@ -10,18 +10,18 @@ import type { DocumentType } from './types';
  * and cannot be overridden. Templates layer additional guidance on
  * top:
  *
- * 1. `systemPromptFragment` — appended for every extractor call
+ * 1. `systemPromptFragment` - appended for every extractor call
  *    against this document type. Describes what's typically in this
  *    document class, what to focus on, and where to be cautious.
  *
- * 2. `extractorHints` — optional per-tool nudges keyed by
+ * 2. `extractorHints` - optional per-tool nudges keyed by
  *    `ExtractorName`. Sparse by design: most templates provide hints
  *    for at most one or two extractors (the "natural fit" ones for
  *    that document class). Negative hints (e.g., "imaging-report →
  *    extract_lab_values: return empty") are reserved for high-value
  *    cases only, not blanket "impossible combo" guards.
  *
- * All text is German — matching the rest of the Phylax AI prompt
+ * All text is German - matching the rest of the Phylax AI prompt
  * surface (`STRUCTURE_ONLY`, `CLASSIFICATION_SYSTEM_PROMPT`,
  * `extractorSystemPrompt`) and the primary language of the input
  * documents (DACH healthcare).
@@ -59,7 +59,7 @@ export const PROMPT_TEMPLATES: Readonly<Record<DocumentType, PromptTemplate>> = 
     systemPromptFragment: `Rezepte listen verschreibungspflichtige Medikamente: Wirkstoff, Stärke, Packungsgröße, Dosierungsanweisung. Meist pro Zeile ein Eintrag. Kein narrativer Kontext.`,
     extractorHints: {
       extract_supplements: `Rezepte enthalten primär verschreibungspflichtige Medikamente. Einträge wie 'Vitamin D 20.000 IE', 'Magnesium 400 mg', 'Vitamin B12' oder 'Eisen' können als Supplement-Kategorie extrahiert werden, wenn es sich um Dauermedikation handelt (höherdosierte Supplemente sind in Deutschland rezeptpflichtig und erscheinen daher auf Rezept). Bei klassischen Medikamenten (Antibiotika, Blutdrucksenker, etc.): leer lassen.`,
-      extract_open_points: `Rezepte enthalten typischerweise keine offenen Punkte — die Anweisung lautet 'einnehmen', nicht 'nachverfolgen'. Leeres Array zurückgeben, es sei denn ein expliziter Hinweis steht im Rezepttext.`,
+      extract_open_points: `Rezepte enthalten typischerweise keine offenen Punkte - die Anweisung lautet 'einnehmen', nicht 'nachverfolgen'. Leeres Array zurückgeben, es sei denn ein expliziter Hinweis steht im Rezepttext.`,
     },
   },
   'imaging-report': {

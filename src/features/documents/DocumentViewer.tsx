@@ -87,7 +87,7 @@ function ViewerBody({ state }: { state: DocumentContentState }) {
   // metadata.mimeType (trusted since it was set at upload time and is
   // re-read from the encrypted metadata row), never by filename
   // extension. Explicit whitelist match against the shared constants
-  // in `mimeTypes.ts` — NOT an `image/*` prefix match — because
+  // in `mimeTypes.ts` - NOT an `image/*` prefix match - because
   // image/svg+xml can carry script and must never silently route into
   // the image viewer.
   if (isPdfMimeType(state.document.mimeType)) {

@@ -76,7 +76,7 @@ export type DeleteWithProvenanceResult =
  * Order matters: clear references first (so there is no transient
  * window where a zombie reference could mislead a reader), then
  * delete the Document itself. If clearing partially fails, we stop
- * and do NOT delete the Document — the user retries from a consistent
+ * and do NOT delete the Document - the user retries from a consistent
  * state rather than being left with a deleted Document and partially
  * updated entities.
  */

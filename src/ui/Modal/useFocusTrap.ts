@@ -2,7 +2,7 @@ import { useEffect, type RefObject } from 'react';
 
 /**
  * Focusable selector. Excludes disabled, hidden, and aria-hidden
- * elements. Skipping these is a standard focus-trap gotcha — naive
+ * elements. Skipping these is a standard focus-trap gotcha - naive
  * implementations include disabled buttons in the trap and focus
  * unfocusable controls on Tab cycling.
  *
@@ -27,7 +27,7 @@ const FOCUSABLE_SELECTOR = [
  *
  * No-ops if the container has zero focusable elements.
  *
- * Listener is scoped to `document.keydown`, not the container — Tab
+ * Listener is scoped to `document.keydown`, not the container - Tab
  * from outside the container would otherwise bypass the trap.
  */
 export function useFocusTrap<T extends HTMLElement>(

@@ -13,7 +13,7 @@ export interface SupplementFormProps {
  * O-14 supplement form: modal-based create + edit. Consumes the O-20
  * `<Modal>` primitive for focus trap, backdrop, portal, scroll lock.
  *
- * Layout: 5 fields flat (no `<details>` disclosure — total field count
+ * Layout: 5 fields flat (no `<details>` disclosure - total field count
  * is small enough to keep visible). Required: `name` + `category`.
  * Optional: `brand`, `recommendation`, `rationale`.
  *

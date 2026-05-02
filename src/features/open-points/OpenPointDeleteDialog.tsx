@@ -17,16 +17,14 @@ const TEXT_PREVIEW_MAX = 50;
  * which item is being deleted, mirroring O-12b's parameter+result
  * pattern. Two body keys:
  * - `delete.body.with-context`: text + context
- * - `delete.body.no-context`: text only (defensive — context is
+ * - `delete.body.no-context`: text only (defensive - context is
  *   required so empty shouldn't normally happen)
  */
 export function OpenPointDeleteDialog({ form }: OpenPointDeleteDialogProps) {
   const { t } = useTranslation('open-points');
   const open = form.state.kind === 'open' && form.state.mode.kind === 'delete';
   const point =
-    form.state.kind === 'open' && form.state.mode.kind === 'delete'
-      ? form.state.mode.point
-      : null;
+    form.state.kind === 'open' && form.state.mode.kind === 'delete' ? form.state.mode.point : null;
   const submitting = form.state.kind === 'open' ? form.state.submitting : false;
   const error = form.state.kind === 'open' ? form.state.error : null;
 

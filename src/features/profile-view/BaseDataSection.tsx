@@ -33,7 +33,7 @@ function formatBirthDate(iso: string): string {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-      <dt className="text-sm font-medium text-gray-600 dark:text-gray-400 sm:w-32">{label}</dt>
+      <dt className="text-sm font-medium text-gray-600 sm:w-32 dark:text-gray-400">{label}</dt>
       <dd className="text-sm text-gray-900 dark:text-gray-100">{children}</dd>
     </div>
   );
@@ -80,7 +80,7 @@ export function BaseDataSection({ baseData, profile, form }: BaseDataSectionProp
 
   const hasNotes = typeof baseData.contextNotes === 'string' && baseData.contextNotes.trim() !== '';
 
-  // O-16: keep section visible when only the edit button is present —
+  // O-16: keep section visible when only the edit button is present -
   // the user needs an entry point even on a profile with no scalar
   // fields populated yet.
   if (rows.length === 0 && !hasNotes && !showEditButton) return null;

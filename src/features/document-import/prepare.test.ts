@@ -19,7 +19,7 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('prepare() — text path', () => {
+describe('prepare() - text path', () => {
   it('round-trips a text/plain file into a ready text-mode PreparedInput', async () => {
     const file = makeFile(['Hallo, das ist eine medizinische Notiz.'], 'note.txt', 'text/plain');
 
@@ -68,7 +68,7 @@ describe('prepare() — text path', () => {
   });
 });
 
-describe('prepare() — size cap', () => {
+describe('prepare() - size cap', () => {
   it('throws DocumentSizeLimitError for files exceeding the 10 MB cap', async () => {
     const oversizedBytes = new Uint8Array(DOCUMENT_SIZE_LIMIT_BYTES + 1);
     const file = makeFile([oversizedBytes], 'big.txt', 'text/plain');
@@ -83,7 +83,7 @@ describe('prepare() — size cap', () => {
   });
 });
 
-describe('prepare() — HEIC / HEIF rejection', () => {
+describe('prepare() - HEIC / HEIF rejection', () => {
   it('throws HeicHeifNotSupportedError for image/heic with the MIME type carried', async () => {
     const file = makeFile([new Uint8Array([0])], 'photo.heic', 'image/heic');
     try {
@@ -106,7 +106,7 @@ describe('prepare() — HEIC / HEIF rejection', () => {
   });
 });
 
-describe('prepare() — unrelated MIMEs', () => {
+describe('prepare() - unrelated MIMEs', () => {
   it('throws UnsupportedSourceError for application/octet-stream', async () => {
     const file = makeFile([new Uint8Array([0])], 'data.bin', 'application/octet-stream');
     await expect(prepare(file)).rejects.toThrow(UnsupportedSourceError);
@@ -124,7 +124,7 @@ describe('prepare() — unrelated MIMEs', () => {
   });
 });
 
-describe('prepare() — PDF dispatch (preparePdf mocked)', () => {
+describe('prepare() - PDF dispatch (preparePdf mocked)', () => {
   it('returns ready text-mode when PDF has a usable text layer', async () => {
     vi.spyOn(preparePdfModule, 'preparePdfNoConsentNeeded').mockResolvedValueOnce({
       mode: 'text',
@@ -174,7 +174,7 @@ describe('prepare() — PDF dispatch (preparePdf mocked)', () => {
   });
 });
 
-describe('prepare() — image dispatch (prepareImage mocked)', () => {
+describe('prepare() - image dispatch (prepareImage mocked)', () => {
   it('returns ready image-mode for PNG', async () => {
     vi.spyOn(prepareImageModule, 'prepareImage').mockResolvedValueOnce({
       mode: 'image',
@@ -206,7 +206,7 @@ describe('prepare() — image dispatch (prepareImage mocked)', () => {
   });
 });
 
-describe('prepareWithConsent() — defensive non-PDF re-route', () => {
+describe('prepareWithConsent() - defensive non-PDF re-route', () => {
   it('re-routes a non-PDF file through prepare() and returns ready when it succeeds', async () => {
     const file = makeFile(['plain text'], 'note.txt', 'text/plain');
 

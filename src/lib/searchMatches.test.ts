@@ -44,7 +44,7 @@ describe('findMatchRanges', () => {
   });
 
   it('finds matches across diacritics in NFC original text', () => {
-    // "Müller" (NFC) — ü is one character, normalizes to "u"
+    // "Müller" (NFC) - ü is one character, normalizes to "u"
     // Query "muller" should match the entire string.
     const ranges = findMatchRanges('Müller', ['muller']);
     expect(ranges).toEqual([{ start: 0, end: 6 }]);
@@ -55,7 +55,7 @@ describe('findMatchRanges', () => {
   });
 
   it('merges overlapping ranges from multiple terms', () => {
-    // "tester" matches "test" at [0,4] and "es" at [1,3] — merges to [0,4].
+    // "tester" matches "test" at [0,4] and "es" at [1,3] - merges to [0,4].
     const ranges = findMatchRanges('tester', ['test', 'es']);
     expect(ranges).toEqual([{ start: 0, end: 4 }]);
   });

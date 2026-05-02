@@ -42,7 +42,7 @@ describe('useSavedAutoLockMinutes', () => {
 
     // User changes the value while the hook is mounted.
     await saveAppSettings({ autoLockMinutes: 60 });
-    // Hook does NOT live-update — value stays at the previous read
+    // Hook does NOT live-update - value stays at the previous read
     // until the next unlock event re-fires the load (P-05
     // apply-on-reload semantic).
     expect(result.current).toBe(15);

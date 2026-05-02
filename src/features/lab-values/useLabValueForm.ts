@@ -221,7 +221,7 @@ export function useLabValueForm(options: UseLabValueFormOptions = {}): UseLabVal
           referenceRange: emptyToUndefined(state.fields.referenceRange),
           assessment: emptyToUndefined(state.fields.assessment),
           // sourceDocumentId + reportId preserved by NOT including them
-          // in the patch — provenance round-trip and parent FK stay
+          // in the patch - provenance round-trip and parent FK stay
           // verbatim. reportId is immutable from the form's perspective
           // even though the base class does not enforce it.
         });

@@ -87,7 +87,7 @@ function isValidIsoDate(value: string): boolean {
 
 /**
  * State machine for the O-16 profile base-data edit form. Drives a
- * single edit mode (no create / no delete — Phylax is single-profile
+ * single edit mode (no create / no delete - Phylax is single-profile
  * per ADR; the profile already exists).
  *
  * Save side effects, in a single Dexie transaction (atomicity matches
@@ -102,7 +102,7 @@ function isValidIsoDate(value: string): boolean {
  * Q4 migration (legacy age-without-birthDate): if the existing profile
  * has `age` set but no `birthDate`, the form lets the user enter a
  * birthDate. On save with a birthDate set, `age` is cleared
- * (single source of truth going forward — age is derived from
+ * (single source of truth going forward - age is derived from
  * birthDate). If birthDate stays empty, age stays untouched.
  *
  * Provenance: Profile entity has no `sourceDocumentId` (IMP-05 lives
@@ -165,8 +165,7 @@ export function useProfileBaseDataForm(
         state.fields.lastUpdateReason.trim().length > 0
           ? state.fields.lastUpdateReason.trim()
           : FALLBACK_REASON;
-      const newBirthDate =
-        state.fields.birthDate.length > 0 ? state.fields.birthDate : undefined;
+      const newBirthDate = state.fields.birthDate.length > 0 ? state.fields.birthDate : undefined;
 
       // Q4 migration: if user provided a birthDate, clear the legacy
       // `age` field so birthDate becomes the single source of truth.

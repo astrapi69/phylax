@@ -2,7 +2,7 @@ import type { ConsentRequiredReason } from './types';
 
 /**
  * Module-level set of consent reasons granted for the current page
- * load. Resets to empty on every fresh page load — no localStorage,
+ * load. Resets to empty on every fresh page load - no localStorage,
  * no sessionStorage. Per IMP-02 design: persistent consent would
  * surprise users later (forgotten consent → unexpected data egress).
  * Per-file with optional session-remember is the safer default.

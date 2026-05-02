@@ -36,7 +36,7 @@ export type ObservationDraft = Pick<
 
 /**
  * Lab value draft. `reportId` is omitted because IMP-03 does not
- * yet create LabReport rows — IMP-04 commit may either map drafts
+ * yet create LabReport rows - IMP-04 commit may either map drafts
  * to an existing report or surface a new-report flow. `result` is
  * a string per the domain (lab values can be non-numeric).
  */
@@ -71,7 +71,7 @@ export type OpenPointDraft = Pick<
  * commit pipeline uses these to synthesize a `LabReport` row that
  * the accepted lab values reference.
  *
- * Both fields are optional — the AI returns them only when the
+ * Both fields are optional - the AI returns them only when the
  * document is unambiguous. On commit:
  * - `reportDate` missing or unparseable → fall back to today's ISO date.
  * - `labName` missing → leave the synthetic report's `labName` undefined.

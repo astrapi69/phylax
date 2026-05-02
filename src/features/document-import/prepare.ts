@@ -23,7 +23,7 @@ import { isConsentGranted, grantConsentForSession } from './consent';
  * application/octet-stream, video/*) surfaces this error.
  *
  * HEIC / HEIF have a dedicated error class with targeted localized
- * message — see `HeicHeifNotSupportedError`.
+ * message - see `HeicHeifNotSupportedError`.
  */
 export class UnsupportedSourceError extends Error {
   constructor(public readonly mimeType: string) {
@@ -35,7 +35,7 @@ export class UnsupportedSourceError extends Error {
 /**
  * Thrown when the user uploads a HEIC or HEIF file. Distinct from
  * `UnsupportedSourceError` so the UI can render targeted guidance
- * ("Convert to JPEG before upload — your iOS share-sheet does this
+ * ("Convert to JPEG before upload - your iOS share-sheet does this
  * automatically in most apps") rather than the generic unsupported
  * message. Per ADR-0017 + IMP-02 design rationale: bundling
  * `heic2any` (~100 KB) for an edge case where iOS auto-converts is
@@ -52,7 +52,7 @@ export class HeicHeifNotSupportedError extends Error {
  * Convert a user-supplied `File` into a `PrepareResult`.
  *
  * Validation order:
- *   1. Size cap against `DOCUMENT_SIZE_LIMIT_BYTES` (10 MB) — fail
+ *   1. Size cap against `DOCUMENT_SIZE_LIMIT_BYTES` (10 MB) - fail
  *      fast before any read or decode work happens. Defense in depth
  *      next to `DocumentRepository.create` which also enforces the
  *      cap; the repo gate would catch oversized files only after a
