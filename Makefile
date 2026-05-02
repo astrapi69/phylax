@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production size test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -59,8 +59,10 @@ test-e2e-ui: ## Run Playwright tests in interactive UI mode
 test-e2e-production: ## Run Playwright E2E against production build
 	npx playwright test --config playwright.config.production.ts
 
-test-bundle-size: build ## Check production bundle against size-limit budgets
+size: ## Run size-limit against an existing dist/ build (no rebuild)
 	npm run size
+
+test-bundle-size: build size ## Build then check production bundle against size-limit budgets
 
 test-mutation-dry: ## Validate Stryker config without running mutations
 	npx stryker run --dryRunOnly

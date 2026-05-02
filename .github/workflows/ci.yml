@@ -107,7 +107,7 @@ jobs:
       - run: npm ci
       - run: make build
       - name: Check bundle size (size-limit, budgets in .size-limit.json)
-        run: npm run size
+        run: make size
       - name: Bundle size summary
         if: always()
         run: |
