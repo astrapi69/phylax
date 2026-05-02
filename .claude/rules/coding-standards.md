@@ -58,8 +58,10 @@
 
 ## Allowed dependencies (locked list)
 
-Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `jspdf-autotable` (ADR-0020), `i18next`, `react-i18next`, `tailwindcss`, `react-markdown` (ADR-0008), `@zxcvbn-ts/core`, `@zxcvbn-ts/language-common` (ADR-0014).
+Core: `react`, `react-dom`, `react-router-dom`, `dexie`, `jspdf`, `jspdf-autotable` (ADR-0020), `pdfjs-dist` (ADR-0017), `i18next`, `react-i18next`, `tailwindcss`, `react-markdown` (ADR-0008), `@zxcvbn-ts/core`, `@zxcvbn-ts/language-common` (ADR-0014).
 
 Dev: `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `typescript`, `vitest`, `@vitest/coverage-v8`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `fake-indexeddb`, `jsdom`, `@playwright/test`, `@axe-core/playwright`, `@tailwindcss/typography` (ADR-0008), `size-limit`, `@size-limit/preset-app` (ADR-0010), `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`, `@stryker-mutator/typescript-checker` (ADR-0011), `eslint`, `prettier`, `husky`, `lint-staged`.
+
+Tooling shims (no separate ADR, required by the existing build/lint stack): `@eslint/js`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `typescript-eslint` (ESLint flat-config example in `.claude/rules/code-hygiene.md`), `@types/react`, `@types/react-dom` (React type packages), `@tailwindcss/postcss`, `postcss`, `prettier-plugin-tailwindcss` (Tailwind v4 PostCSS bridge), `@resvg/resvg-js` (icon-build script, F-15).
 
 Adding a new dependency requires explicit approval and an entry in `docs/decisions/`.
