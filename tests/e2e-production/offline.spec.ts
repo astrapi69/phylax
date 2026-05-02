@@ -23,8 +23,12 @@ test.describe('Offline support (production build)', () => {
     // Simulate offline
     await context.setOffline(true);
 
-    // Reload: should load entirely from service worker cache
-    await page.reload();
+    // Re-navigate to the same URL while offline: should load entirely
+    // from the service worker cache. We use goto() instead of reload()
+    // because WebKit's driver intermittently throws "WebKit encountered
+    // an internal error" on reload() after context.setOffline(true);
+    // goto() exercises the same SW code path without triggering the bug.
+    await page.goto(page.url(), { waitUntil: 'domcontentloaded' });
 
     // The app should still render (onboarding screen on fresh install)
     await expect(page.locator('h1')).toBeVisible();
