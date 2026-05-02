@@ -1,5 +1,23 @@
 **Audit date:** 2026-05-02 | **Commit:** a23f5b7
 
+## Update (post-publication)
+
+Findings closed since publication, in commit order:
+
+- `122495b` - P1 em-dash in DE/EN locale strings (section 2).
+- `8505022` - P1 ADR-0020 backfill for `jspdf-autotable` plus locked-list update (section 3).
+- `4fdd32b` - P2 declare missing task-series prefixes (section 3).
+- `be566bb` - P2 sync locked dependency list with `package.json` (sections 3 + 4).
+- `d731d94` - P3 add pdf.js + jsPDF lazy-chunk budgets to perf budget (sections 3 + 4).
+- `5d4e31d` - P2 justify `as unknown as` casts inline (section 2).
+- `4388b89` - P2 em-dash sweep across `src/` and `docs/` (section 2; ~200 occurrences).
+- `599b1b6` - P2 ADR-0021 backfill for React 19; CLAUDE.md / architecture.md / README.md sync (sections 3 + 4).
+- `951d467` - P2 initial `docs/audits/current-coverage.md` (section 1).
+- `c6de551` - P3 archive legacy audits to `history/` (section 4).
+- `e81dc50` - P3 route bundle-size check through `make` instead of `npm run size` (section 3).
+
+Open at this audit's level of fidelity: ROADMAP P-01 / AIP-01..05 Tier 2 sign-off (P3, requires manual smoke walk by user); coverage threshold violations now tracked in `current-coverage.md` instead.
+
 ## 1. Test Validity
 
 | File / Path:Line                          | Type        | Priority | Reason                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Recommended Action                                                                                                                                                               |
