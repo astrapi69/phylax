@@ -138,11 +138,6 @@ These are the four threshold-violating modules surfaced by the
 2026-05-02 coverage audit. They are tracked here so they appear in
 the same priority queue as feature work.
 
-- [ ] **Coverage P0 - `features/backup-import` 82.10% lines**.
-      `useBackupImport.ts` carries the bulk of the gap. Add
-      error-path tests for partial-decrypt failure and
-      quota-exceeded mid-restore.
-
 ## Working agreements
 
 - New work follows `.claude/rules/task-series.md` for prefix

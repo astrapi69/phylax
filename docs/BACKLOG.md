@@ -12,18 +12,17 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-| #   | Task                                                   | Why it's first                                                                                                                                                                                                  | Effort  |
-| --- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 1   | **Coverage P0 - `features/backup-import` error paths** | 82.10%; backup restore is data-integrity critical (half-applied restore = inconsistent vault). Add partial-decrypt and quota-exceeded mid-restore tests. Closes the last P0 row in `current-coverage.md`.       | ~1 h    |
-| 2   | **AIP-polish-1 explicit Add-Provider button**          | The "Anbieter verwalten" wizard opens pre-filled with the active provider; an explicit "Add provider" CTA removes the implicit-radio-switch confusion. Real UX clarity gain, ships without an upstream trigger. | ~1 h    |
-| 3   | **D-03 PWABuilder packaging**                          | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner.                                                        | ~1 h    |
-| 4   | **P-05 ChangePassword Settings layout polish**         | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                                                                            | ~30 min |
+| #   | Task                                           | Why it's first                                                                                                                                                                                                  | Effort  |
+| --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1   | **AIP-polish-1 explicit Add-Provider button**  | The "Anbieter verwalten" wizard opens pre-filled with the active provider; an explicit "Add provider" CTA removes the implicit-radio-switch confusion. Real UX clarity gain, ships without an upstream trigger. | ~1 h    |
+| 2   | **D-03 PWABuilder packaging**                  | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner.                                                        | ~1 h    |
+| 3   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                                                                            | ~30 min |
 
-After Tier 1 closes, all four "Coverage P0" rows in
-`docs/audits/current-coverage.md` are resolved, the AI-provider
-wizard has a clean add-flow, the app ships as installable
-Play Store / Microsoft Store packages, and the Settings page is
-visually consistent.
+All four "Coverage P0" rows in
+`docs/audits/current-coverage.md` are now resolved. After this Tier
+1 closes, the AI-provider wizard has a clean add-flow, the app
+ships as installable Play Store / Microsoft Store packages, and the
+Settings page is visually consistent.
 
 ## Tier 2 - User-blocked (can only be done by the maintainer)
 

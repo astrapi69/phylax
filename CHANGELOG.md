@@ -25,6 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Error-path tests for `features/backup-import`: populate-failure
+  surfacing in `useBackupImport.run` (write-failed path lines
+  128-130), the lockout-countdown setInterval body in
+  `useBackupImport` (lines 83-85, fake-timer driven), four
+  inner-payload corruption branches in `decryptBackup`
+  (utf-8-decode failure line 131, non-object inner payload line
+  142, missing rows key line 155, non-array rows.<table> line
+  175), full-table-coverage of the `TABLE_FOR` accessors in
+  `populateVault` (every supported table type now exercised by
+  one row each), plus the populate-vault transaction-throws
+  catch branch (line 136). Pushes the
+  `features/backup-import` directory rollup from 82.10% to
+  86.64% lines, closing the P0 coverage threshold violation
+  (the last of four).
 
 ## [1.1.0] - 2026-05-02
 
