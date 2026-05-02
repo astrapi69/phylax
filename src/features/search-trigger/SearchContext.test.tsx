@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { SearchProvider, useSearch } from './SearchContext';
 
 function Probe() {
@@ -121,5 +121,63 @@ describe('SearchContext', () => {
       </MemoryRouter>,
     );
     expect(screen.getByTestId('probe-isOpen').textContent).toBe('true');
+  });
+
+  it('route change resets isOpen based on the new route + active filter', async () => {
+    function Navigator() {
+      const navigate = useNavigate();
+      return (
+        <>
+          <button data-testid="goto-profile" type="button" onClick={() => navigate('/profile')}>
+            profile
+          </button>
+          <button
+            data-testid="goto-observations-q"
+            type="button"
+            onClick={() => navigate('/observations?q=foo')}
+          >
+            observations-with-q
+          </button>
+        </>
+      );
+    }
+
+    render(
+      <MemoryRouter initialEntries={['/observations?q=initial']}>
+        <SearchProvider>
+          <Probe />
+          <Navigator />
+        </SearchProvider>
+      </MemoryRouter>,
+    );
+
+    const user = userEvent.setup();
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('true');
+
+    // Navigate to a non-search route - isOpen should reset to false
+    // (route change effect: nextHasSearch=false -> setIsOpen(false)).
+    await user.click(screen.getByTestId('goto-profile'));
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('false');
+    expect(screen.getByTestId('probe-hasSearch').textContent).toBe('false');
+
+    // Navigate to a search route with an active filter - isOpen should
+    // re-derive to true (route change effect with nextHasSearch=true
+    // and nextHasActiveFilter=true).
+    await user.click(screen.getByTestId('goto-observations-q'));
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('true');
+    expect(screen.getByTestId('probe-hasSearch').textContent).toBe('true');
+    expect(screen.getByTestId('probe-hasActiveFilter').textContent).toBe('true');
+  });
+
+  it('inert defaults: open / close / toggle are callable no-ops', async () => {
+    render(<Probe />);
+    const user = userEvent.setup();
+    // The fallback functions return undefined and do not flip isOpen.
+    await user.click(screen.getByTestId('probe-open'));
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('false');
+    await user.click(screen.getByTestId('probe-close'));
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('false');
+    await user.click(screen.getByTestId('probe-toggle'));
+    expect(screen.getByTestId('probe-isOpen').textContent).toBe('false');
   });
 });

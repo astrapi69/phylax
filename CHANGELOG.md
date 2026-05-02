@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the P0 coverage threshold violation flagged in
   `docs/audits/current-coverage.md` (module was at 0% lines on a
   16-line stub view).
+- Route-change-effect and inert-fallback tests for
+  `features/search-trigger/SearchContext.tsx`. Covers the
+  previously uncovered route-reset effect (lines 104-107) and the
+  outside-provider no-op functions (lines 135-137). Closes the
+  P0 coverage threshold violation (75.00% -> module fully covered).
 
 ## [1.1.0] - 2026-05-02
 
