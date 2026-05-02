@@ -8,7 +8,7 @@ Your local-first, zero-knowledge living health profile.
 
 [![CI](https://github.com/astrapi69/phylax/actions/workflows/ci.yml/badge.svg)](https://github.com/astrapi69/phylax/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Bundle budget](https://img.shields.io/badge/bundle-%3C180%20KB-blue)](./size-limit.json)
+[![Bundle budget](https://img.shields.io/badge/bundle-%3C350%20KB-blue)](.size-limit.json)
 [![Donate using Liberapay](https://img.shields.io/liberapay/patrons/astrapi69.svg?logo=liberapay)](https://liberapay.com/astrapi69/donate)
 
 ## What is Phylax
@@ -27,9 +27,11 @@ supplements, and open questions for your next doctor visit.
 
 Phylax supports AI-guided profile creation: you provide fragments (lab photos,
 medication names, verbal observations), and an AI structures them into your
-profile using your own API key (Anthropic Claude). The AI operates under a
-strict contract: it structures, it does not diagnose. You can also enter data
-manually or paste markdown from an external AI session.
+profile using your own API key. Multiple providers are supported - Anthropic,
+OpenAI, Google, Mistral, plus local models via LM Studio or Ollama (see
+ADR-0019). The AI operates under a strict contract: it structures, it does
+not diagnose. You can also enter data manually or paste markdown from an
+external AI session.
 
 The name comes from the Greek phylax (guardian). Phylax is not a doctor, not
 a database, but a guardian of your health narrative.
@@ -41,9 +43,10 @@ a database, but a guardian of your health narrative.
 - Anyone preparing for doctor visits with structured, fact-based notes
 - Developers interested in local-first, zero-backend PWA architecture
 
-Phylax is primarily designed for German-speaking users; the UI is in German.
-The documentation (this README, ADRs) is in English. A German-to-English UI
-translation is on the roadmap.
+Phylax is primarily designed for German-speaking users; the UI ships
+bilingual (German + English) with auto-detection and a manual override.
+The developer documentation (this README, ADRs) is in English; the user-
+facing concept and roadmap docs are in German.
 
 ## Screenshots
 
@@ -73,18 +76,32 @@ translation is on the roadmap.
   with an AI-assisted cleanup fallback when the input does not match
 - **Read-only views** per entity type with alphabetical and recent-first
   sorting
-- **AI assistant** (optional, bring your own Anthropic API key):
+- **AI assistant** (optional, bring your own API key for any supported provider):
+  - Multi-provider: Anthropic, OpenAI, Google, Mistral, plus local LM Studio /
+    Ollama / custom OpenAI-compatible endpoints (ADR-0019)
   - Structuring partner only; never diagnoses, never interprets lab values
   - Share profile context into the chat without losing messages between turns
   - Commit preview with diff view and field-level merge
   - Guided session mode that walks three profile sections systematically
   - Parser fallback: reformat unparseable markdown via one-click cleanup
-- **Progressive Web App**: installable, works offline, autoUpdate service
-  worker
+- **Document import** (Phase 4b): upload lab reports / doctor letters / ePA
+  exports; the AI classifies and extracts structured entries with provenance
+  tracking back to the source document
+- **Multi-format export** (Phase 5): PDF, Markdown, CSV with date-range and
+  theme filters and an optional linked-documents appendix
+- **Backup and restore** (Phase 6): encrypted vault export to a single
+  `.phylax` file; round-trip restore preserves all entities and provenance
+- **Change master password** (P-06, ADR-0018): atomic re-encryption of the
+  full vault under a new key; key swap bounded in memory
+- **Cross-feature search** (P-22): instant search across observations, lab
+  values, supplements, open points, and documents
+- **Progressive Web App**: installable, works offline, silent background
+  service-worker updates (BUG-01)
 - **Accessibility**: WCAG 2.1 AA via axe-core checks in the production E2E
   suite
 - **Dark mode** with system-preference detection
-- **German UI** (i18next-ready for English translation)
+- **Bilingual UI**: German + English at runtime with auto-detection and a
+  manual override (I18N-02-e)
 
 ## Origin
 
@@ -161,11 +178,14 @@ For the full security model, see [docs/CONCEPT.md](docs/CONCEPT.md).
 ## Privacy summary
 
 - **Nothing leaves your device** unless you explicitly use the AI features.
-- **AI requests go directly from your browser to Anthropic** using your own
-  API key. Anthropic retains prompts and completions for 30 days for safety
-  review, then auto-deletes them. API data is not used for model training.
-- **Your Anthropic account is yours**, not Phylax's. You can audit usage and
-  revoke the key directly in Anthropic's console at any time.
+- **AI requests go directly from your browser to the provider you choose**
+  (Anthropic, OpenAI, Google, Mistral, LM Studio, Ollama, or a custom
+  OpenAI-compatible endpoint) using your own API key. Each provider has its
+  own retention and training policy; Phylax surfaces the relevant
+  disclaimer in-app at the point of provider selection. Local providers
+  (LM Studio, Ollama) keep AI traffic on your own machine.
+- **Your provider account is yours**, not Phylax's. You can audit usage and
+  revoke each key directly in the provider's console at any time.
 - **No telemetry, no analytics, no error reporting services.**
 
 The in-app disclaimer (shown on first AI activation) and the "Datenschutz
@@ -174,29 +194,50 @@ information in German at the point of use.
 
 ## Project status
 
-Phylax is preparing its v1.0.0 public release. Phases 1 through 3 are
-complete:
+Phylax v1.0.0 shipped 2026-04-18. Subsequent work is post-1.0.0 polish
+plus a few new feature phases. Closed phases:
 
 - **Phase 1 - Foundation**: crypto, storage, onboarding, auto-lock, PWA
-- **Phase 2 - Profile**: domain model, repositories, profile versioning
-- **Phase 2b - Import**: markdown parser, import pipeline, UI
+- **Phase 2 - Profile**: domain model, repositories, profile versioning,
+  manual-entry CRUD (O-10..O-19), shared modal primitive (O-20)
+- **Phase 2b - Import**: markdown parser, import pipeline, UI; IM-04
+  auto-version-entry; IM-05 per-type replace toggles plus Option B merge
 - **Phase 2c - Views**: read-only views for observations, lab values,
   supplements, open points, timeline, profile overview
 - **Phase 2d - Theming**: dark mode with system-preference detection
-- **Phase 3 - AI-Guided Input**: Anthropic Claude integration, chat UI,
-  guided session, commit preview, parser fallback
-- **Infrastructure (I-series)**: Node 24, CI coverage policy, privacy
-  disclosure precision
-- **Phase S**: donation integration (settings link, onboarding hint,
-  90-day reminder)
+- **Phase 3 - AI-Guided Input**: chat UI, guided session, commit preview,
+  parser fallback
+- **Phase 4 - Documents**: D-01..D-10 attached-document storage and viewer
+- **Phase 4b - ePA Import**: IMP-01..06 document classification and
+  structured-entry extraction with provenance
+- **Phase 5 - Export**: X-01..X-08 Markdown / PDF / CSV with date-range,
+  theme filter, and linked-documents appendix
+- **Phase 6 - Backup**: B-01..B-04, B-06, B-07 encrypted vault round-trip
+- **Phase ONB**: onboarding UX restructure
+- **Phase S**: donation integration
+- **Multi-AI-Provider (AIP-01..05, ADR-0019)**: seven preset providers
+  plus custom OpenAI-compatible endpoints
+- **Infrastructure (I-series, DEPS-01..03)**: React 19 (ADR-0021),
+  TypeScript 6, Vite 7 / Vitest 4, Tailwind 4, Node 24, CI coverage
+  policy
 
-Current test counts: 1096 unit tests, 95 production E2E tests, 0 axe
-violations. Bundle size: 177.99 / 180 KB gzipped. Mutation testing
-thresholds per-module (crypto 95%, repositories 95%, parser 55%, import
-75%).
+In progress (Phase 7 polish): manual-entry forms, error boundary
+(P-09), inline document delete (P-16), search (P-22), license footer
+(P-12), Change Master Password (P-06, ADR-0018).
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task breakdown and
-[CHANGELOG.md](CHANGELOG.md) for the release history.
+Deferred: Phase 8 multi-profile (deprioritised 2026-05-01), Phase 9
+derived plans, P-11 ES/FR/EL translations.
+
+Current test counts: 2632 unit tests across 279 files, 0 axe
+violations. Bundle budgets: 350 KB main JS, 380 KB total JS+CSS
+gzipped (ADR-0015). Mutation thresholds per-module (crypto 95%,
+repositories 95%, parser 55%, import 75%; see
+[`.claude/rules/quality-checks.md`](.claude/rules/quality-checks.md)).
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full task breakdown,
+[CHANGELOG.md](CHANGELOG.md) for the release history, and
+[docs/audits/current-coverage.md](docs/audits/current-coverage.md) for
+the latest coverage audit.
 
 ## Quick start
 
@@ -240,9 +281,9 @@ standalone app on the home screen or app drawer.
 ### Run tests
 
 ```bash
-make test                 # Unit tests (1096 tests)
+make test                 # Unit tests (2632 tests)
 make test-e2e             # E2E tests against dev server
-make test-e2e-production  # E2E tests against production build (95 tests)
+make test-e2e-production  # E2E tests against production build
 make test-bundle-size     # Production bundle vs size-limit budgets
 make ci-local-full        # Everything CI runs
 ```
@@ -251,18 +292,33 @@ Run `make help` to see all available targets.
 
 ## AI features (optional)
 
-AI features are opt-in and require your own Anthropic API key.
+AI features are opt-in and require your own API key for one of the
+supported providers (ADR-0019):
 
-1. Get an Anthropic API key at [console.anthropic.com](https://console.anthropic.com).
-2. In Phylax: Einstellungen -> KI-Assistent -> paste the key -> accept the
-   disclaimer -> "KI aktivieren".
+- Cloud providers: Anthropic, OpenAI, Google (Gemini), Mistral
+- Local providers: LM Studio, Ollama
+- Any custom OpenAI-compatible endpoint
+
+1. Get a key (or run a local model). For cloud providers, generate a key in
+   the provider's console.
+2. In Phylax: Einstellungen -> KI-Assistent -> Anbieter verwalten -> add a
+   provider, paste the key, accept the per-provider disclaimer, activate.
 3. Navigate to `/chat` and start a conversation. Use "Profil teilen" to let
    the AI see your current profile context (ephemeral, not persisted).
 4. Use "Gefuehrte Sitzung starten" for a guided walkthrough of three
    profile sections (observations, supplements, open points).
+5. The active provider can be switched at any time via the same wizard.
 
-The assistant is a structuring partner, not a diagnostician. See the
-in-app disclaimer for the exact boundaries.
+The assistant is a structuring partner, not a diagnostician. Each provider
+has its own retention and training policy; the in-app disclaimer surfaces
+the relevant text at the point of provider selection.
+
+### Change master password
+
+Settings -> Sicherheit -> Master-Passwort ändern triggers an atomic
+re-encryption of the entire vault under the new key (P-06, ADR-0018).
+The old key is dropped from memory once the new key is committed; partial
+failure restores the previous state.
 
 ## Development
 
@@ -382,5 +438,10 @@ fees, no account required for the donor.
 - [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm) for
   accessibility testing
 - [@resvg/resvg-js](https://github.com/yisibl/resvg-js) for icon generation
-- [Anthropic Claude](https://www.anthropic.com/claude) for the optional AI
-  structuring partner
+- The AI providers Phylax supports as optional structuring partners:
+  [Anthropic Claude](https://www.anthropic.com/claude),
+  [OpenAI](https://openai.com/),
+  [Google Gemini](https://ai.google.dev/),
+  [Mistral](https://mistral.ai/),
+  [LM Studio](https://lmstudio.ai/),
+  [Ollama](https://ollama.com/)
