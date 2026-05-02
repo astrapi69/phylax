@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-02
+
+First post-1.0.0 minor release. Closes Phases 4 (Documents), 4b (ePA
+Import), 5 (Export), 6 (Backup), Phase ONB (Onboarding restructure),
+Phase 2 manual-entry (O-10..O-20), DOC-01 Iteration 1, the AIP-01..05
+Multi-AI-Provider series (ADR-0019), the bulk of Phase 7 polish, and a
+toolchain refresh (React 19, TypeScript 6, Vite 7, Vitest 4, Tailwind 4,
+Node 24).
+
+The vault format is fully backward-compatible with v1.0.0: the
+single-shape `MetaPayload.aiConfig` migrates automatically on read to
+the new multi-shape `MultiProviderAIConfig` (see ADR-0019). No user
+action required to upgrade.
+
 ### Added
 
 #### AI assistant
