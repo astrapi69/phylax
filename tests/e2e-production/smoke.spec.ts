@@ -237,9 +237,20 @@ matrixTests(
     await page.getByRole('button', { name: 'Weiteren Import' }).click();
     const content = readFileSync(FIXTURE_PATH, 'utf-8');
     await page.getByLabel(/markdown-text einfügen/i).fill(content);
-    await page.getByRole('button', { name: 'Weiter' }).click();
+    // "Weiter" button webkit zxcvbn timing safeguard mirrors the
+    // helper-side fix in `06b5f63` / `314f1ae`.
+    const weiter = page.getByRole('button', { name: 'Weiter' });
+    await expect(weiter).toBeEnabled({ timeout: 10000 });
+    await weiter.click();
     await page.getByRole('button', { name: 'Diesem Profil zuordnen' }).click();
-    await expect(page.getByRole('heading', { name: /Bestehende Daten ersetzen/i })).toBeVisible();
+    // IM-05 Option B (commit `8e93964`) renamed the confirm-replace
+    // dialog heading from "Bestehende Daten ersetzen" to "Import in
+    // bestehendes Profil" because the rewrite covers more than just
+    // replacement (per-type replace / add / skip modes). Production
+    // smoke kept the pre-rename copy.
+    await expect(
+      page.getByRole('heading', { name: /Import in bestehendes Profil/i }),
+    ).toBeVisible();
   },
 );
 
