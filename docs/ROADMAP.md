@@ -50,11 +50,6 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
 
 ## AI Provider polish (AIP-series)
 
-- [ ] **AIP-polish-1** Add-new-provider explicit UX. The "Anbieter
-      verwalten" wizard currently opens pre-filled with the active
-      provider; switching to a new provider type is implicit. Revisit
-      with a dedicated "Add provider" button if user feedback
-      indicates confusion.
 - [ ] **AIP-polish-2** Generic structured-output abstraction.
       **Trigger:** a second provider needs tool calling (OpenAI
       function calling or Google function declarations). Current

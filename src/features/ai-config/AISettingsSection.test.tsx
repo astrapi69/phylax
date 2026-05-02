@@ -145,6 +145,44 @@ describe('AISettingsSection (multi-provider summary, AI Commit 4b)', () => {
     );
   });
 
+  it('"Anbieter hinzufügen" CTA is visible in the configured state (AIP-polish-1)', async () => {
+    await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-add-button-visible' });
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-add-btn')).toBeInTheDocument());
+    expect(screen.getByTestId('ai-settings-add-btn')).toHaveTextContent(/Anbieter hinzufügen/i);
+  });
+
+  it('"Anbieter hinzufügen" opens the wizard cleanly without pre-filling the API key', async () => {
+    // Active provider is Google with a saved key. The add-button must
+    // NOT route the user through the active provider's pre-filled
+    // form (that path is the manage-button). The wizard should open
+    // with no API key in the input.
+    await saveMultiAIConfig({
+      providers: [{ provider: 'google', apiKey: 'gsk-existing-key-WXYZ' }],
+      activeProviderId: 'google',
+    });
+    const user = userEvent.setup();
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-add-btn')).toBeInTheDocument());
+    await user.click(screen.getByTestId('ai-settings-add-btn'));
+    await waitFor(() => expect(screen.getByTestId('ai-setup-wizard-title')).toBeInTheDocument());
+
+    // Wizard opens on step 1 (provider selection). Step to the key
+    // input via the Weiter button to inspect its initial value.
+    await user.click(screen.getByRole('button', { name: /Weiter/i }));
+    const keyInput = screen.getByTestId('ai-setup-wizard-key-input') as HTMLInputElement;
+    expect(keyInput.value).toBe('');
+  });
+
+  it('add-button is NOT rendered before the user has any provider configured', async () => {
+    // In the unconfigured state, only the "AI aktivieren" CTA is
+    // present; the add-button only appears once at least one
+    // provider exists.
+    render(<AISettingsSection />);
+    await waitFor(() => expect(screen.getByTestId('ai-settings-activate-btn')).toBeInTheDocument());
+    expect(screen.queryByTestId('ai-settings-add-btn')).toBeNull();
+  });
+
   it('"KI deaktivieren" clears the multi-provider config + returns to unconfigured view', async () => {
     await saveAIConfig({ provider: 'anthropic', apiKey: 'sk-ant-deactivate-test' });
     const user = userEvent.setup();

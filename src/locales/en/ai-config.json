@@ -31,6 +31,7 @@
     "change-button": "Change",
     "model-label": "Model",
     "model-custom-suffix": "(custom)",
+    "add-button": "Add provider",
     "deactivate-button": "Deactivate AI",
     "manage-button": "Manage providers",
     "provider-label": "Provider"

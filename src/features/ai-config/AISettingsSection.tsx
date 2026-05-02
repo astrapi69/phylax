@@ -54,13 +54,16 @@ export function AISettingsSection() {
   const { t } = useTranslation('ai-config');
   const { state, deleteConfig, acceptDisclaimer } = useAIConfig();
 
-  const [wizardOpen, setWizardOpen] = useState(false);
+  // 'add' opens the wizard with no `initial` (clean form). 'edit'
+  // opens it pre-filled with the active provider for in-place edit.
+  // null = wizard closed.
+  const [wizardMode, setWizardMode] = useState<'add' | 'edit' | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
 
   function handleActivate() {
     if (state.disclaimerAccepted) {
-      setWizardOpen(true);
+      setWizardMode('add');
       return;
     }
     setShowDisclaimer(true);
@@ -69,7 +72,7 @@ export function AISettingsSection() {
   function handleDisclaimerConfirm() {
     acceptDisclaimer();
     setShowDisclaimer(false);
-    setWizardOpen(true);
+    setWizardMode('add');
   }
 
   function handleDisclaimerCancel() {
@@ -79,7 +82,14 @@ export function AISettingsSection() {
   function handleManage() {
     // The disclaimer was already accepted on first activation; do
     // not force it again on subsequent edits.
-    setWizardOpen(true);
+    setWizardMode('edit');
+  }
+
+  function handleAddProvider() {
+    // Explicit add-flow: open the wizard with no pre-filled fields
+    // so the user can choose a provider type without first having
+    // to clear the active provider's values. AIP-polish-1.
+    setWizardMode('add');
   }
 
   async function handleDeactivate() {
@@ -118,6 +128,7 @@ export function AISettingsSection() {
         <ConfiguredView
           config={state.config}
           onManage={handleManage}
+          onAddProvider={handleAddProvider}
           onDeactivate={() => void handleDeactivate()}
         />
       )}
@@ -126,13 +137,13 @@ export function AISettingsSection() {
         <AIDisclaimer onConfirm={handleDisclaimerConfirm} onCancel={handleDisclaimerCancel} />
       )}
 
-      {wizardOpen && (
+      {wizardMode !== null && (
         <Suspense fallback={null}>
           <AiSetupWizard
-            open={wizardOpen}
-            onClose={() => setWizardOpen(false)}
+            open={wizardMode !== null}
+            onClose={() => setWizardMode(null)}
             initial={
-              state.status === 'configured' && state.config
+              wizardMode === 'edit' && state.status === 'configured' && state.config
                 ? {
                     provider: state.config.provider,
                     apiKey: state.config.apiKey,
@@ -172,10 +183,12 @@ function UnconfiguredView({ onActivate }: { onActivate: () => void }) {
 function ConfiguredView({
   config,
   onManage,
+  onAddProvider,
   onDeactivate,
 }: {
   config: AIProviderConfig;
   onManage: () => void;
+  onAddProvider: () => void;
   onDeactivate: () => void;
 }) {
   const { t } = useTranslation('ai-config');
@@ -227,7 +240,7 @@ function ConfiguredView({
         ) : null}
       </dl>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={onManage}
@@ -235,6 +248,14 @@ function ConfiguredView({
           className="rounded-sm bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           {t('settings-section.manage-button')}
+        </button>
+        <button
+          type="button"
+          onClick={onAddProvider}
+          data-testid="ai-settings-add-btn"
+          className="rounded-sm border border-blue-600 bg-white px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-300 dark:hover:bg-gray-700"
+        >
+          {t('settings-section.add-button')}
         </button>
         <button
           type="button"

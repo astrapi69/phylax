@@ -31,6 +31,7 @@
     "change-button": "Ändern",
     "model-label": "Modell",
     "model-custom-suffix": "(benutzerdefiniert)",
+    "add-button": "Anbieter hinzufügen",
     "deactivate-button": "KI deaktivieren",
     "manage-button": "Anbieter verwalten",
     "provider-label": "Anbieter"

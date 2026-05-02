@@ -25,6 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Explicit "Anbieter hinzufügen" / "Add provider" button in the
+  AI Settings configured-state card (AIP-polish-1). The
+  pre-existing "Anbieter verwalten" button still opens the wizard
+  pre-filled with the active provider for in-place edits; the new
+  CTA opens the wizard with no `initial` prop so users can add a
+  new provider without first clearing the active provider's
+  fields. State machine swapped from `wizardOpen: boolean` to
+  `wizardMode: 'add' | 'edit' | null`. New i18n key
+  `ai-config:settings-section.add-button` (DE / EN) and
+  `data-testid="ai-settings-add-btn"`. Three new tests cover:
+  visibility in configured state, no API-key pre-fill on the
+  add-flow, and absence of the button in the unconfigured state.
 - Error-path tests for `features/backup-import`: populate-failure
   surfacing in `useBackupImport.run` (write-failed path lines
   128-130), the lockout-countdown setInterval body in

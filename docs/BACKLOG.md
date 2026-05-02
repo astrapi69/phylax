@@ -12,11 +12,10 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-| #   | Task                                           | Why it's first                                                                                                                                                                                                  | Effort  |
-| --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 1   | **AIP-polish-1 explicit Add-Provider button**  | The "Anbieter verwalten" wizard opens pre-filled with the active provider; an explicit "Add provider" CTA removes the implicit-radio-switch confusion. Real UX clarity gain, ships without an upstream trigger. | ~1 h    |
-| 2   | **D-03 PWABuilder packaging**                  | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner.                                                        | ~1 h    |
-| 3   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                                                                            | ~30 min |
+| #   | Task                                           | Why it's first                                                                                                                                           | Effort  |
+| --- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1   | **D-03 PWABuilder packaging**                  | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner. | ~1 h    |
+| 2   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                     | ~30 min |
 
 All four "Coverage P0" rows in
 `docs/audits/current-coverage.md` are now resolved. After this Tier
