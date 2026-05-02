@@ -138,10 +138,6 @@ These are the four threshold-violating modules surfaced by the
 2026-05-02 coverage audit. They are tracked here so they appear in
 the same priority queue as feature work.
 
-- [ ] **Coverage P0 - `src/ui` 82.50% lines** (threshold 85%).
-      Dominant gap is `ErrorBoundary.tsx` (lines 79-83, 99-114).
-      Test the recovery path: throw inside a child, assert fallback
-      UI plus reset behaviour.
 - [ ] **Coverage P0 - `features/backup-import` 82.10% lines**.
       `useBackupImport.ts` carries the bulk of the gap. Add
       error-path tests for partial-decrypt failure and

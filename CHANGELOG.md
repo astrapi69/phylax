@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   previously uncovered route-reset effect (lines 104-107) and the
   outside-provider no-op functions (lines 135-137). Closes the
   P0 coverage threshold violation (75.00% -> module fully covered).
+- Default-handler and legacy-clipboard-fallback tests for
+  `src/ui/ErrorBoundary.tsx`. Covers the previously uncovered
+  `defaultReload` / `defaultGoHome` handlers (lines 79-83) and the
+  `document.execCommand('copy')` legacy path with success / throw /
+  modern-clipboard-rejects-and-falls-back branches (lines 99-114).
+  Closes the P0 coverage threshold violation on the
+  security-relevant render-tree-crash boundary.
 
 ## [1.1.0] - 2026-05-02
 
