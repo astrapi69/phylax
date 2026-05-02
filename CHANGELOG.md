@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Smoke render test for `features/not-found/NotFound.tsx`. Closes
+  the P0 coverage threshold violation flagged in
+  `docs/audits/current-coverage.md` (module was at 0% lines on a
+  16-line stub view).
+
 ## [1.1.0] - 2026-05-02
 
 First post-1.0.0 minor release. Closes Phases 4 (Documents), 4b (ePA

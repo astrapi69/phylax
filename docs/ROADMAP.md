@@ -146,8 +146,6 @@ the same priority queue as feature work.
       `useBackupImport.ts` carries the bulk of the gap. Add
       error-path tests for partial-decrypt failure and
       quota-exceeded mid-restore.
-- [ ] **Coverage P0 - `features/not-found` 0% lines**. Stub view
-      lines 5-6 only. A smoke render test closes the gap.
 - [ ] **Coverage P0 - `features/search-trigger` 75.00% lines**.
       `SearchContext.tsx` lines 104-107, 135-137 uncovered. Add
       tests for keyboard-shortcut and outside-click branches.
