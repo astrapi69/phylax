@@ -1,10 +1,31 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 vi.mock('../../crypto', async (importOriginal) => {
   const { buildCryptoMockModule } = await import('../../crypto/testHelpers/mockDeriveKey');
   return buildCryptoMockModule(importOriginal);
+});
+
+// Forced populate-failure switch. Default false: tests use the real
+// populateVault. Flip to a `PopulateError` to exercise the error
+// branch in `useBackupImport.run` (lines 128-130: setError +
+// setStatus('error') + return ok: false).
+let forcedPopulateError: import('./populateVault').PopulateError | null = null;
+
+vi.mock('./populateVault', async () => {
+  const actual = await vi.importActual<typeof import('./populateVault')>('./populateVault');
+  return {
+    ...actual,
+    populateVault: async (
+      ...args: Parameters<typeof actual.populateVault>
+    ): Promise<import('./populateVault').PopulateResult> => {
+      if (forcedPopulateError) {
+        return { ok: false, error: forcedPopulateError };
+      }
+      return actual.populateVault(...args);
+    },
+  };
 });
 
 import { encrypt, generateSalt, deriveKeyFromPassword, lock } from '../../crypto';
@@ -51,6 +72,11 @@ beforeEach(async () => {
   lock();
   await resetDatabase();
   sessionStorage.removeItem(BACKUP_IMPORT_STORAGE_KEY);
+  forcedPopulateError = null;
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('useBackupImport', () => {
@@ -159,6 +185,64 @@ describe('useBackupImport', () => {
     });
     expect(result.current.status).toBe('idle');
     expect(result.current.error).toBeNull();
+  });
+
+  it('populate failure (e.g. quota exceeded mid-restore) surfaces a write-failed error and leaves status=error', async () => {
+    forcedPopulateError = {
+      kind: 'write-failed',
+      detail: 'QuotaExceededError: simulated mid-restore quota exhaustion',
+    };
+    const parsed = await makeBackup('correct-password');
+    const { result } = renderHook(() => useBackupImport());
+
+    let runResult: { ok: boolean } = { ok: true };
+    await act(async () => {
+      runResult = await result.current.run(parsed, 'correct-password');
+    });
+
+    expect(runResult.ok).toBe(false);
+    expect(result.current.status).toBe('error');
+    expect(result.current.error?.kind).toBe('write-failed');
+    if (result.current.error?.kind === 'write-failed') {
+      expect(result.current.error.detail).toContain('QuotaExceededError');
+    }
+  });
+
+  it('lockout countdown ticks remainingLockoutMs down and clears the interval at zero', async () => {
+    // Pre-fill the limiter so the hook starts locked.
+    const limiter = createRateLimiter(BACKUP_IMPORT_STORAGE_KEY);
+    for (let i = 0; i < 6; i++) {
+      limiter.recordFailedAttempt();
+    }
+    const initialRemaining = limiter.getRemainingLockoutMs();
+    expect(initialRemaining).toBeGreaterThan(0);
+
+    // Switch to fake timers AFTER the limiter is pre-filled so its
+    // lockedUntil is stored in the same time coordinate as
+    // Date.now() under the fake clock (vi.useFakeTimers seeds the
+    // fake clock with the current real Date.now() by default).
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useBackupImport());
+    expect(result.current.isLocked).toBe(true);
+
+    // Advance halfway through the lockout window. advanceTimersByTime
+    // both ticks the fake clock and fires the setInterval callback
+    // multiple times (TICK_INTERVAL_MS=250); each tick reads
+    // limiter.getRemainingLockoutMs() and writes it to state.
+    const halfStep = Math.floor(initialRemaining / 2);
+    await act(async () => {
+      vi.advanceTimersByTime(halfStep);
+    });
+    expect(result.current.remainingLockoutMs).toBeLessThan(initialRemaining);
+    expect(result.current.remainingLockoutMs).toBeGreaterThan(0);
+
+    // Advance past the lockout boundary. Tick body sees next <= 0 and
+    // calls clearInterval; final state is unlocked + remaining=0.
+    await act(async () => {
+      vi.advanceTimersByTime(initialRemaining);
+    });
+    expect(result.current.remainingLockoutMs).toBe(0);
+    expect(result.current.isLocked).toBe(false);
   });
 
   it('shares the rate-limiter with pre-auth flow via BACKUP_IMPORT_STORAGE_KEY', async () => {

@@ -143,4 +143,60 @@ describe('populateVault', () => {
     expect(await db.observations.count()).toBe(0);
     expect(await db.meta.count()).toBe(1);
   });
+
+  it('writes one row into every supported table (covers all TABLE_FOR accessors)', async () => {
+    const salt = generateSalt();
+    const key = await deriveKeyFromPassword('backup-password-all-tables', salt);
+
+    const dump = emptyDump();
+    dump.rows.profiles = [{ id: 'p1', profileId: 'p1', createdAt: 1, updatedAt: 1 }];
+    dump.rows.observations = [{ id: 'o1', profileId: 'p1', createdAt: 2, updatedAt: 2 }];
+    dump.rows.lab_values = [{ id: 'lv1', profileId: 'p1', createdAt: 3, updatedAt: 3 }];
+    dump.rows.lab_reports = [{ id: 'lr1', profileId: 'p1', createdAt: 4, updatedAt: 4 }];
+    dump.rows.supplements = [{ id: 's1', profileId: 'p1', createdAt: 5, updatedAt: 5 }];
+    dump.rows.open_points = [{ id: 'op1', profileId: 'p1', createdAt: 6, updatedAt: 6 }];
+    dump.rows.profile_versions = [{ id: 'pv1', profileId: 'p1', createdAt: 7, updatedAt: 7 }];
+    dump.rows.documents = [{ id: 'd1', profileId: 'p1', createdAt: 8, updatedAt: 8 }];
+    dump.rows.timeline_entries = [{ id: 't1', profileId: 'p1', createdAt: 9, updatedAt: 9 }];
+
+    const result = await populateVault(dump, key, salt);
+    expect(result.ok).toBe(true);
+
+    expect(await db.profiles.count()).toBe(1);
+    expect(await db.observations.count()).toBe(1);
+    expect(await db.labValues.count()).toBe(1);
+    expect(await db.labReports.count()).toBe(1);
+    expect(await db.supplements.count()).toBe(1);
+    expect(await db.openPoints.count()).toBe(1);
+    expect(await db.profileVersions.count()).toBe(1);
+    expect(await db.documents.count()).toBe(1);
+    expect(await db.timelineEntries.count()).toBe(1);
+  });
+
+  it('returns write-failed when the Dexie transaction throws', async () => {
+    // Force the underlying transaction to reject so the catch branch
+    // (line 136 of populateVault.ts) executes. Replace
+    // db.transaction with a stub for the duration of the test.
+    const salt = generateSalt();
+    const key = await deriveKeyFromPassword('backup-password-fail', salt);
+
+    // Dexie's `transaction` is overloaded; bypass the overload-set
+    // typecheck by replacing the property directly. Restore
+    // afterwards.
+    const dbAny = db as unknown as { transaction: unknown };
+    const original = dbAny.transaction;
+    dbAny.transaction = () => {
+      throw new Error('simulated quota exceeded');
+    };
+    try {
+      const result = await populateVault(emptyDump(), key, salt);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error.kind).toBe('write-failed');
+        expect(result.error.detail).toContain('simulated quota exceeded');
+      }
+    } finally {
+      dbAny.transaction = original;
+    }
+  });
 });

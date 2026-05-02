@@ -130,4 +130,79 @@ describe('decryptBackup', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.kind).toBe('corrupted');
   });
+
+  it('returns corrupted when the decrypted plaintext is not valid UTF-8', async () => {
+    // Encrypt raw bytes that include an invalid UTF-8 sequence so the
+    // fatal TextDecoder throws (line 131 of decryptBackup.ts).
+    const password = 'utf-8-fail';
+    const salt = generateSalt();
+    const key = await deriveKeyFromPassword(password, salt);
+    // 0xC3 0x28 is an invalid UTF-8 continuation pair.
+    const invalidBytes = new Uint8Array([0xc3, 0x28, 0x41]);
+    const encrypted = await encrypt(key, invalidBytes);
+    const parsed: ParsedPhylaxFile = {
+      version: 1,
+      type: 'phylax-backup',
+      created: '2026-04-20T00:00:00Z',
+      source: { app: 'phylax', appVersion: '0.0.0' },
+      crypto: {
+        algorithm: 'AES-256-GCM',
+        kdf: 'PBKDF2-SHA256',
+        iterations: PBKDF2_ITERATIONS,
+        salt: bytesToBase64(salt),
+      },
+      data: bytesToBase64(new Uint8Array(encrypted)),
+    };
+    const result = await decryptBackup(parsed, password);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.kind).toBe('corrupted');
+      if (result.error.kind === 'corrupted') {
+        expect(result.error.detail).toMatch(/utf-8 decode/);
+      }
+    }
+  });
+
+  it('returns corrupted when the inner payload is a JSON primitive (not an object)', async () => {
+    const parsed = await makeBackup('not-an-object', 42);
+    const result = await decryptBackup(parsed, 'not-an-object');
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.kind).toBe('corrupted');
+      if (result.error.kind === 'corrupted') {
+        expect(result.error.detail).toMatch(/inner payload not an object/);
+      }
+    }
+  });
+
+  it('returns corrupted when the inner payload has no rows key', async () => {
+    const parsed = await makeBackup('rows-missing', {
+      schemaVersion: SUPPORTED_INNER_SCHEMA_VERSION,
+      meta_settings: {},
+    });
+    const result = await decryptBackup(parsed, 'rows-missing');
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.kind).toBe('corrupted');
+      if (result.error.kind === 'corrupted') {
+        expect(result.error.detail).toMatch(/rows missing/);
+      }
+    }
+  });
+
+  it('returns corrupted when a rows.<table> value is not an array', async () => {
+    const parsed = await makeBackup('rows-not-array', {
+      schemaVersion: SUPPORTED_INNER_SCHEMA_VERSION,
+      rows: { profiles: 'definitely-not-an-array' },
+      meta_settings: {},
+    });
+    const result = await decryptBackup(parsed, 'rows-not-array');
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.kind).toBe('corrupted');
+      if (result.error.kind === 'corrupted') {
+        expect(result.error.detail).toMatch(/rows\.profiles not an array/);
+      }
+    }
+  });
 });
