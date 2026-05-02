@@ -9,7 +9,7 @@ Phylax ist eine persönliche, datensouveräne Gesundheitsplattform als Progressi
 ## Nicht-verhandelbare Prinzipien
 
 1. **Kein Backend**: Jeder Vorschlag für einen Server wird abgelehnt. Phylax ist reine Browser-App.
-2. **Keine eigenen externen Services**: Keine Fonts von Google, keine Analytics, keine CDN-Abhängigkeiten zur Laufzeit. Alles wird gebundled. Ausnahme: nutzerinitiierte KI-Requests mit eigenem API-Key des Nutzers an OpenAI/Anthropic.
+2. **Keine eigenen externen Services**: Keine Fonts von Google, keine Analytics, keine CDN-Abhängigkeiten zur Laufzeit. Alles wird gebundled. Ausnahme: nutzerinitiierte KI-Requests mit eigenem API-Key des Nutzers an einen vom Nutzer gewählten KI-Anbieter (siehe ADR-0019).
 3. **Verschlüsselung vor Persistierung**: Kein Klartext darf jemals in IndexedDB landen. Tests müssen das absichern.
 4. **KI strukturiert, KI diagnostiziert nicht**: Die KI in Phylax ist ein Strukturierungspartner. Sie stellt keine Diagnosen, gibt keine Therapieempfehlungen und übernimmt keine klinische Verantwortung.
 5. **Keine medizinische Beratung**: Kein Code, der Diagnosen stellt oder Empfehlungen gibt. UI-Disclaimer an relevanten Stellen.
@@ -22,7 +22,8 @@ Phylax ist eine persönliche, datensouveräne Gesundheitsplattform als Progressi
 - Dexie.js für IndexedDB
 - Web Crypto API (nativ, keine Crypto-Library)
 - Tailwind CSS
-- jsPDF für PDF-Export
+- jsPDF + jspdf-autotable für PDF-Export (siehe ADR-0020)
+- pdfjs-dist für PDF-Import (siehe ADR-0017)
 - vite-plugin-pwa
 - Vitest für Unit-Tests
 - Playwright für E2E
@@ -100,9 +101,9 @@ Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (B
 
 ### Commits und Tasks
 
-- Jede Phase hat eigene Tasks mit Prefix-ID: F (Foundation), O (Observations/Profile), AI (KI-gestützte Eingabe), D (Document), X (Export), B (Backup), P (Polish), M (Multi-Profile)
+- Task-IDs folgen dem Series-Prefix-Schema in `.claude/rules/task-series.md` (single source of truth: F, O, IM, V, T, I, AI, D, X, B, P, M, DP, E, R, I18N, IMP, AIP, ONB, DOC, S, BUG, TD, DEPS).
 - Beispiel: F-01 Vite-Setup, F-02 PWA-Config, O-01 Domain-Types
-- Ein Commit pro Task, Commit-Message enthält Task-ID
+- Ein Commit pro Task, Commit-Message enthält Task-ID in Klammern.
 
 ## Was Claude Code nicht tun soll
 
