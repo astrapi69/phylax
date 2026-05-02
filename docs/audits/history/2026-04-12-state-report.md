@@ -10,13 +10,13 @@
 
 ## Task completion status
 
-| Task   | Description                                      | Status            | Commit    |
-|--------|--------------------------------------------------|-------------------|-----------|
-| **F-01** | Vite + React + TypeScript + Tailwind setup     | Done              | `0e9ad91` |
-| **F-02** | Folder structure scaffold                      | Done              | `ccfa3cc` |
-| **F-03** | ESLint rules for crypto/dexie import boundaries | Done             | `0143e18` |
-| **F-04** | Husky + lint-staged pre-commit hook            | Not done          |           |
-| F-05 to F-18 | Remaining foundation tasks                | Not started       |           |
+| Task         | Description                                     | Status      | Commit    |
+| ------------ | ----------------------------------------------- | ----------- | --------- |
+| **F-01**     | Vite + React + TypeScript + Tailwind setup      | Done        | `0e9ad91` |
+| **F-02**     | Folder structure scaffold                       | Done        | `ccfa3cc` |
+| **F-03**     | ESLint rules for crypto/dexie import boundaries | Done        | `0143e18` |
+| **F-04**     | Husky + lint-staged pre-commit hook             | Not done    |           |
+| F-05 to F-18 | Remaining foundation tasks                      | Not started |           |
 
 ROADMAP checkboxes for F-01 to F-03 have not been updated yet (bookkeeping debt).
 
