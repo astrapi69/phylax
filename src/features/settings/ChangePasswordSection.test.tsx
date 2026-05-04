@@ -125,4 +125,49 @@ describe('ChangePasswordSection', () => {
     // Form values preserved.
     expect(screen.getByLabelText(/aktuelles master-passwort/i)).toHaveValue(OLD);
   });
+
+  it('same-as-current new password surfaces the dedicated inline error', async () => {
+    const user = userEvent.setup();
+    render(<ChangePasswordSection />);
+    // Reuse OLD as the new password to trigger the
+    // `same-as-current` validation branch in useChangeMasterPassword.
+    await fillForm(user, OLD, OLD, OLD);
+    await user.click(screen.getByRole('button', { name: /master-passwort ändern/i }));
+    await user.click(screen.getByRole('button', { name: /Ja, ändern/i }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        /darf nicht mit dem aktuellen übereinstimmen|same as current/i,
+      ),
+    );
+  });
+
+  it('weak new password (too short) surfaces an inline error mentioning the minimum', async () => {
+    const user = userEvent.setup();
+    render(<ChangePasswordSection />);
+    // 1-char new password reaches the validateInputs `too-short`
+    // branch; submit-disabled only blocks empty fields.
+    await fillForm(user, OLD, 'x', 'x');
+    await user.click(screen.getByRole('button', { name: /master-passwort ändern/i }));
+    await user.click(screen.getByRole('button', { name: /Ja, ändern/i }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(/12|mindestens|minimum/i),
+    );
+  });
+
+  it('locked keystore surfaces the locked-state inline error', async () => {
+    const user = userEvent.setup();
+    render(<ChangePasswordSection />);
+    // Lock the keystore between fixture setup and the click so the
+    // hook's pre-check finds the store locked.
+    lock();
+    await fillForm(user, OLD, NEW, NEW);
+    await user.click(screen.getByRole('button', { name: /master-passwort ändern/i }));
+    await user.click(screen.getByRole('button', { name: /Ja, ändern/i }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(/gesperrt|locked|entsperr/i),
+    );
+  });
 });

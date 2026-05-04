@@ -25,6 +25,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `features/settings` change-password
+  flow: hook-side runtime errors (no-meta when post-verify
+  readMeta returns null, reencrypt-failed when reencryptVault
+  throws a generic error, partial-failure when reencryptVault
+  throws a swap-step "Cannot replace key" message); and
+  section-side render variants (same-as-current,
+  weak-new-too-short, locked-keystore). Pushes
+  `features/settings` from 85.43% / 70.23% to 91.39% / 84.52%
+  (lines / branches), `useChangeMasterPassword.ts` from 82% /
+  61.53% to 94% / 88.46%, and `ChangePasswordSection.tsx` from
+  72.97% / 66.66% to 81.08% / 80.55%. Closes the second P1 row
+  in `current-coverage.md` (security-relevant: master-password
+  change is the user-driven re-encryption gate per ADR-0018).
 - Branch-coverage tests for `features/reset/useResetAllData.ts`:
   caches-API-present (loops over `caches.keys()` then deletes
   each), navigator.serviceWorker-present (gets registration then

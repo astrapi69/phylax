@@ -1,9 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import 'fake-indexeddb/auto';
 import { deriveKeyFromPassword, unlockWithKey, lock, getLockState } from '../../crypto';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
+import * as metaModule from '../../db/meta';
+import * as reencryptModule from '../../db/reencrypt';
 import { ProfileRepository, ObservationRepository } from '../../db/repositories';
 import { __resetAutoLockPauseStateForTests, isAutoLockPaused } from '../auto-lock/pauseStore';
 import { useChangeMasterPassword } from './useChangeMasterPassword';
@@ -180,5 +182,89 @@ describe('useChangeMasterPassword', () => {
       result.current.reset();
     });
     expect(result.current.status.kind).toBe('idle');
+  });
+
+  describe('runtime error branches', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('readMeta returning null after sudo verify yields no-meta error (lines 132-133)', async () => {
+      // First readMeta() call (inside verifyCurrentPassword) returns
+      // a real meta so the sudo step succeeds; the second readMeta()
+      // (in the changePassword body) returns null. Use a counter so
+      // only the second call is shimmed.
+      let callCount = 0;
+      vi.spyOn(metaModule, 'readMeta').mockImplementation(async () => {
+        callCount += 1;
+        if (callCount === 1) {
+          // Defer to the real implementation by un-spying for one call.
+          // Simpler: cast through dynamic import of the original.
+          const actual = await vi.importActual<typeof metaModule>('../../db/meta');
+          return actual.readMeta();
+        }
+        return null;
+      });
+
+      const { result } = renderHook(() => useChangeMasterPassword());
+      await act(async () => {
+        await result.current.changePassword({
+          currentPassword: OLD,
+          newPassword: NEW,
+          confirmPassword: NEW,
+        });
+      });
+
+      expect(result.current.status.kind).toBe('error');
+      if (result.current.status.kind === 'error') {
+        expect(result.current.status.error.kind).toBe('no-meta');
+      }
+    });
+
+    it('reencryptVault throwing yields reencrypt-failed error (lines 143-151, generic branch)', async () => {
+      vi.spyOn(reencryptModule, 'reencryptVault').mockRejectedValue(
+        new Error('disk write failure: ENOSPC'),
+      );
+
+      const { result } = renderHook(() => useChangeMasterPassword());
+      await act(async () => {
+        await result.current.changePassword({
+          currentPassword: OLD,
+          newPassword: NEW,
+          confirmPassword: NEW,
+        });
+      });
+
+      expect(result.current.status.kind).toBe('error');
+      if (result.current.status.kind === 'error') {
+        expect(result.current.status.error.kind).toBe('reencrypt-failed');
+        if (result.current.status.error.kind === 'reencrypt-failed') {
+          expect(result.current.status.error.detail).toContain('ENOSPC');
+        }
+      }
+      // Auto-lock pause is released even on error.
+      expect(isAutoLockPaused()).toBe(false);
+    });
+
+    it('reencryptVault throwing with swap-failure message yields partial-failure error (lines 143-151, swap branch)', async () => {
+      // Phase 3 swap throw: message matches /Cannot replace key|store is locked/i.
+      vi.spyOn(reencryptModule, 'reencryptVault').mockRejectedValue(
+        new Error('Cannot replace key: keystore was concurrently locked'),
+      );
+
+      const { result } = renderHook(() => useChangeMasterPassword());
+      await act(async () => {
+        await result.current.changePassword({
+          currentPassword: OLD,
+          newPassword: NEW,
+          confirmPassword: NEW,
+        });
+      });
+
+      expect(result.current.status.kind).toBe('error');
+      if (result.current.status.kind === 'error') {
+        expect(result.current.status.error.kind).toBe('partial-failure');
+      }
+    });
   });
 });
