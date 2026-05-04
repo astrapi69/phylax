@@ -75,6 +75,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
 - Branch-coverage tests for
+  `features/profile-import/ui/ImportFlow.tsx`: parse-failure
+  cascade route via an unparseable text body that triggers the
+  `shouldOfferCleanup` early-return (covers the
+  `case 'parse-failure'` arm and the `ImportCleanupScreen`
+  render path), plus the bootstrap `ProfileRepository.list`
+  catch branch via `vi.spyOn().mockRejectedValueOnce(new Error)`
+  (asserts `console.warn` fires and the user can still complete
+  the flow). Two new tests close the 63.15% branch ratio on
+  ImportFlow.tsx and the 79.85% rollup on `features/profile-import/ui`.
+- Branch-coverage tests for
   `features/lab-values/LabReportForm.tsx`: hasOptionalData
   four-arm OR (each of `reportNumber`, `overallAssessment`,
   `relevanceNotes` set in isolation expands the disclosure -

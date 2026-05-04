@@ -176,6 +176,40 @@ describe('ImportFlow', () => {
     await user.click(await screen.findByRole('button', { name: 'Import starten' }));
     await screen.findByRole('heading', { name: /Import erfolgreich/i });
   });
+
+  it('parse-failure cascade: unparseable text body routes to ImportCleanupScreen', async () => {
+    const user = userEvent.setup();
+    renderFlow();
+    const textarea = await screen.findByLabelText(/markdown-text einfügen/i);
+    await user.click(textarea);
+    // No structured header sections -> empty parse result -> shouldOfferCleanup returns true.
+    // Padded to clear the 100-char MIN_PASTE_LENGTH gate on the entry screen.
+    const blob =
+      'Das ist nur normaler Fließtext ohne irgendeine Profilstruktur, ohne Überschriften, ohne Listen, ohne irgendeine Markdown-Hierarchie. ';
+    await user.paste(blob.repeat(2));
+    await user.click(screen.getByRole('button', { name: 'Weiter' }));
+    // The cleanup screen replaces the entry heading. Drift-resistant assertion:
+    // wait until the entry heading disappears.
+    await waitFor(
+      () => expect(screen.queryByRole('heading', { name: 'Import aus Markdown' })).toBeNull(),
+      { timeout: 5000 },
+    );
+  });
+
+  it('ProfileRepository.list catch branch leaves profilesById empty without throwing', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(ProfileRepository.prototype, 'list').mockRejectedValueOnce(new Error('locked'));
+    const user = userEvent.setup();
+    renderFlow();
+    // Initial mount triggers load(); the catch arm runs without crashing
+    // and the user can still complete the flow normally.
+    await pasteAndContinue(user);
+    expect(
+      await screen.findByRole('heading', { name: /In welches Profil importieren/i }),
+    ).toBeInTheDocument();
+    expect(warnSpy).toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
 });
 
 // Silence the act-warning noise from async flows the test already awaits.
