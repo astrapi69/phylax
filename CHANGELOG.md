@@ -74,6 +74,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- First test suite for `features/documents/useLinkableEntities.ts`
+  (previously untested, contributing to the 74.08% branch ratio
+  on the `features/documents` rollup). Nine tests cover: the
+  initial loading state, the no-profile early-return, sorted
+  observation lists with theme + truncated-fact labels, the
+  > 40-char ellipsis path on `formatObservationLabel`, the
+  > empty-fact theme-only branch, sorted lab-value lists with
+  > parameter + result + unit labels, the missing-unit branch on
+  > `formatLabValueLabel`, and the catch arm via `vi.spyOn` on
+  > `ProfileRepository.getCurrentProfile` for both Error and
+  > non-Error rejections. Cancellation guards (lines 43, 52, 72)
+  > are deliberately uncovered (race-condition harness with
+  > marginal value, same reasoning as `useTimeline`).
 - Branch-coverage tests for
   `features/backup-export/useBackupExport.ts`: buildVaultDump
   read-failed -> encryption-failed mapping (lines 70-73),
