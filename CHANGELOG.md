@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `features/ai/aiCall.ts`:
+  non-Anthropic preset.defaultModel resolution (lines 71-72),
+  stream-end-without-done event (line 159 fallback path), and
+  non-LLMError thrown values (line 107 mapLLMErrorToChatError
+  fallback). Pushes `aiCall.ts` from 89.18% / 75% to 94.59% /
+  80.55% (lines / branches), and `features/ai` dir rollup
+  91.69% / 78.21% to 93.35% / 79.86%.
 - Branch-coverage tests for
   `features/profile-import/ui/ImportEntryScreen.tsx`:
   cancel-the-file-picker (fires a synthetic change event with no
