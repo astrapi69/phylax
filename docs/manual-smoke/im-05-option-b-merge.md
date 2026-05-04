@@ -28,6 +28,14 @@ Add-mode actually creates additive duplicates of the prior import.
 
 ## Scenarios
 
+> **Walk status (2026-05-04):** scenarios 1-3 pass, scenarios 4-5 FAIL
+> with finding S4-S5-B (see Findings section), scenarios 6-10
+> DEFERRED until IM-06 (field-level merge mode) ships. Both the
+> Replace and Add semantics tested below are superseded by IM-06;
+> walking the remaining scenarios against the soon-to-be-replaced
+> behaviour is throwaway work. See ROADMAP "Phase 4 follow-up:
+> Import" for IM-06 scope.
+
 ### 1. Dialog opens with no default mode; confirm disabled
 
 - **Steps**: Navigate to `/import`. Paste / select Profile B's
@@ -42,7 +50,8 @@ Add-mode actually creates additive duplicates of the prior import.
     Überspringen (none preselected).
   - "Übernehmen" button is disabled.
   - Cancel button is focused on mount.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail (with C-polish finding S1-C: helper-text
+  entries should each render on a new row)
 
 ### 2. Confirm enables only after every visible row has a mode
 
@@ -54,7 +63,7 @@ Add-mode actually creates additive duplicates of the prior import.
     mode.
   - Picking + re-picking on the same row never disables the
     button (each row keeps a mode once picked).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 3. Add-mode warning surfaces and toggles with selection
 
@@ -66,7 +75,7 @@ Add-mode actually creates additive duplicates of the prior import.
   - Warning hides again as soon as no row is on Add.
   - Warning copy mentions duplicates if the same file is imported
     multiple times.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 4. All-Replace produces the legacy overwrite behaviour
 
@@ -78,7 +87,8 @@ Add-mode actually creates additive duplicates of the prior import.
     `/open-points`: only Profile B's data is present (A wiped).
   - Profile version history retains the synthesized "Profil aus
     Datei importiert" entry.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☑ fail (finding S4-S5-B: Replace destroys
+  user's prior data, fundamental UX gap. Superseded by IM-06.)
 
 ### 5. All-Merge produces additive coexistence (the smoke goal)
 
@@ -91,7 +101,15 @@ Add-mode actually creates additive duplicates of the prior import.
     supplement count = A + B, lab reports = A + B, etc.
   - Profile version history includes both A's and B's parsed
     versions plus the synthesized import marker.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☑ fail (finding S4-S5-B: Add creates duplicates
+  of overlapping entities, no field-level merge. Superseded by
+  IM-06.)
+
+> **Scenarios 6-10 below: DEFERRED until IM-06 ships.** They
+> exercise the same Replace + Add semantics that scenarios 4 + 5
+> already proved unfit; walking them is throwaway work. Re-walk
+> after IM-06 (field-level merge) lands and the dialog is
+> restructured.
 
 ### 6. Mixed mode (Add + Replace + Skip) honours per-type pick
 
@@ -106,7 +124,7 @@ Add-mode actually creates additive duplicates of the prior import.
   - Observations view: A's + B's observations coexist.
   - Supplements view: only B's supplements (A's wiped).
   - Open-points view: only A's open-points (B's discarded).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☐ fail ☑ deferred (IM-06)
 
 ### 7. Empty-side disabled radios
 
@@ -119,7 +137,7 @@ Add-mode actually creates additive duplicates of the prior import.
   - Inverse case: target has open-points, Profile B does not.
     Ersetzen + Überspringen enabled, Zusammenführen disabled
     (nothing to add).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☐ fail ☑ deferred (IM-06)
 
 ### 8. Same file imported twice with all-Add creates duplicates
 
@@ -132,7 +150,7 @@ Add-mode actually creates additive duplicates of the prior import.
   - The amber duplicate warning was visible in the dialog before
     confirming.
   - User experience matches the duplicate hint copy.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☐ fail ☑ deferred (IM-06)
 
 ### 9. Dark mode legibility
 
@@ -141,7 +159,7 @@ Add-mode actually creates additive duplicates of the prior import.
   - Radio buttons stay legible against the modal background.
   - Amber duplicate warning has visible contrast in dark.
   - Disabled radios visually distinct from enabled ones.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☐ fail ☑ deferred (IM-06)
 
 ### 10. 360 px viewport fit
 
@@ -153,24 +171,49 @@ Add-mode actually creates additive duplicates of the prior import.
     second line cleanly when long.
   - No horizontal scroll inside the dialog.
   - Cancel + Übernehmen footer buttons fit side by side.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☐ pass ☐ fail ☑ deferred (IM-06)
 
 ## Findings
 
-(none yet)
+### S1-C (Category C polish, scenario 1)
+
+Helper text below the heading should render each entry on its own
+row rather than inline. Cosmetic; revisit alongside any future
+ConfirmDialog copy work.
+
+### S4-S5-B (Category B UX gap, scenarios 4 + 5)
+
+Both shipped IM-05 modes fall short of a usable "merge two
+profiles" UX:
+
+- **Ersetzen** wipes the user's prior data. Acceptable only when
+  the user explicitly intends a clean overwrite, but there is no
+  intermediate option that preserves existing entries.
+- **Zusammenführen (Add)** creates duplicate rows for any
+  entity that exists on both sides (same theme, same lab-report
+  date, same supplement name, same open-points context). No
+  natural-key match, no field-level merge, no dedup.
+
+A real merge needs natural-key matching per entity type plus a
+conflict-resolution UX when matched fields differ. Tracked as
+**IM-06 Field-level merge mode** in ROADMAP "Phase 4 follow-up:
+Import"; spec at
+[`../specs/IM-06-field-level-merge.md`](../specs/IM-06-field-level-merge.md).
+IM-05 scenarios 6-10 are deferred until IM-06 lands and the
+dialog is restructured.
 
 ## Sign-off
 
-- ☐ Dialog opens with no default mode; confirm disabled (scenario 1)
-- ☐ Confirm enables only after every visible row has a mode (scenario 2)
-- ☐ Add-mode warning surfaces and toggles correctly (scenario 3)
-- ☐ All-Replace produces overwrite (scenario 4)
-- ☐ All-Merge produces additive coexistence (scenario 5)
-- ☐ Mixed mode honours per-type pick (scenario 6)
-- ☐ Empty-side disabled radios behave correctly (scenario 7)
-- ☐ Same file twice with all-Add creates duplicates (scenario 8)
-- ☐ Dark mode legible (scenario 9)
-- ☐ 360 px fit (scenario 10)
+- ☑ Dialog opens with no default mode; confirm disabled (scenario 1)
+- ☑ Confirm enables only after every visible row has a mode (scenario 2)
+- ☑ Add-mode warning surfaces and toggles correctly (scenario 3)
+- ☐ All-Replace produces overwrite (scenario 4) — FAIL S4-S5-B
+- ☐ All-Merge produces additive coexistence (scenario 5) — FAIL S4-S5-B
+- ☐ Mixed mode honours per-type pick (scenario 6) — DEFERRED IM-06
+- ☐ Empty-side disabled radios behave correctly (scenario 7) — DEFERRED IM-06
+- ☐ Same file twice with all-Add creates duplicates (scenario 8) — DEFERRED IM-06
+- ☐ Dark mode legible (scenario 9) — DEFERRED IM-06
+- ☐ 360 px fit (scenario 10) — DEFERRED IM-06
 
-Walker: ********\_\_\_\_********
-Date: 2026-**-**
+Walker: Asterios Raptis
+Date: 2026-05-04 (partial walk; suspended pending IM-06)

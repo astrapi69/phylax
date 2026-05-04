@@ -57,6 +57,24 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       architecture; revisit if a real-world deployment scenario
       demands it.
 
+## Phase 4 follow-up: Import
+
+- [ ] **IM-06** Field-level merge mode. Triggered by the IM-05 Option
+      B manual smoke finding 2026-05-04: the existing Replace mode
+      destroys user data and the existing Add ("Zusammenführen") mode
+      creates duplicates of overlapping entities. Neither matches a
+      user's intuition for "merge two profiles". Add a real
+      field-level merge: match by natural key per entity type
+      (observations: theme, lab reports: reportDate, supplements:
+      name, open-points: context), update fields where matched
+      without destroying or duplicating, surface a conflict-resolution
+      UX when matched fields differ. Likely restructures the IM-05
+      ConfirmDialog into Replace / Field-Merge / Skip (the current
+      Add semantic is superseded). Spec draft at
+      [`specs/IM-06-field-level-merge.md`](specs/IM-06-field-level-merge.md).
+      Blocks resumption of the IM-05 Option B smoke walk; IM-05
+      scenarios 6-10 are deferred until IM-06 ships.
+
 ## Phase 6 follow-up: Backup
 
 - [ ] **B-05** Merge-mode backup import. **Deferred.** Requires a
