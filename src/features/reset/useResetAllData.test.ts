@@ -214,4 +214,94 @@ describe('useResetAllData', () => {
     await waitFor(() => expect(result.current.step).toBe('done'));
     expect(result.current.result?.errors.some((e) => e.step === 'clearing-caches')).toBe(false);
   });
+
+  it('wipes every cache when the caches API is available', async () => {
+    installDeleteDbStub('success');
+    stubLocation();
+
+    const cacheNames = ['phylax-precache-v1', 'workbox-runtime', 'unrelated-cache'];
+    const deleteSpy = vi.fn(async () => true);
+    const cachesShim = {
+      keys: vi.fn(async () => cacheNames),
+      delete: deleteSpy,
+    };
+    Object.defineProperty(globalThis, 'caches', {
+      configurable: true,
+      writable: true,
+      value: cachesShim,
+    });
+    try {
+      const { result } = renderHook(() => useResetAllData());
+      await act(async () => {
+        await result.current.reset();
+      });
+
+      await waitFor(() => expect(result.current.step).toBe('done'));
+      expect(cachesShim.keys).toHaveBeenCalledOnce();
+      expect(deleteSpy).toHaveBeenCalledTimes(cacheNames.length);
+      // Each name passed exactly once.
+      const calledWith = deleteSpy.mock.calls.map((c: unknown[]) => c[0]);
+      expect(new Set(calledWith)).toEqual(new Set(cacheNames));
+      expect(result.current.result?.errors.some((e) => e.step === 'clearing-caches')).toBe(false);
+    } finally {
+      // Remove the shim so subsequent tests start clean.
+      // @ts-expect-error - configurable own-property delete
+      delete globalThis.caches;
+    }
+  });
+
+  it('unregisters the service worker when navigator.serviceWorker is available', async () => {
+    installDeleteDbStub('success');
+    stubLocation();
+
+    const unregisterSpy = vi.fn(async () => true);
+    const swShim = {
+      getRegistration: vi.fn(async () => ({ unregister: unregisterSpy })),
+    };
+    Object.defineProperty(window.navigator, 'serviceWorker', {
+      configurable: true,
+      writable: true,
+      value: swShim,
+    });
+    try {
+      const { result } = renderHook(() => useResetAllData());
+      await act(async () => {
+        await result.current.reset();
+      });
+
+      await waitFor(() => expect(result.current.step).toBe('done'));
+      expect(swShim.getRegistration).toHaveBeenCalledOnce();
+      expect(unregisterSpy).toHaveBeenCalledOnce();
+      expect(result.current.result?.errors.some((e) => e.step === 'unregistering-sw')).toBe(false);
+    } finally {
+      // @ts-expect-error - configurable own-property delete
+      delete window.navigator.serviceWorker;
+    }
+  });
+
+  it('skips unregister when navigator.serviceWorker.getRegistration returns nothing', async () => {
+    installDeleteDbStub('success');
+    stubLocation();
+
+    const swShim = { getRegistration: vi.fn(async () => undefined) };
+    Object.defineProperty(window.navigator, 'serviceWorker', {
+      configurable: true,
+      writable: true,
+      value: swShim,
+    });
+    try {
+      const { result } = renderHook(() => useResetAllData());
+      await act(async () => {
+        await result.current.reset();
+      });
+
+      await waitFor(() => expect(result.current.step).toBe('done'));
+      expect(swShim.getRegistration).toHaveBeenCalledOnce();
+      // No registration -> no unregister call -> no error logged.
+      expect(result.current.result?.errors.some((e) => e.step === 'unregistering-sw')).toBe(false);
+    } finally {
+      // @ts-expect-error - configurable own-property delete
+      delete window.navigator.serviceWorker;
+    }
+  });
 });

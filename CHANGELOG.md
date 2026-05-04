@@ -25,6 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `features/reset/useResetAllData.ts`:
+  caches-API-present (loops over `caches.keys()` then deletes
+  each), navigator.serviceWorker-present (gets registration then
+  unregisters), and the no-registration short-circuit. Existing
+  tests only covered the early-return paths against jsdom
+  defaults; now both real-environment branches are exercised.
+  Pushes `features/reset` from 87.05% / 66.66% (lines / branches)
+  to 94.11% / 81.48% and `useResetAllData.ts` from 85.5% / 62.5%
+  to 94.2% / 87.5%. Closes the top P1 branch-coverage row in
+  `current-coverage.md` (destructive feature, security-relevant
+  via the ADR-0018 reset-pause invariant).
 - Settings README rewrite (P-05): replaced the stale "Planned
   contents" placeholder list (which still referenced
   `Settings.tsx` and `ChangePassword.tsx` as future files) with
