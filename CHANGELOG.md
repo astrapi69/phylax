@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `src/i18n/detector.ts` SSR /
+  non-browser fallback paths: navigator-undefined (line 44-45
+  guard returns 'en'), localStorage-undefined paths in
+  readStoredLanguage / setLanguagePreference /
+  clearLanguagePreference (lines 54, 65-66, 73-74), plus the
+  setItem / removeItem-throws catch branches. Six new tests
+  using vi.stubGlobal + spyOn(Storage.prototype). Pushes
+  `i18n/` dir from 89.79% / 75% to 95.91% / 89.28% (lines /
+  branches).
 - Branch-coverage tests for
   `features/backup-import/BackupImportSelectView.tsx`
   renderParseError switch arms (lines 36-44). Five new tests

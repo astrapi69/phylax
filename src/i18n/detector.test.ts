@@ -136,3 +136,44 @@ describe('setLanguagePreference + hasLanguagePreference', () => {
     expect(readStoredLanguage()).toBeNull();
   });
 });
+
+describe('SSR / non-browser fallback paths', () => {
+  // Each test stubs `navigator` or `localStorage` to undefined so the
+  // `typeof X === 'undefined'` guards execute. afterEach in this
+  // file already calls vi.unstubAllGlobals.
+
+  it('detectFromNavigator returns "en" when navigator is undefined (lines 44-45 false branch)', () => {
+    vi.stubGlobal('navigator', undefined);
+    expect(detectFromNavigator()).toBe('en');
+  });
+
+  it('readStoredLanguage returns null when localStorage is undefined (line 54)', () => {
+    vi.stubGlobal('localStorage', undefined);
+    expect(readStoredLanguage()).toBeNull();
+  });
+
+  it('setLanguagePreference is a no-op when localStorage is undefined (lines 65-66)', () => {
+    vi.stubGlobal('localStorage', undefined);
+    // No throw is the assertion: the function should short-circuit.
+    expect(() => setLanguagePreference('de')).not.toThrow();
+  });
+
+  it('setLanguagePreference swallows errors thrown by localStorage.setItem (lines 67-71 catch)', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota');
+    });
+    expect(() => setLanguagePreference('en')).not.toThrow();
+  });
+
+  it('clearLanguagePreference is a no-op when localStorage is undefined (lines 73-74)', () => {
+    vi.stubGlobal('localStorage', undefined);
+    expect(() => clearLanguagePreference()).not.toThrow();
+  });
+
+  it('clearLanguagePreference swallows errors thrown by localStorage.removeItem', () => {
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('locked');
+    });
+    expect(() => clearLanguagePreference()).not.toThrow();
+  });
+});
