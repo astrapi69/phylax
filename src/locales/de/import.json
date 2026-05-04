@@ -108,6 +108,10 @@
       "field-by-field": "Feldweise entscheiden",
       "field-by-field-disabled": "Feldweise (in Vorbereitung)"
     },
+    "value": {
+      "expand": "Mehr anzeigen",
+      "collapse": "Weniger anzeigen"
+    },
     "footer": {
       "cancel": "Abbrechen",
       "confirm": "Übernehmen"

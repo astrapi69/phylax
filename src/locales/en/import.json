@@ -108,6 +108,10 @@
       "field-by-field": "Field-by-field",
       "field-by-field-disabled": "Field-by-field (coming soon)"
     },
+    "value": {
+      "expand": "Show more",
+      "collapse": "Show less"
+    },
     "footer": {
       "cancel": "Cancel",
       "confirm": "Apply"

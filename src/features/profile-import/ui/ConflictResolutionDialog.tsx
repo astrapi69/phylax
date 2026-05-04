@@ -36,12 +36,25 @@ interface ConflictResolutionDialogProps {
 }
 
 /**
- * Conflict-pick = `'mine'` | `'theirs'` for the IM-06 Step 5a dialog.
- * Step 5b adds `'field-by-field'`; the radio is rendered disabled
- * here with a "coming soon" tooltip so users see the intended option
- * without it being functional.
+ * Conflict-pick state for the IM-06 dialog. Mirrors the
+ * `ConflictResolution<K>` discriminated union from the resolveMerge
+ * contract; the dialog stores its working state in the same shape so
+ * Confirm can submit without further translation.
+ *
+ * - `mine` / `theirs`: resolved on a single radio click.
+ * - `field-by-field`: requires an explicit pick for every entry in
+ *   the matching `FieldDiff[]`. The conflict is considered resolved
+ *   only when `Object.keys(fields).length === diffs.length`.
+ *
+ * Q2 discipline: no default preselection at any level. Mode-switch
+ * (e.g. picking `'mine'` after `'field-by-field'`) discards the
+ * per-field map (W1 lean: cleaner transitions; user re-picks if they
+ * re-enter field-by-field).
  */
-type ConflictPick = 'mine' | 'theirs';
+type ConflictPick =
+  | { kind: 'mine' }
+  | { kind: 'theirs' }
+  | { kind: 'field-by-field'; fields: Record<string, 'mine' | 'theirs'> };
 
 /**
  * IM-06 Step 5a: dialog that surfaces every conflict produced by the
@@ -89,7 +102,8 @@ export function ConflictResolutionDialog({
       const map = picks[section.kind];
       if (!map) continue;
       for (const m of section.matches) {
-        if (map[m.existing.id] !== undefined) n += 1;
+        const pick = map[m.existing.id];
+        if (pick && isPickResolved(pick, m.diffs.length)) n += 1;
       }
     }
     return n;
@@ -118,6 +132,34 @@ export function ConflictResolutionDialog({
     }));
   }
 
+  /**
+   * Per-field setter for field-by-field mode. Called from inside
+   * `ConflictRow` when the user clicks a per-field radio. Preserves
+   * mode (`field-by-field`) and merges the field map.
+   */
+  function setFieldPick(
+    kind: MergeableEntityKey,
+    existingId: string,
+    field: string,
+    choice: 'mine' | 'theirs',
+  ): void {
+    setPicks((prev) => {
+      const typeMap = prev[kind] ?? {};
+      const current = typeMap[existingId];
+      const nextFields =
+        current && current.kind === 'field-by-field'
+          ? { ...current.fields, [field]: choice }
+          : { [field]: choice };
+      return {
+        ...prev,
+        [kind]: {
+          ...typeMap,
+          [existingId]: { kind: 'field-by-field', fields: nextFields },
+        },
+      };
+    });
+  }
+
   function handleConfirm(): void {
     if (!allPicked) return;
     const payload: MergeResolutions = {};
@@ -128,7 +170,7 @@ export function ConflictResolutionDialog({
       for (const m of section.matches) {
         const pick = map[m.existing.id];
         if (pick === undefined) continue;
-        slice[m.existing.id] = { kind: pick };
+        slice[m.existing.id] = pickToResolution(pick);
       }
       assignResolutionSlice(payload, section.kind, slice);
     }
@@ -168,6 +210,7 @@ export function ConflictResolutionDialog({
               picks={picks[section.kind] ?? {}}
               onToggle={() => toggleSection(section.kind)}
               onPick={(id, pick) => setPick(section.kind, id, pick)}
+              onFieldPick={(id, field, choice) => setFieldPick(section.kind, id, field, choice)}
             />
           ))}
         </div>
@@ -242,15 +285,48 @@ function assignResolutionSlice(
   (target as Record<string, unknown>)[kind] = slice;
 }
 
+/**
+ * Decide whether a single `ConflictPick` counts as resolved for the
+ * Confirm-disable gate + the progress counter. `mine` and `theirs`
+ * are atomic; `field-by-field` requires every diff field to have an
+ * explicit choice (Q2 discipline; Step 4 watch point W1).
+ */
+function isPickResolved(pick: ConflictPick, diffCount: number): boolean {
+  if (pick.kind === 'mine' || pick.kind === 'theirs') return true;
+  return Object.keys(pick.fields).length === diffCount;
+}
+
+/**
+ * Translate a working `ConflictPick` into the
+ * `ConflictResolution<K>` shape consumed by `resolveMerge`.
+ * `field-by-field` is mapped one-for-one onto the `fieldChoices`
+ * record; the resolver checks per-field completeness via
+ * `UnresolvedConflictError` if anything is missing (defence in
+ * depth; the dialog already gates Confirm).
+ */
+function pickToResolution(pick: ConflictPick): ConflictResolution<MergeableEntityKey> {
+  if (pick.kind === 'mine') return { kind: 'mine' };
+  if (pick.kind === 'theirs') return { kind: 'theirs' };
+  return { kind: 'field-by-field', fieldChoices: { ...pick.fields } };
+}
+
 interface ConflictSectionProps {
   section: SectionDescriptor;
   isExpanded: boolean;
   picks: Record<string, ConflictPick>;
   onToggle: () => void;
   onPick: (existingId: string, pick: ConflictPick) => void;
+  onFieldPick: (existingId: string, field: string, choice: 'mine' | 'theirs') => void;
 }
 
-function ConflictSection({ section, isExpanded, picks, onToggle, onPick }: ConflictSectionProps) {
+function ConflictSection({
+  section,
+  isExpanded,
+  picks,
+  onToggle,
+  onPick,
+  onFieldPick,
+}: ConflictSectionProps) {
   const { t } = useTranslation('import');
   const sectionId = `conflict-section-${section.kind}`;
   const headerId = `${sectionId}-header`;
@@ -291,6 +367,7 @@ function ConflictSection({ section, isExpanded, picks, onToggle, onPick }: Confl
                 match={m}
                 pick={picks[m.existing.id]}
                 onPick={(p) => onPick(m.existing.id, p)}
+                onFieldPick={(field, choice) => onFieldPick(m.existing.id, field, choice)}
               />
             ))}
           </div>
@@ -305,13 +382,15 @@ interface ConflictRowProps {
   match: Extract<MergeMatch<MergeableEntityKey>, { outcome: 'conflict' }>;
   pick: ConflictPick | undefined;
   onPick: (pick: ConflictPick) => void;
+  onFieldPick: (field: string, choice: 'mine' | 'theirs') => void;
 }
 
-function ConflictRow({ kind, match, pick, onPick }: ConflictRowProps) {
+function ConflictRow({ kind, match, pick, onPick, onFieldPick }: ConflictRowProps) {
   const { t } = useTranslation('import');
   const groupId = `conflict-row-${match.existing.id}`;
   const identityKey = identityKeyFor(kind, match.existing);
   const fieldList = match.diffs.map((d) => d.field).join(', ');
+  const isFbF = pick?.kind === 'field-by-field';
 
   return (
     <div
@@ -328,33 +407,168 @@ function ConflictRow({ kind, match, pick, onPick }: ConflictRowProps) {
         <RadioOption
           name={groupId}
           value="mine"
-          checked={pick === 'mine'}
+          checked={pick?.kind === 'mine'}
           label={t('merge-conflicts.mode.mine')}
-          onSelect={() => onPick('mine')}
+          onSelect={() => onPick({ kind: 'mine' })}
           testId={`${groupId}-mine`}
         />
         <RadioOption
           name={groupId}
           value="theirs"
-          checked={pick === 'theirs'}
+          checked={pick?.kind === 'theirs'}
           label={t('merge-conflicts.mode.theirs')}
-          onSelect={() => onPick('theirs')}
+          onSelect={() => onPick({ kind: 'theirs' })}
           testId={`${groupId}-theirs`}
         />
         <RadioOption
           name={groupId}
           value="field-by-field"
-          checked={false}
-          disabled
-          label={t('merge-conflicts.mode.field-by-field-disabled')}
-          onSelect={() => {
-            /* Step 5b */
-          }}
+          checked={isFbF}
+          label={t('merge-conflicts.mode.field-by-field')}
+          onSelect={() => onPick({ kind: 'field-by-field', fields: {} })}
           testId={`${groupId}-field-by-field`}
+        />
+      </div>
+      {isFbF && pick?.kind === 'field-by-field' && (
+        <div
+          className="mt-3 space-y-3 rounded-sm border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40"
+          data-testid={`${groupId}-fbf-panel`}
+        >
+          {match.diffs.map((diff) => (
+            <FieldDiffPicker
+              key={diff.field}
+              parentGroupId={groupId}
+              field={diff.field}
+              mineValue={diff.mineValue}
+              theirsValue={diff.theirsValue}
+              choice={pick.fields[diff.field]}
+              onChoose={(choice) => onFieldPick(diff.field, choice)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface FieldDiffPickerProps {
+  parentGroupId: string;
+  field: string;
+  mineValue: unknown;
+  theirsValue: unknown;
+  choice: 'mine' | 'theirs' | undefined;
+  onChoose: (choice: 'mine' | 'theirs') => void;
+}
+
+function FieldDiffPicker({
+  parentGroupId,
+  field,
+  mineValue,
+  theirsValue,
+  choice,
+  onChoose,
+}: FieldDiffPickerProps) {
+  const { t } = useTranslation('import');
+  const groupId = `${parentGroupId}-field-${field}`;
+  return (
+    <div
+      data-testid={`${parentGroupId}-fbf-${field}`}
+      className="rounded-sm border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900"
+    >
+      <p className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">{field}</p>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <ValueCell
+          label={t('merge-conflicts.mode.mine')}
+          value={mineValue}
+          testId={`${groupId}-mine-value`}
+        />
+        <ValueCell
+          label={t('merge-conflicts.mode.theirs')}
+          value={theirsValue}
+          testId={`${groupId}-theirs-value`}
+        />
+      </div>
+      <div role="radiogroup" aria-label={field} className="mt-2 flex flex-wrap gap-3">
+        <RadioOption
+          name={groupId}
+          value="mine"
+          checked={choice === 'mine'}
+          label={t('merge-conflicts.mode.mine')}
+          onSelect={() => onChoose('mine')}
+          testId={`${groupId}-mine`}
+        />
+        <RadioOption
+          name={groupId}
+          value="theirs"
+          checked={choice === 'theirs'}
+          label={t('merge-conflicts.mode.theirs')}
+          onSelect={() => onChoose('theirs')}
+          testId={`${groupId}-theirs`}
         />
       </div>
     </div>
   );
+}
+
+const VALUE_TRUNCATE_AT = 80;
+
+interface ValueCellProps {
+  label: string;
+  value: unknown;
+  testId: string;
+}
+
+/**
+ * Render one mine/theirs value side. Long strings collapse to the
+ * first VALUE_TRUNCATE_AT chars with a click-to-expand toggle (W3
+ * long-values UX). Other types render via `formatValue`.
+ */
+function ValueCell({ label, value, testId }: ValueCellProps) {
+  const { t } = useTranslation('import');
+  const [expanded, setExpanded] = useState(false);
+  const formatted = formatValue(value);
+  const isLong = formatted.length > VALUE_TRUNCATE_AT;
+  const display = isLong && !expanded ? `${formatted.slice(0, VALUE_TRUNCATE_AT)}…` : formatted;
+
+  return (
+    <div className="text-xs">
+      <p className="mb-1 font-medium text-gray-600 dark:text-gray-400">{label}</p>
+      <pre
+        data-testid={testId}
+        className="m-0 max-h-40 overflow-auto rounded-sm bg-gray-50 p-2 font-mono text-xs break-words whitespace-pre-wrap text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+      >
+        {display}
+      </pre>
+      {isLong && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-1 text-xs text-blue-600 hover:underline dark:text-blue-400"
+          data-testid={`${testId}-toggle`}
+        >
+          {expanded ? t('merge-conflicts.value.collapse') : t('merge-conflicts.value.expand')}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Stringify a diff value for display. Empty / undefined falls back
+ * to '—'; boolean / number / string render directly; arrays + objects
+ * via JSON.stringify (W2). Edge cases ride on the truncate-and-expand
+ * UX in `ValueCell`.
+ */
+function formatValue(v: unknown): string {
+  if (v === undefined || v === null) return '—';
+  if (v === '') return '—';
+  if (typeof v === 'boolean') return v ? '✓' : '✗';
+  if (typeof v === 'number' || typeof v === 'string') return String(v);
+  try {
+    return JSON.stringify(v, null, 2);
+  } catch {
+    return String(v);
+  }
 }
 
 interface RadioOptionProps {

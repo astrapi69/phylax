@@ -173,7 +173,7 @@ describe('ConflictResolutionDialog', () => {
     expect(theirs.checked).toBe(false);
   });
 
-  it('field-by-field radio renders disabled with the coming-soon label (Step 5b)', () => {
+  it('field-by-field radio is enabled in Step 5b (functional, not disabled)', () => {
     render(
       <ConflictResolutionDialog
         conflicts={emptyConflictSet({ observations: [makeObservationConflict()] })}
@@ -185,7 +185,234 @@ describe('ConflictResolutionDialog', () => {
     const fbf = screen.getByTestId(
       'conflict-row-obs-existing-1-field-by-field',
     ) as HTMLInputElement;
-    expect(fbf.disabled).toBe(true);
+    expect(fbf.disabled).toBe(false);
+  });
+
+  it('field-by-field opens the per-field expansion panel below the conflict', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [makeObservationConflict()] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    expect(screen.queryByTestId('conflict-row-obs-existing-1-fbf-panel')).toBeNull();
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    expect(screen.getByTestId('conflict-row-obs-existing-1-fbf-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('conflict-row-obs-existing-1-fbf-fact')).toBeInTheDocument();
+  });
+
+  it('per-field gating: confirm disabled until every diff field has a per-field pick', async () => {
+    const user = userEvent.setup();
+    // Conflict with TWO differing fields so per-field gating is non-trivial.
+    const existing = makeObservation({ fact: 'mine fact', status: 'mine-status' });
+    const parsed = makeObservation({
+      id: 'parsed-1',
+      fact: 'theirs fact',
+      status: 'theirs-status',
+    });
+    const conflict: Extract<MergeMatch<'observations'>, { outcome: 'conflict' }> = {
+      outcome: 'conflict',
+      kind: 'observations',
+      parsed,
+      existing,
+      diffs: [
+        { field: 'fact', mineValue: 'mine fact', theirsValue: 'theirs fact' },
+        { field: 'status', mineValue: 'mine-status', theirsValue: 'theirs-status' },
+      ],
+    };
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [conflict] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    const confirm = screen.getByTestId('conflict-resolution-dialog-confirm');
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    expect(confirm).toBeDisabled();
+
+    // Pick one of two fields -> still disabled.
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-fact-theirs'));
+    expect(confirm).toBeDisabled();
+
+    // Pick the second field -> resolved -> Confirm enables.
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-status-mine'));
+    expect(confirm).toBeEnabled();
+  });
+
+  it('mode-switch from field-by-field to mine discards per-field picks (W1 lean)', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [makeObservationConflict()] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-fact-theirs'));
+    // Switch to mine.
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-mine'));
+    expect(screen.queryByTestId('conflict-row-obs-existing-1-fbf-panel')).toBeNull();
+    // Re-enter field-by-field -> per-field map empty.
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    const factTheirs = screen.getByTestId(
+      'conflict-row-obs-existing-1-field-fact-theirs',
+    ) as HTMLInputElement;
+    expect(factTheirs.checked).toBe(false);
+  });
+
+  it('field-by-field submit produces ConflictResolution with fieldChoices in the payload', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    const existing = makeObservation({ fact: 'mine fact', status: 'mine-status' });
+    const parsed = makeObservation({
+      id: 'parsed-1',
+      fact: 'theirs fact',
+      status: 'theirs-status',
+    });
+    const conflict: Extract<MergeMatch<'observations'>, { outcome: 'conflict' }> = {
+      outcome: 'conflict',
+      kind: 'observations',
+      parsed,
+      existing,
+      diffs: [
+        { field: 'fact', mineValue: 'mine fact', theirsValue: 'theirs fact' },
+        { field: 'status', mineValue: 'mine-status', theirsValue: 'theirs-status' },
+      ],
+    };
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [conflict] })}
+        targetProfileName="Mein Profil"
+        onSubmit={onSubmit}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-fact-theirs'));
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-status-mine'));
+    await user.click(screen.getByTestId('conflict-resolution-dialog-confirm'));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      observations: {
+        'obs-existing-1': {
+          kind: 'field-by-field',
+          fieldChoices: { fact: 'theirs', status: 'mine' },
+        },
+      },
+    });
+  });
+
+  it('value rendering: mine + theirs values shown in field-by-field expansion', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [makeObservationConflict()] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-fact-mine-value'),
+    ).toHaveTextContent('mine fact');
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-fact-theirs-value'),
+    ).toHaveTextContent('theirs fact');
+  });
+
+  it('long values truncate with click-to-expand toggle', async () => {
+    const user = userEvent.setup();
+    const existing = makeObservation({
+      fact: 'A'.repeat(200),
+    });
+    const parsed = makeObservation({
+      id: 'parsed-1',
+      fact: 'B'.repeat(200),
+    });
+    const conflict: Extract<MergeMatch<'observations'>, { outcome: 'conflict' }> = {
+      outcome: 'conflict',
+      kind: 'observations',
+      parsed,
+      existing,
+      diffs: [{ field: 'fact', mineValue: existing.fact, theirsValue: parsed.fact }],
+    };
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [conflict] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    const cell = screen.getByTestId('conflict-row-obs-existing-1-field-fact-mine-value');
+    // Truncated (ellipsis present).
+    expect(cell.textContent).toMatch(/…$/);
+    // Toggle expands.
+    await user.click(
+      screen.getByTestId('conflict-row-obs-existing-1-field-fact-mine-value-toggle'),
+    );
+    expect(cell.textContent).not.toMatch(/…$/);
+  });
+
+  it('value rendering edge cases: undefined/null/empty render as em-dash, boolean as ✓/✗', async () => {
+    const user = userEvent.setup();
+    const existing = makeObservation({ fact: '', status: 'old-status' });
+    const parsed = makeObservation({
+      id: 'parsed-1',
+      fact: 'theirs fact',
+      status: '',
+    });
+    // The renderer is type-erased on field value (it accepts unknown).
+    // Cast through unknown so the test can include boolean / undefined
+    // values without manufacturing extra fields on Observation.
+    const conflict = {
+      outcome: 'conflict',
+      kind: 'observations',
+      parsed,
+      existing,
+      diffs: [
+        { field: 'fact', mineValue: '', theirsValue: 'theirs fact' },
+        { field: 'status', mineValue: 'old-status', theirsValue: '' },
+        { field: 'undef', mineValue: undefined, theirsValue: 'present' },
+        { field: 'bool', mineValue: true, theirsValue: false },
+      ],
+    } as unknown as Extract<MergeMatch<'observations'>, { outcome: 'conflict' }>;
+    render(
+      <ConflictResolutionDialog
+        conflicts={emptyConflictSet({ observations: [conflict] })}
+        targetProfileName="Mein Profil"
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('conflict-row-obs-existing-1-field-by-field'));
+    // Empty -> em-dash.
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-fact-mine-value'),
+    ).toHaveTextContent('—');
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-status-theirs-value'),
+    ).toHaveTextContent('—');
+    // Undefined -> em-dash.
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-undef-mine-value'),
+    ).toHaveTextContent('—');
+    // Boolean -> ✓ / ✗.
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-bool-mine-value'),
+    ).toHaveTextContent('✓');
+    expect(
+      screen.getByTestId('conflict-row-obs-existing-1-field-bool-theirs-value'),
+    ).toHaveTextContent('✗');
   });
 
   it('progress counter reflects resolved-of-total picks', async () => {
