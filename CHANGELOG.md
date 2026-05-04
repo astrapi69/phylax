@@ -74,6 +74,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- Branch-coverage tests for
+  `features/backup-import/BackupImportSection.tsx`:
+  renderParseError 5 unique switch arms (missing-field,
+  unsupported-version, wrong-type, too-large, corrupted) via
+  vi.spyOn on parseBackupFile module; formatFileSize KB-range
+  (1536 -> "1.5 KB") and MB-range (2_500_000 -> "2.38 MB")
+  branches via mocked metadata; formatCreatedAt catch branch
+  via an invalid ISO that surfaces the raw string. Eight new
+  tests across two `describe` blocks. Closes the residual
+  branch ratio on the post-auth Settings restore surface that
+  was the dominant gap on the features/backup-import 77.14%
+  rollup.
 - Branch-coverage tests for `features/ai/AiSetupWizard.tsx`:
   same-provider re-click no-op (preserves apiKey, line 87
   early-return), eye toggle flips the `-webkit-text-security`

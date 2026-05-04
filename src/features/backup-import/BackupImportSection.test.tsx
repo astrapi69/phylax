@@ -15,6 +15,7 @@ import { PBKDF2_ITERATIONS } from '../../crypto/constants';
 import { resetDatabase, setupCompletedOnboarding } from '../../db/test-helpers';
 import { readMeta } from '../../db/meta';
 import { __resetScrollLockForTest } from '../../ui';
+import * as parseBackupModule from './parseBackupFile';
 import { BackupImportSection } from './BackupImportSection';
 import { BACKUP_IMPORT_STORAGE_KEY } from '../unlock/rateLimit';
 
@@ -288,5 +289,106 @@ describe('BackupImportSection', () => {
       expect(screen.getByTestId('backup-import-section-parse-error')).toBeInTheDocument(),
     );
     expect(screen.queryByTestId('backup-import-section-metadata')).toBeNull();
+  });
+
+  describe('renderParseError variants', () => {
+    async function uploadAndExpect(
+      forced: import('./parseBackupFile').ParseError,
+      pattern: RegExp,
+    ): Promise<void> {
+      vi.spyOn(parseBackupModule, 'parseBackupFile').mockResolvedValue({
+        valid: false,
+        error: forced,
+      });
+      const user = userEvent.setup();
+      renderInRouter();
+      const dummy = new File(['anything'], 'x.phylax', { type: 'application/json' });
+      await user.upload(screen.getByTestId('backup-import-section-file-input'), dummy);
+      await waitFor(() => expect(screen.getByText(pattern)).toBeInTheDocument());
+    }
+
+    it('missing-field surfaces the field-name interpolation', async () => {
+      await uploadAndExpect(
+        { kind: 'missing-field', field: 'crypto' },
+        /Datei unvollständig.*crypto/i,
+      );
+    });
+
+    it('unsupported-version surfaces the version-interpolated message', async () => {
+      await uploadAndExpect(
+        { kind: 'unsupported-version', version: 99 },
+        /Datei-Version 99 wird nicht unterstützt/i,
+      );
+    });
+
+    it('wrong-type surfaces the wrong-type message', async () => {
+      await uploadAndExpect(
+        { kind: 'wrong-type', got: 'not-phylax' },
+        /keine Phylax-Backup-Datei/i,
+      );
+    });
+
+    it('too-large surfaces the size-interpolated message', async () => {
+      await uploadAndExpect({ kind: 'too-large', sizeMb: 99 }, /Datei zu groß.*99 MB/i);
+    });
+
+    it('corrupted surfaces the corrupted message', async () => {
+      await uploadAndExpect(
+        { kind: 'corrupted', detail: 'salt base64 invalid' },
+        /Backup ist beschädigt/i,
+      );
+    });
+  });
+
+  describe('formatFileSize / formatCreatedAt', () => {
+    async function uploadValidWithMeta(meta: {
+      fileSizeBytes: number;
+      created?: string;
+    }): Promise<void> {
+      vi.spyOn(parseBackupModule, 'parseBackupFile').mockResolvedValue({
+        valid: true,
+        parsed: {
+          version: 1,
+          type: 'phylax-backup',
+          created: meta.created ?? '2026-04-20T00:00:00Z',
+          source: { app: 'phylax', appVersion: '0.0.0' },
+          crypto: {
+            algorithm: 'AES-256-GCM',
+            kdf: 'PBKDF2-SHA256',
+            iterations: PBKDF2_ITERATIONS,
+            salt: bytesToBase64(new Uint8Array(32)),
+          },
+          data: bytesToBase64(new Uint8Array(64)),
+        },
+        metadata: {
+          fileName: 'meta-test.phylax',
+          fileSizeBytes: meta.fileSizeBytes,
+          created: meta.created ?? '2026-04-20T00:00:00Z',
+          sourceAppVersion: '0.0.0',
+        },
+      });
+      const user = userEvent.setup();
+      renderInRouter();
+      const dummy = new File(['ignored'], 'x.phylax', { type: 'application/json' });
+      await user.upload(screen.getByTestId('backup-import-section-file-input'), dummy);
+      await waitFor(() =>
+        expect(screen.getByTestId('backup-import-section-metadata')).toBeInTheDocument(),
+      );
+    }
+
+    it('renders KB-range file size with one decimal', async () => {
+      await uploadValidWithMeta({ fileSizeBytes: 1536 });
+      expect(screen.getByText(/1\.5 KB/)).toBeInTheDocument();
+    });
+
+    it('renders MB-range file size with two decimals', async () => {
+      await uploadValidWithMeta({ fileSizeBytes: 2_500_000 });
+      expect(screen.getByText(/2\.38 MB/)).toBeInTheDocument();
+    });
+
+    it('falls back to the raw ISO string when Intl rejects the date', async () => {
+      await uploadValidWithMeta({ fileSizeBytes: 100, created: 'not-an-iso' });
+      expect(screen.getByText('not-an-iso')).toBeInTheDocument();
+    });
   });
 });
