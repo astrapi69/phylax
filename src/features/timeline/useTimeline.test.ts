@@ -103,4 +103,19 @@ describe('useTimeline', () => {
     }
     spy.mockRestore();
   });
+
+  it('falls back to "Unbekannter Fehler" when the rejection value is not an Error (line 51 false branch)', async () => {
+    await createProfile();
+    const spy = vi
+      .spyOn(TimelineEntryRepository.prototype, 'listChronological')
+      .mockRejectedValueOnce('plain-string-rejection');
+    const { result } = renderHook(() => useTimeline());
+    await waitFor(() => expect(result.current.state.kind).toBe('error'));
+    if (result.current.state.kind === 'error' && result.current.state.error.kind === 'generic') {
+      expect(result.current.state.error.detail).toBe('Unbekannter Fehler');
+    } else {
+      throw new Error('expected generic error');
+    }
+    spy.mockRestore();
+  });
 });

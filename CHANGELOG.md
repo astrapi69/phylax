@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage test for
+  `features/timeline/useTimeline.ts`: non-Error rejection
+  fallback (line 51 false branch). Existing test covered the
+  Error-instance path; rejecting with a plain string proves the
+  `'Unbekannter Fehler'` fallback is reached. Pushes
+  `useTimeline.ts` lines 95.45% -> 100% and dir branches 76.19%
+  -> 80.95%. Remaining gap (lines 42-46) is the cancellation
+  guards (`if (cancelled) return`); covering those needs a
+  race-condition harness with marginal value.
 - Branch-coverage tests for
   `features/backup-export/useBackupExport.ts`: buildVaultDump
   read-failed -> encryption-failed mapping (lines 70-73),
