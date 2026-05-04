@@ -12,15 +12,17 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-| #   | Task                                           | Why it's first                                                                                                       | Effort  |
-| --- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------- |
-| 1   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour. | ~30 min |
-
+Tier 1 is empty: every actionable code-side row has shipped.
 All four "Coverage P0" rows in
 `docs/audits/current-coverage.md` are resolved. The AI-provider
 wizard has a clean add-flow. PWABuilder manifest prep is in place
-(execution moved to Tier 2 user-blocked). After this Tier 1
-closes, the Settings page is visually consistent.
+(execution moved to Tier 2 user-blocked). The Settings README is
+back in sync with the shipped sections.
+
+The next code-side work has to come from new audit findings, user
+feedback, or one of the trigger-bound items in Tier 3 firing. In
+the meantime, the queue is dominated by maintainer-driven
+manual smokes and store-submission work in Tier 2.
 
 ## Tier 2 - User-blocked (can only be done by the maintainer)
 

@@ -25,6 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Settings README rewrite (P-05): replaced the stale "Planned
+  contents" placeholder list (which still referenced
+  `Settings.tsx` and `ChangePassword.tsx` as future files) with
+  an accurate section-by-section map of the shipped components
+  (Theme / Language / AutoLock / ChangePassword / AISettings /
+  Backup / Legal / DangerZone), the hook backing the
+  change-password flow, and the architecture-rule constraints
+  that keep `crypto.subtle` and Dexie out of the feature folder.
+  Documentation-only; no runtime change.
+- Umbrella store-deployment guide at `docs/store-deployment.md`
+  covering Microsoft Store, Google Play, Samsung Galaxy Store,
+  Apple App Store, Amazon Appstore, and F-Droid (the last marked
+  out-of-scope due to TWA non-FOSS rejection). Cross-references
+  the D-03 PWABuilder runbook for shared mechanics.
 - PWABuilder-quality manifest fields for D-03 packaging prep:
   `id` (stable cross-version identifier), `display_override`
   (fallback chain for browsers ignoring the primary `display`),

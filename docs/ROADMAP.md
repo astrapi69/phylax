@@ -19,10 +19,6 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       [`docs/manual-smoke/p-01-mobile-sweep.md`](manual-smoke/p-01-mobile-sweep.md);
       sign-off pending. Findings register as P-01a..n and ship as
       separate per-finding commits per Q3 lock.
-- [ ] **P-05** Settings polish: change-master-password section reaches
-      feature parity with the rest of the Settings layout. P-06 has
-      shipped the underlying flow; this task is the Settings-page
-      placeholder cleanup.
 - [ ] **P-07-d** A11y screen-reader sweep across NVDA / VoiceOver /
       Orca / TalkBack. Deferred from the 2026-04-29 manual sweep
       because no SR was installed at the time. Archive findings as
