@@ -67,6 +67,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   -> 80.95%. Remaining gap (lines 42-46) is the cancellation
   guards (`if (cancelled) return`); covering those needs a
   race-condition harness with marginal value.
+- Branch-coverage tests for `features/export/ExportDialog.tsx`
+  PDF export path (handlePdfExport, lines 332-373): happy-path
+  click triggers lazy-loaded jsPDF + autotable bundle and a
+  blob download; no-profile and locked-keystore arms surface
+  the localized error inside the dialog. Three new tests inside
+  a dedicated `describe('PDF export (X-02)')` block. Closes the
+  62.73% branch gap on the multi-step ExportDialog UI.
 - Branch-coverage tests for
   `features/backup-export/useBackupExport.ts`: buildVaultDump
   read-failed -> encryption-failed mapping (lines 70-73),

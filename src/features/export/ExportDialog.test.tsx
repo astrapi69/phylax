@@ -242,9 +242,7 @@ describe('ExportDialog', () => {
       render(<ExportDialog open={true} onClose={vi.fn()} />);
 
       await user.click(screen.getByTestId('export-csv-preview'));
-      await waitFor(() =>
-        expect(screen.getByTestId('export-preview-empty')).toBeInTheDocument(),
-      );
+      await waitFor(() => expect(screen.getByTestId('export-preview-empty')).toBeInTheDocument());
     });
 
     it('Close from inside preview returns to the dialog without downloading', async () => {
@@ -283,9 +281,7 @@ describe('ExportDialog', () => {
     it('renders the CSV format button', async () => {
       await seedProfile();
       render(<ExportDialog open={true} onClose={vi.fn()} />);
-      await waitFor(() =>
-        expect(screen.getByTestId('export-csv-button')).toBeInTheDocument(),
-      );
+      await waitFor(() => expect(screen.getByTestId('export-csv-button')).toBeInTheDocument());
     });
 
     it('clicking CSV triggers a download', async () => {
@@ -298,6 +294,51 @@ describe('ExportDialog', () => {
       await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledOnce());
       expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('PDF export (X-02)', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('clicking PDF loads the profile, lazy-imports the PDF builder, and triggers a download', async () => {
+      await seedProfile();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-pdf-button'));
+
+      // The PDF stack lazy-loads jsPDF + jspdf-autotable; await the
+      // download call rather than asserting a specific timing.
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalled(), { timeout: 8000 });
+      expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
+    });
+
+    it('PDF export shows the no-profile error when no profile exists', async () => {
+      lock();
+      await setupCompletedOnboarding(TEST_PASSWORD);
+      await unlockSession();
+
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-pdf-button'));
+      await waitFor(() => {
+        expect(screen.getByTestId('export-error')).toHaveTextContent(/Kein Profil/);
+      });
+    });
+
+    it('PDF export shows the locked error when the keystore is locked', async () => {
+      await seedProfile();
+      lock();
+      const user = userEvent.setup();
+      render(<ExportDialog open={true} onClose={vi.fn()} />);
+
+      await user.click(screen.getByTestId('export-pdf-button'));
+      await waitFor(() => {
+        expect(screen.getByTestId('export-error')).toBeInTheDocument();
+      });
     });
   });
 
@@ -314,7 +355,9 @@ describe('ExportDialog', () => {
       await seedProfile();
       const user = userEvent.setup();
       render(<ExportDialog open={true} onClose={vi.fn()} />);
-      await waitFor(() => expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument(),
+      );
       const checkbox = screen.getByTestId('export-appendix-checkbox') as HTMLInputElement;
       await user.click(checkbox);
       expect(checkbox.checked).toBe(true);
@@ -326,7 +369,9 @@ describe('ExportDialog', () => {
       await seedProfile();
       const user = userEvent.setup();
       render(<ExportDialog open={true} onClose={vi.fn()} />);
-      await waitFor(() => expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByTestId('export-appendix-checkbox')).toBeInTheDocument(),
+      );
 
       await user.click(screen.getByTestId('export-appendix-checkbox'));
       await user.click(screen.getByTestId('export-markdown-button'));
