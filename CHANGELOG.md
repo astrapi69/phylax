@@ -25,6 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `features/export/appendix.ts`:
+  formatBytes (B / KB / MB unit boundaries), classifyMime (pdf
+  / image / other), pickLinkedDocuments (filter on observation
+  - lab-value link fields), and resolveLinkTargets across
+    observation-found, observation-missing, lab-value-found,
+    lab-value-found-with-missing-report, lab-value-missing, and
+    the BOTH-links case. Pushes `appendix.ts` from 57.14% / 45%
+    to fully covered, and `features/export` dir from 84.75% /
+    71.92% to 86.19% / 74.29% (lines / branches), above the
+    72.13% branch-coverage P1 target.
 - Branch-coverage tests for `i18n/config.ts` lazyBackend.read:
   non-EN language short-circuit (covers two flavours of language
   code) and unknown-EN-namespace short-circuit, both reached via
