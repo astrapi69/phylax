@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production size test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production size test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build seed-smoke check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -86,6 +86,9 @@ test-mutation: ## Run Stryker across all modules (combined threshold)
 
 build: ## Production build
 	npm run build
+
+seed-smoke: ## Seed a manual smoke session (SCENARIO=profile-a|profile-a-plus-b|merge-a-plus-b). Requires `make dev` running.
+	node scripts/seed-smoke.mjs $(SCENARIO)
 
 check: lint typecheck test build ## Run lint, typecheck, test, and build (CI gate)
 
