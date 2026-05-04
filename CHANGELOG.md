@@ -74,6 +74,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- P-22b/c/d match-nav polish manual smoke signed off
+  (2026-05-04). All eight scenarios pass: Lab-Values /
+  Supplements / Open-Points up-down nav scrolls correctly,
+  Enter/Shift-Enter drives nav, buttons hidden at matchCount
+  < 2, dark-mode legibility, 360px fit, UX consistent across
+  all four views (incl. Observations). Removed from BACKLOG
+  Tier 2.
 - Branch-coverage tests for
   `features/profile-import/ui/ImportFlow.tsx`: parse-failure
   cascade route via an unparseable text body that triggers the

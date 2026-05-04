@@ -39,8 +39,6 @@ real human in front of a real browser / a screen reader / a market.
   ([`manual-smoke/im-05-option-b-merge.md`](manual-smoke/im-05-option-b-merge.md)).
 - **AIP-01..05 smoke walk**
   ([`manual-smoke/ai-multi-provider.md`](manual-smoke/ai-multi-provider.md)).
-- **P-22b/c/d-polish** Tier 2 sign-off
-  ([`manual-smoke/p-22-b-c-d-match-nav.md`](manual-smoke/p-22-b-c-d-match-nav.md)).
 - **D-02 Custom domain** - blocked on the user picking a domain. Once
   the registrar + name are decided, the work itself is ~30 min (DNS
   CNAME + Pages config). Until then it cannot proceed.

@@ -29,21 +29,21 @@ and the cross-view UX consistency check.
   - Each click scrolls the matched report card into view, centred,
     not hidden under the sticky search bar (`scroll-mt-24`).
   - Smooth scroll on default; instant scroll if OS has reduced-motion.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 2. Supplements: Up / Down nav cycles through groups
 
 - **Steps**: `/supplements`. Open header search. Broad query matching
-  >= 2 category groups. Click chevrons.
+  > = 2 category groups. Click chevrons.
 - **Expected**: same as scenario 1 but groups instead of reports.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 3. Open-Points: Up / Down nav cycles through context groups
 
 - **Steps**: `/open-points`. Open header search. Broad query matching
-  >= 2 context groups. Click chevrons.
+  > = 2 context groups. Click chevrons.
 - **Expected**: same as scenario 1 but context groups.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 4. Enter / Shift-Enter from the search input drives nav
 
@@ -53,21 +53,21 @@ and the cross-view UX consistency check.
   - Enter moves to next match. Shift-Enter moves to previous.
   - Counter updates accordingly. Scroll animates as in the chevron
     path.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 5. Buttons hidden when matchCount < 2
 
 - **Steps**: Type a query that retains exactly one row / group.
 - **Expected**: Counter shows "1 von 1 ..." (no `/`), nav buttons
   hidden (no chevrons rendered).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 6. Dark mode legibility
 
 - **Steps**: Toggle theme to dark. Walk scenarios 1-3 in dark.
 - **Expected**: Chevron buttons retain visible borders + hover state
   on dark background; counter text legible against the sticky bar.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 7. 360 px viewport
 
@@ -76,7 +76,7 @@ and the cross-view UX consistency check.
   - Counter + chevrons fit in the sticky bar; SearchInput wraps to
     next row if needed (`flex-wrap` already in place).
   - Hit targets remain 44 x 44.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ### 8. UX consistency across all four views
 
@@ -84,7 +84,7 @@ and the cross-view UX consistency check.
   in sequence with the same query approach.
 - **Expected**: nav chrome looks and behaves identically in all four
   views (the goal of the polish).
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass ☐ fail
 
 ## Findings
 
@@ -92,14 +92,14 @@ and the cross-view UX consistency check.
 
 ## Sign-off
 
-- ☐ Lab-Values nav scrolls between matched reports (scenario 1)
-- ☐ Supplements nav scrolls between matched groups (scenario 2)
-- ☐ Open-Points nav scrolls between matched groups (scenario 3)
-- ☐ Enter / Shift-Enter drives nav (scenario 4)
-- ☐ Buttons hidden when matchCount < 2 (scenario 5)
-- ☐ Dark mode legible (scenario 6)
-- ☐ 360 px fit (scenario 7)
-- ☐ UX consistency across all four views (scenario 8)
+- ☑ Lab-Values nav scrolls between matched reports (scenario 1)
+- ☑ Supplements nav scrolls between matched groups (scenario 2)
+- ☑ Open-Points nav scrolls between matched groups (scenario 3)
+- ☑ Enter / Shift-Enter drives nav (scenario 4)
+- ☑ Buttons hidden when matchCount < 2 (scenario 5)
+- ☑ Dark mode legible (scenario 6)
+- ☑ 360 px fit (scenario 7)
+- ☑ UX consistency across all four views (scenario 8)
 
-Walker: ____________________
-Date: 2026-__-__
+Walker: Asterios Raptis
+Date: 2026-05-04
