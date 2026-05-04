@@ -63,12 +63,21 @@ export function supplementKey(s: Pick<Supplement, 'name' | 'brand'>): string {
 }
 
 /**
- * Open-point: context groups bullets in the UI; bullet-level
- * merge is handled separately by `mergeOpenPointsBullets` in the
- * resolution step.
+ * Open-point: composite `context|text`. The parser produces one
+ * `OpenPoint` row per bullet, with `context` = subsection heading
+ * and `text` = bullet body. Two rows with the same `(context, text)`
+ * pair are the same bullet; same context with different text are
+ * two distinct bullets that both stay (or one is new). This collapses
+ * the spec's "Sub-entity bullets" sub-step into the standard match
+ * pipeline: byte-equal text under the same context dedups via the
+ * 'identical' outcome; differing text under the same context surfaces
+ * as two separate 'new' rows rather than a conflict (because text
+ * is the natural key, not a non-key field). Edits to a bullet's
+ * wording therefore appear as a new bullet in v1; acceptable
+ * trade-off for the simpler model.
  */
-export function openPointKey(p: Pick<OpenPoint, 'context'>): string {
-  return p.context.trim();
+export function openPointKey(p: Pick<OpenPoint, 'context' | 'text'>): string {
+  return `${p.context.trim()}|${p.text.trim()}`;
 }
 
 /**

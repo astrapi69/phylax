@@ -63,10 +63,22 @@ describe('supplementKey', () => {
 });
 
 describe('openPointKey', () => {
-  it('returns the trimmed context', () => {
-    expect(openPointKey({ context: '  Wiederholungs-Blutabnahme  ' })).toBe(
-      'Wiederholungs-Blutabnahme',
-    );
+  it('returns composite context|text trimmed on both sides', () => {
+    expect(
+      openPointKey({ context: '  Wiederholungs-Blutabnahme  ', text: '  Wasser trinken  ' }),
+    ).toBe('Wiederholungs-Blutabnahme|Wasser trinken');
+  });
+
+  it('different text under same context produces different keys (two distinct bullets)', () => {
+    const a = openPointKey({ context: 'Blutabnahme', text: 'Wasser trinken' });
+    const b = openPointKey({ context: 'Blutabnahme', text: 'Supplemente pausieren' });
+    expect(a).not.toBe(b);
+  });
+
+  it('same context + same text byte-equal collapses to identical key (dedup)', () => {
+    const a = openPointKey({ context: 'Blutabnahme', text: 'Wasser trinken' });
+    const b = openPointKey({ context: 'Blutabnahme', text: 'Wasser trinken' });
+    expect(a).toBe(b);
   });
 });
 

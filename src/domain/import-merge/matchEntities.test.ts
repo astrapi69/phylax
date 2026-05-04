@@ -229,11 +229,112 @@ describe('matchSupplements', () => {
 });
 
 describe('matchOpenPoints', () => {
-  it('matches by context and surfaces text-differing entries as conflicts', () => {
-    const existing = [makeOpenPoint({ text: 'Wasser trinken' })];
-    const parsed = [makeOpenPoint({ text: 'Wasser plus Tee', id: 'parsed-1' })];
+  it('same context + same text are identical (dedup)', () => {
+    const existing = [makeOpenPoint({ context: 'Blutabnahme', text: 'Wasser trinken' })];
+    const parsed = [
+      makeOpenPoint({ context: 'Blutabnahme', text: 'Wasser trinken', id: 'parsed-1' }),
+    ];
+    const matches = matchOpenPoints(existing, parsed);
+    expect(matches[0]?.outcome).toBe('identical');
+  });
+
+  it('same context + different text are NOT matched (two distinct bullets)', () => {
+    const existing = [makeOpenPoint({ context: 'Blutabnahme', text: 'Wasser trinken' })];
+    const parsed = [
+      makeOpenPoint({ context: 'Blutabnahme', text: 'Supplemente pausieren', id: 'parsed-1' }),
+    ];
+    const matches = matchOpenPoints(existing, parsed);
+    // Composite key (context|text); different text -> different key -> new bullet.
+    expect(matches[0]?.outcome).toBe('new');
+  });
+
+  it('same context + same text but differing priority surfaces as conflict on priority', () => {
+    const existing = [
+      makeOpenPoint({
+        context: 'Blutabnahme',
+        text: 'Wasser trinken',
+        priority: 'Hoch',
+      }),
+    ];
+    const parsed = [
+      makeOpenPoint({
+        context: 'Blutabnahme',
+        text: 'Wasser trinken',
+        priority: 'Mittel',
+        id: 'parsed-1',
+      }),
+    ];
     const matches = matchOpenPoints(existing, parsed);
     expect(matches[0]?.outcome).toBe('conflict');
+    if (matches[0]?.outcome === 'conflict') {
+      expect(matches[0].diffs.map((d) => d.field)).toEqual(['priority']);
+    }
+  });
+});
+
+describe('parsed-undefined preservation (watchpoint #5)', () => {
+  it('parsed-undefined while existing has a value does NOT count as a diff', () => {
+    // Existing has priority = 'Hoch'; parsed omits it (undefined).
+    // Per watchpoint #5 the import has no opinion on priority and
+    // the existing value is preserved -> identical, not conflict.
+    const existing = makeOpenPoint({
+      context: 'Blutabnahme',
+      text: 'Wasser trinken',
+      priority: 'Hoch',
+    });
+    const parsedNoOpinion: OpenPoint = {
+      id: 'parsed-1',
+      profileId: PROFILE_ID,
+      createdAt: 1,
+      updatedAt: 2,
+      context: 'Blutabnahme',
+      text: 'Wasser trinken',
+      resolved: false,
+      // priority intentionally absent -> undefined
+    };
+    const matches = matchOpenPoints([existing], [parsedNoOpinion]);
+    expect(matches[0]?.outcome).toBe('identical');
+  });
+
+  it('parsed-empty-string while existing has a value IS a diff (positive assertion)', () => {
+    // Empty string is a real value the import wrote, distinct from undefined.
+    // See diffFields comment.
+    const existing = makeOpenPoint({
+      context: 'Blutabnahme',
+      text: 'Wasser trinken',
+      priority: 'Hoch',
+    });
+    const parsed = makeOpenPoint({
+      context: 'Blutabnahme',
+      text: 'Wasser trinken',
+      priority: '',
+      id: 'parsed-1',
+    });
+    const matches = matchOpenPoints([existing], [parsed]);
+    expect(matches[0]?.outcome).toBe('conflict');
+  });
+
+  it('absent entity case: existing has 2 rows, parsed has 1 matching the first; second existing is preserved (no record in match output)', () => {
+    // Watchpoint: imported lacks entity that existing has -> existing
+    // preserved. Implementation: matchEntities only emits matches for
+    // PARSED entities; existing-only rows do not appear in the output
+    // and are not touched downstream.
+    const existing = [
+      makeOpenPoint({ context: 'Blutabnahme', text: 'Wasser trinken' }),
+      makeOpenPoint({
+        id: 'op-existing-2',
+        context: 'Blutabnahme',
+        text: 'Supplemente pausieren',
+      }),
+    ];
+    const parsed = [
+      makeOpenPoint({ context: 'Blutabnahme', text: 'Wasser trinken', id: 'parsed-1' }),
+    ];
+    const matches = matchOpenPoints(existing, parsed);
+    expect(matches).toHaveLength(1);
+    expect(matches[0]?.outcome).toBe('identical');
+    // 'Supplemente pausieren' appears nowhere in matches -> resolveMerge
+    // will neither insert nor update it -> existing row stays as-is.
   });
 });
 

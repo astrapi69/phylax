@@ -115,7 +115,10 @@ export type ConflictResolution<K extends MergeableEntityKey> =
   | { kind: 'theirs' }
   | {
       kind: 'field-by-field';
-      fieldChoices: Record<keyof MergeEntity<K> & string, 'mine' | 'theirs'>;
+      // Partial: only the fields that appear in the matching
+      // `FieldDiff[]` need an entry. Missing fields fall back to
+      // 'mine' inside `resolveMerge`.
+      fieldChoices: Partial<Record<keyof MergeEntity<K> & string, 'mine' | 'theirs'>>;
     };
 
 /**

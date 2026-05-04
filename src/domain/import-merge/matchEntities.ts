@@ -113,6 +113,13 @@ function diffFields<K extends MergeableEntityKey>(
     if (SKIP_FIELDS.has(k)) continue;
     const a = (existing as unknown as Record<string, unknown>)[k];
     const b = (parsed as unknown as Record<string, unknown>)[k];
+    // Watchpoint #5: parsed-undefined while existing has a value is
+    // "no opinion" from the import side. Field-level merge means
+    // imported fields update where PRESENT; mine-fields stay where
+    // the imported document doesn't mention them. Empty string is a
+    // positive assertion (the import explicitly wrote nothing) and
+    // is NOT skipped here.
+    if (b === undefined && a !== undefined) continue;
     if (!valuesEqual(a, b)) {
       diffs.push({
         field: k as keyof MergeEntity<K> & string,
