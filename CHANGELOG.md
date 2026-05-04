@@ -25,6 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for
+  `features/documents/useAttachedDocuments.ts`: no-current-profile
+  short-circuit (lines 44-45), labValueId path (lines 51-52), and
+  the no-id fallback (lines 53-54). Plus a sort-order test that
+  asserts loaded documents come back createdAt-DESC. Pushes
+  `useAttachedDocuments.ts` from 66.66% / 33.33% to 85.18% / 60%
+  (lines / branches). The remaining gap (lines 60-61, the catch
+  branch when the repository call rejects) is intentionally left
+  uncovered - it would require a forced repository-throw shim
+  for one branch and the failure mode is already exercised at
+  the repository layer.
 - Branch-coverage tests for `features/export/appendix.ts`:
   formatBytes (B / KB / MB unit boundaries), classifyMime (pdf
   / image / other), pickLinkedDocuments (filter on observation
