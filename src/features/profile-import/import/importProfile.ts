@@ -43,6 +43,8 @@ import {
   matchOpenPoints,
   matchProfileVersions,
   matchTimelineEntries,
+  matchLabReports,
+  matchLabValuesPerReport,
   resolveMerge,
   type MergeMatch,
   type MergeableEntityKey,
@@ -209,6 +211,28 @@ export async function importProfile(
       return labValueRepo.serialize(entity);
     }),
   );
+
+  // IM-06 lab-data merge slice. Reports + values must be merged
+  // together to keep FK consistency: a parsed report that matches
+  // an existing report (by reportDate) shares its parent's id with
+  // its child values; the values then bind by `(reportId,
+  // parameter)` to the existing report's prior value set. New
+  // parent reports keep their fresh `labReportIds[i]` and own all
+  // their child values as inserts. See `prepareLabDataMergeRows`
+  // for the orchestration; the four FK cases (W1) are tested
+  // explicitly in importProfile.merge.lab.test.ts.
+  const labDataMergeSlice =
+    modeMap.labData === 'merge'
+      ? await prepareLabDataMergeRows(
+          labReportRepo,
+          labValueRepo,
+          parseResult,
+          labReportIds,
+          options.resolutions ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
 
   const supplementEntities: Supplement[] = parseResult.supplements.map((parsed) =>
     wrapEntity<Supplement>(parsed, targetProfileId, now),
@@ -382,12 +406,17 @@ export async function importProfile(
       } else if (modeMap.labData === 'add') {
         ops.push(bulkPut(db.labReports, labReportRows));
         ops.push(bulkPut(db.labValues, labValueRows));
+      } else if (modeMap.labData === 'merge') {
+        if (!labDataMergeSlice) {
+          throw new Error('labDataMergeSlice missing in merge mode');
+        }
+        // Reports BEFORE values for clarity (W5). Dexie does not
+        // enforce FK constraints inside a transaction commit, so
+        // either order is atomically equivalent, but reports-first
+        // matches the read order downstream code expects.
+        ops.push(bulkPut(db.labReports, labDataMergeSlice.reportRows));
+        ops.push(bulkPut(db.labValues, labDataMergeSlice.valueRows));
       }
-      // labData 'merge' deferred to Step 3b (FK rewiring across
-      // matched parent reports). Until then, callers must use
-      // 'replace', 'add', or 'skip' for labData; passing 'merge'
-      // here is a no-op (transaction body skips, no error thrown
-      // so type-system gates remain a UI concern).
 
       applyMode(
         ops,
@@ -645,4 +674,169 @@ async function deleteByProfileId(
   profileId: string,
 ): Promise<void> {
   await table.where('profileId').equals(profileId).delete();
+}
+
+/**
+ * IM-06 helper for the parent/child lab-data pair (LabReport +
+ * LabValue). Mirrors the shape of `prepareMergeRows` but threads
+ * the FK rewiring across matched parent reports.
+ *
+ * Algorithm:
+ *
+ *  1. Load existing reports + values for the profile.
+ *  2. Wrap parsed reports into entity shape with placeholder ids
+ *     from `labReportIds[i]` (the up-front fresh ids).
+ *  3. Match reports by `reportDate`.
+ *  4. Build `effectiveReportIds[i]`: when a parsed report matched
+ *     an existing one, replace its fresh id with the matched
+ *     existing report's id so child values bind to the persisted
+ *     parent. New parents keep their fresh id (W1 case 1: new
+ *     report + new values).
+ *  5. Wrap parsed values with the effective reportId.
+ *  6. Group existing values by reportId and call
+ *     `matchLabValuesPerReport` so value-matching is scoped per
+ *     parent (W6: cross-report parameter collisions stay
+ *     independent). Q4 silent-merge: a parsed value with a
+ *     parameter not in the existing parent's value set buckets
+ *     as 'new' and inserts without a user decision.
+ *  7. resolveMerge for reports + resolveMerge for values, using
+ *     the caller-supplied resolutions slices.
+ *  8. Serialize inserts + updates into two `EncryptedRow[]`
+ *     arrays for bulkPut. Updates patch the existing entity
+ *     (preserving `id`, `profileId`, `createdAt`, `reportId` for
+ *     values - all in SKIP_FIELDS so the patch never touches
+ *     them; W1 case 3: matched report + value-conflict
+ *     resolution preserves existing reportId).
+ *
+ * Throws `UnresolvedConflictError` (Q2) before the transaction
+ * opens. Vault unchanged on bad input (W4 atomicity).
+ */
+async function prepareLabDataMergeRows(
+  labReportRepo: LabReportRepository,
+  labValueRepo: LabValueRepository,
+  parseResult: ParseResult,
+  labReportIds: string[],
+  resolutions: MergeResolutions,
+  targetProfileId: string,
+  now: number,
+): Promise<{ reportRows: EncryptedRow[]; valueRows: EncryptedRow[] }> {
+  const existingReports: LabReport[] = await labReportRepo.listByProfile(targetProfileId);
+  const existingValues: LabValue[] = await labValueRepo.listByProfile(targetProfileId);
+
+  // Wrap parsed reports as entities with placeholder ids from
+  // labReportIds. The wrapped report.id will be replaced for
+  // matched parents in step 4 below (we keep the unmatched-parent
+  // ids since those will be inserted as-is).
+  const parsedReportEntities: LabReport[] = parseResult.labReports.map((parsed, i) => {
+    const id = labReportIds[i];
+    if (id === undefined) {
+      throw new Error(`Missing labReportIds[${i}] (only ${labReportIds.length} provided)`);
+    }
+    return wrapEntity<LabReport>(parsed, targetProfileId, now, id);
+  });
+
+  // Step 3: match reports by reportDate.
+  const reportMatches = matchLabReports(existingReports, parsedReportEntities);
+
+  // Step 4: effective reportId per parsed report.
+  const effectiveReportIds: string[] = reportMatches.map((m, i) => {
+    if (m.outcome === 'new') {
+      const id = labReportIds[i];
+      if (id === undefined) {
+        throw new Error(`Missing labReportIds[${i}] in effective-id resolution`);
+      }
+      return id;
+    }
+    return m.existing.id;
+  });
+
+  // Step 5: wrap parsed values with the effective reportId.
+  const parsedValueEntitiesWithIndex = parseResult.labValues.map((parsed) => {
+    const reportId = effectiveReportIds[parsed.reportIndex];
+    if (reportId === undefined) {
+      throw new Error(
+        `Lab value references unknown reportIndex ${parsed.reportIndex} (only ${effectiveReportIds.length} parsed reports)`,
+      );
+    }
+    const entity = wrapEntity<LabValue>(
+      {
+        category: parsed.category,
+        parameter: parsed.parameter,
+        result: parsed.result,
+        unit: parsed.unit,
+        referenceRange: parsed.referenceRange,
+        assessment: parsed.assessment,
+        reportId,
+      },
+      targetProfileId,
+      now,
+    );
+    return Object.assign(entity, { reportIndex: parsed.reportIndex });
+  });
+
+  // Step 6: group existing values by reportId for per-parent
+  // value matching.
+  const existingValuesByReportId = new Map<string, LabValue[]>();
+  for (const v of existingValues) {
+    const arr = existingValuesByReportId.get(v.reportId) ?? [];
+    arr.push(v);
+    existingValuesByReportId.set(v.reportId, arr);
+  }
+
+  const valueMatches = matchLabValuesPerReport(
+    reportMatches,
+    parsedValueEntitiesWithIndex,
+    existingValuesByReportId,
+  );
+
+  // Step 7: resolve plans.
+  const reportPlan: MergePlan<'labReports'> = resolveMerge<'labReports'>(
+    reportMatches,
+    (resolutions.labReports ?? {}) as unknown as Parameters<typeof resolveMerge<'labReports'>>[1],
+  );
+  const valuePlan: MergePlan<'labValues'> = resolveMerge<'labValues'>(
+    valueMatches,
+    (resolutions.labValues ?? {}) as unknown as Parameters<typeof resolveMerge<'labValues'>>[1],
+  );
+
+  // Step 8: serialize inserts + updates.
+  const reportRows: EncryptedRow[] = [];
+  for (const insertEntity of reportPlan.inserts) {
+    reportRows.push(await labReportRepo.serialize(insertEntity));
+  }
+  for (const update of reportPlan.updates) {
+    const existing = existingReports.find((e) => e.id === update.existingId);
+    if (!existing) {
+      throw new Error(
+        `prepareLabDataMergeRows: report update target ${update.existingId} not in existing slice`,
+      );
+    }
+    const merged: LabReport = {
+      ...existing,
+      ...(update.patch as Partial<LabReport>),
+      updatedAt: now,
+    };
+    reportRows.push(await labReportRepo.serialize(merged));
+  }
+
+  const valueRows: EncryptedRow[] = [];
+  for (const insertEntity of valuePlan.inserts) {
+    valueRows.push(await labValueRepo.serialize(insertEntity));
+  }
+  for (const update of valuePlan.updates) {
+    const existing = existingValues.find((e) => e.id === update.existingId);
+    if (!existing) {
+      throw new Error(
+        `prepareLabDataMergeRows: value update target ${update.existingId} not in existing slice`,
+      );
+    }
+    const merged: LabValue = {
+      ...existing,
+      ...(update.patch as Partial<LabValue>),
+      updatedAt: now,
+    };
+    valueRows.push(await labValueRepo.serialize(merged));
+  }
+
+  return { reportRows, valueRows };
 }
