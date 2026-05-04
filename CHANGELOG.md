@@ -74,6 +74,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- Branch-coverage tests for
+  `features/lab-values/LabReportForm.tsx`: hasOptionalData
+  four-arm OR (each of `reportNumber`, `overallAssessment`,
+  `relevanceNotes` set in isolation expands the disclosure -
+  `contextNote` was already covered), `isValidIsoDate`
+  round-trip-mismatch arm via Feb 30 (passes regex, fails the
+  `toISOString().slice(0,10)` re-equality check), and the
+  edit-mode save label arm. Five new tests close the residual
+  branches on the 96.66%-already-covered LabReportForm and
+  bring the `features/lab-values` rollup above the threshold.
 - Function-coverage tests for `features/profile-create/useProfileCreate.ts`:
   setVersion propagating to the persisted profile (the unused
   setter), the blank-version fallback to "1.0" via the trim-or

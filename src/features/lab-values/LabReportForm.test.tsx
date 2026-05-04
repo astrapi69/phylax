@@ -246,6 +246,137 @@ describe('LabReportForm', () => {
     expect(screen.getByTestId('lab-report-form-error')).toHaveTextContent(/quota exceeded/);
   });
 
+  it('expands optional disclosure when editing report with reportNumber set', () => {
+    const form = makeForm({
+      state: {
+        kind: 'open',
+        mode: {
+          kind: 'edit',
+          report: makeLabReport({ reportDate: '2026-03-15', reportNumber: 'ABC-1' }),
+        },
+        fields: {
+          reportDate: '2026-03-15',
+          labName: '',
+          doctorName: '',
+          reportNumber: 'ABC-1',
+          contextNote: '',
+          overallAssessment: '',
+          relevanceNotes: '',
+        },
+        submitting: false,
+        error: null,
+      },
+    });
+    render(<LabReportForm form={form} />);
+    expect(screen.getByTestId('lab-report-form-optional').hasAttribute('open')).toBe(true);
+  });
+
+  it('expands optional disclosure when editing report with overallAssessment set', () => {
+    const form = makeForm({
+      state: {
+        kind: 'open',
+        mode: {
+          kind: 'edit',
+          report: makeLabReport({
+            reportDate: '2026-03-15',
+            overallAssessment: 'unauffällig',
+          }),
+        },
+        fields: {
+          reportDate: '2026-03-15',
+          labName: '',
+          doctorName: '',
+          reportNumber: '',
+          contextNote: '',
+          overallAssessment: 'unauffällig',
+          relevanceNotes: '',
+        },
+        submitting: false,
+        error: null,
+      },
+    });
+    render(<LabReportForm form={form} />);
+    expect(screen.getByTestId('lab-report-form-optional').hasAttribute('open')).toBe(true);
+  });
+
+  it('expands optional disclosure when editing report with relevanceNotes set', () => {
+    const form = makeForm({
+      state: {
+        kind: 'open',
+        mode: {
+          kind: 'edit',
+          report: makeLabReport({ reportDate: '2026-03-15', relevanceNotes: 'follow-up' }),
+        },
+        fields: {
+          reportDate: '2026-03-15',
+          labName: '',
+          doctorName: '',
+          reportNumber: '',
+          contextNote: '',
+          overallAssessment: '',
+          relevanceNotes: 'follow-up',
+        },
+        submitting: false,
+        error: null,
+      },
+    });
+    render(<LabReportForm form={form} />);
+    expect(screen.getByTestId('lab-report-form-optional').hasAttribute('open')).toBe(true);
+  });
+
+  it('disables submit when reportDate matches the YYYY-MM-DD shape but is not a real calendar day', () => {
+    // Feb 30 passes the regex but fails the round-trip check; covers
+    // the false branch of `parsed.toISOString().slice(0,10) === value`.
+    const form = makeForm({
+      state: {
+        kind: 'open',
+        mode: { kind: 'create' },
+        fields: {
+          reportDate: '2026-02-30',
+          labName: '',
+          doctorName: '',
+          reportNumber: '',
+          contextNote: '',
+          overallAssessment: '',
+          relevanceNotes: '',
+        },
+        submitting: false,
+        error: null,
+      },
+    });
+    render(<LabReportForm form={form} />);
+    expect(screen.getByTestId('lab-report-form-submit')).toBeDisabled();
+    expect(screen.getByTestId('lab-report-form-date-error')).toBeInTheDocument();
+  });
+
+  it('renders save-edit label in edit mode', () => {
+    const form = makeForm({
+      state: {
+        kind: 'open',
+        mode: {
+          kind: 'edit',
+          report: makeLabReport({ reportDate: '2026-03-15' }),
+        },
+        fields: {
+          reportDate: '2026-03-15',
+          labName: '',
+          doctorName: '',
+          reportNumber: '',
+          contextNote: '',
+          overallAssessment: '',
+          relevanceNotes: '',
+        },
+        submitting: false,
+        error: null,
+      },
+    });
+    render(<LabReportForm form={form} />);
+    // The German edit-save label (form-report.save.edit) is "Speichern".
+    // The create label is "Erstellen". Whichever the locale resolves to,
+    // the create-mode label must NOT match an editing form.
+    expect(screen.getByTestId('lab-report-form-submit')).not.toHaveTextContent(/Erstellen/i);
+  });
+
   it('shows busy label when submitting', () => {
     const form = makeForm({
       state: {
