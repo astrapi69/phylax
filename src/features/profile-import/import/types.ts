@@ -13,7 +13,7 @@ export interface EntityCounts {
 }
 
 /**
- * Per-type import mode (IM-05 Option B).
+ * Per-type import mode (IM-05 Option B + IM-06 field-merge).
  *
  *   - `'replace'`: delete existing entities of this type, then write
  *     the imported entities. Wipes existing.
@@ -22,20 +22,30 @@ export interface EntityCounts {
  *     `generateId()` so PK collisions are impossible by construction.
  *     User is responsible for duplicate avoidance; ConfirmDialog
  *     surfaces a warning when this mode is chosen.
+ *     **Deprecated by IM-06**: kept for backwards compatibility with
+ *     existing IM-05 Option B callers; new UI surfaces should pick
+ *     `'merge'` instead.
+ *   - `'merge'` (IM-06): natural-key match parsed entities against
+ *     existing rows. New entities insert; identical entities no-op;
+ *     conflicting entities resolve via `ImportOptions.resolutions`
+ *     (UnresolvedConflictError throws if any conflict lacks a pick).
+ *     Never destroys or duplicates existing data.
  *   - `'skip'`: keep existing entities, drop imported ones.
  *
  * Lab data (LabReport + LabValue) is intentionally a single combined
  * `labData` toggle covering both tables: splitting the toggle would
  * either orphan child values or insert empty reports (Q6 lock from
- * the original IM-05). FK consistency is preserved across all three
- * modes because `labReportIds[i]` is generated up-front and threaded
- * through both report and value rows.
+ * the original IM-05). FK consistency is preserved across all modes
+ * because `labReportIds[i]` is generated up-front and threaded
+ * through both report and value rows; `'merge'` mode rewires
+ * `labReportIds[i]` to point at the matched existing report's id
+ * when the parent matched.
  *
  * `Profile` itself (BaseData / warningSigns / etc.) is never replaced
  * via per-type modes. It is always merged through `mergeProfile()`
  * so identity-level data is never silently wiped.
  */
-export type ImportMode = 'replace' | 'add' | 'skip';
+export type ImportMode = 'replace' | 'add' | 'merge' | 'skip';
 
 /**
  * Per-type mode map (IM-05 Option B). Each key accepts an
@@ -74,11 +84,25 @@ export interface ImportOptions {
    *   - `true`: replace ALL types (legacy boolean form).
    *   - `false` / `undefined`: replace NONE; throws
    *     `ImportTargetNotEmptyError` when the target is non-empty.
-   *   - `PerTypeMode` object: per-type three-mode selection
-   *     (replace / add / skip). Used by IM-05 Option B selective
-   *     merge dialog.
+   *   - `PerTypeMode` object: per-type four-mode selection
+   *     (replace / add / merge / skip). `'merge'` is the IM-06
+   *     field-level merge mode; the others retain their IM-05
+   *     Option B semantics.
    */
   replaceExisting?: boolean | PerTypeMode;
+  /**
+   * IM-06 conflict resolutions. Required when any per-type mode
+   * is `'merge'` AND the matchEntities pass produces at least one
+   * `'conflict'` outcome. Keyed by entity type, then by the
+   * existing-row id. Missing entries surface as
+   * `UnresolvedConflictError` so the storage layer never silently
+   * picks a default.
+   *
+   * Empty / absent = no resolutions provided. Acceptable when no
+   * row has merge mode OR every merge match resolves as
+   * `'new'` / `'identical'`.
+   */
+  resolutions?: import('../../../domain/import-merge').MergeResolutions;
 }
 
 export type ResolvedModeMap = Required<{ [K in keyof PerTypeMode]: ImportMode }>;

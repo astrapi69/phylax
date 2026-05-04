@@ -75,6 +75,15 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       Blocks resumption of the IM-05 Option B smoke walk; IM-05
       scenarios 6-10 are deferred until IM-06 ships.
 
+- [ ] **IM-06-polish-1** Synth-marker dedup. Multiple successive
+      merge-imports accumulate one synthesized "Profil aus Datei
+      importiert" `ProfileVersion` row per import. By design
+      (audit trail of import gestures). If real users report
+      `ProfileVersion` clutter, dedup adjacent identical synth
+      markers (same `changeDate` + `changeDescription`) at write
+      time. Trigger: user feedback flagging clutter. Not blocking
+      IM-06 ship.
+
 ## Phase 6 follow-up: Backup
 
 - [ ] **B-05** Merge-mode backup import. **Deferred.** Requires a

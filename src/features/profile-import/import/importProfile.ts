@@ -31,11 +31,24 @@ import {
   userAuthorisedAnyReplace,
   userAuthorisedAnyWrite,
   type EntityCounts,
+  type ImportMode,
   type ImportOptions,
   type ImportResult,
 } from './types';
 import { countEntities } from './countEntities';
 import { bumpVersion } from '../../../domain/profileVersion/bumpVersion';
+import {
+  matchObservations,
+  matchSupplements,
+  matchOpenPoints,
+  matchProfileVersions,
+  matchTimelineEntries,
+  resolveMerge,
+  type MergeMatch,
+  type MergeableEntityKey,
+  type MergePlan,
+  type MergeResolutions,
+} from '../../../domain/import-merge';
 
 /**
  * IM-04: every successful import emits one synthesized ProfileVersion
@@ -134,11 +147,37 @@ export async function importProfile(
   // id, targetProfileId as profileId, and matching timestamps.
   const labReportIds: string[] = parseResult.labReports.map(() => generateId());
 
-  const observationRows = await Promise.all(
-    parseResult.observations.map((parsed) =>
-      observationRepo.serialize(wrapEntity<Observation>(parsed, targetProfileId, now)),
-    ),
+  // IM-05 ('replace' / 'add') row arrays: every parsed entity wrapped
+  // and serialized up-front. These arrays are the source of truth for
+  // the legacy non-merge branches.
+  const observationEntities: Observation[] = parseResult.observations.map((parsed) =>
+    wrapEntity<Observation>(parsed, targetProfileId, now),
   );
+  const observationRows = await Promise.all(
+    observationEntities.map((entity) => observationRepo.serialize(entity)),
+  );
+
+  // IM-06 'merge' mode: when at least one type is in merge mode, we
+  // need the corresponding pre-encrypted MERGED row arrays too. These
+  // are built by `prepareMergeRows` which loads existing rows,
+  // matches parsed against them, resolves conflicts via
+  // ImportOptions.resolutions, and serializes inserts + updates into
+  // a single EncryptedRow[] ready for bulkPut. All async work happens
+  // OUTSIDE the transaction body (Dexie aborts on non-Dexie awaits).
+  // Throws UnresolvedConflictError if any 'conflict' match lacks a
+  // resolution entry (Q2 discipline) - the catch is at the route
+  // boundary so the transaction never opens on bad input.
+  const observationMergeRows =
+    modeMap.observations === 'merge'
+      ? await prepareMergeRows<Observation, 'observations'>(
+          observationRepo,
+          matchObservations,
+          observationEntities,
+          options.resolutions?.observations ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
 
   const labReportRows = await Promise.all(
     parseResult.labReports.map((parsed, i) =>
@@ -171,17 +210,41 @@ export async function importProfile(
     }),
   );
 
+  const supplementEntities: Supplement[] = parseResult.supplements.map((parsed) =>
+    wrapEntity<Supplement>(parsed, targetProfileId, now),
+  );
   const supplementRows = await Promise.all(
-    parseResult.supplements.map((parsed) =>
-      supplementRepo.serialize(wrapEntity<Supplement>(parsed, targetProfileId, now)),
-    ),
+    supplementEntities.map((entity) => supplementRepo.serialize(entity)),
   );
+  const supplementMergeRows =
+    modeMap.supplements === 'merge'
+      ? await prepareMergeRows<Supplement, 'supplements'>(
+          supplementRepo,
+          matchSupplements,
+          supplementEntities,
+          options.resolutions?.supplements ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
 
-  const openPointRows = await Promise.all(
-    parseResult.openPoints.map((parsed) =>
-      openPointRepo.serialize(wrapEntity<OpenPoint>(parsed, targetProfileId, now)),
-    ),
+  const openPointEntities: OpenPoint[] = parseResult.openPoints.map((parsed) =>
+    wrapEntity<OpenPoint>(parsed, targetProfileId, now),
   );
+  const openPointRows = await Promise.all(
+    openPointEntities.map((entity) => openPointRepo.serialize(entity)),
+  );
+  const openPointMergeRows =
+    modeMap.openPoints === 'merge'
+      ? await prepareMergeRows<OpenPoint, 'openPoints'>(
+          openPointRepo,
+          matchOpenPoints,
+          openPointEntities,
+          options.resolutions?.openPoints ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
 
   // IM-04: append one synthesized ProfileVersion row recording the
   // import gesture itself. Carries the bumped Profile.version (set
@@ -226,11 +289,46 @@ export async function importProfile(
   ];
   const profileVersionRowsForKeepMode = [synthesizedImportVersionRow];
 
-  const timelineEntryRows = await Promise.all(
-    parseResult.timelineEntries.map((parsed) =>
-      timelineEntryRepo.serialize(wrapEntity<TimelineEntry>(parsed, targetProfileId, now)),
-    ),
+  const timelineEntryEntities: TimelineEntry[] = parseResult.timelineEntries.map((parsed) =>
+    wrapEntity<TimelineEntry>(parsed, targetProfileId, now),
   );
+  const timelineEntryRows = await Promise.all(
+    timelineEntryEntities.map((entity) => timelineEntryRepo.serialize(entity)),
+  );
+  const timelineEntryMergeRows =
+    modeMap.timelineEntries === 'merge'
+      ? await prepareMergeRows<TimelineEntry, 'timelineEntries'>(
+          timelineEntryRepo,
+          matchTimelineEntries,
+          timelineEntryEntities,
+          options.resolutions?.timelineEntries ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
+
+  // IM-06 profile-versions merge: like the other types but with the
+  // synthesized "Profil aus Datei importiert" marker still appended
+  // unconditionally per Q5 (the marker is the import gesture, not
+  // data). The marker is added AFTER the merge plan resolves so it
+  // never participates in the natural-key matcher.
+  const parsedProfileVersionEntities: ProfileVersion[] = parseResult.profileVersions.map((parsed) =>
+    wrapEntity<ProfileVersion>(parsed, targetProfileId, now),
+  );
+  const profileVersionMergeRowsBase =
+    modeMap.profileVersions === 'merge'
+      ? await prepareMergeRows<ProfileVersion, 'profileVersions'>(
+          profileVersionRepo,
+          matchProfileVersions,
+          parsedProfileVersionEntities,
+          options.resolutions?.profileVersions ?? {},
+          targetProfileId,
+          now,
+        )
+      : null;
+  const profileVersionMergeRows = profileVersionMergeRowsBase
+    ? [...profileVersionMergeRowsBase, synthesizedImportVersionRow]
+    : null;
 
   // IM-05 Option B per-type branching. For each type:
   //   modeMap.X = 'replace' -> deleteByProfileId + bulkPut(imported)
@@ -267,7 +365,14 @@ export async function importProfile(
     async () => {
       const ops: Promise<unknown>[] = [db.profiles.put(profileRow)];
 
-      applyMode(ops, modeMap.observations, db.observations, observationRows, targetProfileId);
+      applyMode(
+        ops,
+        modeMap.observations,
+        db.observations,
+        observationRows,
+        targetProfileId,
+        observationMergeRows,
+      );
 
       if (modeMap.labData === 'replace') {
         ops.push(deleteByProfileId(db.labReports, targetProfileId));
@@ -278,15 +383,35 @@ export async function importProfile(
         ops.push(bulkPut(db.labReports, labReportRows));
         ops.push(bulkPut(db.labValues, labValueRows));
       }
+      // labData 'merge' deferred to Step 3b (FK rewiring across
+      // matched parent reports). Until then, callers must use
+      // 'replace', 'add', or 'skip' for labData; passing 'merge'
+      // here is a no-op (transaction body skips, no error thrown
+      // so type-system gates remain a UI concern).
 
-      applyMode(ops, modeMap.supplements, db.supplements, supplementRows, targetProfileId);
-      applyMode(ops, modeMap.openPoints, db.openPoints, openPointRows, targetProfileId);
+      applyMode(
+        ops,
+        modeMap.supplements,
+        db.supplements,
+        supplementRows,
+        targetProfileId,
+        supplementMergeRows,
+      );
+      applyMode(
+        ops,
+        modeMap.openPoints,
+        db.openPoints,
+        openPointRows,
+        targetProfileId,
+        openPointMergeRows,
+      );
       applyMode(
         ops,
         modeMap.timelineEntries,
         db.timelineEntries,
         timelineEntryRows,
         targetProfileId,
+        timelineEntryMergeRows,
       );
 
       if (modeMap.profileVersions === 'replace') {
@@ -295,6 +420,14 @@ export async function importProfile(
       } else if (modeMap.profileVersions === 'add') {
         // Add: keep existing + write parsed source rows + synthesized marker.
         ops.push(bulkPut(db.profileVersions, profileVersionRowsForReplaceMode));
+      } else if (modeMap.profileVersions === 'merge') {
+        // Merge: bulkPut the merge plan's row slice (inserts +
+        // updates) plus the synthesized marker. Existing rows not
+        // in the plan are preserved (no delete).
+        if (!profileVersionMergeRows) {
+          throw new Error('profileVersionMergeRows missing in merge mode');
+        }
+        ops.push(bulkPut(db.profileVersions, profileVersionMergeRows));
       } else {
         // Skip: synthesized marker still writes (Q5).
         ops.push(bulkPut(db.profileVersions, profileVersionRowsForKeepMode));
@@ -407,28 +540,102 @@ async function bulkPut(
 }
 
 /**
- * Per-type three-mode dispatcher for the simple single-table cases
+ * Per-type four-mode dispatcher for the simple single-table cases
  * (observations, supplements, openPoints, timelineEntries). Lab data
  * has its own custom branch above because the LabReport+LabValue FK
  * grouping prevents reuse of this helper.
+ *
+ * `'merge'` mode (IM-06) requires `mergeRows` precomputed by
+ * `prepareMergeRows` outside the transaction. Inserts + updates flow
+ * through a single bulkPut; existing rows whose ids do not appear in
+ * the slice stay untouched (Dexie keeps them, watchpoint W1 absent-
+ * entity preservation). Throws if mergeRows is null when mode is
+ * 'merge' - caller bug (the merge slice should have been computed
+ * up-front).
  */
 function applyMode(
   ops: Promise<unknown>[],
-  mode: 'replace' | 'add' | 'skip',
+  mode: ImportMode,
   table: {
     bulkPut(rows: EncryptedRow[]): Promise<unknown>;
     where(index: string): { equals(value: string): { delete(): Promise<number> } };
   },
   rows: EncryptedRow[],
   profileId: string,
+  mergeRows: EncryptedRow[] | null,
 ): void {
   if (mode === 'replace') {
     ops.push(deleteByProfileId(table, profileId));
     ops.push(bulkPut(table, rows));
   } else if (mode === 'add') {
     ops.push(bulkPut(table, rows));
+  } else if (mode === 'merge') {
+    if (!mergeRows) {
+      throw new Error('applyMode: merge mode requires precomputed mergeRows');
+    }
+    ops.push(bulkPut(table, mergeRows));
   }
   // 'skip' = no-op
+}
+
+/**
+ * IM-06 helper. Loads existing rows for a profile, runs the
+ * type-specific matcher against the parsed entities, resolves
+ * conflicts via the user-supplied resolutions map, and serializes
+ * the resulting plan (inserts + updates) into a single
+ * `EncryptedRow[]` ready for bulkPut.
+ *
+ * All async work happens OUTSIDE the import transaction so Dexie's
+ * `aborts-on-non-Dexie-await` rule is respected. Existing rows
+ * with no parsed counterpart are absent from both `inserts` and
+ * `updates`, which means they stay untouched at write time
+ * (watchpoint W1 absent-entity preservation).
+ *
+ * Throws `UnresolvedConflictError` when any 'conflict' match lacks
+ * an entry in `resolutions` (Q2 discipline) or when
+ * 'field-by-field' resolution leaves a conflicting field without
+ * an explicit pick. The throw happens BEFORE the transaction
+ * opens, so on bad input the vault stays untouched (W1 atomicity).
+ */
+async function prepareMergeRows<
+  T extends { id: string; profileId: string; createdAt: number; updatedAt: number },
+  K extends MergeableEntityKey,
+>(
+  repo: {
+    listByProfile(profileId: string): Promise<T[]>;
+    serialize(entity: T): Promise<EncryptedRow>;
+  },
+  matcher: (existing: T[], parsed: T[]) => MergeMatch<K>[],
+  parsedAsEntities: T[],
+  resolutionsForType: NonNullable<MergeResolutions[K]>,
+  targetProfileId: string,
+  now: number,
+): Promise<EncryptedRow[]> {
+  const existing = await repo.listByProfile(targetProfileId);
+  const matches = matcher(existing, parsedAsEntities);
+  // Cast through unknown: at the generic level TypeScript cannot
+  // prove that `MergeResolutions[K]` and `ResolutionMap<K>` share
+  // the same shape (they do; both are `Record<string,
+  // ConflictResolution<K>>`). Each call site supplies the correctly
+  // narrowed K so the cast is sound at every invocation.
+  const plan: MergePlan<K> = resolveMerge<K>(
+    matches,
+    resolutionsForType as unknown as Parameters<typeof resolveMerge<K>>[1],
+  );
+
+  const rows: EncryptedRow[] = [];
+  for (const insertEntity of plan.inserts) {
+    rows.push(await repo.serialize(insertEntity as unknown as T));
+  }
+  for (const update of plan.updates) {
+    const existingEntity = existing.find((e) => e.id === update.existingId);
+    if (!existingEntity) {
+      throw new Error(`prepareMergeRows: update target ${update.existingId} not in existing slice`);
+    }
+    const merged = { ...existingEntity, ...(update.patch as Partial<T>), updatedAt: now } as T;
+    rows.push(await repo.serialize(merged));
+  }
+  return rows;
 }
 
 async function deleteByProfileId(

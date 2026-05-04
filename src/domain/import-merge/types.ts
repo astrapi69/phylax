@@ -129,3 +129,25 @@ export type ConflictResolution<K extends MergeableEntityKey> =
 export type MergeMatchSet = {
   [K in MergeableEntityKey]: MergeMatch<K>[];
 };
+
+/**
+ * Per-entity-type resolution map shape. `ResolutionMap<K>` is
+ * defined in `resolveMerge.ts` as a `Record<existingId,
+ * ConflictResolution<K>>`; replicated here as a structural
+ * dependency so consumers (`features/profile-import/import/types.ts`
+ * `ImportOptions.resolutions`) avoid a circular import via the
+ * resolveMerge module.
+ *
+ * Each field is optional: callers only populate the entity types
+ * that have at least one conflict to resolve. Empty / absent =
+ * no resolutions provided for that type.
+ */
+export interface MergeResolutions {
+  observations?: Record<string, ConflictResolution<'observations'>>;
+  labReports?: Record<string, ConflictResolution<'labReports'>>;
+  labValues?: Record<string, ConflictResolution<'labValues'>>;
+  supplements?: Record<string, ConflictResolution<'supplements'>>;
+  openPoints?: Record<string, ConflictResolution<'openPoints'>>;
+  profileVersions?: Record<string, ConflictResolution<'profileVersions'>>;
+  timelineEntries?: Record<string, ConflictResolution<'timelineEntries'>>;
+}
