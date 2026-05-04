@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for `i18n/config.ts` lazyBackend.read:
+  non-EN language short-circuit (covers two flavours of language
+  code) and unknown-EN-namespace short-circuit, both reached via
+  `i18n.services.backendConnector.backend`. Loader-rejection
+  branch (line 126) intentionally left uncovered - it only fires
+  on a real dynamic-import failure that would itself be a
+  build-system bug. Pushes `i18n/config.ts` lines 81.81% -> 95%
+  and `i18n/` dir lines 92.68% -> 97.56%, well above the 85%
+  threshold.
 - Branch-coverage tests for `features/settings` change-password
   flow: hook-side runtime errors (no-meta when post-verify
   readMeta returns null, reencrypt-failed when reencryptVault

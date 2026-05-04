@@ -96,6 +96,56 @@ describe('i18n config', () => {
   it('registers ai-chat EN namespace after I18N-02-d', () => {
     expect(i18n.hasResourceBundle('en', 'ai-chat')).toBe(true);
   });
+
+  describe('lazyBackend.read branches', () => {
+    // Reach the backend via i18n's services. The backend is internal
+    // to config.ts but exposed at runtime through the services graph,
+    // which is enough to drive the three uncovered branches without
+    // changing module visibility.
+    function getBackend(): {
+      read: (lang: string, ns: string, cb: (err: unknown, res: unknown) => void) => void;
+    } {
+      const services = (i18n as unknown as { services: { backendConnector: { backend: unknown } } })
+        .services;
+      const backend = services.backendConnector.backend as {
+        read: (lang: string, ns: string, cb: (err: unknown, res: unknown) => void) => void;
+      };
+      return backend;
+    }
+
+    it('non-EN language short-circuits read with empty resources (lines 112-113)', () => {
+      let captured: { err: unknown; res: unknown } | null = null;
+      getBackend().read('fr', 'common', (err, res) => {
+        captured = { err, res };
+      });
+      if (!captured) throw new Error('callback never fired');
+      const result = captured as { err: unknown; res: unknown };
+      expect(result.err).toBeNull();
+      expect(result.res).toEqual({});
+    });
+
+    it('non-EN language returns empty resources for any namespace', () => {
+      let captured: { err: unknown; res: unknown } | null = null;
+      getBackend().read('es', 'observations', (err, res) => {
+        captured = { err, res };
+      });
+      if (!captured) throw new Error('callback never fired');
+      const result = captured as { err: unknown; res: unknown };
+      expect(result.err).toBeNull();
+      expect(result.res).toEqual({});
+    });
+
+    it('unknown EN namespace short-circuits read with empty resources (lines 117-119)', () => {
+      let captured: { err: unknown; res: unknown } | null = null;
+      getBackend().read('en', 'this-namespace-does-not-exist', (err, res) => {
+        captured = { err, res };
+      });
+      if (!captured) throw new Error('callback never fired');
+      const result = captured as { err: unknown; res: unknown };
+      expect(result.err).toBeNull();
+      expect(result.res).toEqual({});
+    });
+  });
 });
 
 describe('common counts plural forms', () => {
