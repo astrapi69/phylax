@@ -147,4 +147,65 @@ describe('useProfileCreate', () => {
     expect(onComplete).not.toHaveBeenCalled();
     lock();
   });
+
+  it('setVersion propagates to the persisted profile', async () => {
+    const { result } = renderHook(() => useProfileCreate(onComplete));
+    act(() => {
+      result.current.setName('Versioned');
+      result.current.setVersion('2.5');
+    });
+
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    const profile = await new ProfileRepository().getCurrentProfile();
+    expect(profile?.version).toBe('2.5');
+    lock();
+  });
+
+  it('blank version after trim falls back to "1.0"', async () => {
+    const { result } = renderHook(() => useProfileCreate(onComplete));
+    act(() => {
+      result.current.setName('Whitespace version');
+      result.current.setVersion('   ');
+    });
+
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    const profile = await new ProfileRepository().getCurrentProfile();
+    expect(profile?.version).toBe('1.0');
+    lock();
+  });
+
+  it('submit catch branch surfaces an Error message', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'create').mockRejectedValue(new Error('write fail'));
+    const { result } = renderHook(() => useProfileCreate(onComplete));
+    act(() => result.current.setName('Will fail'));
+
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    expect(result.current.state.kind).toBe('error');
+    expect(result.current.state.detail).toBe('write fail');
+    expect(onComplete).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+
+  it('submit catch branch falls back to "Unbekannter Fehler" for non-Error rejections', async () => {
+    vi.spyOn(ProfileRepository.prototype, 'create').mockRejectedValue('not-an-error');
+    const { result } = renderHook(() => useProfileCreate(onComplete));
+    act(() => result.current.setName('Will fail again'));
+
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    expect(result.current.state.kind).toBe('error');
+    expect(result.current.state.detail).toBe('Unbekannter Fehler');
+    vi.restoreAllMocks();
+  });
 });

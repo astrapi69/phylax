@@ -74,6 +74,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- Function-coverage tests for `features/profile-create/useProfileCreate.ts`:
+  setVersion propagating to the persisted profile (the unused
+  setter), the blank-version fallback to "1.0" via the trim-or
+  expression, the catch branch with both Error and non-Error
+  rejections (covers the `err instanceof Error` ternary). Four
+  new tests close the 80% functions gap on the `features/profile-create`
+  rollup flagged in docs/audits/current-coverage.md as the top
+  P3 row.
 - Branch-coverage tests for
   `features/backup-import/BackupImportSection.tsx`:
   renderParseError 5 unique switch arms (missing-field,
