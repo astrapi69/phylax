@@ -1,9 +1,34 @@
 # IM-06 Field-level merge mode
 
-**Status:** In progress (Q-locks confirmed 2026-05-04, branch `feat/im-06-field-level-merge`)
+**Status:** Implementation complete, awaiting smoke verification (branch `feat/im-06-field-level-merge`)
 **Series:** IM (import) / Phase 4 follow-up
 **Author:** Asterios Raptis
 **Date:** 2026-05-04
+**Architectural decisions:** [ADR-0022](../decisions/ADR-0022-im-06-field-level-merge.md)
+**Smoke walk:** [`../manual-smoke/im-06-field-level-merge.md`](../manual-smoke/im-06-field-level-merge.md)
+
+## Implementation trail
+
+Eight commits on the feature branch, with per-step diff review per
+`.claude/rules/ai-workflow.md`:
+
+| Step | Commit  | Scope                                              |
+| ---- | ------- | -------------------------------------------------- |
+| 1    | af30915 | Domain layer (types + naturalKey + matchEntities)  |
+| 2    | f975e7a | resolveMerge transform + tests                     |
+| 3a   | 5dfc191 | Wire `'merge'` for simple-table types in storage   |
+| 3b   | d4c8e95 | Lab-data `'merge'` with FK rewiring                |
+| 4    | f92b17e | useImport state machine + `'conflict-resolution'`  |
+| 5a   | 01cc5ca | ConflictResolutionDialog mine/theirs + integration |
+| 5b   | 771aab0 | Field-by-field expansion + per-field rendering     |
+| 6    | 55feed6 | ConfirmDialog `'add'` -> `'merge'` UI swap         |
+| 7    | 29897ec | IM-06 smoke walk file + IM-05 supersede banner     |
+| 8    | TBD     | ROADMAP closure prep + ADR-0022 + branch close-out |
+
+382 tests pass on the branch (Steps 1-6 contribute the new tests;
+Step 7 is doc-only). After the user walks the smoke, the merge
+commit on `main` closes the feature and the spec status moves to
+`Shipped {merge-commit-hash}`.
 
 ## Problem statement
 

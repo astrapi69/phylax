@@ -59,21 +59,25 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
 
 ## Phase 4 follow-up: Import
 
-- [ ] **IM-06** Field-level merge mode. Triggered by the IM-05 Option
+- [ ] **IM-06** Field-level merge mode. **Implementation complete on
+      `feat/im-06-field-level-merge`** (eight commits, 382 tests
+      passing). Awaiting user smoke walk per
+      [`manual-smoke/im-06-field-level-merge.md`](manual-smoke/im-06-field-level-merge.md)
+      before merge-commit to `main`. Triggered by the IM-05 Option
       B manual smoke finding 2026-05-04: the existing Replace mode
       destroys user data and the existing Add ("Zusammenführen") mode
       creates duplicates of overlapping entities. Neither matches a
-      user's intuition for "merge two profiles". Add a real
-      field-level merge: match by natural key per entity type
-      (observations: theme, lab reports: reportDate, supplements:
-      name, open-points: context), update fields where matched
-      without destroying or duplicating, surface a conflict-resolution
-      UX when matched fields differ. Likely restructures the IM-05
-      ConfirmDialog into Replace / Field-Merge / Skip (the current
-      Add semantic is superseded). Spec draft at
-      [`specs/IM-06-field-level-merge.md`](specs/IM-06-field-level-merge.md).
-      Blocks resumption of the IM-05 Option B smoke walk; IM-05
-      scenarios 6-10 are deferred until IM-06 ships.
+      user's intuition for "merge two profiles". IM-06 adds a real
+      field-level merge: match by natural key per entity type,
+      update fields where matched without destroying or duplicating,
+      surface a conflict-resolution UX (mine / theirs / field-by-field)
+      when matched fields differ. Restructures the
+      ConfirmDialog into Replace / Merge / Skip; the IM-05 `'add'`
+      semantic is retired from the UI but kept in the storage-layer
+      API for back-compat. Architectural decisions:
+      [ADR-0022](decisions/ADR-0022-im-06-field-level-merge.md).
+      Spec: [`specs/IM-06-field-level-merge.md`](specs/IM-06-field-level-merge.md).
+      Final ROADMAP tick after smoke pass + merge-commit on `main`.
 
 - [ ] **IM-06-polish-1** Synth-marker dedup. Multiple successive
       merge-imports accumulate one synthesized "Profil aus Datei
@@ -83,6 +87,32 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       markers (same `changeDate` + `changeDescription`) at write
       time. Trigger: user feedback flagging clutter. Not blocking
       IM-06 ship.
+
+- [ ] **IM-06-polish-2** `submitResolutions` silent no-op outside
+      `'conflict-resolution'` state. The state-machine method
+      currently returns silently when called in any other state,
+      matching the rest of `useImport`'s defensive style. Could
+      be elevated to a dev-time warning (or thrown error) for
+      better debuggability if the silent case starts hiding UI
+      bugs. Trigger: a programmer-error report or smoke-walk
+      finding. Not blocking IM-06 ship.
+
+- [ ] **IM-06-polish-3** Value-preview in mine/theirs picks. The
+      Step 5a dialog renders only the differing field-name list
+      for mine/theirs picks; the user must switch to
+      field-by-field to see actual values. Step 5b's field-by-field
+      expansion likely resolves this for users who care about
+      values. Trigger: smoke walk surfacing user frustration with
+      blind picks. If confirmed unnecessary, drop the marker
+      after Step 7 smoke pass. Not blocking IM-06 ship.
+
+- [ ] **IM-06-polish-4** Preserve field-picks across mode-switch
+      in the conflict dialog. Current behaviour (W1 lean):
+      switching from `field-by-field` to `mine` / `theirs` and
+      back discards per-field picks. Cleaner state transitions
+      but more user effort if the same picks need to be
+      re-entered. Trigger: smoke-walk scenario 10 finding or
+      user report of frustration. Not blocking IM-06 ship.
 
 ## Phase 6 follow-up: Backup
 
