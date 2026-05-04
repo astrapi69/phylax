@@ -65,13 +65,12 @@
   "confirm": {
     "heading": "Import into existing profile",
     "body": "\"{{name}}\" already contains data. Choose how the import should treat each section.",
-    "modes-explainer": "Replace: delete existing data and replace with the import. Merge: keep existing data and add the import on top. Skip: keep existing data and discard the import for that section.",
-    "warning": "Replace deletes existing data irreversibly. Merge can create duplicates. Skip discards the import for that section.",
-    "add-warning": "Note: merging can create duplicates if the same file is imported more than once. Phylax does not deduplicate by content.",
+    "modes-explainer": "Replace: delete existing data and replace with the import. Merge: match existing rows by natural key (theme, date, name, context), add new fields, prompt for conflicts on import. No duplicates. Skip: keep existing data and discard the import for that section.",
+    "warning": "Replace deletes existing data irreversibly. Skip discards the import for that section.",
     "toggle-legend": "Decide per section",
     "mode": {
       "replace": "Replace",
-      "add": "Merge",
+      "merge": "Merge",
       "skip": "Skip"
     },
     "row": {

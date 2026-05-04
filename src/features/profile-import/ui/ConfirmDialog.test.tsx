@@ -66,7 +66,7 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
       />,
     );
     expect(screen.getByTestId('confirm-row-observations-replace')).toBeInTheDocument();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-observations-merge')).toBeInTheDocument();
     expect(screen.getByTestId('confirm-row-observations-skip')).toBeInTheDocument();
   });
 
@@ -104,20 +104,19 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
         onCancel={vi.fn()}
       />,
     );
-    await user.click(screen.getByTestId('confirm-row-observations-add'));
+    await user.click(screen.getByTestId('confirm-row-observations-merge'));
     await user.click(screen.getByTestId('confirm-row-labData-replace'));
     await user.click(screen.getByTestId('confirm-row-supplements-skip'));
     await user.click(screen.getByRole('button', { name: /Übernehmen/i }));
     expect(onConfirm).toHaveBeenCalledOnce();
     expect(onConfirm).toHaveBeenCalledWith({
-      observations: 'add',
+      observations: 'merge',
       labData: 'replace',
       supplements: 'skip',
     });
   });
 
-  it('warning hint surfaces when any row is set to add; hidden otherwise', async () => {
-    const user = userEvent.setup();
+  it('IM-06 Step 6: legacy duplicate-warning hint is no longer rendered (merge does not duplicate)', () => {
     render(
       <ConfirmDialog
         existingCounts={EXISTING}
@@ -127,13 +126,6 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
-    await user.click(screen.getByTestId('confirm-row-observations-replace'));
-    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
-    await user.click(screen.getByTestId('confirm-row-labData-add'));
-    expect(screen.getByTestId('confirm-add-warning')).toBeInTheDocument();
-    // Toggling labData away from add hides the warning again.
-    await user.click(screen.getByTestId('confirm-row-labData-replace'));
     expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
   });
 
@@ -148,11 +140,11 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
       />,
     );
     expect(screen.getByTestId('confirm-row-observations-replace')).toBeDisabled();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeEnabled();
+    expect(screen.getByTestId('confirm-row-observations-merge')).toBeEnabled();
     expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
   });
 
-  it('add radio disabled when parsed is zero (nothing to add)', () => {
+  it('merge radio disabled when parsed is zero (nothing to merge in)', () => {
     render(
       <ConfirmDialog
         existingCounts={{ ...EMPTY_COUNTS, observations: 4 }}
@@ -163,7 +155,7 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
       />,
     );
     expect(screen.getByTestId('confirm-row-observations-replace')).toBeEnabled();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeDisabled();
+    expect(screen.getByTestId('confirm-row-observations-merge')).toBeDisabled();
     expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
   });
 

@@ -65,13 +65,12 @@
   "confirm": {
     "heading": "Import in bestehendes Profil",
     "body": "\"{{name}}\" enthält bereits Daten. Wähle für jeden Bereich, wie der Import damit umgehen soll.",
-    "modes-explainer": "Ersetzen: bestehende Daten löschen und durch Import ersetzen. Zusammenführen: bestehende Daten behalten und Import zusätzlich hinzufügen. Überspringen: bestehende Daten behalten und Import-Daten verwerfen.",
-    "warning": "Ersetzen löscht bestehende Daten unwiderruflich. Zusammenführen kann Duplikate erzeugen. Überspringen verwirft die Import-Daten dieses Bereichs.",
-    "add-warning": "Hinweis: Beim Zusammenführen können Duplikate entstehen, wenn dieselbe Datei mehrfach importiert wird. Phylax prüft Inhalte nicht auf Doppelung.",
+    "modes-explainer": "Ersetzen: bestehende Daten löschen und durch Import ersetzen. Zusammenführen: bestehende Einträge per natürlichem Schlüssel (Thema, Datum, Name, Kontext) erkennen, neue Felder ergänzen, Konflikte beim Import abfragen. Keine Duplikate. Überspringen: bestehende Daten behalten und Import-Daten verwerfen.",
+    "warning": "Ersetzen löscht bestehende Daten unwiderruflich. Überspringen verwirft die Import-Daten dieses Bereichs.",
     "toggle-legend": "Pro Bereich entscheiden",
     "mode": {
       "replace": "Ersetzen",
-      "add": "Zusammenführen",
+      "merge": "Zusammenführen",
       "skip": "Überspringen"
     },
     "row": {
