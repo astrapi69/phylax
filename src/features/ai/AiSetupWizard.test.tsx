@@ -236,4 +236,120 @@ describe('AiSetupWizard finish (save)', () => {
       expect(screen.getByTestId('ai-setup-wizard-save-error')).toHaveTextContent(/vault locked/);
     });
   });
+
+  it('coerces non-Error save rejections via String()', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(aiConfig, 'saveAIConfig').mockRejectedValue('plain-string-fail');
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-fail2' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-finish'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-setup-wizard-save-error')).toHaveTextContent(
+        /plain-string-fail/,
+      );
+    });
+  });
+});
+
+describe('AiSetupWizard branch closures', () => {
+  it('clicking the already-selected provider is a no-op (preserves apiKey)', async () => {
+    const user = userEvent.setup();
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-keep' } });
+    // Click the same provider again - early return at line 87 preserves apiKey.
+    await user.click(screen.getByTestId('ai-setup-wizard-provider-anthropic'));
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    const key = screen.getByTestId('ai-setup-wizard-key-input') as HTMLInputElement;
+    expect(key.value).toBe('sk-ant-keep');
+  });
+
+  it('eye toggle flips the key-input style mask', async () => {
+    const user = userEvent.setup();
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-toggle' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    const input = screen.getByTestId('ai-setup-wizard-key-input') as HTMLInputElement;
+    // Hidden by default: -webkit-text-security: disc applied.
+    expect(input.getAttribute('style')).toMatch(/text-security/i);
+    await user.click(screen.getByTestId('ai-setup-wizard-key-toggle'));
+    // After toggle, style attribute is empty (showKey === true -> undefined).
+    expect(input.getAttribute('style') ?? '').not.toMatch(/text-security/i);
+  });
+
+  it('local provider step 2 renders the no-key-hint instead of the key field', async () => {
+    const user = userEvent.setup();
+    setup({ initial: { provider: 'lmstudio' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    expect(screen.getByTestId('ai-setup-wizard-no-key-hint')).toBeInTheDocument();
+    expect(screen.queryByTestId('ai-setup-wizard-key-input')).toBeNull();
+  });
+
+  it('step-2 next disabled when baseUrl is empty', async () => {
+    const user = userEvent.setup();
+    setup({ initial: { provider: 'lmstudio' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    const baseUrl = screen.getByTestId('ai-setup-wizard-base-url-input') as HTMLInputElement;
+    await user.clear(baseUrl);
+    expect(screen.getByTestId('ai-setup-wizard-next')).toBeDisabled();
+  });
+
+  it('verifyKey thrown Error is surfaced via the catch branch', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(verifyKeyModule, 'verifyKey').mockRejectedValue(new Error('network down'));
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-test' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-test-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-setup-wizard-test-fail')).toHaveTextContent(/network down/);
+    });
+  });
+
+  it('verifyKey thrown non-Error value is coerced via String() in the catch branch', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(verifyKeyModule, 'verifyKey').mockRejectedValue('verify-string-fail');
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-test' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-test-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-setup-wizard-test-fail')).toHaveTextContent(
+        /verify-string-fail/,
+      );
+    });
+  });
+
+  it('verifyKey resolved-fail without detail falls back to status text (line 115 false branch)', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(verifyKeyModule, 'verifyKey').mockResolvedValue({
+      ok: false,
+      status: 'rate_limited',
+      detail: '',
+    });
+    setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-test' } });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-test-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('ai-setup-wizard-test-fail')).toHaveTextContent(/rate_limited/);
+    });
+  });
+
+  it('finish without explicit model omits the model key from the saved config', async () => {
+    const user = userEvent.setup();
+    const saveSpy = vi.spyOn(aiConfig, 'saveAIConfig').mockResolvedValue();
+    setup({
+      initial: { provider: 'anthropic', apiKey: 'sk-ant-no-model' },
+    });
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    // Model defaults to the preset's defaultModel; clear it to exercise the
+    // `if (model)` false branch in buildConfig (line 100).
+    const model = screen.getByTestId('ai-setup-wizard-model-input') as HTMLInputElement;
+    await user.clear(model);
+    await user.click(screen.getByTestId('ai-setup-wizard-next'));
+    await user.click(screen.getByTestId('ai-setup-wizard-finish'));
+    await waitFor(() => expect(saveSpy).toHaveBeenCalled());
+    const saved = saveSpy.mock.calls[0]?.[0];
+    expect(saved).not.toHaveProperty('model');
+  });
 });

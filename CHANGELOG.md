@@ -74,6 +74,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the localized error inside the dialog. Three new tests inside
   a dedicated `describe('PDF export (X-02)')` block. Closes the
   62.73% branch gap on the multi-step ExportDialog UI.
+- Branch-coverage tests for `features/ai/AiSetupWizard.tsx`:
+  same-provider re-click no-op (preserves apiKey, line 87
+  early-return), eye toggle flips the `-webkit-text-security`
+  style mask (line 310 toggle path), local-provider step-2 path
+  rendering the `no-key-hint` block (line 326, false branch of
+  `needsKey`), step-2 next disabled when `baseUrl` is empty
+  (line 150 second clause), `verifyKey` thrown-Error and
+  thrown-non-Error catch branches (lines 117-119 incl. the
+  `String(err)` fallback), resolved-fail with empty `detail`
+  falling back to the `status` text (line 115 false branch),
+  non-Error save rejection coerced via `String()` (line 142
+  fallback), and `buildConfig` omitting the model key when the
+  user clears the model input (line 100 false branch). Eight
+  new tests inside a `describe('AiSetupWizard branch closures')`
+  block.
 - First test suite for `features/documents/useLinkableEntities.ts`
   (previously untested, contributing to the 74.08% branch ratio
   on the `features/documents` rollup). Nine tests cover: the
