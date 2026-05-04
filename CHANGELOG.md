@@ -26,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
 - Branch-coverage tests for
+  `features/backup-export/useBackupExport.ts`: buildVaultDump
+  read-failed -> encryption-failed mapping (lines 70-73),
+  createBackup crypto-unavailable surface (lines 91-95), and
+  createBackup encryption-failed pass-through (lines 91-97).
+  Each test installs a vi.spyOn shim for one underlying module
+  (buildVaultDump or createBackup), with a per-test
+  afterEach(restoreAllMocks) to keep spies isolated. Pushes
+  `useBackupExport.ts` from 84.61% / 62.5% to 94.87% / 93.75%
+  (lines / branches), and the `features/backup-export` dir
+  rollup from 86.23% / 74.07% to 89.9% / 83.33%, well above
+  the 80% project branch threshold.
+- Branch-coverage tests for
   `features/documents/useAttachedDocuments.ts`: no-current-profile
   short-circuit (lines 44-45), labValueId path (lines 51-52), and
   the no-id fallback (lines 53-54). Plus a sort-order test that
