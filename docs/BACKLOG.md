@@ -12,16 +12,15 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-| #   | Task                                           | Why it's first                                                                                                                                           | Effort  |
-| --- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 1   | **D-03 PWABuilder packaging**                  | One-shot upload of the live D-01 URL to PWABuilder generates Play Store / Microsoft Store packages. Extends product reach beyond the PWA install banner. | ~1 h    |
-| 2   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour.                                     | ~30 min |
+| #   | Task                                           | Why it's first                                                                                                       | Effort  |
+| --- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------- |
+| 1   | **P-05 ChangePassword Settings layout polish** | The P-06 flow is shipped; the Settings page placeholder is the only visible gap. Cosmetic cleanup, no new behaviour. | ~30 min |
 
 All four "Coverage P0" rows in
-`docs/audits/current-coverage.md` are now resolved. After this Tier
-1 closes, the AI-provider wizard has a clean add-flow, the app
-ships as installable Play Store / Microsoft Store packages, and the
-Settings page is visually consistent.
+`docs/audits/current-coverage.md` are resolved. The AI-provider
+wizard has a clean add-flow. PWABuilder manifest prep is in place
+(execution moved to Tier 2 user-blocked). After this Tier 1
+closes, the Settings page is visually consistent.
 
 ## Tier 2 - User-blocked (can only be done by the maintainer)
 
@@ -43,6 +42,15 @@ real human in front of a real browser / a screen reader / a market.
 - **D-02 Custom domain** - blocked on the user picking a domain. Once
   the registrar + name are decided, the work itself is ~30 min (DNS
   CNAME + Pages config). Until then it cannot proceed.
+- **D-03 PWABuilder packaging execution** - manifest-side prep
+  shipped (id / display_override / launch_handler in
+  [`vite.config.ts`](../vite.config.ts), maintainer runbook at
+  [`d-03-pwabuilder.md`](d-03-pwabuilder.md)). The remaining work
+  is maintainer-driven: capture screenshots, run the PWABuilder
+  web flow for `.msixbundle` and `.aab`, register the Microsoft
+  Partner Center + Google Play console accounts, and submit.
+  Cannot be automated (account credentials, screenshot
+  judgement, store-policy decisions).
 
 ## Tier 3 - Trigger-bound (wait for an external signal before shipping)
 

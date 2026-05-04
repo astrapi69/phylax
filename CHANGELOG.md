@@ -25,6 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- PWABuilder-quality manifest fields for D-03 packaging prep:
+  `id` (stable cross-version identifier), `display_override`
+  (fallback chain for browsers ignoring the primary `display`),
+  and `launch_handler` (focus-existing client mode for installed
+  packages). New maintainer runbook at
+  `docs/d-03-pwabuilder.md` covers the screenshot prereq, the
+  PWABuilder web flow for `.msixbundle` and `.aab`, the Digital
+  Asset Links setup for TWA, and the store-submission steps.
+  Execution side moves to user-blocked tier (cannot be
+  automated: store credentials, screenshot judgement,
+  submission policy).
 - Explicit "Anbieter hinzufügen" / "Add provider" button in the
   AI Settings configured-state card (AIP-polish-1). The
   pre-existing "Anbieter verwalten" button still opens the wizard

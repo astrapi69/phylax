@@ -38,6 +38,11 @@ export default defineConfig(({ mode }) => {
         // local-first app with no server-side state.
         registerType: 'prompt',
         manifest: {
+          // Stable cross-version identifier. PWABuilder + the
+          // browser update path use `id` to detect "same app, new
+          // version" rather than re-installing under a new identity
+          // when start_url changes. Keep stable across releases.
+          id: '/phylax/',
           name: 'Phylax',
           short_name: 'Phylax',
           description: 'Dein lokales, verschluesseltes Gesundheitsprofil.',
@@ -46,9 +51,17 @@ export default defineConfig(({ mode }) => {
           start_url: base,
           scope: base,
           display: 'standalone',
+          // Fallback chain for browsers that do not honour the
+          // primary `display` value. PWABuilder Quality flags PWAs
+          // that omit it as missing modern manifest fields.
+          display_override: ['standalone', 'minimal-ui', 'browser'],
           orientation: 'portrait-primary',
           background_color: '#ffffff',
           theme_color: '#1f2937',
+          // Focus existing window on protocol launches instead of
+          // opening a new instance (relevant once D-03 ships
+          // installable Play Store / Microsoft Store packages).
+          launch_handler: { client_mode: ['focus-existing', 'auto'] },
           categories: ['health', 'productivity'],
           icons: [
             { src: 'icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },

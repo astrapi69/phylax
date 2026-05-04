@@ -101,8 +101,13 @@ so future activation does not require schema migration.
 
 - [ ] **D-02** Custom domain (optional; requires registrar + CNAME +
       DNS verification).
-- [ ] **D-03** PWABuilder packaging for app stores (needs the live
-      URL from D-01, which has shipped).
+- [ ] **D-03** PWABuilder packaging for app stores. Manifest-side
+      prep done (`id`, `display_override`, `launch_handler` in
+      `vite.config.ts`; maintainer runbook at
+      [`d-03-pwabuilder.md`](d-03-pwabuilder.md)). Outstanding:
+      capture screenshots, run the PWABuilder web flow, register
+      Microsoft Partner Center + Google Play accounts, submit.
+      Maintainer-driven; cannot be automated.
 
 ## User documentation (DOC-series)
 
