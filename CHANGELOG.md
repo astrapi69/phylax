@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for
+  `features/profile-import/ui/ImportEntryScreen.tsx`:
+  cancel-the-file-picker (fires a synthetic change event with no
+  files; covers the cleared-fileContent branch lines 31-32) and
+  read-failed (replaces global FileReader with a stub that fires
+  onerror; covers the catch branch lines 48-49 that surfaces the
+  read-failed inline message). ImportEntryScreen.tsx pushes
+  86.36% / 72.72% (lines / branches) to 100% / 81.81%, and the
+  profile-import/ui dir rollup 87.5% / 78.41% to 90.5% / 79.85%.
 - Branch-coverage test for
   `features/timeline/useTimeline.ts`: non-Error rejection
   fallback (line 51 false branch). Existing test covered the

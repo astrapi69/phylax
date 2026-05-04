@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ImportEntryScreen } from './ImportEntryScreen';
@@ -95,5 +95,62 @@ describe('ImportEntryScreen', () => {
     const link = hint.querySelector('a');
     expect(link).not.toBeNull();
     expect(link).toHaveAttribute('href', '/settings');
+  });
+
+  describe('file-input runtime branches', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('clears fileContent when the user opens then cancels the file picker (lines 31-32)', async () => {
+      const user = userEvent.setup();
+      renderInRouter();
+      const fileInput = document.getElementById('import-file') as HTMLInputElement;
+
+      // First, upload a valid file so fileContent is non-null.
+      const file = new File(['# A'], 'a.md', { type: 'text/markdown' });
+      await user.upload(fileInput, file);
+      await screen.findByText(/Geladen: a.md/);
+
+      // Now fire a change event with no files (cancel-picker path).
+      // user.upload always provides a file, so use fireEvent directly.
+      fireEvent.change(fileInput, { target: { files: [] } });
+
+      await waitFor(() => expect(screen.queryByText(/Geladen: a.md/)).toBeNull());
+      expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
+    });
+
+    it('surfaces a read-failed error when FileReader fires onerror (lines 48-49)', async () => {
+      // Replace the global FileReader so its readAsText path immediately
+      // fires onerror. The component's readFileAsText helper rejects on
+      // onerror, the catch swallows the rejection and sets fileError.
+      class FailingFileReader {
+        public onerror: ((this: FailingFileReader) => void) | null = null;
+        public onload: ((this: FailingFileReader) => void) | null = null;
+        public error: Error | null = new Error('forced read failure');
+        public result: string | null = null;
+        readAsText(): void {
+          // Defer to mimic the real async flow.
+          setTimeout(() => {
+            this.error = new Error('forced read failure');
+            this.onerror?.call(this);
+          }, 0);
+        }
+      }
+      const originalFileReader = window.FileReader;
+      (window as unknown as { FileReader: unknown }).FileReader = FailingFileReader;
+
+      try {
+        const user = userEvent.setup();
+        renderInRouter();
+        const fileInput = document.getElementById('import-file') as HTMLInputElement;
+        const file = new File(['ok'], 'broken.md', { type: 'text/markdown' });
+        await user.upload(fileInput, file);
+        await screen.findByText(/lesen|read.*failed|fehlgeschlagen/i);
+        expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
+      } finally {
+        (window as unknown as { FileReader: typeof FileReader }).FileReader = originalFileReader;
+      }
+    });
   });
 });
