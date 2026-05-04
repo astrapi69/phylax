@@ -84,6 +84,35 @@
     },
     "confirm": "Apply"
   },
+  "merge-conflicts": {
+    "heading": "Merge conflicts",
+    "intro": "{{total}} conflict(s) detected for \"{{name}}\". Pick a resolution for each row.",
+    "progress": "{{resolved}} of {{total}} conflicts resolved",
+    "section": {
+      "observations": "Observations",
+      "labReports": "Lab reports",
+      "labValues": "Lab values",
+      "supplements": "Supplements",
+      "openPoints": "Open points",
+      "profileVersions": "Version history",
+      "timelineEntries": "Timeline entries",
+      "count": "{{count}} conflict(s)"
+    },
+    "row": {
+      "label-key": "Identity: {{key}}",
+      "diff-fields": "Differing fields: {{fields}}"
+    },
+    "mode": {
+      "mine": "Keep mine",
+      "theirs": "Take theirs",
+      "field-by-field": "Field-by-field",
+      "field-by-field-disabled": "Field-by-field (coming soon)"
+    },
+    "footer": {
+      "cancel": "Cancel",
+      "confirm": "Apply"
+    }
+  },
   "result": {
     "success": {
       "heading": "Import successful",

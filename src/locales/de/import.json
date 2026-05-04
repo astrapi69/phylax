@@ -84,6 +84,35 @@
     },
     "confirm": "Übernehmen"
   },
+  "merge-conflicts": {
+    "heading": "Konflikte beim Zusammenführen",
+    "intro": "Für \"{{name}}\" wurden {{total}} Konflikt(e) erkannt. Bitte entscheide pro Eintrag, welche Version übernommen werden soll.",
+    "progress": "{{resolved}} von {{total}} Konflikten gelöst",
+    "section": {
+      "observations": "Beobachtungen",
+      "labReports": "Befunde",
+      "labValues": "Laborwerte",
+      "supplements": "Verträglichkeiten",
+      "openPoints": "Offene Punkte",
+      "profileVersions": "Versionshistorie",
+      "timelineEntries": "Verlaufsnotizen",
+      "count": "{{count}} Konflikt(e)"
+    },
+    "row": {
+      "label-key": "Identität: {{key}}",
+      "diff-fields": "Unterschiedliche Felder: {{fields}}"
+    },
+    "mode": {
+      "mine": "Vorhandene behalten",
+      "theirs": "Importierte übernehmen",
+      "field-by-field": "Feldweise entscheiden",
+      "field-by-field-disabled": "Feldweise (in Vorbereitung)"
+    },
+    "footer": {
+      "cancel": "Abbrechen",
+      "confirm": "Übernehmen"
+    }
+  },
   "result": {
     "success": {
       "heading": "Import erfolgreich",
