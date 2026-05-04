@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern-clipboard-rejects-and-falls-back branches (lines 99-114).
   Closes the P0 coverage threshold violation on the
   security-relevant render-tree-crash boundary.
+- Branch-coverage tests for
+  `features/backup-import/BackupImportSelectView.tsx`
+  renderParseError switch arms (lines 36-44). Five new tests
+  drive each ParseError variant via vi.spyOn on parseBackupFile,
+  asserting the localized error text renders from the section.
+  Pushes `BackupImportSelectView.tsx` from 71.73% / 55.17% to
+  82.6% / 72.41% (lines / branches), and `features/backup-import`
+  dir 84.92% / 77.14% to 86.24% / 79.18%.
 - Branch-coverage tests for `features/ai/aiCall.ts`:
   non-Anthropic preset.defaultModel resolution (lines 71-72),
   stream-end-without-done event (line 159 fallback path), and

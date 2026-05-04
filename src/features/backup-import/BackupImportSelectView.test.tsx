@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -6,6 +6,7 @@ import 'fake-indexeddb/auto';
 import i18n from '../../i18n/config';
 import { lock } from '../../crypto';
 import { resetDatabase, setupCompletedOnboarding } from '../../db/test-helpers';
+import * as parseBackupModule from './parseBackupFile';
 import { BackupImportSelectView } from './BackupImportSelectView';
 
 function validBase64(byteLength: number): string {
@@ -122,5 +123,58 @@ describe('BackupImportSelectView', () => {
     renderView();
     expect(screen.getByRole('heading', { level: 1, name: 'Import backup' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
+  });
+
+  describe('renderParseError variants', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    async function uploadAndExpect(
+      forcedError: import('./parseBackupFile').ParseError,
+      pattern: RegExp,
+    ) {
+      vi.spyOn(parseBackupModule, 'parseBackupFile').mockResolvedValue({
+        valid: false,
+        error: forcedError,
+      });
+      const user = userEvent.setup();
+      renderView();
+      const input = screen.getByLabelText('Datei auswählen') as HTMLInputElement;
+      await user.upload(input, makePhylaxFile('test.phylax'));
+      await waitFor(() => expect(screen.getByText(pattern)).toBeInTheDocument());
+    }
+
+    it('missing-field surfaces the field-name interpolated message (line 36)', async () => {
+      await uploadAndExpect(
+        { kind: 'missing-field', field: 'crypto' },
+        /Datei unvollständig.*crypto/i,
+      );
+    });
+
+    it('unsupported-version surfaces the version-interpolated message (lines 37-38)', async () => {
+      await uploadAndExpect(
+        { kind: 'unsupported-version', version: 99 },
+        /Datei-Version 99 wird nicht unterstützt/i,
+      );
+    });
+
+    it('wrong-type surfaces the wrong-type message (lines 39-40)', async () => {
+      await uploadAndExpect(
+        { kind: 'wrong-type', got: 'not-phylax' },
+        /keine Phylax-Backup-Datei/i,
+      );
+    });
+
+    it('too-large surfaces the size-interpolated message (lines 41-42)', async () => {
+      await uploadAndExpect({ kind: 'too-large', sizeMb: 99 }, /Datei zu groß.*99 MB/i);
+    });
+
+    it('corrupted surfaces the corrupted message (lines 43-44)', async () => {
+      await uploadAndExpect(
+        { kind: 'corrupted', detail: 'salt base64 invalid' },
+        /Backup ist beschädigt/i,
+      );
+    });
   });
 });
