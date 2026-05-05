@@ -101,6 +101,15 @@ export function ConfirmDialog({
   const [selection, setSelection] = useState<Partial<Record<RowKey, ImportMode>>>({});
 
   const allModesPicked = rows.every((r) => selection[r.key] !== undefined);
+  // Smoke-walk fix S2-A 2026-05-04: if the user picks 'skip' on
+  // every visible row and clicks Übernehmen, the storage layer
+  // throws ImportTargetNotEmptyError (no authorised write on a
+  // non-empty target) which routes the state machine back to
+  // 'confirm-replace' and surfaces the dialog again - looks like
+  // an infinite loop to the user. Disable Übernehmen on all-skip
+  // and force the user to either pick a non-skip mode for at least
+  // one row OR click Abbrechen.
+  const allSkip = allModesPicked && rows.every((r) => selection[r.key] === 'skip');
 
   const setMode = (key: RowKey, mode: ImportMode) => {
     setSelection((prev) => ({ ...prev, [key]: mode }));
@@ -142,6 +151,15 @@ export function ConfirmDialog({
               />
             ))}
           </fieldset>
+          {allSkip && (
+            <p
+              role="note"
+              data-testid="confirm-all-skip-hint"
+              className="mb-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+            >
+              {t('confirm.all-skip-hint')}
+            </p>
+          )}
           <p className="text-sm text-red-700 dark:text-red-300">{t('confirm.warning')}</p>
         </>
       }
@@ -149,7 +167,7 @@ export function ConfirmDialog({
       confirmLabel={t('confirm.confirm')}
       onConfirm={handleConfirm}
       variant="destructive"
-      confirmDisabled={!allModesPicked}
+      confirmDisabled={!allModesPicked || allSkip}
     />
   );
 }

@@ -11,6 +11,17 @@ destroy untouched existing data). New behaviour drops the row
 entirely; the resolver's missing-key default (`'skip'`) handles
 the implicit choice. Decision-9 below.
 
+**Smoke-walk amendment 2026-05-04 (scenario 2 / S2-A):** all-skip
+selection must not reach the storage layer. Old behaviour: user
+picks `Überspringen` on every visible row, clicks Übernehmen,
+`importProfile` throws `ImportTargetNotEmptyError` (no authorised
+write on a non-empty target), state machine routes back to
+`'confirm-replace'`, dialog re-opens. Looks like an infinite
+loop. New behaviour: ConfirmDialog disables the Übernehmen button
+when every visible row is Überspringen and shows an amber hint
+asking the user to pick a non-skip mode for at least one row OR
+click Abbrechen. Decision-10 below.
+
 ## Context
 
 The IM-05 Option B import dialog shipped three per-type modes -
@@ -260,6 +271,40 @@ Test: `ConfirmDialog.test.tsx` "row hidden entirely when parsed
 is zero (smoke-walk fix 2026-05-04)" + companion test asserting
 that the resolver receives the right payload when the hidden
 row's type is left to default to `'skip'`.
+
+### 10. Disable Übernehmen on all-skip selection (smoke amendment 2026-05-04)
+
+Surfaced during scenario 2 of the IM-06 smoke walk (re-import
+identical Profile A as Profile A, user picked `Überspringen` on
+every row). The storage layer treated all-skip as "no authorised
+write on a non-empty target" and threw
+`ImportTargetNotEmptyError`. The state-machine catch routed back
+to `'confirm-replace'`, the dialog re-opened, and the user was
+trapped in a re-render loop with no clear path forward.
+
+Three fix options were considered:
+
+- **(A) Auto-cancel**: treat all-skip Übernehmen as a Cancel
+  click. Loses the explicit "user chose this" signal.
+- **(B) Success state with zero changes**: skip storage entirely,
+  emit a `'done'` state with empty `created` counts. Drops the
+  synthesized `Profil aus Datei importiert` ProfileVersion row,
+  losing audit-trail consistency with other import paths.
+- **(C) Disable Übernehmen + hint**: prevent the bad state from
+  being reached. User must pick a non-skip mode for at least one
+  row OR click Abbrechen explicitly.
+
+Picked C. Cleanest: matches the Q2 discipline pattern of "force
+explicit user intent before destructive or semantically-empty
+operations". Locale keys `confirm.all-skip-hint` (DE / EN)
+explain why Übernehmen is disabled and steer the user to either
+adjust their picks or cancel.
+
+Test: `ConfirmDialog.test.tsx` "S2-A all-skip discipline:
+confirm disabled + hint shown when every row is Überspringen".
+Asserts hint visibility + button-disabled state in the all-skip
+case AND the toggle-to-merge case (re-enables button + hides
+hint). Smoke-walk amendment header documents the trigger.
 
 ## Consequences
 

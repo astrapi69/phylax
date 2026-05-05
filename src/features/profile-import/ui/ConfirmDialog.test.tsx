@@ -116,6 +116,40 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
     });
   });
 
+  it('S2-A all-skip discipline: confirm disabled + hint shown when every row is Überspringen', async () => {
+    // Smoke-walk fix 2026-05-04: picking 'skip' on every row and
+    // clicking Übernehmen used to throw ImportTargetNotEmptyError
+    // and route the state machine back to 'confirm-replace'.
+    // Dialog now disables the Übernehmen button and surfaces a
+    // hint asking the user to pick a non-skip mode for at least
+    // one row OR cancel.
+    const user = userEvent.setup();
+    render(
+      <ConfirmDialog
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+    const confirmBtn = screen.getByRole('button', { name: /Übernehmen/i });
+    expect(screen.queryByTestId('confirm-all-skip-hint')).toBeNull();
+
+    // Pick skip for every visible row.
+    await user.click(screen.getByTestId('confirm-row-observations-skip'));
+    await user.click(screen.getByTestId('confirm-row-labData-skip'));
+    await user.click(screen.getByTestId('confirm-row-supplements-skip'));
+
+    expect(screen.getByTestId('confirm-all-skip-hint')).toBeInTheDocument();
+    expect(confirmBtn).toBeDisabled();
+
+    // Switching one row to merge re-enables Übernehmen and hides the hint.
+    await user.click(screen.getByTestId('confirm-row-supplements-merge'));
+    expect(screen.queryByTestId('confirm-all-skip-hint')).toBeNull();
+    expect(confirmBtn).toBeEnabled();
+  });
+
   it('IM-06 Step 6: legacy duplicate-warning hint is no longer rendered (merge does not duplicate)', () => {
     render(
       <ConfirmDialog

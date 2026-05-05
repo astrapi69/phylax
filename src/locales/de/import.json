@@ -67,6 +67,7 @@
     "body": "\"{{name}}\" enthält bereits Daten. Wähle für jeden Bereich, wie der Import damit umgehen soll.",
     "modes-explainer": "Ersetzen: bestehende Daten löschen und durch Import ersetzen. Zusammenführen: bestehende Einträge per natürlichem Schlüssel (Thema, Datum, Name, Kontext) erkennen, neue Felder ergänzen, Konflikte beim Import abfragen. Keine Duplikate. Überspringen: bestehende Daten behalten und Import-Daten verwerfen.",
     "warning": "Ersetzen löscht bestehende Daten unwiderruflich. Überspringen verwirft die Import-Daten dieses Bereichs.",
+    "all-skip-hint": "Alle Bereiche auf Überspringen: nichts wird importiert. Wähle für mindestens einen Bereich Ersetzen oder Zusammenführen, oder klicke Abbrechen.",
     "toggle-legend": "Pro Bereich entscheiden",
     "mode": {
       "replace": "Ersetzen",

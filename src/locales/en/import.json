@@ -67,6 +67,7 @@
     "body": "\"{{name}}\" already contains data. Choose how the import should treat each section.",
     "modes-explainer": "Replace: delete existing data and replace with the import. Merge: match existing rows by natural key (theme, date, name, context), add new fields, prompt for conflicts on import. No duplicates. Skip: keep existing data and discard the import for that section.",
     "warning": "Replace deletes existing data irreversibly. Skip discards the import for that section.",
+    "all-skip-hint": "Every section is set to Skip: nothing will be imported. Pick Replace or Merge for at least one section, or click Cancel.",
     "toggle-legend": "Decide per section",
     "mode": {
       "replace": "Replace",

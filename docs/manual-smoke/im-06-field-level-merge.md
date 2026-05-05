@@ -70,6 +70,19 @@ References:
   - Entity counts unchanged.
 - **Result**: ☐ pass ☐ fail
 
+### 2b. All-skip selection: Übernehmen disabled + hint shown (S2-A fix)
+
+- **Steps**: load Profile A. Re-import. In ConfirmDialog pick
+  `Überspringen` on every visible row.
+- **Expected**:
+  - Übernehmen button disabled.
+  - Amber hint surfaces below the rows: "Alle Bereiche auf
+    Überspringen: nichts wird importiert. ..."
+  - Switching one row to `Zusammenführen` or `Ersetzen`:
+    Übernehmen re-enables, hint disappears.
+  - Clicking `Abbrechen` returns to entry; vault unchanged.
+- **Result**: ☐ pass ☐ fail
+
 ### 3. New parameter in matched lab report = silent additive merge (Q4)
 
 - **Steps**: load Profile A. Edit Profile B so its lab report
@@ -296,6 +309,25 @@ importiert"` and a bumped version label.
 
 ## Findings
 
+### S2-A (Category A UX gap, scenario 2, fixed in same session)
+
+User re-imported Profile A as Profile A (identical re-import) and
+picked `Überspringen` on every visible row of the ConfirmDialog,
+then clicked Übernehmen. `importProfile` threw
+`ImportTargetNotEmptyError` because `userAuthorisedAnyWrite`
+returns false on all-skip. The state-machine catch routed back
+to `'confirm-replace'`, the dialog re-opened, and the user was
+trapped in a re-render loop.
+
+**Fix shipped** the same day on the IM-06 branch: ConfirmDialog
+disables the Übernehmen button when every visible row is
+`Überspringen` and surfaces an amber hint asking the user to
+pick a non-skip mode for at least one row OR click Abbrechen.
+Documented in ADR-0022 decision 10. New
+`ConfirmDialog.test.tsx` test "S2-A all-skip discipline" guards
+the regression. New scenario 2b in this smoke file walks the
+fix.
+
 ### S1-A (Category A UX gap, scenario 1, fixed in same session)
 
 ConfirmDialog rendered rows for every entity type where
@@ -320,6 +352,7 @@ parsed is zero" guards the regression.
 
 - ☑ Disjoint profiles merge (scenario 1) — pass with S1-A fixed in-session
 - ☐ Identical entries collapse (scenario 2)
+- ☐ All-skip Übernehmen disabled + hint (scenario 2b, S2-A fix)
 - ☐ New parameter silent additive (scenario 3)
 - ☐ Mine wins (scenario 4)
 - ☐ Theirs wins (scenario 5)
