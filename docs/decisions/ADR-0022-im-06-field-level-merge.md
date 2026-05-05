@@ -1,7 +1,15 @@
 # ADR-0022: IM-06 field-level merge mode
 
 **Date:** 2026-05-04
-**Status:** Accepted (implementation complete; smoke verification pending)
+**Status:** Accepted (implementation complete; smoke verification in progress)
+
+**Smoke-walk amendment 2026-05-04 (scenario 1):** zero-parsed rows
+must not surface in the ConfirmDialog. Old behaviour rendered the
+row with `replace` enabled and `merge` disabled, forcing the user
+to pick `überspringen` (or worse, accidentally `ersetzen` and
+destroy untouched existing data). New behaviour drops the row
+entirely; the resolver's missing-key default (`'skip'`) handles
+the implicit choice. Decision-9 below.
 
 ## Context
 
@@ -228,6 +236,30 @@ content removed) so the decision trail stays legible.
 This pattern - smoke as architectural-correction tool, not just
 visual-fit verification - is worth carrying forward to future
 multi-day tracks. Lessons-learned section below summarises.
+
+### 9. Hide zero-parsed rows in ConfirmDialog (smoke amendment 2026-05-04)
+
+Surfaced during scenario 1 of the IM-06 smoke walk. The
+IM-05-era `rowsFromCounts` filter rendered any row where EITHER
+`existing > 0` OR `parsed > 0`. Consequence: a profile with
+existing observations + an import whose `observations` was empty
+forced the user into the row's mode picker. The only safe pick
+was `überspringen`; `ersetzen` would have destroyed the
+existing observations the import did not touch, and `merge` was
+disabled (nothing to merge in).
+
+The corrected filter requires `parsed > 0` (or `secondaryParsed > 0`
+for lab data). Rows where the import contributes nothing are
+hidden; the resolver's missing-key default (`'skip'`) preserves
+existing data implicitly. This eliminates the "user clicks
+ersetzen by mistake on a zero-parsed row" failure mode that had
+the same shape as the original IM-05 finding (destructive option
+exposed where no user intent applies).
+
+Test: `ConfirmDialog.test.tsx` "row hidden entirely when parsed
+is zero (smoke-walk fix 2026-05-04)" + companion test asserting
+that the resolver receives the right payload when the hidden
+row's type is left to default to `'skip'`.
 
 ## Consequences
 

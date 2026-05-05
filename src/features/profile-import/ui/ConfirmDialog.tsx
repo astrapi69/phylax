@@ -47,13 +47,17 @@ function rowsFromCounts(existing: EntityCounts, parsed: EntityCounts): RowDescri
     { key: 'timelineEntries', existing: existing.timelineEntries, parsed: parsed.timelineEntries },
     { key: 'profileVersions', existing: existing.profileVersions, parsed: parsed.profileVersions },
   ];
-  return rows.filter(
-    (r) =>
-      r.existing > 0 ||
-      r.parsed > 0 ||
-      (r.secondaryExisting ?? 0) > 0 ||
-      (r.secondaryParsed ?? 0) > 0,
-  );
+  // Smoke-walk fix 2026-05-04: hide rows where the import has nothing
+  // to contribute (parsed = 0). Asking the user to pick replace / merge
+  // / skip on a zero-parsed row is a UX trap: 'replace' would delete
+  // existing data that the import does not even touch, and 'skip' is
+  // the only sensible default. The resolver already defaults missing
+  // keys to 'skip', so dropping the row from the dialog implicitly
+  // selects 'skip' for that type without surfacing a destructive
+  // option to the user. Lab-data row checks the secondaryParsed
+  // (lab-values) too so a report-less import with values surfaces
+  // (rare but possible).
+  return rows.filter((r) => r.parsed > 0 || (r.secondaryParsed ?? 0) > 0);
 }
 
 /**

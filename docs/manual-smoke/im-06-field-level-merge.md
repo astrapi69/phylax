@@ -57,7 +57,7 @@ References:
   - Result screen shows successful import.
   - `/observations`, `/lab-values`, `/supplements`, `/open-points`
     each show A's + B's entries without modification.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass (with finding S1-A; see Findings)
 
 ### 2. Identical entries collapse to no-op
 
@@ -296,11 +296,29 @@ importiert"` and a bumped version label.
 
 ## Findings
 
-(none yet)
+### S1-A (Category A UX gap, scenario 1, fixed in same session)
+
+ConfirmDialog rendered rows for every entity type where
+EITHER existing OR parsed had non-zero count. Consequence: a
+profile with existing observations + an import whose
+`observations` was empty forced the user into the row's mode
+picker. The only safe pick was `Überspringen`; `Ersetzen`
+would have destroyed the existing observations the import did
+not touch, and `Zusammenführen` was disabled (nothing to merge
+in). Same destructive-option-exposure shape as the original
+IM-05 finding.
+
+**Fix shipped** the same day on the IM-06 branch:
+`rowsFromCounts` filter now requires `parsed > 0` (or
+`secondaryParsed > 0` for lab data). Zero-parsed rows are
+hidden; resolver's missing-key default (`'skip'`) preserves
+existing data implicitly. Documented in ADR-0022 decision 9.
+New `ConfirmDialog.test.tsx` test "row hidden entirely when
+parsed is zero" guards the regression.
 
 ## Sign-off
 
-- ☐ Disjoint profiles merge (scenario 1)
+- ☑ Disjoint profiles merge (scenario 1) — pass with S1-A fixed in-session
 - ☐ Identical entries collapse (scenario 2)
 - ☐ New parameter silent additive (scenario 3)
 - ☐ Mine wins (scenario 4)
@@ -321,5 +339,5 @@ importiert"` and a bumped version label.
 - ☐ 360 px viewport fit (scenario 19)
 - ☐ 30+ conflicts scaling (scenario 20)
 
-Walker: ********\_\_\_\_********
+Walker: **\*\*\*\***\_\_\_\_**\*\*\*\***
 Date: 2026-**-**
