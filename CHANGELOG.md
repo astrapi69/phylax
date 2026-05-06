@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Soft-Reset (data wipe with master-password preservation)**
+  (six-step direct-to-main track, shipped 2026-05-06). New
+  destructive action in Settings > Danger Zone that clears profile
+  data only, preserving the master password, AI provider
+  configuration, user preferences, and the in-memory crypto key.
+  Addresses the friction of the existing hard-reset path (forced
+  master-password change plus full re-onboarding, including a 1.6 s
+  PBKDF2 re-derivation per ADR-0001) for users who only want a
+  fresh data slate. The new path opens one Dexie `'rw'` transaction
+  over the ten profile-data tables (`meta` excluded; salt +
+  verification token + encrypted AI config preserved byte-equal),
+  wipes `phylax.persistence.*` localStorage keys, leaves the
+  keystore singleton untouched, and on success routes the user to
+  `/profile/create` via React Router
+  `navigate(..., { replace: true })` so the in-memory key survives
+  the route transition. Locale-aware type-challenge (DE `LOESCHEN`
+  / EN `CLEAR`) contrasts with hard-reset's English-constant
+  `RESET`. Two-button stack in the danger zone with amber-vs-red
+  visual differentiation; hard-reset path unchanged. No polish
+  markers registered. Architectural decisions:
+  [ADR-0023](docs/decisions/ADR-0023-soft-reset.md). Commits:
+  accb3e4 (hook), 6aaf45d (locale), cdf7d3e (dialog), dc0aaca
+  (DangerZone integration), 315e767 (ADR + ROADMAP), 758ce59 (ADR
+  motivation correction), plus this commit (CHANGELOG).
 - **IM-06 field-level merge mode** (branch
   `feat/im-06-field-level-merge`, eight commits, 382 tests passing,
   awaiting smoke verification). Replaces the IM-05 Option B `'add'`
