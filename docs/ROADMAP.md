@@ -59,25 +59,16 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
 
 ## Phase 4 follow-up: Import
 
-- [ ] **IM-06** Field-level merge mode. **Implementation complete on
-      `feat/im-06-field-level-merge`** (eight commits, 382 tests
-      passing). Awaiting user smoke walk per
-      [`manual-smoke/im-06-field-level-merge.md`](manual-smoke/im-06-field-level-merge.md)
-      before merge-commit to `main`. Triggered by the IM-05 Option
-      B manual smoke finding 2026-05-04: the existing Replace mode
-      destroys user data and the existing Add ("Zusammenführen") mode
-      creates duplicates of overlapping entities. Neither matches a
-      user's intuition for "merge two profiles". IM-06 adds a real
-      field-level merge: match by natural key per entity type,
-      update fields where matched without destroying or duplicating,
-      surface a conflict-resolution UX (mine / theirs / field-by-field)
-      when matched fields differ. Restructures the
-      ConfirmDialog into Replace / Merge / Skip; the IM-05 `'add'`
-      semantic is retired from the UI but kept in the storage-layer
-      API for back-compat. Architectural decisions:
+- [x] **IM-06** Field-level merge mode. **Shipped 2026-05-04 in
+      merge commit 69f5ff3.** 12 commits across 8 implementation
+      steps + smoke-walk fixes. 384 unit tests + 11 e2e tests
+      passing (2854 total project-wide). Manual smoke scenarios
+      1, 2, 2b verified during the walk; scenarios 3-20 deferred
+      and accepted as technical debt - findings will surface as
+      ROADMAP polish markers if real-user reports come in.
+      Architectural decisions:
       [ADR-0022](decisions/ADR-0022-im-06-field-level-merge.md).
       Spec: [`specs/IM-06-field-level-merge.md`](specs/IM-06-field-level-merge.md).
-      Final ROADMAP tick after smoke pass + merge-commit on `main`.
 
 - [ ] **IM-06-polish-1** Synth-marker dedup. Multiple successive
       merge-imports accumulate one synthesized "Profil aus Datei

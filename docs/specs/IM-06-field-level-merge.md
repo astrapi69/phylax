@@ -1,6 +1,6 @@
 # IM-06 Field-level merge mode
 
-**Status:** Implementation complete, awaiting smoke verification (branch `feat/im-06-field-level-merge`)
+**Status:** Shipped 2026-05-04 in merge commit 69f5ff3
 **Series:** IM (import) / Phase 4 follow-up
 **Author:** Asterios Raptis
 **Date:** 2026-05-04
@@ -9,26 +9,28 @@
 
 ## Implementation trail
 
-Eight commits on the feature branch, with per-step diff review per
-`.claude/rules/ai-workflow.md`:
+Twelve commits across 8 implementation steps + smoke-walk fixes,
+with per-step diff review per `.claude/rules/ai-workflow.md`:
 
-| Step | Commit  | Scope                                              |
-| ---- | ------- | -------------------------------------------------- |
-| 1    | af30915 | Domain layer (types + naturalKey + matchEntities)  |
-| 2    | f975e7a | resolveMerge transform + tests                     |
-| 3a   | 5dfc191 | Wire `'merge'` for simple-table types in storage   |
-| 3b   | d4c8e95 | Lab-data `'merge'` with FK rewiring                |
-| 4    | f92b17e | useImport state machine + `'conflict-resolution'`  |
-| 5a   | 01cc5ca | ConflictResolutionDialog mine/theirs + integration |
-| 5b   | 771aab0 | Field-by-field expansion + per-field rendering     |
-| 6    | 55feed6 | ConfirmDialog `'add'` -> `'merge'` UI swap         |
-| 7    | 29897ec | IM-06 smoke walk file + IM-05 supersede banner     |
-| 8    | TBD     | ROADMAP closure prep + ADR-0022 + branch close-out |
+| Step    | Commit  | Scope                                              |
+| ------- | ------- | -------------------------------------------------- |
+| 1       | af30915 | Domain layer (types + naturalKey + matchEntities)  |
+| 2       | f975e7a | resolveMerge transform + tests                     |
+| 3a      | 5dfc191 | Wire `'merge'` for simple-table types in storage   |
+| 3b      | d4c8e95 | Lab-data `'merge'` with FK rewiring                |
+| 4       | f92b17e | useImport state machine + `'conflict-resolution'`  |
+| 5a      | 01cc5ca | ConflictResolutionDialog mine/theirs + integration |
+| 5b      | 771aab0 | Field-by-field expansion + per-field rendering     |
+| 6       | 55feed6 | ConfirmDialog `'add'` -> `'merge'` UI swap         |
+| 7       | 29897ec | IM-06 smoke walk file + IM-05 supersede banner     |
+| 8       | f878f0c | ROADMAP closure prep + ADR-0022 + spec status      |
+| smoke-1 | a53f12c | S1-A fix: hide zero-parsed rows in ConfirmDialog   |
+| smoke-2 | 9e11435 | S2-A fix: disable Übernehmen on all-skip selection |
 
-382 tests pass on the branch (Steps 1-6 contribute the new tests;
-Step 7 is doc-only). After the user walks the smoke, the merge
-commit on `main` closes the feature and the spec status moves to
-`Shipped {merge-commit-hash}`.
+384 unit tests + 11 e2e tests pass on the branch; 2854 tests
+total project-wide after merge to main. Manual smoke scenarios
+1, 2, 2b verified; 3-20 deferred. Merge to main via
+`--no-ff` per ADR-0022 strategy: branch history preserved.
 
 ## Problem statement
 
