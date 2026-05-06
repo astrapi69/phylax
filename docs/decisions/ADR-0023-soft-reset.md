@@ -13,13 +13,14 @@ caches plus the service worker, and reloads the app to onboarding.
 That flow assumes the user wants to start over completely, including
 master-password rotation and full re-onboarding.
 
-The 2026-05-05 user-feedback review surfaced a different use case:
-"I want to clear my profile data and start a new profile, but I do
-not want to type a new master password, re-configure my AI provider,
-or rebuild my preferences." Today the only path that satisfies this
-ends with the hard-reset wizard plus a manual re-onboarding pass,
-which is high-friction for a recurring data-wipe gesture (e.g. test
-profile, draft profile, "I want to redo my profile from scratch").
+The existing hard-reset path deletes all profile data but couples
+the wipe to a forced master-password change and full re-onboarding,
+including a PBKDF2 re-derivation (per ADR-0001, 1.2M iterations,
+~1.6s on commodity hardware). This coupling is friction for users
+who want a fresh data slate without rotating their password or
+losing their AI configuration. Soft-reset closes that gap: same
+data wipe, same in-memory crypto key, same AI configuration, same
+preferences. No re-onboarding.
 
 The Soft-Reset feature addresses this by introducing a second,
 lower-friction destructive surface that wipes profile data only and
@@ -346,10 +347,10 @@ Negative / accepted trade-offs:
   lookup. Two sibling dialogs are smaller surface (Decision 5).
 - **A2 - Hard reset only (status quo).** Keep the single danger
   zone trigger and force users into full re-onboarding for any
-  data wipe. Rejected: the user feedback explicitly flagged
-  this as friction, and re-onboarding includes a 1.6 s PBKDF2
+  data wipe. Rejected: re-onboarding includes a 1.6 s PBKDF2
   derivation plus master-password retype on the recovery path
-  every time.
+  every time, friction that delivers no security benefit when the
+  user only wants to clear data without rotating their password.
 - **A3 - Programmatic API only without UI.** Ship `useSoftReset`
   as a hook for future call sites without exposing a button in
   the danger zone. Rejected: defeats the purpose. Users need a
