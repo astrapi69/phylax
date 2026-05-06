@@ -57,6 +57,26 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       architecture; revisit if a real-world deployment scenario
       demands it.
 
+## Phase 7 follow-up: Settings polish
+
+- [x] **SOFT-RESET** Soft-reset (data wipe with master-password
+      preservation). **Shipped 2026-05-06 in commits accb3e4
+      (useSoftReset hook), 6aaf45d (DE + EN locale strings), cdf7d3e
+      (SoftResetDialog component), dc0aaca (DangerZoneSection
+      two-button stack), plus this commit (ADR-0023).** Six-step
+      direct-to-main track: hook -> locales -> dialog ->
+      DangerZoneSection -> ADR-0023 -> CHANGELOG. AI configuration,
+      master password, in-memory crypto key, and user preferences
+      preserved across the wipe; only the ten profile-data tables
+      and `phylax.persistence.*` localStorage keys are cleared.
+      Locale-aware type-challenge (DE `LOESCHEN` / EN `CLEAR`).
+      Two-button stack in the danger zone (amber soft above red
+      hard). Post-reset navigation via React Router
+      `navigate('/profile/create', { replace: true })` to preserve
+      the in-memory key. Hard-reset path unchanged. No polish
+      markers registered. Architectural decisions:
+      [ADR-0023](decisions/ADR-0023-soft-reset.md).
+
 ## Phase 4 follow-up: Import
 
 - [x] **IM-06** Field-level merge mode. **Shipped 2026-05-04 in
