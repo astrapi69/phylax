@@ -66,7 +66,7 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
       />,
     );
     expect(screen.getByTestId('confirm-row-observations-replace')).toBeInTheDocument();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-row-observations-merge')).toBeInTheDocument();
     expect(screen.getByTestId('confirm-row-observations-skip')).toBeInTheDocument();
   });
 
@@ -104,19 +104,25 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
         onCancel={vi.fn()}
       />,
     );
-    await user.click(screen.getByTestId('confirm-row-observations-add'));
+    await user.click(screen.getByTestId('confirm-row-observations-merge'));
     await user.click(screen.getByTestId('confirm-row-labData-replace'));
     await user.click(screen.getByTestId('confirm-row-supplements-skip'));
     await user.click(screen.getByRole('button', { name: /Übernehmen/i }));
     expect(onConfirm).toHaveBeenCalledOnce();
     expect(onConfirm).toHaveBeenCalledWith({
-      observations: 'add',
+      observations: 'merge',
       labData: 'replace',
       supplements: 'skip',
     });
   });
 
-  it('warning hint surfaces when any row is set to add; hidden otherwise', async () => {
+  it('S2-A all-skip discipline: confirm disabled + hint shown when every row is Überspringen', async () => {
+    // Smoke-walk fix 2026-05-04: picking 'skip' on every row and
+    // clicking Übernehmen used to throw ImportTargetNotEmptyError
+    // and route the state machine back to 'confirm-replace'.
+    // Dialog now disables the Übernehmen button and surfaces a
+    // hint asking the user to pick a non-skip mode for at least
+    // one row OR cancel.
     const user = userEvent.setup();
     render(
       <ConfirmDialog
@@ -127,13 +133,33 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
-    await user.click(screen.getByTestId('confirm-row-observations-replace'));
-    expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
-    await user.click(screen.getByTestId('confirm-row-labData-add'));
-    expect(screen.getByTestId('confirm-add-warning')).toBeInTheDocument();
-    // Toggling labData away from add hides the warning again.
-    await user.click(screen.getByTestId('confirm-row-labData-replace'));
+    const confirmBtn = screen.getByRole('button', { name: /Übernehmen/i });
+    expect(screen.queryByTestId('confirm-all-skip-hint')).toBeNull();
+
+    // Pick skip for every visible row.
+    await user.click(screen.getByTestId('confirm-row-observations-skip'));
+    await user.click(screen.getByTestId('confirm-row-labData-skip'));
+    await user.click(screen.getByTestId('confirm-row-supplements-skip'));
+
+    expect(screen.getByTestId('confirm-all-skip-hint')).toBeInTheDocument();
+    expect(confirmBtn).toBeDisabled();
+
+    // Switching one row to merge re-enables Übernehmen and hides the hint.
+    await user.click(screen.getByTestId('confirm-row-supplements-merge'));
+    expect(screen.queryByTestId('confirm-all-skip-hint')).toBeNull();
+    expect(confirmBtn).toBeEnabled();
+  });
+
+  it('IM-06 Step 6: legacy duplicate-warning hint is no longer rendered (merge does not duplicate)', () => {
+    render(
+      <ConfirmDialog
+        existingCounts={EXISTING}
+        parsedCounts={PARSED}
+        targetProfileName="X"
+        onConfirm={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
     expect(screen.queryByTestId('confirm-add-warning')).toBeNull();
   });
 
@@ -148,23 +174,56 @@ describe('ConfirmDialog (IM-05 Option B)', () => {
       />,
     );
     expect(screen.getByTestId('confirm-row-observations-replace')).toBeDisabled();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeEnabled();
+    expect(screen.getByTestId('confirm-row-observations-merge')).toBeEnabled();
     expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
   });
 
-  it('add radio disabled when parsed is zero (nothing to add)', () => {
+  it('row hidden entirely when parsed is zero (smoke-walk fix 2026-05-04)', () => {
+    // Old behaviour: row rendered with merge disabled + replace
+    // enabled. That trapped users into either picking 'überspringen'
+    // (the only sensible action) or accidentally picking 'ersetzen'
+    // which would destroy existing data the import did not touch.
+    // New behaviour: hide the row entirely; resolver defaults missing
+    // keys to 'skip'.
     render(
       <ConfirmDialog
-        existingCounts={{ ...EMPTY_COUNTS, observations: 4 }}
-        parsedCounts={{ ...EMPTY_COUNTS }}
+        existingCounts={{
+          ...EMPTY_COUNTS,
+          observations: 4,
+          // Make at least one row render so the dialog body has
+          // content to assert against.
+          supplements: 1,
+        }}
+        parsedCounts={{ ...EMPTY_COUNTS, supplements: 1 }}
         targetProfileName="X"
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
       />,
     );
-    expect(screen.getByTestId('confirm-row-observations-replace')).toBeEnabled();
-    expect(screen.getByTestId('confirm-row-observations-add')).toBeDisabled();
-    expect(screen.getByTestId('confirm-row-observations-skip')).toBeEnabled();
+    expect(screen.queryByTestId('confirm-row-observations')).toBeNull();
+    expect(screen.queryByTestId('confirm-row-observations-replace')).toBeNull();
+    // The supplements row remains because parsed.supplements > 0.
+    expect(screen.getByTestId('confirm-row-supplements')).toBeInTheDocument();
+  });
+
+  it('observations=replace + supplements=skip produces the same write decision when only supplements parsed', async () => {
+    // Companion test: payload contains only the picked types; the
+    // hidden 'observations' row defaults to 'skip' inside the
+    // resolver, preserving existing observations untouched.
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+    render(
+      <ConfirmDialog
+        existingCounts={{ ...EMPTY_COUNTS, observations: 4, supplements: 1 }}
+        parsedCounts={{ ...EMPTY_COUNTS, supplements: 1 }}
+        targetProfileName="X"
+        onConfirm={onConfirm}
+        onCancel={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByTestId('confirm-row-supplements-merge'));
+    await user.click(screen.getByRole('button', { name: /Übernehmen/i }));
+    expect(onConfirm).toHaveBeenCalledWith({ supplements: 'merge' });
   });
 
   it('cancel button calls onCancel', async () => {

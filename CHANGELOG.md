@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **IM-06 field-level merge mode** (branch
+  `feat/im-06-field-level-merge`, eight commits, 382 tests passing,
+  awaiting smoke verification). Replaces the IM-05 Option B `'add'`
+  semantic with a real natural-key + field-level merge engine.
+  Triggered by the 2026-05-04 IM-05 manual smoke finding that
+  neither Replace (destroys) nor Add (duplicates) matched the
+  user's mental model of "merge two profiles". The new path:
+  pre-transaction natural-key matching per entity type, conflict
+  detection routes through a new `'conflict-resolution'` state in
+  `useImport`, `ConflictResolutionDialog` collects per-conflict
+  picks (mine / theirs / field-by-field), `importProfile` applies
+  the resulting plan inside a single Dexie transaction with FK
+  rewiring across matched parent reports for lab data. Storage-
+  layer `'add'` retained for back-compat (38/38 pre-existing
+  tests still green). Architectural decisions:
+  [ADR-0022](docs/decisions/ADR-0022-im-06-field-level-merge.md).
+  Spec: [`docs/specs/IM-06-field-level-merge.md`](docs/specs/IM-06-field-level-merge.md).
+  Smoke: [`docs/manual-smoke/im-06-field-level-merge.md`](docs/manual-smoke/im-06-field-level-merge.md).
+  IM-05 Option B smoke kept as historical artifact under a
+  SUPERSEDED-BY-IM-06 banner.
 - Smoke render test for `features/not-found/NotFound.tsx`. Closes
   the P0 coverage threshold violation flagged in
   `docs/audits/current-coverage.md` (module was at 0% lines on a

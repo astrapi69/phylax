@@ -65,13 +65,13 @@
   "confirm": {
     "heading": "Import into existing profile",
     "body": "\"{{name}}\" already contains data. Choose how the import should treat each section.",
-    "modes-explainer": "Replace: delete existing data and replace with the import. Merge: keep existing data and add the import on top. Skip: keep existing data and discard the import for that section.",
-    "warning": "Replace deletes existing data irreversibly. Merge can create duplicates. Skip discards the import for that section.",
-    "add-warning": "Note: merging can create duplicates if the same file is imported more than once. Phylax does not deduplicate by content.",
+    "modes-explainer": "Replace: delete existing data and replace with the import. Merge: match existing rows by natural key (theme, date, name, context), add new fields, prompt for conflicts on import. No duplicates. Skip: keep existing data and discard the import for that section.",
+    "warning": "Replace deletes existing data irreversibly. Skip discards the import for that section.",
+    "all-skip-hint": "Every section is set to Skip: nothing will be imported. Pick Replace or Merge for at least one section, or click Cancel.",
     "toggle-legend": "Decide per section",
     "mode": {
       "replace": "Replace",
-      "add": "Merge",
+      "merge": "Merge",
       "skip": "Skip"
     },
     "row": {
@@ -83,6 +83,39 @@
       "profile-versions": "Profile versions: {{existing}} existing, {{parsed}} in import"
     },
     "confirm": "Apply"
+  },
+  "merge-conflicts": {
+    "heading": "Merge conflicts",
+    "intro": "{{total}} conflict(s) detected for \"{{name}}\". Pick a resolution for each row.",
+    "progress": "{{resolved}} of {{total}} conflicts resolved",
+    "section": {
+      "observations": "Observations",
+      "labReports": "Lab reports",
+      "labValues": "Lab values",
+      "supplements": "Supplements",
+      "openPoints": "Open points",
+      "profileVersions": "Version history",
+      "timelineEntries": "Timeline entries",
+      "count": "{{count}} conflict(s)"
+    },
+    "row": {
+      "label-key": "Identity: {{key}}",
+      "diff-fields": "Differing fields: {{fields}}"
+    },
+    "mode": {
+      "mine": "Keep mine",
+      "theirs": "Take theirs",
+      "field-by-field": "Field-by-field",
+      "field-by-field-disabled": "Field-by-field (coming soon)"
+    },
+    "value": {
+      "expand": "Show more",
+      "collapse": "Show less"
+    },
+    "footer": {
+      "cancel": "Cancel",
+      "confirm": "Apply"
+    }
   },
   "result": {
     "success": {

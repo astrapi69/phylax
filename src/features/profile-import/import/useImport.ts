@@ -12,10 +12,17 @@ import { importProfile } from './importProfile';
 import {
   ImportTargetNotEmptyError,
   countsAreEmpty,
+  resolvePerTypeMode,
   type EntityCounts,
   type ImportResult,
   type PerTypeMode,
 } from './types';
+import {
+  detectMergeConflicts,
+  hasAnyConflict,
+  type MergeConflictSet,
+} from './detectMergeConflicts';
+import type { MergeResolutions } from '../../../domain/import-merge';
 
 export type ImportState =
   | { kind: 'entry' }
@@ -46,10 +53,18 @@ export type ImportState =
       existingCounts: EntityCounts;
     }
   | {
+      kind: 'conflict-resolution';
+      parseResult: ParseResult;
+      targetProfileId: string;
+      replaceSelection: PerTypeMode;
+      conflicts: MergeConflictSet;
+    }
+  | {
       kind: 'importing';
       parseResult: ParseResult;
       targetProfileId: string;
       replaceSelection?: PerTypeMode;
+      resolutions?: MergeResolutions;
     }
   | { kind: 'done'; importResult: ImportResult }
   | { kind: 'error'; detail: string };
@@ -60,6 +75,16 @@ export interface ImportHook {
   selectProfile: (targetProfileId: string) => Promise<void>;
   confirmReplace: (selection: PerTypeMode) => void;
   startImport: () => Promise<void>;
+  /**
+   * IM-06: from `'conflict-resolution'` state, supply the user-
+   * collected resolutions for every detected conflict and proceed
+   * to `'importing'`. Caller must pass an entry for every conflict
+   * in `state.conflicts`; missing entries surface
+   * `UnresolvedConflictError` from `importProfile` and route to
+   * `'error'`. Q2 discipline: the UI gates the submit button until
+   * every conflict has a pick.
+   */
+  submitResolutions: (resolutions: MergeResolutions) => Promise<void>;
   /**
    * Trigger AI-09 cleanup on a parse-failure state. Reads the original
    * markdown, sends it to Anthropic with the cleanup system prompt, and
@@ -80,16 +105,56 @@ export interface ImportHook {
 /**
  * State machine for the Markdown profile import flow.
  *
- * Transitions (happy path):
- *   entry -> parsing -> profile-selection -> preview -> importing -> done
+ * Full state graph (post-IM-06):
  *
- * Non-empty target routes through confirm-replace between
- * profile-selection and preview. Errors at any step land in `error`.
- * `cancel` and `reset` return to `entry` for a fresh start.
+ *   entry
+ *     -> parsing                                 (loadMarkdown)
+ *     -> parse-failure                            (parser low-confidence)
+ *     -> profile-selection
  *
- * All async edges catch errors and transition to `error` with a
+ *   parse-failure
+ *     -> parse-failure(cleanup-loading)           (requestAICleanup)
+ *     -> parse-failure(cleanup-error)
+ *     -> parse-failure(cleanup-impossible)
+ *     -> profile-selection                        (proceedWithPartial)
+ *
+ *   profile-selection
+ *     -> preview                                  (target empty)
+ *     -> confirm-replace                          (target non-empty)
+ *
+ *   confirm-replace
+ *     -> preview                                  (confirmReplace)
+ *
+ *   preview
+ *     -> importing                                (startImport, no merge mode)
+ *     -> conflict-resolution                      (startImport, merge mode + conflicts)
+ *     -> importing                                (startImport, merge mode + zero conflicts)
+ *     -> confirm-replace                          (startImport, ImportTargetNotEmptyError fallback)
+ *
+ *   conflict-resolution                           [IM-06 Step 4]
+ *     -> importing                                (submitResolutions)
+ *     -> entry                                    (cancel; W3 atomicity)
+ *
+ *   importing
+ *     -> done
+ *     -> error                                    (any other error)
+ *
+ *   any -> entry                                  (cancel / reset)
+ *
+ * All async edges catch errors and transition to `'error'` with a
  * user-facing message. `startImport` catches `ImportTargetNotEmptyError`
- * specifically and routes to `confirm-replace` instead of failing.
+ * specifically and routes to `'confirm-replace'` instead of failing.
+ *
+ * Atomicity guarantees:
+ *
+ * - Pre-transaction conflict detection (`detectMergeConflicts`) runs
+ *   BEFORE any Dexie write. Errors there route to `'error'` (W4: only
+ *   user-decision conflicts surface as `'conflict-resolution'`).
+ * - Cancel from `'conflict-resolution'` returns to `'entry'`. No
+ *   transaction was opened; vault stays untouched (W3).
+ * - `submitResolutions` calls `importProfile` with the collected
+ *   resolutions; an `UnresolvedConflictError` (UI bug) surfaces as
+ *   `'error'`.
  */
 export function useImport(): ImportHook {
   const [state, setState] = useState<ImportState>({ kind: 'entry' });
@@ -155,6 +220,47 @@ export function useImport(): ImportHook {
   const startImport = useCallback(async (): Promise<void> => {
     if (state.kind !== 'preview') return;
     const { parseResult, targetProfileId, replaceSelection } = state;
+
+    // IM-06: pre-transaction conflict detection. If the user picked
+    // 'merge' for any type and at least one row in that type would
+    // surface as a conflict, route through 'conflict-resolution' so
+    // the UI collects picks before the Dexie write opens. Types
+    // without merge mode are skipped (their resolution is implicit:
+    // replace / add / skip).
+    if (replaceSelection) {
+      const modeMap = resolvePerTypeMode(replaceSelection);
+      const anyMerge =
+        modeMap.observations === 'merge' ||
+        modeMap.labData === 'merge' ||
+        modeMap.supplements === 'merge' ||
+        modeMap.openPoints === 'merge' ||
+        modeMap.profileVersions === 'merge' ||
+        modeMap.timelineEntries === 'merge';
+      if (anyMerge) {
+        let conflicts: MergeConflictSet;
+        try {
+          conflicts = await detectMergeConflicts(parseResult, targetProfileId, modeMap);
+        } catch (err) {
+          // W4: pre-transaction errors (decryption / load failure)
+          // route to 'error', NOT 'conflict-resolution'.
+          setState({ kind: 'error', detail: toDetail(err) });
+          return;
+        }
+        if (hasAnyConflict(conflicts)) {
+          setState({
+            kind: 'conflict-resolution',
+            parseResult,
+            targetProfileId,
+            replaceSelection,
+            conflicts,
+          });
+          return;
+        }
+        // Zero conflicts -> skip resolution, proceed straight to
+        // importing with empty resolutions.
+      }
+    }
+
     setState({ kind: 'importing', parseResult, targetProfileId, replaceSelection });
     try {
       const importResult = await importProfile(parseResult, targetProfileId, {
@@ -174,6 +280,34 @@ export function useImport(): ImportHook {
       setState({ kind: 'error', detail: toDetail(err) });
     }
   }, [state]);
+
+  const submitResolutions = useCallback(
+    async (resolutions: MergeResolutions): Promise<void> => {
+      if (state.kind !== 'conflict-resolution') return;
+      const { parseResult, targetProfileId, replaceSelection } = state;
+      setState({
+        kind: 'importing',
+        parseResult,
+        targetProfileId,
+        replaceSelection,
+        resolutions,
+      });
+      try {
+        const importResult = await importProfile(parseResult, targetProfileId, {
+          replaceExisting: replaceSelection,
+          resolutions,
+        });
+        setState({ kind: 'done', importResult });
+      } catch (err) {
+        // UnresolvedConflictError from importProfile means the UI
+        // submitted incomplete resolutions (Q2 discipline broken).
+        // Route through the standard error surface; the screen can
+        // display the message and the user can retry.
+        setState({ kind: 'error', detail: toDetail(err) });
+      }
+    },
+    [state],
+  );
 
   const requestAICleanup = useCallback(async (): Promise<void> => {
     if (state.kind !== 'parse-failure') return;
@@ -248,6 +382,7 @@ export function useImport(): ImportHook {
     selectProfile,
     confirmReplace,
     startImport,
+    submitResolutions,
     requestAICleanup,
     proceedWithPartial,
     cancel,

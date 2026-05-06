@@ -1,9 +1,34 @@
 # IM-06 Field-level merge mode
 
-**Status:** Draft (queued behind IM-05 manual-smoke finding 2026-05-04)
+**Status:** Implementation complete, awaiting smoke verification (branch `feat/im-06-field-level-merge`)
 **Series:** IM (import) / Phase 4 follow-up
 **Author:** Asterios Raptis
 **Date:** 2026-05-04
+**Architectural decisions:** [ADR-0022](../decisions/ADR-0022-im-06-field-level-merge.md)
+**Smoke walk:** [`../manual-smoke/im-06-field-level-merge.md`](../manual-smoke/im-06-field-level-merge.md)
+
+## Implementation trail
+
+Eight commits on the feature branch, with per-step diff review per
+`.claude/rules/ai-workflow.md`:
+
+| Step | Commit  | Scope                                              |
+| ---- | ------- | -------------------------------------------------- |
+| 1    | af30915 | Domain layer (types + naturalKey + matchEntities)  |
+| 2    | f975e7a | resolveMerge transform + tests                     |
+| 3a   | 5dfc191 | Wire `'merge'` for simple-table types in storage   |
+| 3b   | d4c8e95 | Lab-data `'merge'` with FK rewiring                |
+| 4    | f92b17e | useImport state machine + `'conflict-resolution'`  |
+| 5a   | 01cc5ca | ConflictResolutionDialog mine/theirs + integration |
+| 5b   | 771aab0 | Field-by-field expansion + per-field rendering     |
+| 6    | 55feed6 | ConfirmDialog `'add'` -> `'merge'` UI swap         |
+| 7    | 29897ec | IM-06 smoke walk file + IM-05 supersede banner     |
+| 8    | TBD     | ROADMAP closure prep + ADR-0022 + branch close-out |
+
+382 tests pass on the branch (Steps 1-6 contribute the new tests;
+Step 7 is doc-only). After the user walks the smoke, the merge
+commit on `main` closes the feature and the spec status moves to
+`Shipped {merge-commit-hash}`.
 
 ## Problem statement
 
@@ -155,7 +180,38 @@ Open-points have a parent (`context`) plus a list of bullets
   - Add to the existing `import` mutation suite; per-module
     threshold rises if hardening lands cleanly.
 
-## Open questions for Q-locks at implementation start
+## Q-locks (confirmed 2026-05-04)
+
+| #   | Decision                                                                                                                                                                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1  | No per-import resolution summary in v1. Synthesized "Profil aus Datei importiert" marker stays. Add later if user asks.                                                                                                               |
+| Q2  | No default radio preselection; user must explicitly pick Mine or Theirs per conflict. Confirm-button disabled until all conflicts resolved. Matches IM-05 ConfirmDialog pattern plus correct UX discipline for destructive decisions. |
+| Q3  | Open-points bullet whitespace normalisation deferred. Byte-equal dedup in v1; revisit if user reports false negatives.                                                                                                                |
+| Q4  | Lab values inside a matched lab report: silent merge for parameters that exist on only one side. Conflict only on `(reportId, parameter)` collision with differing fields.                                                            |
+| Q5  | IM-06 helpers in `domain/import-merge/` are designed to be reusable by B-05 (Phase 6 follow-up Merge-mode backup import). B-05 stays a separate task; IM-06 unblocks it.                                                              |
+| Q6  | No pagination v1. All conflicts surface in the resolution modal. Add bulk "Take all theirs / mine" buttons if real-world profiles exceed ~30 conflicts.                                                                               |
+| Q7  | DE/EN copy added to `docs/i18n-glossary.md` under a `merge.*` namespace at implementation time.                                                                                                                                       |
+
+## Watch points
+
+- **W1 - Natural-key stability over time.** Known v1 limitation:
+  surface variants of the same logical entity that differ in
+  whitespace, punctuation, or capitalisation match-fail and both
+  stay as New. Example: `Schlafqualität` vs `Schlaf-Qualität` is
+  two separate observations even though the user means one.
+  Acceptable for v1 because byte-equal dedup is the safer default
+  (no silent collapsing). Future Q3 normalisation work addresses.
+- **W2 - Conflict-resolution modal dismiss behaviour.** ESC, Back
+  button, or backdrop click during the resolution step =
+  cancel-import-completely (state rollback, transaction abort,
+  return to entry screen). Partial-merge is a data-consistency
+  risk; the user pressing ESC after seeing conflicts has likely
+  changed their mind, and a fresh start is better than a
+  half-applied write. The Modal primitive's `closeOnEscape` flag
+  is set so the cancel path is reachable; the parent state
+  machine treats the dismiss as `cancel`.
+
+## Open questions (originals, kept for audit trail)
 
 1. **Q1 - Should the conflict resolution be saved as a per-import
    summary** (e.g. "merged 12 entities, kept 3 from yours, took

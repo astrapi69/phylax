@@ -11,6 +11,7 @@ import { ImportEntryScreen } from './ImportEntryScreen';
 import { ProfileSelectionScreen } from './ProfileSelectionScreen';
 import { PreviewScreen } from './PreviewScreen';
 import { ConfirmDialog } from './ConfirmDialog';
+import { ConflictResolutionDialog } from './ConflictResolutionDialog';
 import { ResultScreen } from './ResultScreen';
 
 /**
@@ -162,6 +163,27 @@ export function ImportFlow() {
             parsedCounts={parsedCountsFromResult(state.parseResult)}
             targetProfileName={targetName(state.targetProfileId)}
             onConfirm={importState.confirmReplace}
+            onCancel={importState.cancel}
+          />
+        </>
+      );
+
+    case 'conflict-resolution':
+      return (
+        <>
+          <PreviewScreen
+            parseResult={state.parseResult}
+            sourceLabel={sourceLabel || t('flow.source-unknown')}
+            targetProfileName={targetName(state.targetProfileId)}
+            onConfirm={() => {
+              /* blocked by conflict-resolution modal */
+            }}
+            onBack={importState.cancel}
+          />
+          <ConflictResolutionDialog
+            conflicts={state.conflicts}
+            targetProfileName={targetName(state.targetProfileId)}
+            onSubmit={(resolutions) => void importState.submitResolutions(resolutions)}
             onCancel={importState.cancel}
           />
         </>

@@ -47,13 +47,17 @@ function rowsFromCounts(existing: EntityCounts, parsed: EntityCounts): RowDescri
     { key: 'timelineEntries', existing: existing.timelineEntries, parsed: parsed.timelineEntries },
     { key: 'profileVersions', existing: existing.profileVersions, parsed: parsed.profileVersions },
   ];
-  return rows.filter(
-    (r) =>
-      r.existing > 0 ||
-      r.parsed > 0 ||
-      (r.secondaryExisting ?? 0) > 0 ||
-      (r.secondaryParsed ?? 0) > 0,
-  );
+  // Smoke-walk fix 2026-05-04: hide rows where the import has nothing
+  // to contribute (parsed = 0). Asking the user to pick replace / merge
+  // / skip on a zero-parsed row is a UX trap: 'replace' would delete
+  // existing data that the import does not even touch, and 'skip' is
+  // the only sensible default. The resolver already defaults missing
+  // keys to 'skip', so dropping the row from the dialog implicitly
+  // selects 'skip' for that type without surfacing a destructive
+  // option to the user. Lab-data row checks the secondaryParsed
+  // (lab-values) too so a report-less import with values surfaces
+  // (rare but possible).
+  return rows.filter((r) => r.parsed > 0 || (r.secondaryParsed ?? 0) > 0);
 }
 
 /**
@@ -64,11 +68,18 @@ function rowsFromCounts(existing: EntityCounts, parsed: EntityCounts): RowDescri
  * destructive-variant chrome (red confirm button + role="alertdialog")
  * provided by the primitive.
  *
- * IM-05 Option B (2026-05-01): three modes per type - replace, add,
- * skip. No defaults; user must explicitly pick a mode for every
- * visible row before Confirm enables. Add-mode surfaces a warning
- * hint about possible duplicates because this build does not
- * deduplicate by content (Q3 lock from the user's spec).
+ * IM-05 Option B (2026-05-01) shipped three modes: replace / add /
+ * skip. IM-06 Step 6 (2026-05-04) replaced 'add' with 'merge' as
+ * the second user-facing mode after the smoke-walk finding that
+ * 'add' produced duplicates which violated the user's mental model
+ * of "merging two profiles". The 'add' mode is retained at the
+ * storage-layer API for back-compat but no longer surfaced in the
+ * UI; programmatic callers can still opt in. The Add-mode duplicate
+ * warning was dropped: 'merge' uses natural-key matching and routes
+ * conflicts through the IM-06 ConflictResolutionDialog instead.
+ *
+ * No defaults; user must explicitly pick a mode for every visible
+ * row before Confirm enables (Q2 from IM-05 + IM-06).
  *
  * Lab data stays a single combined toggle (Q4 lock, parity with the
  * import transaction body). Profile metadata is always merged
@@ -90,7 +101,15 @@ export function ConfirmDialog({
   const [selection, setSelection] = useState<Partial<Record<RowKey, ImportMode>>>({});
 
   const allModesPicked = rows.every((r) => selection[r.key] !== undefined);
-  const anyAdd = rows.some((r) => selection[r.key] === 'add');
+  // Smoke-walk fix S2-A 2026-05-04: if the user picks 'skip' on
+  // every visible row and clicks Übernehmen, the storage layer
+  // throws ImportTargetNotEmptyError (no authorised write on a
+  // non-empty target) which routes the state machine back to
+  // 'confirm-replace' and surfaces the dialog again - looks like
+  // an infinite loop to the user. Disable Übernehmen on all-skip
+  // and force the user to either pick a non-skip mode for at least
+  // one row OR click Abbrechen.
+  const allSkip = allModesPicked && rows.every((r) => selection[r.key] === 'skip');
 
   const setMode = (key: RowKey, mode: ImportMode) => {
     setSelection((prev) => ({ ...prev, [key]: mode }));
@@ -132,13 +151,13 @@ export function ConfirmDialog({
               />
             ))}
           </fieldset>
-          {anyAdd && (
+          {allSkip && (
             <p
               role="note"
-              data-testid="confirm-add-warning"
+              data-testid="confirm-all-skip-hint"
               className="mb-3 rounded-sm border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
             >
-              {t('confirm.add-warning')}
+              {t('confirm.all-skip-hint')}
             </p>
           )}
           <p className="text-sm text-red-700 dark:text-red-300">{t('confirm.warning')}</p>
@@ -148,7 +167,7 @@ export function ConfirmDialog({
       confirmLabel={t('confirm.confirm')}
       onConfirm={handleConfirm}
       variant="destructive"
-      confirmDisabled={!allModesPicked}
+      confirmDisabled={!allModesPicked || allSkip}
     />
   );
 }
@@ -166,7 +185,7 @@ function ModeRow({
   const groupId = `confirm-mode-${row.key}`;
 
   const replaceAvailable = row.existing > 0 || (row.secondaryExisting ?? 0) > 0;
-  const addAvailable = row.parsed > 0 || (row.secondaryParsed ?? 0) > 0;
+  const mergeAvailable = row.parsed > 0 || (row.secondaryParsed ?? 0) > 0;
 
   return (
     <div className="rounded-sm border border-gray-200 p-2 dark:border-gray-700">
@@ -190,12 +209,12 @@ function ModeRow({
         />
         <ModeRadio
           name={groupId}
-          value="add"
-          checked={selected === 'add'}
-          disabled={!addAvailable}
-          label={t('confirm.mode.add')}
-          onSelect={() => onSelect('add')}
-          testId={`confirm-row-${row.key}-add`}
+          value="merge"
+          checked={selected === 'merge'}
+          disabled={!mergeAvailable}
+          label={t('confirm.mode.merge')}
+          onSelect={() => onSelect('merge')}
+          testId={`confirm-row-${row.key}-merge`}
         />
         <ModeRadio
           name={groupId}

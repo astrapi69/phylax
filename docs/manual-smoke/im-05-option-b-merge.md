@@ -1,5 +1,14 @@
 # IM-05 Option B merge-add manual smoke
 
+> **SUPERSEDED BY IM-06.** This smoke file documents IM-05 Option B
+> behaviour (replace / add / skip) which surfaced fundamental UX gaps
+> in the smoke walk on 2026-05-04. IM-06
+> (`feat/im-06-field-level-merge`) replaces the UI-side `'add'` mode
+> with field-level `'merge'`. New smoke at
+> [`im-06-field-level-merge.md`](im-06-field-level-merge.md). Kept
+> here as a historical artifact for the decision trail; do not walk
+> against the current UI.
+
 Three-mode per-type import dialog (replace / add / skip), shipped
 as the user-reported follow-up to the original IM-05 selective-replace
 release. Vitest covers the per-mode write decisions (38 import tests
