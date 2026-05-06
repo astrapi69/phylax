@@ -68,7 +68,7 @@ References:
     `identical`).
   - Result screen shows successful import.
   - Entity counts unchanged.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass
 
 ### 2b. All-skip selection: Übernehmen disabled + hint shown (S2-A fix)
 
@@ -81,7 +81,7 @@ References:
   - Switching one row to `Zusammenführen` or `Ersetzen`:
     Übernehmen re-enables, hint disappears.
   - Clicking `Abbrechen` returns to entry; vault unchanged.
-- **Result**: ☐ pass ☐ fail
+- **Result**: ☑ pass
 
 ### 3. New parameter in matched lab report = silent additive merge (Q4)
 
@@ -351,8 +351,8 @@ parsed is zero" guards the regression.
 ## Sign-off
 
 - ☑ Disjoint profiles merge (scenario 1) — pass with S1-A fixed in-session
-- ☐ Identical entries collapse (scenario 2)
-- ☐ All-skip Übernehmen disabled + hint (scenario 2b, S2-A fix)
+- ☑ Identical entries collapse (scenario 2)
+- ☑ All-skip Übernehmen disabled + hint (scenario 2b, S2-A fix)
 - ☐ New parameter silent additive (scenario 3)
 - ☐ Mine wins (scenario 4)
 - ☐ Theirs wins (scenario 5)
