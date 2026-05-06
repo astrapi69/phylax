@@ -75,6 +75,7 @@
   "danger-zone": {
     "heading": "Gefahrenzone",
     "description": "Lösche unwiderruflich alle lokal gespeicherten Phylax-Daten dieses Geräts. Profile, Beobachtungen, Laborwerte, Dokumente, KI-Konfiguration. Kein Wiederherstellungsweg.",
+    "soft-reset-button": "Profildaten löschen (Passwort behalten)",
     "reset-button": "Alle Daten löschen"
   }
 }

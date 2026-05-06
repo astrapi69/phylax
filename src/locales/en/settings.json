@@ -75,6 +75,7 @@
   "danger-zone": {
     "heading": "Danger zone",
     "description": "Permanently delete all Phylax data stored locally on this device. Profiles, observations, lab values, documents, AI configuration. No recovery path.",
+    "soft-reset-button": "Clear profile data (keep password)",
     "reset-button": "Delete all data"
   }
 }

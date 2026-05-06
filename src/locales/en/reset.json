@@ -9,5 +9,33 @@
     "progress": "Deleting data...",
     "blocked": "Other Phylax tabs are open. Please close them and retry.",
     "partial-failure": "Data deleted. Some browser caches could not be cleared. Clear your browser data manually if this is a concern."
+  },
+  "soft": {
+    "title": "Clear profile data",
+    "warning-intro": "The following data will be deleted:",
+    "wiped": [
+      "Profiles",
+      "Observations",
+      "Lab reports and lab values",
+      "Supplements",
+      "Open points",
+      "Timeline entries",
+      "Version history",
+      "Documents"
+    ],
+    "warning-kept-intro": "The following stays:",
+    "kept": [
+      "Master password",
+      "AI configuration",
+      "Language and theme",
+      "Sort and display preferences"
+    ],
+    "challenge": "CLEAR",
+    "challenge-prompt": "Type {{challenge}} to confirm.",
+    "challenge-placeholder": "{{challenge}}",
+    "progress": "Clearing profile data...",
+    "partial-failure": "Some steps failed. Please try again.",
+    "cancel-button": "Cancel",
+    "confirm-button": "Clear profile data"
   }
 }

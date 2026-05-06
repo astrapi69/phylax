@@ -9,5 +9,33 @@
     "progress": "Daten werden gelöscht...",
     "blocked": "Andere Phylax-Tabs sind geöffnet. Bitte schließe sie und versuche es erneut.",
     "partial-failure": "Daten gelöscht. Einige Browser-Caches konnten nicht geleert werden. Lösche die Browser-Daten manuell, falls dich das stört."
+  },
+  "soft": {
+    "title": "Profildaten löschen",
+    "warning-intro": "Folgende Daten werden gelöscht:",
+    "wiped": [
+      "Profile",
+      "Beobachtungen",
+      "Laborbefunde und Laborwerte",
+      "Verträglichkeiten",
+      "Offene Punkte",
+      "Verlaufsnotizen",
+      "Versionshistorie",
+      "Dokumente"
+    ],
+    "warning-kept-intro": "Folgendes bleibt erhalten:",
+    "kept": [
+      "Master-Passwort",
+      "KI-Konfiguration",
+      "Sprache und Theme",
+      "Sortier- und Anzeigeeinstellungen"
+    ],
+    "challenge": "LOESCHEN",
+    "challenge-prompt": "Tippe {{challenge}}, um zu bestätigen.",
+    "challenge-placeholder": "{{challenge}}",
+    "progress": "Profildaten werden gelöscht...",
+    "partial-failure": "Einige Schritte sind fehlgeschlagen. Bitte versuche es erneut.",
+    "cancel-button": "Abbrechen",
+    "confirm-button": "Profildaten löschen"
   }
 }
