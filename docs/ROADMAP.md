@@ -106,6 +106,19 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       blind picks. If confirmed unnecessary, drop the marker
       after Step 7 smoke pass. Not blocking IM-06 ship.
 
+- [ ] **IM-06-polish-5** Radio click-target verification. Playwright
+      e2e tests in `tests/e2e/im-06-merge.spec.ts` use `force: true`
+      on ConfirmDialog + ConflictResolutionDialog radio clicks to
+      bypass click-actionability checks under automated test
+      timing. The full IM-06 manual smoke walk (which clicks
+      without `force`) verifies whether real-user clicks land
+      reliably or whether the wrapping `<label>` overlap masks a
+      real hit-target issue. If smoke surfaces miss-clicks: tighten
+      label / input layout (e.g. wrap input in a flex container
+      with explicit pointer-events targeting). Trigger: smoke
+      finding or user-reported click reliability issue. Not
+      blocking IM-06 ship.
+
 - [ ] **IM-06-polish-4** Preserve field-picks across mode-switch
       in the conflict dialog. Current behaviour (W1 lean):
       switching from `field-by-field` to `mine` / `theirs` and
