@@ -311,6 +311,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   86.64% lines, closing the P0 coverage threshold violation
   (the last of four).
 
+### Changed
+
+- **Build tooling: Vite 7.3.2 -> Vite 8.0.x with Rolldown bundler**.
+  Vite 8 unifies the previously-split esbuild/Rollup pipeline into a
+  single Rolldown-based toolchain. vite-plugin-pwa bumped to 1.3.0
+  for Vite 8 peer-dep coverage. plugin-react (5.2.0) and vitest
+  (4.1.5) remained on their existing versions, both already
+  Vite-8-compatible. No vite.config.ts migration required.
+
+  Size-limit adjustments accompanying the upgrade: jsPDF chunk budget
+  raised from 140 KB to 145 KB to absorb routine variance from the
+  jspdf.es.min and jspdf.plugin.autotable glob sum. The workbox-\*.js
+  pattern was widened to include the dist-root service-worker runtime
+  alongside the assets-subdir workbox-window file, with the budget
+  set to 20 KB to cover both files (pre-existing pattern gap, exposed
+  during V8 measurement, not introduced by the upgrade).
+
+  Commits: 61dd1da (deps bump), a476447 (size-limit fixes), plus
+  this commit (ROADMAP + CHANGELOG).
+
 ## [1.1.0] - 2026-05-02
 
 First post-1.0.0 minor release. Closes Phases 4 (Documents), 4b (ePA

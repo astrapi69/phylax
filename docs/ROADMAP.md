@@ -57,6 +57,21 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       architecture; revisit if a real-world deployment scenario
       demands it.
 
+## Phase 7 follow-up: Build tooling
+
+- [x] **VITE 8 UPGRADE**: Migrate from Vite 7.3.2 to Vite 8.0.x with
+      the Rolldown-based bundler. vite-plugin-pwa bumped to 1.3.0 for
+      Vite 8 peer-dep coverage. plugin-react and vitest unchanged
+      (already Vite-8-compatible). vite.config.ts unchanged: no
+      rollupOptions, manualChunks, or esbuild._ surface required
+      migration. Size-limit budgets adjusted: jsPDF chunk 140 KB ->
+      145 KB for routine variance headroom; workbox pattern widened
+      to cover both assets-subdir and dist-root workbox-_.js with
+      20 KB budget after pre-existing pattern gap closed. (Shipped
+      2026-05-07 in commits 61dd1da (deps bump), a476447 (size-limit
+      fixes), plus this commit (ROADMAP + CHANGELOG). V8-track.
+      Manual smoke deferred to V8-05.)
+
 ## Phase 7 follow-up: Settings polish
 
 - [x] **SOFT-RESET** Soft-reset (data wipe with master-password
