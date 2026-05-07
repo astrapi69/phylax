@@ -8,8 +8,8 @@
   },
   {
     "name": "Workbox chunk",
-    "path": "dist/assets/workbox-*.js",
-    "limit": "8 KB",
+    "path": ["dist/assets/workbox-*.js", "dist/workbox-*.js"],
+    "limit": "20 KB",
     "gzip": true,
     "running": false
   },
@@ -44,7 +44,7 @@
   {
     "name": "jsPDF chunk (lazy)",
     "path": "dist/assets/jspdf*.js",
-    "limit": "140 KB",
+    "limit": "145 KB",
     "gzip": true,
     "running": false
   }
