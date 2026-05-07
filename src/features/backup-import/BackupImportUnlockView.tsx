@@ -89,6 +89,16 @@ export function BackupImportUnlockView() {
         </p>
 
         <form onSubmit={(e) => void handleSubmit(e)} noValidate>
+          {/* BUG-12: hidden username for password-manager association
+              and Chrome a11y compliance. */}
+          <input
+            type="text"
+            name="username"
+            value="phylax"
+            autoComplete="username"
+            readOnly
+            hidden
+          />
           <div className="mb-4">
             <label
               htmlFor="backup-import-password"

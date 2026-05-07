@@ -119,6 +119,16 @@ export function SetupView() {
         <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">{t('setup.intro')}</p>
 
         <form onSubmit={handleSubmit} noValidate>
+          {/* BUG-12: hidden username for password-manager association
+              and Chrome a11y compliance. */}
+          <input
+            type="text"
+            name="username"
+            value="phylax"
+            autoComplete="username"
+            readOnly
+            hidden
+          />
           <div className="mb-4">
             <label
               htmlFor="password"

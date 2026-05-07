@@ -333,6 +333,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **BUG-12: Chrome DevTools warning "Password forms should have
+  (optionally hidden) username fields for accessibility".** Every
+  master-password form (unlock, setup, backup export, backup import,
+  change password) now includes a hidden `<input
+autocomplete="username" value="phylax">` so password managers can
+  associate the password with a stable account hint and Chrome's
+  a11y check passes. The constant `phylax` is reused across all five
+  forms because they all accept the same master credential
+  (backup encryption derives from the master password); a single
+  hint keeps password-manager entries consolidated rather than
+  fragmented per screen. No behavior change, no new translations.
+
 - **BUG-11: runtime UI language switch DE -> EN paints raw i18n keys
   until reload.** The Settings language switcher fired
   `i18n.changeLanguage(value)` without awaiting the lazy EN namespace

@@ -85,6 +85,16 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
             }}
             noValidate
           >
+            {/* BUG-12: hidden username for password-manager association
+                and Chrome a11y compliance. */}
+            <input
+              type="text"
+              name="username"
+              value="phylax"
+              autoComplete="username"
+              readOnly
+              hidden
+            />
             <div className="mb-4">
               <label
                 htmlFor="unlock-password"

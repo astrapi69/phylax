@@ -95,6 +95,18 @@ export function BackupExportSection() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="space-y-3">
+          {/* BUG-12: hidden username input lets password managers
+              associate this form's password with the master credential
+              and silences Chrome's a11y warning about missing username
+              fields in password forms. */}
+          <input
+            type="text"
+            name="username"
+            value="phylax"
+            autoComplete="username"
+            readOnly
+            hidden
+          />
           <div>
             <label
               htmlFor="backup-export-password"
