@@ -6,7 +6,7 @@ import {
   hasLanguagePreference,
   setLanguagePreference,
 } from '../../i18n/detector';
-import type { SupportedLanguage } from '../../i18n/config';
+import { loadLanguageBundle, type SupportedLanguage } from '../../i18n/config';
 
 type Selection = 'auto' | SupportedLanguage;
 
@@ -18,6 +18,7 @@ function initialSelection(currentLang: string): Selection {
 export function LanguageSection() {
   const { t, i18n } = useTranslation('settings');
   const [selected, setSelected] = useState<Selection>(() => initialSelection(i18n.language));
+  const [isChanging, setIsChanging] = useState(false);
 
   useEffect(() => {
     const onChange = () => setSelected(initialSelection(i18n.language));
@@ -27,14 +28,27 @@ export function LanguageSection() {
     };
   }, [i18n]);
 
-  const handleChange = (value: Selection) => {
+  // BUG-11: lazy-loaded EN namespaces must be in the resource store
+  // before changeLanguage flips the active language. Otherwise the
+  // synchronous languageChanged event re-renders consumers against an
+  // empty EN store and they paint raw keys until a later (or missing)
+  // 'loaded' tick. Awaiting loadLanguageBundle() closes the race.
+  const handleChange = async (value: Selection) => {
     setSelected(value);
-    if (value === 'auto') {
-      clearLanguagePreference();
-      void i18n.changeLanguage(detectFromNavigator());
-    } else {
-      setLanguagePreference(value);
-      void i18n.changeLanguage(value);
+    setIsChanging(true);
+    try {
+      if (value === 'auto') {
+        clearLanguagePreference();
+        const detected = detectFromNavigator();
+        await loadLanguageBundle(detected);
+        await i18n.changeLanguage(detected);
+      } else {
+        setLanguagePreference(value);
+        await loadLanguageBundle(value);
+        await i18n.changeLanguage(value);
+      }
+    } finally {
+      setIsChanging(false);
     }
   };
 
@@ -46,7 +60,7 @@ export function LanguageSection() {
       >
         {t('language.heading')}
       </h2>
-      <fieldset>
+      <fieldset disabled={isChanging} aria-busy={isChanging}>
         <legend className="sr-only">{t('language.heading')}</legend>
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
@@ -55,7 +69,9 @@ export function LanguageSection() {
               name="language"
               value="auto"
               checked={selected === 'auto'}
-              onChange={() => handleChange('auto')}
+              onChange={() => {
+                void handleChange('auto');
+              }}
             />
             {t('language.auto')}
           </label>
@@ -65,7 +81,9 @@ export function LanguageSection() {
               name="language"
               value="de"
               checked={selected === 'de'}
-              onChange={() => handleChange('de')}
+              onChange={() => {
+                void handleChange('de');
+              }}
             />
             {t('language.option.de')}
           </label>
@@ -75,7 +93,9 @@ export function LanguageSection() {
               name="language"
               value="en"
               checked={selected === 'en'}
-              onChange={() => handleChange('en')}
+              onChange={() => {
+                void handleChange('en');
+              }}
             />
             {t('language.option.en')}
           </label>

@@ -331,6 +331,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Commits: 61dd1da (deps bump), a476447 (size-limit fixes), plus
   this commit (ROADMAP + CHANGELOG).
 
+### Fixed
+
+- **BUG-11: runtime UI language switch DE -> EN paints raw i18n keys
+  until reload.** The Settings language switcher fired
+  `i18n.changeLanguage(value)` without awaiting the lazy EN namespace
+  bundle, so i18next's synchronous `languageChanged` event re-rendered
+  consumers against an empty resource store and `t()` fell through to
+  the dotted-key path under `fallbackLng: false`. Cold-boot EN was
+  unaffected because `main.tsx` already awaits `loadLanguageBundle`
+  before mount; only the runtime switcher missed the same gate.
+  `LanguageSection.handleChange` now awaits `loadLanguageBundle(value)`
+  before `i18n.changeLanguage(value)` and disables the radios with
+  `aria-busy` for the duration. New unit tests in
+  `LanguageSection.test.tsx` lock the load-then-change call order and
+  the busy-state lifecycle; new Playwright spec
+  `tests/e2e/language-switch.spec.ts` exercises the DE -> EN flow end
+  to end and asserts no dotted-path keys leak into the visible DOM.
+
 ## [1.1.0] - 2026-05-02
 
 First post-1.0.0 minor release. Closes Phases 4 (Documents), 4b (ePA
