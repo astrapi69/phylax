@@ -63,10 +63,10 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       the Rolldown-based bundler. vite-plugin-pwa bumped to 1.3.0 for
       Vite 8 peer-dep coverage. plugin-react and vitest unchanged
       (already Vite-8-compatible). vite.config.ts unchanged: no
-      rollupOptions, manualChunks, or esbuild._ surface required
+      rollupOptions, manualChunks, or esbuild.\* surface required
       migration. Size-limit budgets adjusted: jsPDF chunk 140 KB ->
       145 KB for routine variance headroom; workbox pattern widened
-      to cover both assets-subdir and dist-root workbox-_.js with
+      to cover both assets-subdir and dist-root workbox-\*.js with
       20 KB budget after pre-existing pattern gap closed. (Shipped
       2026-05-07 in commits 61dd1da (deps bump), a476447 (size-limit
       fixes), plus this commit (ROADMAP + CHANGELOG). V8-track.
