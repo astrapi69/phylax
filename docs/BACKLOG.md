@@ -57,8 +57,10 @@ real human in front of a real browser / a screen reader / a market.
 These have explicit trigger conditions in ROADMAP. Do nothing until
 the trigger fires.
 
-- **P-11** ES / FR / EL translations. Trigger: bug-clean state plus a
-  per-language scope spec.
+- **P-11** ES / FR / EL translations. Trigger: bug-clean state PLUS
+  per-language scope spec, where bug-clean is defined as: no open
+  BUG- entries in ROADMAP AND no P0 audit findings open AND no E2E
+  flake reports in the last 7 days.
 - **P-13** Image viewer GPU zoom. Trigger: user reports zoom-jank on a
   real scan, or a perf audit shows >100 ms scripting cost per zoom step.
 - **P-14** Image viewer pinch-zoom. Trigger: a manual smoke or user
