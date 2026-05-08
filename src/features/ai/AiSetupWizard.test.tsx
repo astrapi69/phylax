@@ -269,11 +269,13 @@ describe('AiSetupWizard branch closures', () => {
     setup({ initial: { provider: 'anthropic', apiKey: 'sk-ant-toggle' } });
     await user.click(screen.getByTestId('ai-setup-wizard-next'));
     const input = screen.getByTestId('ai-setup-wizard-key-input') as HTMLInputElement;
-    // Hidden by default: -webkit-text-security: disc applied.
-    expect(input.getAttribute('style')).toMatch(/text-security/i);
+    // Hidden by default: monospace + -webkit-text-security: disc are
+    // applied via inline style. jsdom 29 strips the non-standard
+    // -webkit-text-security on serialization, so we assert the inline
+    // style is *present* when masked and *absent* when revealed.
+    expect(input.getAttribute('style') ?? '').not.toBe('');
     await user.click(screen.getByTestId('ai-setup-wizard-key-toggle'));
-    // After toggle, style attribute is empty (showKey === true -> undefined).
-    expect(input.getAttribute('style') ?? '').not.toMatch(/text-security/i);
+    expect(input.getAttribute('style') ?? '').toBe('');
   });
 
   it('local provider step 2 renders the no-key-hint instead of the key field', async () => {

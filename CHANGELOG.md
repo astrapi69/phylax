@@ -331,6 +331,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Commits: 61dd1da (deps bump), a476447 (size-limit fixes), plus
   this commit (ROADMAP + CHANGELOG).
 
+### Changed
+
+- **DEPS-04: bundled dependency upgrades.** Patch / minor: i18next
+  26.0.5 -> 26.0.10, pdfjs-dist 5.6.205 -> 5.7.284, react / react-dom
+  19.2.5 -> 19.2.6, react-i18next 17.0.4 -> 17.0.7, react-router-dom
+  7.14.0 -> 7.15.0, vite 8.0.10 -> 8.0.11, typescript-eslint
+  8.58.1 -> 8.59.2, prettier 3.8.2 -> 3.8.3, @axe-core/playwright
+  4.11.1 -> 4.11.3. Major: @vitejs/plugin-react 5 -> 6,
+  eslint-plugin-react-hooks 5 -> 7, jsdom 25 -> 29, lint-staged
+  16 -> 17, prettier-plugin-tailwindcss 0.7 -> 0.8, react-markdown
+  9 -> 10. ESLint 9 -> 10 deferred: eslint-plugin-react@7.37.5
+  (latest) still caps its `eslint` peer at `^9.7`; revisit once
+  plugin-react ships eslint-10 support. Two transitive
+  vulnerabilities (high in `basic-ftp`, moderate in `ip-address`,
+  both under `@size-limit/preset-app`'s dev-only puppeteer dep
+  tree) cleared via `npm audit fix`. Single regression surfaced and
+  fixed in the same task: `AiSetupWizard` "eye toggle" test relied
+  on jsdom 25 serializing the non-standard
+  `-webkit-text-security` inline style; jsdom 29 strips unknown CSS
+  properties on serialization, so the assertion now compares
+  presence-vs-absence of the `style` attribute. Component behavior
+  in real browsers is unchanged. Gates run: typecheck, lint, full
+  unit suite (2885 pass), bundle-size budgets, production build,
+  Playwright e2e on chromium + firefox (90 pass).
+
 ### Fixed
 
 - **BUG-12: Chrome DevTools warning "Password forms should have
