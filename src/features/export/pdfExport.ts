@@ -15,6 +15,7 @@ import type { ExportOptions } from './exportOptions';
 import { FONT_FAMILY, FontSize, Leading } from './pdf/typography';
 import { CONTENT_WIDTH_MM, Gap, Margin } from './pdf/spacing';
 import { composeFieldBlocks, parseRichText, renderRichText } from './pdf/richText';
+import { classifyAssessment, Palette, type RGB } from './pdf/color';
 
 /**
  * PDF export (X-02). Lazy-loaded jsPDF + jspdf-autotable so the
@@ -99,12 +100,19 @@ const LINE_HEIGHT_BODY = Leading.body;
 const LINE_HEIGHT_H2 = Leading.h2;
 
 type JsPdfDoc = JsPdfType & { lastAutoTable?: { finalY: number } };
+interface AutoTableCellInput {
+  content: string;
+  styles?: { textColor?: RGB | number };
+}
+type AutoTableCell = string | AutoTableCellInput;
 interface AutoTableArg {
   startY: number;
   head: string[][];
-  body: string[][];
+  body: AutoTableCell[][];
   styles?: Record<string, unknown>;
   headStyles?: Record<string, unknown>;
+  bodyStyles?: Record<string, unknown>;
+  alternateRowStyles?: Record<string, unknown>;
   margin?: { left: number; right: number };
   theme?: string;
 }
@@ -296,9 +304,17 @@ function renderLabValues(
       t('pdf.lab.col.assessment'),
     ],
   ];
-  const body = sorted.map((v) => {
+  const body: AutoTableCell[][] = sorted.map((v) => {
     const r = reportById.get(v.reportId);
     const date = r?.reportDate ? formatDate(parseIsoDate(r.reportDate), locale) : '';
+    const assessmentRaw = v.assessment ?? '';
+    const cls = classifyAssessment(assessmentRaw);
+    const assessmentCell: AutoTableCell =
+      cls === 'critical'
+        ? { content: assessmentRaw, styles: { textColor: Palette.abnormalCritical } }
+        : cls === 'notable'
+          ? { content: assessmentRaw, styles: { textColor: Palette.abnormalNotable } }
+          : assessmentRaw;
     return [
       date,
       v.category,
@@ -306,19 +322,28 @@ function renderLabValues(
       v.result,
       v.unit ?? '',
       v.referenceRange ?? '',
-      v.assessment ?? '',
+      assessmentCell,
     ];
   });
   autoTable(doc, {
     startY: y,
     head,
     body,
-    styles: { fontSize: FONT_FOOTER + 1, cellPadding: 1.5 },
-    headStyles: { fillColor: [60, 60, 60], textColor: 255 },
+    styles: {
+      fontSize: FontSize.small,
+      cellPadding: 1.8,
+      textColor: Palette.textPrimary,
+    },
+    headStyles: {
+      fillColor: Palette.tableHeader,
+      textColor: Palette.tableHeaderText,
+      fontStyle: 'bold',
+    },
+    alternateRowStyles: { fillColor: Palette.tableStripe },
     margin: { left: MARGIN_MM, right: MARGIN_MM },
     theme: 'striped',
   });
-  return (doc.lastAutoTable?.finalY ?? y) + LINE_HEIGHT_BODY * 2;
+  return (doc.lastAutoTable?.finalY ?? y) + Gap.afterSection;
 }
 
 function renderObservations(
@@ -612,7 +637,15 @@ function sectionHeading(doc: JsPdfDoc, yIn: number, text: string): number {
   y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY);
   doc.setFont(FONT_FAMILY, 'bold');
   doc.setFontSize(FONT_H2);
+  doc.setTextColor(...Palette.accent);
   doc.text(text, MARGIN_MM, y);
+  // Subtle accent rule under the heading, full content width.
+  const ruleY = y + 1.5;
+  doc.setDrawColor(...Palette.accent);
+  doc.setLineWidth(0.25);
+  doc.line(MARGIN_MM, ruleY, MARGIN_MM + CONTENT_WIDTH_MM, ruleY);
+  // Restore default text color so subsequent body content is not tinted.
+  doc.setTextColor(...Palette.textPrimary);
   return y + LINE_HEIGHT_H2;
 }
 
