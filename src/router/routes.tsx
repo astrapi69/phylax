@@ -1,5 +1,6 @@
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ProfileRepository } from '../db/repositories';
 import { EntryRouter } from './EntryRouter';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequireProfile } from './RequireProfile';
@@ -28,6 +29,25 @@ import { NotFound } from '../features/not-found/NotFound';
 function ProfileCreatePage() {
   const navigate = useNavigate();
   const { setActiveProfileId } = useActiveProfile();
+  // M-02: when at least one profile already exists, the page is
+  // reachable from /profiles ("+ Neues Profil"), so surface a Cancel
+  // button. On the post-onboarding first-profile flow `hasExisting`
+  // stays false and the form has no escape hatch by design.
+  const [hasExisting, setHasExisting] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    void new ProfileRepository()
+      .list()
+      .then((profiles) => {
+        if (!cancelled) setHasExisting(profiles.length > 0);
+      })
+      .catch(() => {
+        if (!cancelled) setHasExisting(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const handleComplete = useCallback(
     (profileId: string) => {
       // M-04: activate the freshly-created profile so all downstream
@@ -37,7 +57,15 @@ function ProfileCreatePage() {
     },
     [navigate, setActiveProfileId],
   );
-  return <ProfileCreateForm onComplete={handleComplete} />;
+  const handleCancel = useCallback(() => {
+    navigate('/profiles');
+  }, [navigate]);
+  return (
+    <ProfileCreateForm
+      onComplete={handleComplete}
+      onCancel={hasExisting ? handleCancel : undefined}
+    />
+  );
 }
 
 /**

@@ -4,14 +4,25 @@ import { useProfileCreate } from './useProfileCreate';
 
 interface ProfileCreateFormProps {
   onComplete: (profileId: string) => void;
+  /**
+   * Optional escape hatch. When provided (M-02 flow from /profiles),
+   * render a "Cancel" link beneath the submit button so the user can
+   * back out without creating a profile. Omitted on the first-run
+   * onboarding flow where there is no destination to return to.
+   */
+  onCancel?: () => void;
 }
 
 /**
  * Form for creating a new profile.
- * Reusable for both the first profile after onboarding and future
- * "add another profile" flows in settings.
+ *
+ * Reusable across two contexts:
+ *   1. First-run onboarding (no `onCancel`) - the only way out is
+ *      submit-or-stay.
+ *   2. M-02 "add another profile" from /profiles (with `onCancel`)
+ *      - the cancel link routes back to the switcher.
  */
-export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
+export function ProfileCreateForm({ onComplete, onCancel }: ProfileCreateFormProps) {
   const { t } = useTranslation('profile-create');
   const hook = useProfileCreate(onComplete);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -145,6 +156,17 @@ export function ProfileCreateForm({ onComplete }: ProfileCreateFormProps) {
         >
           {isSubmitting ? t('submit.pending') : t('submit.label')}
         </button>
+
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="mt-3 w-full rounded-sm border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          >
+            {t('cancel.label')}
+          </button>
+        )}
       </form>
     </div>
   );

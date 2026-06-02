@@ -18,6 +18,9 @@
     "label": "Create profile",
     "pending": "Creating..."
   },
+  "cancel": {
+    "label": "Cancel"
+  },
   "error": {
     "create-failed": "Profile could not be created."
   }
