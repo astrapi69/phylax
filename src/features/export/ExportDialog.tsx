@@ -56,6 +56,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
   // themes filters by design (helper text under the checkbox, code
   // comment in `appendix.ts`). Default: unchecked.
   const [includeLinkedDocuments, setIncludeLinkedDocuments] = useState(false);
+  const [includeCoverPage, setIncludeCoverPage] = useState(false);
   // X-07 export preview. The dialog generates the same artifact the
   // download path produces and hands it to <ExportPreview>; the
   // preview's Download button then triggers the existing download
@@ -103,8 +104,19 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
     if (includeLinkedDocuments) {
       opts.includeLinkedDocuments = true;
     }
+    if (includeCoverPage) {
+      opts.includeCoverPage = true;
+    }
     return opts;
-  }, [fromIso, toIso, availableThemes, excludedThemes, selectedThemes, includeLinkedDocuments]);
+  }, [
+    fromIso,
+    toIso,
+    availableThemes,
+    excludedThemes,
+    selectedThemes,
+    includeLinkedDocuments,
+    includeCoverPage,
+  ]);
 
   // Reset status to idle whenever the dialog is (re)opened. Focus
   // management for the close button is provided by the Modal primitive
@@ -288,6 +300,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         dateRange: exportOptions.dateRange,
         themes: exportOptions.themes,
         includeLinkedDocuments: exportOptions.includeLinkedDocuments,
+        includeCoverPage: exportOptions.includeCoverPage,
       });
       setPreview({
         content: { kind: 'pdf', blob },
@@ -364,6 +377,7 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
         dateRange: exportOptions.dateRange,
         themes: exportOptions.themes,
         includeLinkedDocuments: exportOptions.includeLinkedDocuments,
+        includeCoverPage: exportOptions.includeCoverPage,
       });
       triggerDownload(blob, generatePdfFilename(), 'application/pdf');
       setStatus({ kind: 'idle' });
@@ -443,6 +457,25 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
               </div>
             </fieldset>
           )}
+
+          <label
+            data-testid="export-cover-toggle"
+            className="flex min-h-[44px] cursor-pointer items-start gap-2 rounded-sm px-1 py-1 text-sm text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800"
+          >
+            <input
+              type="checkbox"
+              checked={includeCoverPage}
+              onChange={(e) => setIncludeCoverPage(e.target.checked)}
+              data-testid="export-cover-checkbox"
+              className="mt-0.5 h-4 w-4"
+            />
+            <span className="flex flex-col">
+              <span>{t('cover.toggle.label')}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {t('cover.toggle.hint')}
+              </span>
+            </span>
+          </label>
 
           <label
             data-testid="export-appendix-toggle"

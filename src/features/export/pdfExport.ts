@@ -80,6 +80,13 @@ export interface PdfExportInput {
    * `dateRange` and `themes` filters by design (see appendix.ts).
    */
   includeLinkedDocuments?: boolean;
+  /**
+   * X-09 Phase 4 opt-in. When true, the document opens with a
+   * dedicated cover page (large profile name + subtitle + generation
+   * date) and body content starts on page 2. Default off so the
+   * doctor-visit case stays compact.
+   */
+  includeCoverPage?: boolean;
   /** Override for tests; defaults to `new Date()`. */
   now?: Date;
 }
@@ -145,6 +152,7 @@ function generate(
     themes,
     documents,
     includeLinkedDocuments,
+    includeCoverPage,
   } = input;
   // X-03 date-range filter + X-04 theme filter. Supplements and open
   // points have no theme/date-comparable field; both filters skip them.
@@ -163,15 +171,25 @@ function generate(
 
   let y = MARGIN_MM;
 
+  // 0. Cover page (X-09 Phase 4, opt-in).
+  if (includeCoverPage) {
+    renderCoverPage(doc, name, t, locale, now);
+    doc.addPage();
+    y = MARGIN_MM;
+  }
+
   // 1. Header.
   doc.setFont(FONT_FAMILY, 'bold');
   doc.setFontSize(FONT_TITLE);
+  doc.setTextColor(...Palette.textPrimary);
   doc.text(t('pdf.header.title', { name }), MARGIN_MM, y);
-  y += 9;
+  y += Gap.afterTitle;
   doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
+  doc.setTextColor(...Palette.textSecondary);
   doc.text(t('pdf.header.generated', { date: formatDate(now, locale) }), MARGIN_MM, y);
-  y += LINE_HEIGHT_BODY * 2;
+  doc.setTextColor(...Palette.textPrimary);
+  y += Gap.afterHeader;
 
   // 2. Base data (always rendered, with empty placeholders for missing fields).
   y = renderBaseData(doc, y, profile, t, locale);
@@ -215,10 +233,85 @@ function generate(
     }
   }
 
-  // 8. Footer on every page (after total page count is known).
+  // 8. Headers + footers on every page (after total page count is
+  //    known). Running header skips the cover page and page 1; first
+  //    body page reads cleanly without repeating the profile name
+  //    already in the page-1 title block.
+  renderRunningHeaders(doc, name, t, includeCoverPage ?? false);
   renderFooters(doc, t, locale, now);
 
   return doc.output('blob');
+}
+
+function renderCoverPage(
+  doc: JsPdfDoc,
+  name: string,
+  t: TFunction<'export'>,
+  locale: string,
+  now: Date,
+): void {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const centerX = pageWidth / 2;
+  const subtitle = t('pdf.cover.subtitle');
+  const generated = t('pdf.cover.generated', { date: formatDate(now, locale) });
+
+  // Accent rule above the title block, centered.
+  const titleY = pageHeight * 0.4;
+  doc.setDrawColor(...Palette.accent);
+  doc.setLineWidth(0.5);
+  doc.line(centerX - 40, titleY - 18, centerX + 40, titleY - 18);
+
+  doc.setFont(FONT_FAMILY, 'bold');
+  doc.setFontSize(FontSize.cover);
+  doc.setTextColor(...Palette.textPrimary);
+  doc.text(name, centerX, titleY, { align: 'center' });
+
+  doc.setFont(FONT_FAMILY, 'normal');
+  doc.setFontSize(FontSize.coverSubtitle);
+  doc.setTextColor(...Palette.accent);
+  doc.text(subtitle, centerX, titleY + 10, { align: 'center' });
+
+  doc.setFontSize(FontSize.body);
+  doc.setTextColor(...Palette.textSecondary);
+  doc.text(generated, centerX, titleY + 18, { align: 'center' });
+  doc.setTextColor(...Palette.textPrimary);
+}
+
+function renderRunningHeaders(
+  doc: JsPdfDoc,
+  name: string,
+  t: TFunction<'export'>,
+  hasCover: boolean,
+): void {
+  const totalPages = doc.getNumberOfPages();
+  // Running header begins one page after the first body page so the
+  // first body page does not duplicate the profile name already in
+  // the page-1 title block.
+  const firstHeaderPage = hasCover ? 3 : 2;
+  if (totalPages < firstHeaderPage) return;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  // Body-page numbering excludes the cover (matches the user's
+  // mental model: "page 1" is the first content page, not the cover).
+  const bodyPageOffset = hasCover ? 1 : 0;
+  const bodyTotal = totalPages - bodyPageOffset;
+  for (let p = firstHeaderPage; p <= totalPages; p++) {
+    doc.setPage(p);
+    doc.setFont(FONT_FAMILY, 'normal');
+    doc.setFontSize(FontSize.header);
+    doc.setTextColor(...Palette.textSecondary);
+    const headerY = Margin.headerOffset + 4;
+    const text = t('pdf.running-header', {
+      name,
+      page: p - bodyPageOffset,
+      total: bodyTotal,
+    });
+    doc.text(text, pageWidth - Margin.page, headerY, { align: 'right' });
+    doc.setDrawColor(...Palette.accent);
+    doc.setLineWidth(0.2);
+    doc.line(Margin.page, headerY + 1.5, pageWidth - Margin.page, headerY + 1.5);
+    doc.setTextColor(...Palette.textPrimary);
+  }
 }
 
 function renderBaseData(
@@ -621,15 +714,13 @@ function renderFooters(doc: JsPdfDoc, t: TFunction<'export'>, locale: string, no
   const pageWidth = doc.internal.pageSize.getWidth();
   doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_FOOTER);
+  doc.setTextColor(...Palette.textMuted);
   for (let p = 1; p <= totalPages; p++) {
     doc.setPage(p);
-    const text = t('pdf.footer', {
-      date: formatDate(now, locale),
-      page: p,
-      total: totalPages,
-    });
-    doc.text(text, pageWidth / 2, pageHeight - 10);
+    const text = t('pdf.footer', { date: formatDate(now, locale) });
+    doc.text(text, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
+  doc.setTextColor(...Palette.textPrimary);
 }
 
 function sectionHeading(doc: JsPdfDoc, yIn: number, text: string): number {

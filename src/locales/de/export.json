@@ -60,6 +60,12 @@
       "assessment": "Bewertung"
     }
   },
+  "cover": {
+    "toggle": {
+      "label": "Deckblatt einschließen",
+      "hint": "Zusätzliche Titelseite mit Profil-Name und Erstellungsdatum."
+    }
+  },
   "appendix": {
     "toggle": {
       "label": "Verlinkte Dokumente als Anhang einschließen",
@@ -85,7 +91,12 @@
       "title": "Phylax · Gesundheits-Profil von {{name}}",
       "generated": "Erzeugt am {{date}}"
     },
-    "footer": "Phylax · {{date}} · Seite {{page}} / {{total}}",
+    "footer": "Phylax · {{date}}",
+    "running-header": "{{name}} · Seite {{page}} / {{total}}",
+    "cover": {
+      "subtitle": "Phylax · Gesundheits-Profil",
+      "generated": "Erzeugt am {{date}}"
+    },
     "section": {
       "base-data": "Basisdaten",
       "lab-values": "Laborwerte",

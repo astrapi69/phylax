@@ -60,6 +60,12 @@
       "assessment": "Assessment"
     }
   },
+  "cover": {
+    "toggle": {
+      "label": "Include cover page",
+      "hint": "Adds a title page with the profile name and the date the export was generated."
+    }
+  },
   "appendix": {
     "toggle": {
       "label": "Include linked documents as appendix",
@@ -85,7 +91,12 @@
       "title": "Phylax · Health profile of {{name}}",
       "generated": "Generated on {{date}}"
     },
-    "footer": "Phylax · {{date}} · Page {{page}} / {{total}}",
+    "footer": "Phylax · {{date}}",
+    "running-header": "{{name}} · Page {{page}} / {{total}}",
+    "cover": {
+      "subtitle": "Phylax · Health profile",
+      "generated": "Generated on {{date}}"
+    },
     "section": {
       "base-data": "Base data",
       "lab-values": "Lab values",

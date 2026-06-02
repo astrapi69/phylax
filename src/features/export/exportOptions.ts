@@ -33,4 +33,10 @@ export interface ExportOptions {
    * accepts the option for forward compatibility.
    */
   includeLinkedDocuments?: boolean;
+  /**
+   * PDF-only: render a dedicated cover page as page 1. X-09 Phase 4
+   * opt-in (default off) so the doctor-visit use case stays compact.
+   * Markdown and CSV exports ignore this flag.
+   */
+  includeCoverPage?: boolean;
 }
