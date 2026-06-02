@@ -74,6 +74,27 @@ the trigger fires.
   providers. Trigger: a real-world deployment scenario demands it.
 - **B-05** Merge-mode backup import. Trigger: Phase 8 multi-profile
   planning or a multi-device-sync requirement.
+- **X-10** All-profiles PDF export option, producing one document that
+  spans every profile on the device rather than only the active one.
+  Trigger: an explicit user request for a single PDF covering multiple
+  profiles, OR a maintainer-confirmed caregiver workflow where exporting
+  each profile separately is demonstrably impractical (reported in a
+  smoke walk or user message). The mere existence of more than one
+  profile does not fire this: per-profile separation is the intended
+  default and combining profiles in one file carries a privacy cost.
+- **TD-14** Unify the proxy-profile wording between the predicate-form
+  create-form radio ("Stellvertretend für jemand anderen") and the
+  noun-form badge ("Stellvertreterprofil"), and resolve the EN
+  proxy-vs-caregiver lexical split, across all locales. Trigger:
+  user-reported confusion about the term in any language, OR a
+  translation-review task (e.g., P-11 ES / FR / EL) that forces a
+  decision on the canonical noun.
+- **TD-15** Add a JSDoc note to `useExportData` stating that the hook
+  resolves the active profile only, so every export format is scoped to
+  the current profile and not to all profiles. Trigger: any future PR
+  modifying the data-loading or profile-resolution logic in
+  `src/features/export/useExportData.ts`, OR a maintainer-reported
+  confusion about active-profile scoping in the export pipeline.
 
 ## Tier 4 - Deferred / future (out-of-scope for the next release)
 
