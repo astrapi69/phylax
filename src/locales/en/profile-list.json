@@ -1,9 +1,9 @@
 {
   "screen": {
     "heading": "All profiles",
-    "description": "Switch between your profiles or create a new one. The active profile is highlighted.",
+    "description": "Switch between your profiles or create a new one, for example a caregiver profile for someone else. The active profile is highlighted.",
     "active-label": "Active",
-    "empty": "No profiles yet."
+    "empty": "No profiles yet. Create one for yourself or a caregiver profile for someone else."
   },
   "profile-type": {
     "own": "Own profile",

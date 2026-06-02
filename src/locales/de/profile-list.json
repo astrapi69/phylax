@@ -1,9 +1,9 @@
 {
   "screen": {
     "heading": "Alle Profile",
-    "description": "Wechsle zwischen deinen Profilen oder lege ein neues an. Das aktive Profil ist hervorgehoben.",
+    "description": "Wechsle zwischen deinen Profilen oder lege ein neues an, z.B. ein Stellvertreterprofil für eine andere Person. Das aktive Profil ist hervorgehoben.",
     "active-label": "Aktiv",
-    "empty": "Noch keine Profile vorhanden."
+    "empty": "Noch keine Profile vorhanden. Lege ein Eigenprofil für dich selbst oder ein Stellvertreterprofil für eine andere Person an."
   },
   "profile-type": {
     "own": "Eigenes Profil",

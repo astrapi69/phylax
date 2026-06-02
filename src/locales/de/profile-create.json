@@ -1,12 +1,13 @@
 {
   "heading": "Neues Profil erstellen",
-  "intro": "Erstelle dein erstes Gesundheitsprofil. Du kannst alle Details später ergänzen.",
+  "intro": "Lege ein Gesundheitsprofil für dich selbst an, oder ein Stellvertreterprofil für eine andere Person, z.B. ältere Eltern oder Kinder. Alle Details lassen sich später ergänzen.",
   "form": {
     "name-label": "Profilname",
     "name-placeholder": "Mein Profil",
     "type-label": "Profiltyp",
     "type-self": "Für mich selbst",
     "type-proxy": "Stellvertretend für jemand anderen",
+    "type-hint": "Ein Stellvertreterprofil dokumentiert die Gesundheit einer anderen Person, z.B. ältere Eltern oder Kinder.",
     "managed-by-label": "Dein Name (als Betreuer)",
     "managed-by-placeholder": "Asterios",
     "managed-by-hint": "Wird gespeichert, um zu kennzeichnen, wer dieses Profil verwaltet.",

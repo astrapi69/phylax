@@ -153,6 +153,23 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       re-entered. Trigger: smoke-walk scenario 10 finding or
       user report of frustration. Not blocking IM-06 ship.
 
+## Internationalization (I18N-series)
+
+- [x] **I18N-03** Stellvertreter / caregiver-profile messaging on the
+      create form and the /profiles list. Closes the gap between the
+      "Lebende Gesundheit" article-series narrative and the shipped
+      UI flagged by the 2026-06-02 audit: the proxy use case was
+      present as a radio option and a badge but never explained
+      anywhere visible. Adds a new `form.type-hint` caption under
+      the Profiltyp radio fieldset, rewrites `profile-create:intro`
+      to work in both first-run and add-another contexts (drops
+      "dein erstes"), extends `profile-list:screen.description` and
+      `screen.empty` so both profile types are named in the empty
+      state and the on-screen guidance. DE + EN parity; EN aligned
+      to the README vocabulary ("caregiver profile", "elderly
+      parent or child"). No schema change, no business-logic
+      change. Shipped 2026-06-02 in this commit.
+
 ## Phase 6 follow-up: Backup
 
 - [ ] **B-05** Merge-mode backup import. **Deferred.** Requires a

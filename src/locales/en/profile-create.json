@@ -1,12 +1,13 @@
 {
   "heading": "Create new profile",
-  "intro": "Create your first health profile. You can add all details later.",
+  "intro": "Create a health profile for yourself, or a caregiver profile for someone else, for example an elderly parent or child. You can add all details later.",
   "form": {
     "name-label": "Profile name",
     "name-placeholder": "My profile",
     "type-label": "Profile type",
     "type-self": "For myself",
     "type-proxy": "Proxy for someone else",
+    "type-hint": "A caregiver profile documents another person's health, for example an elderly parent or child.",
     "managed-by-label": "Your name (as caregiver)",
     "managed-by-placeholder": "Asterios",
     "managed-by-hint": "Stored to indicate who manages this profile.",
