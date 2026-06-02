@@ -28,20 +28,36 @@ export function RequireProfile({ children }: RequireProfileProps) {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const repo = new ProfileRepository();
     void (async () => {
-      const profiles = await repo.list();
-      if (profiles.length === 0) {
+      try {
+        const profiles = await repo.list();
+        if (cancelled) return;
+        if (profiles.length === 0) {
+          setHasProfile(false);
+          return;
+        }
+        const existing = activeProfileId
+          ? profiles.find((p) => p.id === activeProfileId)
+          : undefined;
+        if (!existing) {
+          const fallback = profiles[0];
+          if (fallback) setActiveProfileId(fallback.id);
+        }
+        setHasProfile(true);
+      } catch {
+        // Lock race during test teardown / route unmount: the
+        // keystore may be cleared while a pending decrypt is in
+        // flight. Swallow the error; the surrounding ProtectedRoute
+        // will redirect to /unlock on the next render.
+        if (cancelled) return;
         setHasProfile(false);
-        return;
       }
-      const existing = activeProfileId ? profiles.find((p) => p.id === activeProfileId) : undefined;
-      if (!existing) {
-        const fallback = profiles[0];
-        if (fallback) setActiveProfileId(fallback.id);
-      }
-      setHasProfile(true);
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [activeProfileId, setActiveProfileId]);
 
   if (hasProfile === null) {

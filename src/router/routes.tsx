@@ -11,6 +11,7 @@ import { BackupImportSelectView, BackupImportUnlockView } from '../features/back
 import { ProfileCreateForm } from '../features/profile-create';
 import { useActiveProfile } from '../features/active-profile';
 import { ProfileView } from '../features/profile-view';
+import { ProfilesView } from '../features/profiles';
 import { ObservationsView } from '../features/observations';
 import { LabValuesView } from '../features/lab-values';
 import { SupplementsView } from '../features/supplements';
@@ -100,6 +101,7 @@ export function AppRoutes() {
         }
       >
         <Route path="/profile" element={<ProfileView />} />
+        <Route path="/profiles" element={<ProfilesView />} />
         <Route path="/observations" element={<ObservationsView />} />
         <Route path="/lab-values" element={<LabValuesView />} />
         <Route path="/supplements" element={<SupplementsView />} />

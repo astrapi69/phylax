@@ -25,6 +25,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/profile', i18n: 'app-shell:nav.profile' },
+  { to: '/profiles', i18n: 'app-shell:nav.profiles' },
   { to: '/observations', i18n: 'app-shell:nav.observations' },
   { to: '/lab-values', i18n: 'app-shell:nav.lab-values' },
   { to: '/supplements', i18n: 'app-shell:nav.supplements' },

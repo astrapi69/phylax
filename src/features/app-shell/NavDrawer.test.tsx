@@ -58,7 +58,7 @@ describe('NavDrawer (BUG-02 mobile hamburger)', () => {
     expect(screen.getByText('Einstellungen')).toBeInTheDocument();
     // All NAV_ITEMS should be NavLink anchors
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
-    expect(nav.querySelectorAll('a')).toHaveLength(10);
+    expect(nav.querySelectorAll('a')).toHaveLength(11);
   });
 
   it('backdrop click invokes onClose', async () => {

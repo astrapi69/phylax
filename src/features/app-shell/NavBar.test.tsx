@@ -25,6 +25,7 @@ beforeEach(() => {
 
 const EXPECTED_ITEMS = [
   'Profil',
+  'Alle Profile',
   'Beobachtungen',
   'Laborwerte',
   'Supplemente',

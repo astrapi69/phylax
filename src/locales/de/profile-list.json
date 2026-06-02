@@ -1,4 +1,10 @@
 {
+  "screen": {
+    "heading": "Alle Profile",
+    "description": "Wechsle zwischen deinen Profilen oder lege ein neues an. Das aktive Profil ist hervorgehoben.",
+    "active-label": "Aktiv",
+    "empty": "Noch keine Profile vorhanden."
+  },
   "profile-type": {
     "own": "Eigenes Profil",
     "proxy": "Stellvertreterprofil",
@@ -6,6 +12,7 @@
   },
   "action": {
     "select": "Auswählen",
+    "activate": "Aktivieren",
     "create-new": "+ Neues Profil erstellen"
   },
   "counts": {

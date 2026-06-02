@@ -1,4 +1,10 @@
 {
+  "screen": {
+    "heading": "All profiles",
+    "description": "Switch between your profiles or create a new one. The active profile is highlighted.",
+    "active-label": "Active",
+    "empty": "No profiles yet."
+  },
   "profile-type": {
     "own": "Own profile",
     "proxy": "Proxy profile",
@@ -6,6 +12,7 @@
   },
   "action": {
     "select": "Select",
+    "activate": "Activate",
     "create-new": "+ Create new profile"
   },
   "counts": {

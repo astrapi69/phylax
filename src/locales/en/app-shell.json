@@ -8,6 +8,7 @@
   "nav": {
     "aria-label": "Main navigation",
     "profile": "Profile",
+    "profiles": "All profiles",
     "observations": "Observations",
     "lab-values": "Lab values",
     "supplements": "Supplements",
