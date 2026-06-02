@@ -12,9 +12,9 @@ import type {
 import { getDisplayName } from '../../domain';
 import { classifyMime, formatBytes, pickLinkedDocuments, resolveLinkTargets } from './appendix';
 import type { ExportOptions } from './exportOptions';
-import { stripMarkdown } from './markdownStripper';
 import { FONT_FAMILY, FontSize, Leading } from './pdf/typography';
-import { CONTENT_WIDTH_MM, Margin } from './pdf/spacing';
+import { CONTENT_WIDTH_MM, Gap, Margin } from './pdf/spacing';
+import { composeFieldBlocks, parseRichText, renderRichText } from './pdf/richText';
 
 /**
  * PDF export (X-02). Lazy-loaded jsPDF + jspdf-autotable so the
@@ -35,8 +35,11 @@ import { CONTENT_WIDTH_MM, Margin } from './pdf/spacing';
  * the user's current locale. Dates render via `Intl.DateTimeFormat`.
  *
  * Empty sections (except base data) are omitted entirely. Markdown
- * content is stripped to plain text via `stripMarkdown`; rich-text
- * rendering is registered as P-21 polish.
+ * content is rendered via `./pdf/richText` (X-09 Phase 2): inline
+ * bold + italic, bullet items, and paragraph breaks are preserved;
+ * headings, links, code, blockquotes, and HRs are stripped to plain
+ * text. `stripMarkdown` is still used by other export paths and is
+ * kept as a public module.
  */
 export interface PdfExportInput {
   profile: Profile;
@@ -248,15 +251,20 @@ function renderBaseData(
         : t('pdf.empty.none'),
   });
 
-  doc.setFont(FONT_FAMILY, 'normal');
-  doc.setFontSize(FONT_BODY);
   for (const { label, value } of lines) {
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY);
-    const wrapped = doc.splitTextToSize(`${label}: ${value}`, CONTENT_WIDTH_MM);
-    doc.text(wrapped, MARGIN_MM, y);
-    y += LINE_HEIGHT_BODY * wrapped.length;
+    const blocks = composeFieldBlocks(label, value);
+    if (blocks.length === 0) continue;
+    y = renderRichText(doc, blocks, {
+      x: MARGIN_MM,
+      y,
+      maxWidth: CONTENT_WIDTH_MM,
+      fontSize: FONT_BODY,
+      leading: LINE_HEIGHT_BODY,
+      blockGap: 1,
+      ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+    });
   }
-  return y + LINE_HEIGHT_BODY;
+  return y + Gap.afterSection;
 }
 
 function renderLabValues(
@@ -350,31 +358,37 @@ function renderObservationBlock(
 ): number {
   let y = yIn;
   const fieldOrder: { label: string; value: string }[] = [
-    { label: t('pdf.field.fact'), value: stripMarkdown(obs.fact) },
-    { label: t('pdf.field.pattern'), value: stripMarkdown(obs.pattern) },
-    { label: t('pdf.field.self-regulation'), value: stripMarkdown(obs.selfRegulation) },
+    { label: t('pdf.field.fact'), value: obs.fact },
+    { label: t('pdf.field.pattern'), value: obs.pattern },
+    { label: t('pdf.field.self-regulation'), value: obs.selfRegulation },
     { label: t('pdf.field.status'), value: obs.status },
   ];
   if (obs.medicalFinding && obs.medicalFinding.trim() !== '') {
     fieldOrder.push({
       label: t('pdf.field.medical-finding'),
-      value: stripMarkdown(obs.medicalFinding),
+      value: obs.medicalFinding,
     });
   }
   if (obs.relevanceNotes && obs.relevanceNotes.trim() !== '') {
     fieldOrder.push({
       label: t('pdf.field.relevance-notes'),
-      value: stripMarkdown(obs.relevanceNotes),
+      value: obs.relevanceNotes,
     });
   }
   for (const { label, value } of fieldOrder) {
-    if (value === '') continue;
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY);
-    const wrapped = doc.splitTextToSize(`${label}: ${value}`, CONTENT_WIDTH_MM);
-    doc.text(wrapped, MARGIN_MM, y);
-    y += LINE_HEIGHT_BODY * wrapped.length;
+    const blocks = composeFieldBlocks(label, value);
+    if (blocks.length === 0) continue;
+    y = renderRichText(doc, blocks, {
+      x: MARGIN_MM,
+      y,
+      maxWidth: CONTENT_WIDTH_MM,
+      fontSize: FONT_BODY,
+      leading: LINE_HEIGHT_BODY,
+      blockGap: 1,
+      ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+    });
   }
-  return y + 2;
+  return y + Gap.afterEntry;
 }
 
 function renderSupplements(
@@ -384,33 +398,63 @@ function renderSupplements(
   t: TFunction<'export'>,
 ): number {
   let y = sectionHeading(doc, yIn, t('pdf.section.supplements'));
-  doc.setFont(FONT_FAMILY, 'normal');
-  doc.setFontSize(FONT_BODY);
   for (const s of supplements) {
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * 2);
     const headline = s.brand ? `${s.name} (${s.brand})` : s.name;
     const cat = t(`pdf.supplement.category.${s.category}`);
-    const wrapped = doc.splitTextToSize(`- ${headline} - ${cat}`, CONTENT_WIDTH_MM);
-    doc.text(wrapped, MARGIN_MM, y);
-    y += LINE_HEIGHT_BODY * wrapped.length;
+    // Headline as bold bullet so the supplement name reads first.
+    y = renderRichText(
+      doc,
+      [
+        {
+          kind: 'bullet',
+          runs: [
+            { text: headline, style: 'bold' },
+            { text: ' - ', style: 'normal' },
+            { text: cat, style: 'italic' },
+          ],
+        },
+      ],
+      {
+        x: MARGIN_MM,
+        y,
+        maxWidth: CONTENT_WIDTH_MM,
+        fontSize: FONT_BODY,
+        leading: LINE_HEIGHT_BODY,
+        blockGap: 1,
+        ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+      },
+    );
     if (s.recommendation && s.recommendation.trim() !== '') {
-      const rec = doc.splitTextToSize(
-        `  ${t('pdf.field.recommendation')}: ${stripMarkdown(s.recommendation)}`,
-        CONTENT_WIDTH_MM,
-      );
-      doc.text(rec, MARGIN_MM, y);
-      y += LINE_HEIGHT_BODY * rec.length;
+      const blocks = composeFieldBlocks(t('pdf.field.recommendation'), s.recommendation);
+      if (blocks.length > 0) {
+        y = renderRichText(doc, blocks, {
+          x: MARGIN_MM + 4,
+          y,
+          maxWidth: CONTENT_WIDTH_MM - 4,
+          fontSize: FONT_BODY,
+          leading: LINE_HEIGHT_BODY,
+          blockGap: 1,
+          ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+        });
+      }
     }
     if (s.rationale && s.rationale.trim() !== '') {
-      const rat = doc.splitTextToSize(
-        `  ${t('pdf.field.rationale')}: ${stripMarkdown(s.rationale)}`,
-        CONTENT_WIDTH_MM,
-      );
-      doc.text(rat, MARGIN_MM, y);
-      y += LINE_HEIGHT_BODY * rat.length;
+      const blocks = composeFieldBlocks(t('pdf.field.rationale'), s.rationale);
+      if (blocks.length > 0) {
+        y = renderRichText(doc, blocks, {
+          x: MARGIN_MM + 4,
+          y,
+          maxWidth: CONTENT_WIDTH_MM - 4,
+          fontSize: FONT_BODY,
+          leading: LINE_HEIGHT_BODY,
+          blockGap: 1,
+          ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+        });
+      }
     }
+    y += Gap.afterEntry;
   }
-  return y + LINE_HEIGHT_BODY;
+  return y + Gap.afterSection - Gap.afterEntry;
 }
 
 function renderOpenPoints(
@@ -427,22 +471,36 @@ function renderOpenPoints(
     if (arr) arr.push(p);
     else grouped.set(p.context, [p]);
   }
-  doc.setFont(FONT_FAMILY, 'normal');
-  doc.setFontSize(FONT_BODY);
   for (const [context, list] of grouped) {
     y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * 2);
     doc.setFont(FONT_FAMILY, 'bold');
+    doc.setFontSize(FONT_BODY);
     doc.text(context, MARGIN_MM, y);
-    doc.setFont(FONT_FAMILY, 'normal');
     y += LINE_HEIGHT_BODY;
     for (const p of list) {
       const marker = p.resolved ? '[x]' : '[ ]';
-      const wrapped = doc.splitTextToSize(`${marker} ${stripMarkdown(p.text)}`, CONTENT_WIDTH_MM);
-      y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * wrapped.length);
-      doc.text(wrapped, MARGIN_MM, y);
-      y += LINE_HEIGHT_BODY * wrapped.length;
+      const parsed = parseRichText(p.text);
+      const [firstParsed, ...restParsed] = parsed;
+      const blocks = firstParsed
+        ? [
+            {
+              kind: 'paragraph' as const,
+              runs: [{ text: `${marker} `, style: 'normal' as const }, ...firstParsed.runs],
+            },
+            ...restParsed,
+          ]
+        : [{ kind: 'paragraph' as const, runs: [{ text: marker, style: 'normal' as const }] }];
+      y = renderRichText(doc, blocks, {
+        x: MARGIN_MM,
+        y,
+        maxWidth: CONTENT_WIDTH_MM,
+        fontSize: FONT_BODY,
+        leading: LINE_HEIGHT_BODY,
+        blockGap: 1,
+        ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+      });
     }
-    y += 1;
+    y += Gap.afterSubsection;
   }
   return y;
 }
@@ -457,26 +515,47 @@ function renderAppendix(
   t: TFunction<'export'>,
 ): number {
   let y = sectionHeading(doc, yIn, t('pdf.section.appendix'));
-  doc.setFont(FONT_FAMILY, 'normal');
-  doc.setFontSize(FONT_BODY);
   for (const docMeta of linked) {
     const filename = docMeta.filename || t('appendix.unnamed');
     const size = formatBytes(docMeta.sizeBytes);
     const mimeLabel = pdfMimeLabel(docMeta.mimeType, t);
     const targetText = pdfRenderLinkTargets(docMeta, observations, labValues, labReports, t);
-    const headline = `- ${filename} (${size}, ${mimeLabel})${targetText ? ' - ' + targetText : ''}`;
-    const wrapped = doc.splitTextToSize(headline, CONTENT_WIDTH_MM);
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * wrapped.length);
-    doc.text(wrapped, MARGIN_MM, y);
-    y += LINE_HEIGHT_BODY * wrapped.length;
+    const tail = `(${size}, ${mimeLabel})${targetText ? ' - ' + targetText : ''}`;
+    y = renderRichText(
+      doc,
+      [
+        {
+          kind: 'bullet',
+          runs: [
+            { text: filename, style: 'bold' },
+            { text: ` ${tail}`, style: 'normal' },
+          ],
+        },
+      ],
+      {
+        x: MARGIN_MM,
+        y,
+        maxWidth: CONTENT_WIDTH_MM,
+        fontSize: FONT_BODY,
+        leading: LINE_HEIGHT_BODY,
+        blockGap: 1,
+        ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+      },
+    );
     if (docMeta.description && docMeta.description.trim() !== '') {
-      const desc = doc.splitTextToSize(`  ${stripMarkdown(docMeta.description)}`, CONTENT_WIDTH_MM);
-      y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * desc.length);
-      doc.text(desc, MARGIN_MM, y);
-      y += LINE_HEIGHT_BODY * desc.length;
+      const blocks = parseRichText(docMeta.description);
+      y = renderRichText(doc, blocks, {
+        x: MARGIN_MM + 4,
+        y,
+        maxWidth: CONTENT_WIDTH_MM - 4,
+        fontSize: FONT_BODY,
+        leading: LINE_HEIGHT_BODY,
+        blockGap: 1,
+        ensureSpace: (cy, needed) => ensurePageSpace(doc, cy, needed),
+      });
     }
   }
-  return y + LINE_HEIGHT_BODY;
+  return y + Gap.afterSection;
 }
 
 function pdfMimeLabel(mimeType: string, t: TFunction<'export'>): string {
