@@ -333,6 +333,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **X-09: PDF visual overhaul** (5-phase direct-to-main track, six
+  commits 2026-06-02). Lifts the PDF export from "draft text dump"
+  into a deliverable suitable for a doctor visit. The work stays on
+  jsPDF + jspdf-autotable (no library swap) and lands within the
+  existing 145 KB jsPDF chunk budget (137.83 KB used, unchanged).
+  Phases:
+  1. **Design tokens** under `src/features/export/pdf/`:
+     `typography.ts` (FONT_FAMILY, FontSize, Leading),
+     `spacing.ts` (Margin, Gap, page dimensions), `color.ts`
+     (Palette, `classifyAssessment`). Replaces inline magic
+     numbers in `pdfExport.ts` with a single source of truth.
+     `classifyAssessment` mirrors the in-app O-13 rule
+     (LabValuesTable.tsx:152 "kritisch" -> red) and extends it
+     with a "notable" amber tier for DE-lab out-of-range markers
+     (unterhalb, oberhalb, erhoeht, erniedrigt, grenzwertig).
+
+  2. **Rich-text rendering** via `pdf/richText.ts`: walks markdown-
+     flavored strings and emits styled runs (`**bold**`, `*italic*`,
+     `***bold-italic***`, bullet items, paragraph breaks) onto a
+     jsPDF document with greedy word-wrap that honours page breaks.
+     Replaces `stripMarkdown` calls in the PDF path for base-data
+     fields, observation fields, supplement recommendation /
+     rationale, open-point text, and document descriptions. Field
+     labels (Fakt, Muster, Selbstregulation, ...) render bold so
+     scanning is faster. Supplement names render bold inside their
+     bullet with the category in italic.
+
+  3. **Color application**: section headings render in accent slate-
+     blue with a 0.25 mm rule underneath. Lab-value table colors
+     the assessment cell per `classifyAssessment` - kritisch red,
+     notable amber, normal default. AutoTable header adopts the
+     subdued `tableHeader` fill with bold weight; zebra rows use
+     `tableStripe` for legibility under print.
+
+  4. **Optional cover page + running header**. ExportDialog's new
+     "Deckblatt einschließen" / "Include cover page" checkbox
+     (default off) inserts a centered title page with profile
+     name, accent rule, subtitle, and generation date. From the
+     second body page onward a running header renders
+     "Name · Seite N / total" right-aligned in secondary gray
+     under a thin accent rule. Page numbers moved out of the
+     footer into the running header; footer simplified to
+     "Phylax · {{date}}" in muted gray.
+
+  5. **Orphan protection** at section / theme-group / entry
+     boundaries. Soft keep-with-next reservations
+     (HEADING_RESERVE_LINES=4, ENTRY_RESERVE_LINES=3) prevent
+     headings from stranding alone at the bottom of a page.
+     Theme-group sub-headings and open-point context labels
+     adopt accent color for visual hierarchy.
+
+  i18n: new keys per locale (DE + EN, no parity gap):
+  `cover.toggle.label`, `cover.toggle.hint`, `pdf.cover.subtitle`,
+  `pdf.cover.generated`, `pdf.running-header`. Existing
+  `pdf.footer` template simplified (no longer interpolates
+  `{{page}}` / `{{total}}`).
+
+  Commits: 457e438 (tokens), e239429 (rich text), ca23cf1
+  (color), bbe43d5 (cover + header), afa52af (orphan protection),
+  plus this commit (CHANGELOG).
+
 - **DEPS-04: bundled dependency upgrades.** Patch / minor: i18next
   26.0.5 -> 26.0.10, pdfjs-dist 5.6.205 -> 5.7.284, react / react-dom
   19.2.5 -> 19.2.6, react-i18next 17.0.4 -> 17.0.7, react-router-dom
