@@ -10,14 +10,11 @@ import type {
   Supplement,
 } from '../../domain';
 import { getDisplayName } from '../../domain';
-import {
-  classifyMime,
-  formatBytes,
-  pickLinkedDocuments,
-  resolveLinkTargets,
-} from './appendix';
+import { classifyMime, formatBytes, pickLinkedDocuments, resolveLinkTargets } from './appendix';
 import type { ExportOptions } from './exportOptions';
 import { stripMarkdown } from './markdownStripper';
+import { FONT_FAMILY, FontSize, Leading } from './pdf/typography';
+import { CONTENT_WIDTH_MM, Margin } from './pdf/spacing';
 
 /**
  * PDF export (X-02). Lazy-loaded jsPDF + jspdf-autotable so the
@@ -83,18 +80,20 @@ export interface PdfExportInput {
   now?: Date;
 }
 
-const PAGE_WIDTH_MM = 210;
-const MARGIN_MM = 20;
-const CONTENT_WIDTH_MM = PAGE_WIDTH_MM - 2 * MARGIN_MM;
-
-const FONT_TITLE = 18;
-const FONT_H2 = 13;
-const FONT_H3 = 11;
-const FONT_BODY = 10;
-const FONT_FOOTER = 8;
-
-const LINE_HEIGHT_BODY = 5;
-const LINE_HEIGHT_H2 = 7;
+/**
+ * Layout constants now live in `./pdf/typography.ts` and
+ * `./pdf/spacing.ts`. The local aliases below are kept so existing
+ * call sites read unchanged; new code should import from the token
+ * modules directly.
+ */
+const MARGIN_MM = Margin.page;
+const FONT_TITLE = FontSize.title;
+const FONT_H2 = FontSize.h2;
+const FONT_H3 = FontSize.h3;
+const FONT_BODY = FontSize.body;
+const FONT_FOOTER = FontSize.footer;
+const LINE_HEIGHT_BODY = Leading.body;
+const LINE_HEIGHT_H2 = Leading.h2;
 
 type JsPdfDoc = JsPdfType & { lastAutoTable?: { finalY: number } };
 interface AutoTableArg {
@@ -154,11 +153,11 @@ function generate(
   let y = MARGIN_MM;
 
   // 1. Header.
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(FONT_FAMILY, 'bold');
   doc.setFontSize(FONT_TITLE);
   doc.text(t('pdf.header.title', { name }), MARGIN_MM, y);
   y += 9;
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
   doc.text(t('pdf.header.generated', { date: formatDate(now, locale) }), MARGIN_MM, y);
   y += LINE_HEIGHT_BODY * 2;
@@ -231,7 +230,8 @@ function renderBaseData(
   }
   lines.push({
     label: t('pdf.field.diagnoses'),
-    value: baseData.knownDiagnoses.length > 0 ? baseData.knownDiagnoses.join(', ') : t('pdf.empty.none'),
+    value:
+      baseData.knownDiagnoses.length > 0 ? baseData.knownDiagnoses.join(', ') : t('pdf.empty.none'),
   });
   lines.push({
     label: t('pdf.field.medications'),
@@ -248,7 +248,7 @@ function renderBaseData(
         : t('pdf.empty.none'),
   });
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
   for (const { label, value } of lines) {
     y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY);
@@ -329,11 +329,11 @@ function renderObservations(
   }
   for (const [theme, list] of grouped) {
     y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY * 3);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(FONT_FAMILY, 'bold');
     doc.setFontSize(FONT_H3);
     doc.text(theme, MARGIN_MM, y);
     y += LINE_HEIGHT_BODY + 1;
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(FONT_FAMILY, 'normal');
     doc.setFontSize(FONT_BODY);
     for (const obs of list) {
       y = renderObservationBlock(doc, y, obs, t);
@@ -384,7 +384,7 @@ function renderSupplements(
   t: TFunction<'export'>,
 ): number {
   let y = sectionHeading(doc, yIn, t('pdf.section.supplements'));
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
   for (const s of supplements) {
     y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * 2);
@@ -427,13 +427,13 @@ function renderOpenPoints(
     if (arr) arr.push(p);
     else grouped.set(p.context, [p]);
   }
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
   for (const [context, list] of grouped) {
     y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * 2);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(FONT_FAMILY, 'bold');
     doc.text(context, MARGIN_MM, y);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(FONT_FAMILY, 'normal');
     y += LINE_HEIGHT_BODY;
     for (const p of list) {
       const marker = p.resolved ? '[x]' : '[ ]';
@@ -457,7 +457,7 @@ function renderAppendix(
   t: TFunction<'export'>,
 ): number {
   let y = sectionHeading(doc, yIn, t('pdf.section.appendix'));
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_BODY);
   for (const docMeta of linked) {
     const filename = docMeta.filename || t('appendix.unnamed');
@@ -511,16 +511,11 @@ function pdfRenderLinkTargets(
     .join(' · ');
 }
 
-function renderFooters(
-  doc: JsPdfDoc,
-  t: TFunction<'export'>,
-  locale: string,
-  now: Date,
-): void {
+function renderFooters(doc: JsPdfDoc, t: TFunction<'export'>, locale: string, now: Date): void {
   const totalPages = doc.getNumberOfPages();
   const pageHeight = doc.internal.pageSize.getHeight();
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.setFont('helvetica', 'normal');
+  doc.setFont(FONT_FAMILY, 'normal');
   doc.setFontSize(FONT_FOOTER);
   for (let p = 1; p <= totalPages; p++) {
     doc.setPage(p);
@@ -536,7 +531,7 @@ function renderFooters(
 function sectionHeading(doc: JsPdfDoc, yIn: number, text: string): number {
   let y = yIn;
   y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY);
-  doc.setFont('helvetica', 'bold');
+  doc.setFont(FONT_FAMILY, 'bold');
   doc.setFontSize(FONT_H2);
   doc.text(text, MARGIN_MM, y);
   return y + LINE_HEIGHT_H2;
