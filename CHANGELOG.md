@@ -331,6 +331,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Commits: 61dd1da (deps bump), a476447 (size-limit fixes), plus
   this commit (ROADMAP + CHANGELOG).
 
+### Added
+
+- **M-01..M-05: Multi-profile activation** (four-phase direct-to-main
+  track, five commits 2026-06-02). Lifts Phylax from the single-
+  profile MVP into a working multi-profile installation. The schema
+  has carried `profileId` on every entity row since day one
+  (`.claude/rules/architecture.md`), so this work is purely the UI
+  activation layer: an active-profile state primitive, a switcher
+  UI, in-app profile creation, and per-profile backup. Phases:
+  1. **ActiveProfileContext + hook subscriptions [M-04]** (commit
+     `f75f49e`). New `src/features/active-profile/` module owns the
+     active profile id, persists to `phylax-active-profile`
+     localStorage, syncs across tabs via the storage event, and
+     exposes `useActiveProfile()`. `ProfileRepository.getCurrentProfile()`
+     now resolves to the stored active id (falling back to the
+     first profile when no id is stored) so existing callers
+     get the right value without further refactor. The seven
+     list-loader hooks (useProfileView, useLabValues, useTimeline,
+     useObservations, useSupplements, useOpenPoints, useDocuments)
+     subscribe to the context and refetch on activeProfileId
+     change. RequireProfile bootstraps the context on first mount,
+     adopting the first stored profile when the context starts
+     empty. The route's ProfileCreatePage activates the freshly-
+     created profile on submit.
+
+  2. **Profile switcher route + nav entry [M-01]** (commit
+     `fb77928`). New `/profiles` route renders the reusable
+     `<ProfileList>` component with entity counts per profile;
+     selecting a card flips activeProfileId and routes back to
+     `/profile`. New "Alle Profile" nav entry between Profil and
+     Beobachtungen. NavBar / NavDrawer hard-coded count assertions
+     bumped from 10 to 11.
+
+  3. **In-app create with cancel link [M-02 M-03]** (commit
+     `1ff4c44`). ProfileCreateForm gains an optional `onCancel`
+     prop that renders a "Abbrechen" button beneath the submit.
+     ProfileCreatePage attaches it only when at least one profile
+     already exists (i.e., the user arrived from `/profiles` rather
+     than first-run onboarding). M-02 (own / proxy creation) and
+     M-03 (managed-by metadata) themselves were already supported
+     by the existing form fields - this commit closes the UX gap.
+
+  4. **Per-profile export filter [M-05]** (commit `9eb5f13`).
+     `BackupExportSection` gains an opt-in checkbox "Nur aktives
+     Profil exportieren" / "Export only the active profile".
+     When checked, the `.phylax` dump contains rows for the active
+     profile only; every other table row is filtered by profileId.
+     `buildVaultDump` accepts an optional `BuildVaultDumpOptions`
+     argument with `profileIds`; the surface plumbs through
+     `useBackupExport.runExport`. Default (no filter) preserves
+     the existing all-profiles behavior.
+
+  Architectural decision: switching profiles is a pure UI scope
+  change; all profiles share the same master key so no re-prompt
+  on switch. The keystore is unaffected. Decided via inline Q
+  during the M-01 kickoff; documented here rather than in a
+  separate ADR because the choice is consistent with the existing
+  single-vault encryption model.
+
+  Out of scope (deferred): backup _import_ as a new profile.
+  Requires FK rewiring + collision handling that overlaps heavily
+  with the IM-06 field-level merge engine; revisit once a real-user
+  request lands. Current import remains "overwrite the vault" -
+  unchanged from the single-profile MVP.
+
+  i18n: 6 new keys per locale (DE + EN parity) -
+  `app-shell:nav.profiles`, `profile-list:screen.*` (heading +
+  description + active-label + empty), `profile-list:action.activate`,
+  `profile-create:cancel.label`, `backup-export:form.active-only-*`.
+
+  Tests: 8 new on ActiveProfileProvider, 4 new on ProfilesView,
+  4 new on buildVaultDump filter behavior. Full unit suite (2934 +
+  1 skipped) green.
+
 ### Changed
 
 - **X-09: PDF visual overhaul** (5-phase direct-to-main track, six

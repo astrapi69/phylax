@@ -81,7 +81,6 @@ the trigger fires.
   scoped, deferred until prioritised.
 - **DOC-01 Iteration 3** (full build-out, additional locales,
   community contribution path) - scoped, deferred.
-- **Phase 8 Multi-Profile** (M-01..M-05) - deprioritised 2026-05-01.
 - **Phase 9 Derived Plans** (DP-01..DP-06) - future.
 
 ## Tech-debt carry-overs (monitor, do not actively work)

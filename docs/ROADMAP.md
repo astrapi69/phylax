@@ -161,19 +161,21 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       multi-device sync is considered. See B-05 scope analysis in the
       2026-04-21 B-02 follow-up (Q1-Q6 locks).
 
-## Phase 8: Multi-Profile (deprioritised 2026-05-01)
+## Phase 8: Multi-Profile (activated 2026-06-02)
 
-Status: deprioritised; no active work scheduled. Profile schema
-already carries `profileId` from day one (per `.claude/rules/architecture.md`),
-so future activation does not require schema migration.
+Status: M-01..M-05 shipped in the four-phase track on 2026-06-02
+(see `CHANGELOG.md` `[Unreleased]` for the rollup). Schema-side
+groundwork (`profileId` on every entity row) was in place from
+day one.
 
-- [ ] **M-01** Profile list view: show all profiles, switch between
-      them.
-- [ ] **M-02** Create new profile: own or proxy (Stellvertreterprofil).
-- [ ] **M-03** Proxy profile metadata: managed-by field, relationship.
-- [ ] **M-04** Profile-scoped views: all screens filter by active
-      profileId.
-- [ ] **M-05** Backup / restore per profile or all profiles.
+Follow-up not currently scheduled:
+
+- [ ] **M-05 import-as-new-profile** Backup _import_ path that adds
+      the incoming profile to the existing vault rather than
+      overwriting. Requires FK rewiring + collision handling
+      overlapping heavily with the IM-06 field-level merge engine.
+      Trigger: a real-user request, or scheduled work to unify the
+      merge engines for both import paths.
 
 ## Phase 9: Derived Plans (future)
 
