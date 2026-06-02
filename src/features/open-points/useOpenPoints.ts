@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { OpenPoint } from '../../domain';
 import { OpenPointRepository, ProfileRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export interface ContextGroup {
   context: string;
@@ -32,6 +33,8 @@ export interface UseOpenPointsResult {
 export function useOpenPoints(): UseOpenPointsResult {
   const [state, setState] = useState<OpenPointsState>({ kind: 'loading' });
   const [version, setVersion] = useState(0);
+  // M-04: re-fetch when the active profile changes.
+  const { activeProfileId } = useActiveProfile();
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -68,7 +71,7 @@ export function useOpenPoints(): UseOpenPointsResult {
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, activeProfileId]);
 
   return { state, refetch };
 }

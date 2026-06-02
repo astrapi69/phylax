@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Observation } from '../../domain';
 import { ObservationRepository, ProfileRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export interface ThemeGroup {
   theme: string;
@@ -33,6 +34,8 @@ export interface UseObservationsResult {
 export function useObservations(): UseObservationsResult {
   const [state, setState] = useState<ObservationsState>({ kind: 'loading' });
   const [version, setVersion] = useState(0);
+  // M-04: re-fetch when the active profile changes.
+  const { activeProfileId } = useActiveProfile();
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -69,7 +72,7 @@ export function useObservations(): UseObservationsResult {
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, activeProfileId]);
 
   return { state, refetch };
 }

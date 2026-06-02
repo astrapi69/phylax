@@ -9,6 +9,7 @@ import { WelcomeView, PrivacyView, SetupView } from '../features/onboarding';
 import { UnlockView } from '../features/unlock';
 import { BackupImportSelectView, BackupImportUnlockView } from '../features/backup-import';
 import { ProfileCreateForm } from '../features/profile-create';
+import { useActiveProfile } from '../features/active-profile';
 import { ProfileView } from '../features/profile-view';
 import { ObservationsView } from '../features/observations';
 import { LabValuesView } from '../features/lab-values';
@@ -25,9 +26,16 @@ import { NotFound } from '../features/not-found/NotFound';
 
 function ProfileCreatePage() {
   const navigate = useNavigate();
-  const handleComplete = useCallback(() => {
-    navigate('/profile', { replace: true });
-  }, [navigate]);
+  const { setActiveProfileId } = useActiveProfile();
+  const handleComplete = useCallback(
+    (profileId: string) => {
+      // M-04: activate the freshly-created profile so all downstream
+      // feature hooks scope their queries to it on the next render.
+      setActiveProfileId(profileId);
+      navigate('/profile', { replace: true });
+    },
+    [navigate, setActiveProfileId],
+  );
   return <ProfileCreateForm onComplete={handleComplete} />;
 }
 

@@ -59,22 +59,43 @@ export class ProfileRepository extends EncryptedRepository<Profile> {
   }
 
   /**
-   * Get the current (single) profile. Returns null if no profile exists.
+   * Get the active profile. Returns null if no profile exists.
    *
-   * In the MVP there is at most one profile. If multiple exist (future
-   * multi-profile support), returns the first and logs a warning.
+   * Resolution order (M-04):
+   *   1. If `phylax-active-profile` localStorage holds an id that
+   *      matches an existing profile, return that profile.
+   *   2. Otherwise, return the first profile in insertion order.
+   *   3. If the database is empty, return null.
+   *
+   * Step 1 keeps the repository layer compatible with the React-side
+   * `ActiveProfileContext` (which is the canonical source for the UI)
+   * without forcing the repository to depend on React. Both readers
+   * consult the same storage key. Step 2 keeps single-profile
+   * installations working without any UI activation step.
+   *
+   * Renamed from the MVP-era single-profile semantic; callers that
+   * specifically want "the only profile" should grep the codebase and
+   * decide whether their context still applies under multi-profile.
    */
   async getCurrentProfile(): Promise<Profile | null> {
     const rows = await this.table.toArray();
     if (rows.length === 0) return null;
 
-    if (rows.length > 1) {
-      console.warn(
-        `Found ${rows.length} profiles; returning first. Multi-profile support is not yet implemented.`,
-      );
+    const storedId = readStoredActiveProfileId();
+    if (storedId !== null) {
+      const match = rows.find((r) => r.id === storedId);
+      if (match) return this.deserialize(match);
     }
-
-    // Safe: rows.length > 0 guaranteed by the check above
     return this.deserialize(rows[0] as (typeof rows)[number]);
+  }
+}
+
+function readStoredActiveProfileId(): string | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const v = localStorage.getItem('phylax-active-profile');
+    return v === null || v === '' ? null : v;
+  } catch {
+    return null;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Document } from '../../domain';
 import { DocumentRepository, ProfileRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export type DocumentsError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
 
@@ -23,6 +24,8 @@ export interface UseDocumentsResult {
  */
 export function useDocuments(versionKey: number = 0): UseDocumentsResult {
   const [state, setState] = useState<DocumentsState>({ kind: 'loading' });
+  // M-04: re-fetch when the active profile changes.
+  const { activeProfileId } = useActiveProfile();
 
   useEffect(() => {
     let cancelled = false;
@@ -54,7 +57,7 @@ export function useDocuments(versionKey: number = 0): UseDocumentsResult {
     return () => {
       cancelled = true;
     };
-  }, [versionKey]);
+  }, [versionKey, activeProfileId]);
 
   return { state };
 }

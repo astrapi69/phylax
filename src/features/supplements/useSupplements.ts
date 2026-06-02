@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Supplement, SupplementCategory } from '../../domain';
 import { ProfileRepository, SupplementRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export interface SupplementGroup {
   category: SupplementCategory;
@@ -40,6 +41,8 @@ const CATEGORY_ORDER: readonly SupplementCategory[] = [
 export function useSupplements(): UseSupplementsResult {
   const [state, setState] = useState<SupplementsState>({ kind: 'loading' });
   const [version, setVersion] = useState(0);
+  // M-04: re-fetch when the active profile changes.
+  const { activeProfileId } = useActiveProfile();
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -76,7 +79,7 @@ export function useSupplements(): UseSupplementsResult {
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, activeProfileId]);
 
   return { state, refetch };
 }

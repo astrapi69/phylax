@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Profile } from '../../domain';
 import { ProfileRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 /**
  * Discriminated error for the profile-view loader. The UI resolves each
@@ -35,6 +36,7 @@ export interface UseProfileViewResult {
 export function useProfileView(): UseProfileViewResult {
   const [state, setState] = useState<ProfileViewState>({ kind: 'loading' });
   const [version, setVersion] = useState(0);
+  const { activeProfileId } = useActiveProfile();
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -43,6 +45,11 @@ export function useProfileView(): UseProfileViewResult {
     (async () => {
       try {
         const repo = new ProfileRepository();
+        // M-04: `getCurrentProfile()` resolves to the active profile
+        // (id stored in localStorage by ActiveProfileProvider) or
+        // falls back to the first profile when the context is empty.
+        // The effect re-runs when `activeProfileId` changes so a
+        // profile switch in the UI refetches transparently.
         const profile = await repo.getCurrentProfile();
         if (cancelled) return;
         if (!profile) {
@@ -65,7 +72,7 @@ export function useProfileView(): UseProfileViewResult {
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, activeProfileId]);
 
   return { state, refetch };
 }

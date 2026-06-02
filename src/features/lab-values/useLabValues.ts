@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { LabReport, LabValue } from '../../domain';
 import { LabReportRepository, LabValueRepository, ProfileRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export interface LabReportWithValues {
   report: LabReport;
@@ -32,6 +33,8 @@ export interface UseLabValuesResult {
 export function useLabValues(): UseLabValuesResult {
   const [state, setState] = useState<LabValuesState>({ kind: 'loading' });
   const [version, setVersion] = useState(0);
+  // M-04: subscribe to the active profile so a switch refetches.
+  const { activeProfileId } = useActiveProfile();
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -76,7 +79,7 @@ export function useLabValues(): UseLabValuesResult {
     return () => {
       cancelled = true;
     };
-  }, [version]);
+  }, [version, activeProfileId]);
 
   return { state, refetch };
 }

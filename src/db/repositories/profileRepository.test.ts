@@ -122,18 +122,35 @@ describe('ProfileRepository', () => {
     lock();
   });
 
-  it('getCurrentProfile warns on multiple profiles', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('getCurrentProfile returns the active profile when the stored id matches', async () => {
+    const first = await repo.create(makeProfileData());
+    const second = await repo.create({ ...makeProfileData(), version: '2.0.0' });
 
-    await repo.create(makeProfileData());
-    // Create a second profile (unusual in MVP, but tests the guard)
-    await repo.create({ ...makeProfileData(), version: '2.0.0' });
+    try {
+      localStorage.setItem('phylax-active-profile', second.id);
+      const active = await repo.getCurrentProfile();
+      expect(active?.id).toBe(second.id);
 
+      localStorage.setItem('phylax-active-profile', first.id);
+      const reactivated = await repo.getCurrentProfile();
+      expect(reactivated?.id).toBe(first.id);
+    } finally {
+      localStorage.removeItem('phylax-active-profile');
+    }
+
+    lock();
+  });
+
+  it('getCurrentProfile returns a stored profile when no active id is set', async () => {
+    const first = await repo.create(makeProfileData());
+    const second = await repo.create({ ...makeProfileData(), version: '2.0.0' });
+
+    localStorage.removeItem('phylax-active-profile');
     const current = await repo.getCurrentProfile();
-    expect(current).not.toBeNull();
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Found 2 profiles'));
+    // Order is Dexie's primary-key iteration (UUIDs); we only assert
+    // that one of the two existing profiles comes back, not which one.
+    expect([first.id, second.id]).toContain(current?.id);
 
-    warnSpy.mockRestore();
     lock();
   });
 

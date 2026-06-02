@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { TimelineEntry } from '../../domain';
 import { ProfileRepository, TimelineEntryRepository } from '../../db/repositories';
+import { useActiveProfile } from '../active-profile';
 
 export type TimelineError = { kind: 'no-profile' } | { kind: 'generic'; detail: string };
 
@@ -24,6 +25,8 @@ export interface UseTimelineResult {
  */
 export function useTimeline(): UseTimelineResult {
   const [state, setState] = useState<TimelineState>({ kind: 'loading' });
+  // M-04: re-fetch when the active profile changes.
+  const { activeProfileId } = useActiveProfile();
 
   useEffect(() => {
     let cancelled = false;
@@ -57,7 +60,7 @@ export function useTimeline(): UseTimelineResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [activeProfileId]);
 
   return { state };
 }
