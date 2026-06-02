@@ -454,10 +454,14 @@ function renderObservations(
     else grouped.set(obs.theme, [obs]);
   }
   for (const [theme, list] of grouped) {
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY * 3);
+    // Reserve theme heading + ENTRY_RESERVE_LINES so the theme name
+    // never lands at the bottom of a page alone.
+    y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY * ENTRY_RESERVE_LINES);
     doc.setFont(FONT_FAMILY, 'bold');
     doc.setFontSize(FONT_H3);
+    doc.setTextColor(...Palette.accent);
     doc.text(theme, MARGIN_MM, y);
+    doc.setTextColor(...Palette.textPrimary);
     y += LINE_HEIGHT_BODY + 1;
     doc.setFont(FONT_FAMILY, 'normal');
     doc.setFontSize(FONT_BODY);
@@ -474,7 +478,11 @@ function renderObservationBlock(
   obs: Observation,
   t: TFunction<'export'>,
 ): number {
-  let y = yIn;
+  // Soft keep-with-next: don't start an observation with < ENTRY_RESERVE_LINES
+  // worth of vertical room. The block can still span a page (rich
+  // text wraps line-by-line) but at least the Fakt label + first
+  // line will land together.
+  let y = ensurePageSpace(doc, yIn, LINE_HEIGHT_BODY * ENTRY_RESERVE_LINES);
   const fieldOrder: { label: string; value: string }[] = [
     { label: t('pdf.field.fact'), value: obs.fact },
     { label: t('pdf.field.pattern'), value: obs.pattern },
@@ -517,6 +525,7 @@ function renderSupplements(
 ): number {
   let y = sectionHeading(doc, yIn, t('pdf.section.supplements'));
   for (const s of supplements) {
+    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * ENTRY_RESERVE_LINES);
     const headline = s.brand ? `${s.name} (${s.brand})` : s.name;
     const cat = t(`pdf.supplement.category.${s.category}`);
     // Headline as bold bullet so the supplement name reads first.
@@ -590,10 +599,12 @@ function renderOpenPoints(
     else grouped.set(p.context, [p]);
   }
   for (const [context, list] of grouped) {
-    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * 2);
+    y = ensurePageSpace(doc, y, LINE_HEIGHT_BODY * ENTRY_RESERVE_LINES);
     doc.setFont(FONT_FAMILY, 'bold');
     doc.setFontSize(FONT_BODY);
+    doc.setTextColor(...Palette.accent);
     doc.text(context, MARGIN_MM, y);
+    doc.setTextColor(...Palette.textPrimary);
     y += LINE_HEIGHT_BODY;
     for (const p of list) {
       const marker = p.resolved ? '[x]' : '[ ]';
@@ -723,9 +734,23 @@ function renderFooters(doc: JsPdfDoc, t: TFunction<'export'>, locale: string, no
   doc.setTextColor(...Palette.textPrimary);
 }
 
+/**
+ * Reserve heading height plus this many body lines worth of space
+ * before drawing a section heading. Prevents a heading from rendering
+ * at the bottom of a page with its first content paragraph orphaned
+ * onto the next page. Approximate: a true keep-with-next would
+ * pre-measure the first paragraph; this estimate is good enough for
+ * the section sizes Phylax actually ships and avoids running the
+ * layout pass twice.
+ */
+const HEADING_RESERVE_LINES = 4;
+/** Minimum body-line reserve before starting a multi-line entry
+ *  (observation block, supplement entry, open point). */
+const ENTRY_RESERVE_LINES = 3;
+
 function sectionHeading(doc: JsPdfDoc, yIn: number, text: string): number {
   let y = yIn;
-  y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY);
+  y = ensurePageSpace(doc, y, LINE_HEIGHT_H2 + LINE_HEIGHT_BODY * HEADING_RESERVE_LINES);
   doc.setFont(FONT_FAMILY, 'bold');
   doc.setFontSize(FONT_H2);
   doc.setTextColor(...Palette.accent);
