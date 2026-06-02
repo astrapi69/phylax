@@ -7,7 +7,9 @@
     "password-label": "Passwort",
     "password-help": "Dein Master-Passwort oder ein anderes Passwort deiner Wahl. Mindestens {{min}} Zeichen.",
     "submit-label": "Backup erstellen",
-    "submit-working": "Backup wird erstellt..."
+    "submit-working": "Backup wird erstellt...",
+    "active-only-label": "Nur aktives Profil exportieren",
+    "active-only-hint": "Wenn aktiviert, enthält das Backup ausschließlich Daten des aktuell ausgewählten Profils. Andernfalls werden alle Profile gesichert."
   },
   "status": {
     "deriving": "Schlüssel wird abgeleitet...",

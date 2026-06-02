@@ -136,4 +136,120 @@ describe('buildVaultDump', () => {
     expect(result.dump.meta_settings.verificationToken).toBe('phylax-verification-v1');
     expect(typeof result.dump.meta_settings.settings?.autoLockMinutes).toBe('number');
   });
+
+  // M-05 per-profile backup: profileIds filter narrows the dump to
+  // matching profiles and their owned rows.
+  it('profileIds filter restricts the dump to the matching profile only', async () => {
+    const profileRepo = new ProfileRepository();
+    const obsRepo = new ObservationRepository();
+
+    const annas = await profileRepo.create({
+      baseData: {
+        name: 'Anna',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+    const bernds = await profileRepo.create({
+      baseData: {
+        name: 'Bernd',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+    await obsRepo.create({
+      profileId: annas.id,
+      theme: 'Anna-Theme',
+      fact: 'a',
+      pattern: 'a',
+      selfRegulation: 'a',
+      status: 'a',
+      source: 'user',
+      extraSections: {},
+    });
+    await obsRepo.create({
+      profileId: bernds.id,
+      theme: 'Bernd-Theme',
+      fact: 'b',
+      pattern: 'b',
+      selfRegulation: 'b',
+      status: 'b',
+      source: 'user',
+      extraSections: {},
+    });
+
+    const result = await buildVaultDump({ profileIds: [annas.id] });
+    if (!result.ok) throw new Error(`buildVaultDump failed: ${JSON.stringify(result.error)}`);
+    expect(result.dump.rows.profiles).toHaveLength(1);
+    expect(result.dump.rows.profiles[0]?.id).toBe(annas.id);
+    expect(result.dump.rows.observations).toHaveLength(1);
+    expect(result.dump.rows.observations[0]?.profileId).toBe(annas.id);
+  });
+
+  it('omitted profileIds returns every profile (default)', async () => {
+    const profileRepo = new ProfileRepository();
+    await profileRepo.create({
+      baseData: {
+        name: 'Anna',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+    await profileRepo.create({
+      baseData: {
+        name: 'Bernd',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+
+    const result = await buildVaultDump();
+    if (!result.ok) throw new Error(`buildVaultDump failed: ${JSON.stringify(result.error)}`);
+    expect(result.dump.rows.profiles).toHaveLength(2);
+  });
+
+  it('empty profileIds array is treated as no filter (consistency with theme filters)', async () => {
+    const profileRepo = new ProfileRepository();
+    await profileRepo.create({
+      baseData: {
+        name: 'Anna',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+
+    const result = await buildVaultDump({ profileIds: [] });
+    if (!result.ok) throw new Error(`buildVaultDump failed: ${JSON.stringify(result.error)}`);
+    expect(result.dump.rows.profiles).toHaveLength(1);
+  });
 });

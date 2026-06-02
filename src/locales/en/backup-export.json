@@ -7,7 +7,9 @@
     "password-label": "Password",
     "password-help": "Your master password or any password you choose. Minimum {{min}} characters.",
     "submit-label": "Create backup",
-    "submit-working": "Creating backup..."
+    "submit-working": "Creating backup...",
+    "active-only-label": "Export only the active profile",
+    "active-only-hint": "When checked, the backup contains data for the currently-active profile only. Otherwise all profiles are backed up."
   },
   "status": {
     "deriving": "Deriving key...",

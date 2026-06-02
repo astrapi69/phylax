@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { PasswordVisibilityToggle } from '../../ui';
 import { useBackupExport, type BackupExportError, MIN_PASSWORD_LENGTH } from './useBackupExport';
+import { useActiveProfile } from '../active-profile';
 
 function renderError(error: BackupExportError, t: TFunction<'backup-export'>): string {
   switch (error.kind) {
@@ -35,7 +36,13 @@ export function BackupExportSection() {
   const { t } = useTranslation('backup-export');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [activeOnly, setActiveOnly] = useState(false);
   const { state, runExport, reset } = useBackupExport();
+  // M-05: when "Nur aktives Profil" is checked, narrow the export to
+  // the currently-active profile id. Falls open when the context is
+  // empty (single-profile installations bootstrapped by RequireProfile
+  // typically have one set, so this is rare).
+  const { activeProfileId } = useActiveProfile();
 
   const working =
     state.kind === 'validating' ||
@@ -44,11 +51,12 @@ export function BackupExportSection() {
     state.kind === 'encrypting';
 
   const submitEnabled = password.length >= MIN_PASSWORD_LENGTH && !working;
+  const activeOnlyEnabled = activeOnly && activeProfileId !== null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!submitEnabled) return;
-    void runExport(password);
+    void runExport(password, activeOnlyEnabled ? { profileIds: [activeProfileId] } : undefined);
   };
 
   const statusText = (() => {
@@ -136,6 +144,26 @@ export function BackupExportSection() {
               {t('form.password-help', { min: MIN_PASSWORD_LENGTH })}
             </p>
           </div>
+
+          <label
+            data-testid="backup-export-active-only-toggle"
+            className="flex min-h-[44px] cursor-pointer items-start gap-2 rounded-sm px-1 py-1 text-sm text-gray-900 dark:text-gray-100"
+          >
+            <input
+              type="checkbox"
+              checked={activeOnly}
+              onChange={(e) => setActiveOnly(e.target.checked)}
+              disabled={working || activeProfileId === null}
+              data-testid="backup-export-active-only-checkbox"
+              className="mt-0.5 h-4 w-4"
+            />
+            <span className="flex flex-col">
+              <span>{t('form.active-only-label')}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {t('form.active-only-hint')}
+              </span>
+            </span>
+          </label>
 
           <button
             type="submit"

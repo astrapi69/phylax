@@ -50,7 +50,18 @@ function toDomainRows<
   return entities as unknown as DomainRow[];
 }
 
-export async function buildVaultDump(): Promise<BuildDumpResult> {
+/**
+ * Optional filter applied to every row's `profileId`. When passed, the
+ * dump only includes rows whose `profileId` is in the set. When omitted
+ * (the default), the dump contains every row in the vault. M-05 uses
+ * this to back up just the active profile so multi-profile users can
+ * share or restore one profile at a time.
+ */
+export interface BuildVaultDumpOptions {
+  readonly profileIds?: readonly string[];
+}
+
+export async function buildVaultDump(options?: BuildVaultDumpOptions): Promise<BuildDumpResult> {
   if (getLockState() !== 'unlocked') {
     return { ok: false, error: { kind: 'locked' } };
   }
@@ -87,18 +98,23 @@ export async function buildVaultDump(): Promise<BuildDumpResult> {
     const decryptedMeta = await decryptWithStoredKey(new Uint8Array(meta.payload));
     const metaPayload = decodeMetaPayload(decryptedMeta);
 
+    const profileFilter = options?.profileIds;
+    const allowed = profileFilter && profileFilter.length > 0 ? new Set(profileFilter) : null;
+    const keep = <T extends { profileId: string; id: string }>(rows: T[]): T[] =>
+      allowed === null ? rows : rows.filter((r) => allowed.has(r.profileId) || allowed.has(r.id));
+
     const dump: VaultDump = {
       schemaVersion: SUPPORTED_INNER_SCHEMA_VERSION,
       rows: {
-        profiles: toDomainRows(profiles),
-        observations: toDomainRows(observations),
-        lab_values: toDomainRows(labValues),
-        lab_reports: toDomainRows(labReports),
-        supplements: toDomainRows(supplements),
-        open_points: toDomainRows(openPoints),
-        profile_versions: toDomainRows(profileVersions),
-        documents: toDomainRows(documents),
-        timeline_entries: toDomainRows(timelineEntries),
+        profiles: toDomainRows(keep(profiles)),
+        observations: toDomainRows(keep(observations)),
+        lab_values: toDomainRows(keep(labValues)),
+        lab_reports: toDomainRows(keep(labReports)),
+        supplements: toDomainRows(keep(supplements)),
+        open_points: toDomainRows(keep(openPoints)),
+        profile_versions: toDomainRows(keep(profileVersions)),
+        documents: toDomainRows(keep(documents)),
+        timeline_entries: toDomainRows(keep(timelineEntries)),
       },
       meta_settings: {
         verificationToken: metaPayload.verificationToken,

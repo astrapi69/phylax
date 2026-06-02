@@ -24,9 +24,22 @@ export type BackupExportState =
   | { kind: 'downloaded'; filename: string }
   | { kind: 'error'; error: BackupExportError };
 
+/**
+ * Options accepted by {@link BackupExportHook.runExport}.
+ */
+export interface RunExportOptions {
+  /**
+   * Restrict the export to a subset of profiles. Empty / omitted
+   * means "every profile" (the previous behavior and current default).
+   * M-05 surfaces this in `BackupExportSection` as a checkbox that
+   * narrows the export to the active profile.
+   */
+  readonly profileIds?: readonly string[];
+}
+
 export interface BackupExportHook {
   state: BackupExportState;
-  runExport: (password: string) => Promise<void>;
+  runExport: (password: string, options?: RunExportOptions) => Promise<void>;
   reset: () => void;
 }
 
@@ -51,7 +64,7 @@ export interface BackupExportHook {
 export function useBackupExport(): BackupExportHook {
   const [state, setState] = useState<BackupExportState>({ kind: 'idle' });
 
-  const runExport = useCallback(async (password: string) => {
+  const runExport = useCallback(async (password: string, options?: RunExportOptions) => {
     if (password.length < MIN_PASSWORD_LENGTH) {
       setState({ kind: 'error', error: { kind: 'password-too-short' } });
       return;
@@ -60,7 +73,7 @@ export function useBackupExport(): BackupExportHook {
     setState({ kind: 'validating' });
     setState({ kind: 'building' });
 
-    const dumpResult = await buildVaultDump();
+    const dumpResult = await buildVaultDump({ profileIds: options?.profileIds });
     if (!dumpResult.ok) {
       if (dumpResult.error.kind === 'locked') {
         setState({ kind: 'error', error: { kind: 'locked' } });
