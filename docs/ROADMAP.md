@@ -268,6 +268,17 @@ Follow-up not currently scheduled:
       without a maintainer click; every other PR keeps the human merge
       gate, and the CI-green requirement is never bypassed. (Shipped in
       this commit.)
+- [x] **I-09** Add a prioritization workflow rule. New
+      `.claude/rules/prioritization.md` codifies how open tasks are
+      consolidated and ranked when the state of work is asked for: the
+      sources to read (BACKLOG, ROADMAP, CHANGELOG `[Unreleased]`,
+      code TODOs, GH issues, undocumented items), the six weighted
+      criteria (tier, trigger, category-risk, user-impact, effort vs
+      leverage, blockers), the output shape (consolidated table, top-3,
+      separate user-bound list, inconsistencies section), and the
+      read-only / no-speculation constraints. Cross-referenced to
+      `ai-workflow.md`, `BACKLOG.md`, and `code-hygiene.md`. (Shipped in
+      this commit.)
 
 ## Tech debt (carry-overs)
 
