@@ -62,6 +62,17 @@ trunk.
    CI-green gate, only a shortened queue.
 6. **TDD ordering applies on the branch** per `.claude/rules/tdd.md`
    (tests first for behavior changes; doc/config-only changes are exempt).
+7. **Agent auto-merge for documentation-only PRs.** A pull request whose
+   diff touches documentation only may be merged by the agent itself once
+   CI is green, without waiting for a maintainer click. "Documentation-only"
+   means every changed path is a Markdown or docs-surface file: `*.md`
+   anywhere (including `docs/**`, `.claude/rules/*.md`,
+   `docs/decisions/*.md`, `CHANGELOG.md`, `README.md`). If the diff contains
+   any source, test, configuration, or binary / visual-asset file, the
+   maintainer-merge default of point 2 applies and the agent stops at green
+   CI for a human to merge. The CI-green gate is never bypassed; this only
+   removes the human click for the lowest-risk class of change. Squash
+   remains the default merge strategy per point 4.
 
 ## Consequences
 
@@ -76,3 +87,13 @@ trunk.
 - The informal direct-to-main convention is revoked. `CLAUDE.md` and the
   affected rule files are updated in the same change; the prior incidental
   mentions in `ROADMAP.md` / `ADR-0023` are historical and left as-is.
+- Documentation-only PRs no longer wait on a maintainer click; the agent
+  merges them on green CI. Every other PR keeps the human merge gate. This
+  keeps the rule- and doc-hygiene cadence fast without lowering the bar on
+  code, tests, config, or assets.
+
+## Amendments
+
+- **2026-06-29 (I-08):** Added Decision point 7 (agent auto-merge for
+  documentation-only PRs) and the matching consequence. No change to the
+  CI-green requirement or the squash-default strategy.

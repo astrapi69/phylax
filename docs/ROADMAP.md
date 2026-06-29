@@ -261,6 +261,34 @@ Follow-up not currently scheduled:
       `.claude/rules/release-workflow.md` are updated to match. Reverses the
       prior direct-to-main convention, whose four-week red `main`
       (2026-06-02..2026-06-29) motivated the change. (Shipped in this commit.)
+- [x] **I-08** Allow agent auto-merge for docs-only PRs. Amends
+      `docs/decisions/ADR-0024` with Decision point 7: a PR whose diff
+      touches documentation only (`*.md`, `docs/**`, `.claude/rules/*.md`,
+      and comparable docs surfaces) may be merged by the agent on green CI
+      without a maintainer click; every other PR keeps the human merge
+      gate, and the CI-green requirement is never bypassed. (Shipped in
+      this commit.)
+- [x] **I-09** Add a prioritization workflow rule. New
+      `.claude/rules/prioritization.md` codifies how open tasks are
+      consolidated and ranked when the state of work is asked for: the
+      sources to read (BACKLOG, ROADMAP, CHANGELOG `[Unreleased]`,
+      code TODOs, GH issues, undocumented items), the six weighted
+      criteria (tier, trigger, category-risk, user-impact, effort vs
+      leverage, blockers), the output shape (consolidated table, top-3,
+      separate user-bound list, inconsistencies section), and the
+      read-only / no-speculation constraints. Cross-referenced to
+      `ai-workflow.md`, `BACKLOG.md`, and `code-hygiene.md`. (Shipped in
+      this commit.)
+- [x] **I-10** Add a PR CI-shepherding rule. New
+      `.claude/rules/pr-ci-shepherding.md` codifies how the agent
+      follows a self-opened PR to completion: watch CI to settle, on
+      green merge (docs-only per ADR-0024 point 7) or hand off, on red
+      diagnose and fix automatically (flake -> re-run, real defect ->
+      root-cause fix on the branch per `tdd.md`), loop until green, and
+      report the outcome either way. The CI-green gate is never bypassed
+      and out-of-scope fixes are surfaced, not folded in silently.
+      Cross-referenced to `ADR-0024`, `tdd.md`, `lessons-learned.md`, and
+      `ai-workflow.md`. (Shipped in this commit.)
 
 ## Tech debt (carry-overs)
 
