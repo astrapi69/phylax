@@ -248,6 +248,12 @@ Follow-up not currently scheduled:
       and `ai-workflow.md`. The `CLAUDE.md` "tests vor oder parallel"
       wording is hardened to "tests first" in the same commit so the two
       rules do not contradict on main. (Shipped in this commit.)
+- [x] **I-06** Adopt a reusability rule. New `.claude/rules/reusability.md`
+      (partial adoption) codifies the search-before-create, rule-of-three,
+      no-dependency-for-small-repetition, and layer-clean-sharing
+      disciplines, cross-referenced to `code-hygiene.md`,
+      `coding-standards.md`, `architecture.md`, and `tdd.md`. Monorepo and
+      plugin sharing are explicitly out of scope. (Shipped in this commit.)
 - [x] **I-07** Return to Gitflow. New `docs/decisions/ADR-0024` documents
       per-task feature branches, PR-to-`main` with required green CI, the
       branch-naming scheme, and the squash-default / merge-commit-for-grouped
