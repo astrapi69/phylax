@@ -279,6 +279,16 @@ Follow-up not currently scheduled:
       read-only / no-speculation constraints. Cross-referenced to
       `ai-workflow.md`, `BACKLOG.md`, and `code-hygiene.md`. (Shipped in
       this commit.)
+- [x] **I-10** Add a PR CI-shepherding rule. New
+      `.claude/rules/pr-ci-shepherding.md` codifies how the agent
+      follows a self-opened PR to completion: watch CI to settle, on
+      green merge (docs-only per ADR-0024 point 7) or hand off, on red
+      diagnose and fix automatically (flake -> re-run, real defect ->
+      root-cause fix on the branch per `tdd.md`), loop until green, and
+      report the outcome either way. The CI-green gate is never bypassed
+      and out-of-scope fixes are surfaced, not folded in silently.
+      Cross-referenced to `ADR-0024`, `tdd.md`, `lessons-learned.md`, and
+      `ai-workflow.md`. (Shipped in this commit.)
 
 ## Tech debt (carry-overs)
 
