@@ -154,6 +154,58 @@ describe('ProfileRepository', () => {
     lock();
   });
 
+  it('getCurrentProfile falls back to the first profile when the stored active id matches nothing', async () => {
+    const created = await repo.create(makeProfileData());
+
+    // A stale id (e.g. the active profile was deleted in another tab)
+    // finds no row; getCurrentProfile falls back to the first profile.
+    localStorage.setItem('phylax-active-profile', 'no-such-profile-id');
+    try {
+      const current = await repo.getCurrentProfile();
+      expect(current?.id).toBe(created.id);
+    } finally {
+      localStorage.removeItem('phylax-active-profile');
+    }
+
+    lock();
+  });
+
+  it('getCurrentProfile tolerates a missing localStorage global', async () => {
+    const created = await repo.create(makeProfileData());
+
+    // Non-browser / SSR-style environments have no localStorage; the
+    // read guards on `typeof localStorage === 'undefined'` and returns
+    // null, so getCurrentProfile still resolves to the first profile.
+    vi.stubGlobal('localStorage', undefined);
+    try {
+      const current = await repo.getCurrentProfile();
+      expect(current?.id).toBe(created.id);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+
+    lock();
+  });
+
+  it('getCurrentProfile falls back to the first profile when localStorage access throws', async () => {
+    const created = await repo.create(makeProfileData());
+
+    // Private-mode / blocked-storage browsers throw on localStorage
+    // access. readStoredActiveProfileId swallows that and returns null,
+    // so getCurrentProfile falls back to the first stored profile.
+    const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('localStorage blocked');
+    });
+    try {
+      const current = await repo.getCurrentProfile();
+      expect(current?.id).toBe(created.id);
+    } finally {
+      getItemSpy.mockRestore();
+    }
+
+    lock();
+  });
+
   it('update preserves profileId self-reference', async () => {
     const created = await repo.create(makeProfileData());
     const updated = await repo.update(created.id, { version: '1.4.0' });

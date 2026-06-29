@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fillNewPasswordPair } from './helpers';
 
 const VALID_PASSWORD = 'test-password-12';
 
@@ -18,8 +19,7 @@ test.describe('Profile creation', () => {
     await page.goto('/setup');
 
     // Complete setup
-    await page.getByLabel('Master-Passwort').first().fill(VALID_PASSWORD);
-    await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
+    await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
 

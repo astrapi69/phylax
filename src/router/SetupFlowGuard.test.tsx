@@ -93,4 +93,43 @@ describe('SetupFlowGuard', () => {
     );
     errorSpy.mockRestore();
   });
+
+  it('skips the result update when unmounted before auth resolves (cancelled guard)', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let resolveMeta!: (value: boolean) => void;
+    vi.mocked(metaExists).mockReturnValue(
+      new Promise<boolean>((resolve) => {
+        resolveMeta = resolve;
+      }),
+    );
+    vi.mocked(getLockState).mockReturnValue('unlocked');
+
+    const { unmount } = renderAt('/welcome');
+    unmount();
+    resolveMeta(true);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Cancelled guard returns before setResult; no fail-open log either.
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it('skips the fail-open update when unmounted before auth rejects (cancelled guard)', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let rejectMeta!: (reason: Error) => void;
+    vi.mocked(metaExists).mockReturnValue(
+      new Promise<boolean>((_resolve, reject) => {
+        rejectMeta = reject;
+      }),
+    );
+
+    const { unmount } = renderAt('/welcome');
+    unmount();
+    rejectMeta(new Error('indexeddb dead'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // The catch's cancelled guard returns before the fail-open log.
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
 });

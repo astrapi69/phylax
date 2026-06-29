@@ -252,9 +252,14 @@ Follow-up not currently scheduled:
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 
-These are the four threshold-violating modules surfaced by the
-2026-05-02 coverage audit. They are tracked here so they appear in
-the same priority queue as feature work.
+Closed by **TD-16** (2026-06-29): the `src/db/repositories/**`,
+`src/db/**`, and `src/router/**` threshold violations carried since
+the 2026-05-02 audit are resolved; `make test-coverage` passes every
+per-module threshold. Targeted branch tests were added for the
+profile-active-id resolution paths (stale id, throwing/absent
+`localStorage`), the `saveMultiAIConfig` missing-meta guard, the
+local-provider `baseUrl` parse branch, and the router auth/profile
+guards including the `cancelled`-cleanup branches.
 
 ## Working agreements
 

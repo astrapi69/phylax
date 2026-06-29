@@ -3,6 +3,36 @@ import { expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { A11Y_EXCLUSIONS } from './a11y-exclusions';
 
+/**
+ * Fill the setup form's password + confirm pair robustly on WebKit.
+ *
+ * Both inputs carry autocomplete="new-password"; on WebKit, Safari's
+ * Automatic Strong Password behaviour asynchronously clears the first
+ * field when the second is filled, leaving the password empty and the
+ * submit button disabled (BUG-13). Fill both, then assert both values
+ * stuck and re-fill whichever WebKit cleared, retrying until the pair
+ * is stable. Chromium and Firefox satisfy the assertion on the first
+ * pass.
+ *
+ * Intentional copy of tests/e2e/helpers.ts#fillNewPasswordPair: the
+ * dev and production E2E suites keep separate helper modules by
+ * design. Keep the two in sync.
+ */
+export async function fillNewPasswordPair(page: Page, password: string): Promise<void> {
+  const passwordField = page.getByLabel('Master-Passwort').first();
+  const confirmField = page.getByLabel('Passwort wiederholen');
+  await expect(async () => {
+    if ((await passwordField.inputValue()) !== password) {
+      await passwordField.fill(password);
+    }
+    if ((await confirmField.inputValue()) !== password) {
+      await confirmField.fill(password);
+    }
+    await expect(passwordField).toHaveValue(password);
+    await expect(confirmField).toHaveValue(password);
+  }).toPass({ timeout: 15000 });
+}
+
 export type ThemeMode = 'light' | 'dark' | 'auto';
 export type SystemPreference = 'light' | 'dark';
 export type ResolvedTheme = 'light' | 'dark';

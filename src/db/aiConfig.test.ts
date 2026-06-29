@@ -194,6 +194,18 @@ describe('multi-provider aiConfig persistence (AI Commit 2)', () => {
     ).rejects.toThrow(/empty/i);
   });
 
+  it('saveMultiAIConfig throws when the meta row is missing', async () => {
+    const { db } = await import('./schema');
+    await db.meta.clear();
+
+    await expect(
+      saveMultiAIConfig({
+        providers: [{ provider: 'anthropic', apiKey: 'sk-ant-xyz' }],
+        activeProviderId: 'anthropic',
+      }),
+    ).rejects.toThrow(/meta row missing/);
+  });
+
   it('deleteAIConfig clears the entire multi-provider list', async () => {
     await saveMultiAIConfig({
       providers: [

@@ -107,6 +107,24 @@ describe('MetaPayload encoding/decoding', () => {
     expect(decoded.settings.autoLockMinutes).toBe(5);
   });
 
+  it('preserves a local provider baseUrl through decode', () => {
+    // A local provider may carry an empty apiKey but a custom baseUrl;
+    // parseSingleProviderEntry must keep the baseUrl field.
+    const aiConfig: MultiProviderAIConfig = {
+      providers: [{ provider: 'ollama', apiKey: '', baseUrl: 'http://localhost:11434' }],
+      activeProviderId: 'ollama',
+    };
+    const payload: MetaPayload = {
+      verificationToken: VERIFICATION_TOKEN,
+      settings: { autoLockMinutes: 5 },
+      aiConfig,
+    };
+
+    const decoded = decodeMetaPayload(encodeMetaPayload(payload));
+
+    expect(decoded.aiConfig?.providers[0]?.baseUrl).toBe('http://localhost:11434');
+  });
+
   it('decodes payload without aiConfig as undefined (backward compat)', () => {
     const payload: MetaPayload = {
       verificationToken: VERIFICATION_TOKEN,

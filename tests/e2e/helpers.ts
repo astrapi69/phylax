@@ -5,6 +5,37 @@ const DEFAULT_PASSWORD = 'test-password-12';
 const DEFAULT_PROFILE_NAME = 'Test-Profil';
 
 /**
+ * Fill the setup form's password + confirm pair robustly on WebKit.
+ *
+ * Both inputs carry autocomplete="new-password"; on WebKit, Safari's
+ * Automatic Strong Password behaviour asynchronously clears the first
+ * field when the second is filled, leaving the password empty and the
+ * submit button disabled (BUG-13). Fill both, then assert both values
+ * stuck and re-fill whichever WebKit cleared, retrying until the pair
+ * is stable. Chromium and Firefox satisfy the assertion on the first
+ * pass. The conditional re-fill avoids re-triggering the clear on a
+ * field that already holds the value.
+ *
+ * The production smoke suite carries an intentional copy of this in
+ * tests/e2e-production/smoke-helpers.ts (the two E2E suites keep
+ * separate helper modules by design); keep the two in sync.
+ */
+export async function fillNewPasswordPair(page: Page, password: string): Promise<void> {
+  const passwordField = page.getByLabel('Master-Passwort').first();
+  const confirmField = page.getByLabel('Passwort wiederholen');
+  await expect(async () => {
+    if ((await passwordField.inputValue()) !== password) {
+      await passwordField.fill(password);
+    }
+    if ((await confirmField.inputValue()) !== password) {
+      await confirmField.fill(password);
+    }
+    await expect(passwordField).toHaveValue(password);
+    await expect(confirmField).toHaveValue(password);
+  }).toPass({ timeout: 15000 });
+}
+
+/**
  * Pin the app language to German before the first React render.
  *
  * Post-I18N-02-e, `src/i18n/detector.ts` picks the initial language
@@ -61,18 +92,13 @@ export async function setupAuthenticatedSession(
   // setup cost low for tests that only need an authenticated session.
   await page.goto('/setup');
 
-  // Setup form
-  await page.getByLabel('Master-Passwort').first().fill(password);
-  await page.getByLabel('Passwort wiederholen').fill(password);
+  // Setup form. The submit gate is validateSetup (password length,
+  // confirm match, acknowledgment) in SetupView.tsx; the zxcvbn
+  // strength score is advisory and never blocks submit. The password
+  // pair is filled via the WebKit-robust helper (BUG-13).
+  await fillNewPasswordPair(page, password);
   await page.getByLabel('Ich habe verstanden').check();
-  // Submit gates on the @zxcvbn-ts strength score, which relies on
-  // an async-loaded dictionary chunk (ADR-0014). On chromium the
-  // chunk lands in a few ms and the submit enables in time for
-  // Playwright's auto-actionability wait. On webkit the chunk
-  // sometimes lands later than Playwright's 30s click-actionability
-  // window, so the click times out with "element is not enabled".
-  // Wait explicitly with a generous budget so the dictionary has a
-  // chance to settle before we click.
+
   const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
   await expect(submitBtn).toBeEnabled({ timeout: 30000 });
   await submitBtn.click();
