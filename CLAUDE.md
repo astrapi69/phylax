@@ -120,7 +120,7 @@ Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (B
 - Bei Unklarheiten zur Architektur nachfragen, bevor geraten wird
 - Security-relevante Entscheidungen explizit begründen
 - Edge Cases auflisten, bevor implementiert wird
-- Tests vor oder parallel zur Implementierung schreiben
+- Tests zuerst schreiben (Red-Green-Refactor, siehe `.claude/rules/tdd.md`), nicht erst nach der Implementierung
 - Bei jedem neuen Profilbereich prüfen: wird Klartext jemals ohne Verschlüsselung persistiert
 - Bei KI-Features prüfen: Chat-Nachrichten dürfen nicht persistiert werden, nur bestätigte Profil-Fragmente
 

@@ -236,6 +236,19 @@ Follow-up not currently scheduled:
       community contribution path. Scoped in the exploration
       document; deferred until prioritised.
 
+## Infrastructure (I-series)
+
+- [x] **I-05** Adopt an adapted TDD workflow rule. New
+      `.claude/rules/tdd.md` ports the Red-Green-Refactor discipline,
+      the four-test target (repro / happy / edge / boundary), the
+      bug-repro-first rule, and the mechanical-refactor exceptions from
+      the adaptive-learner ruleset, adapted to the phylax frontend stack
+      (Vitest / tsc, no backend) and cross-referenced to
+      `quality-checks.md`, `test-strategy.md`, `coding-standards.md`,
+      and `ai-workflow.md`. The `CLAUDE.md` "tests vor oder parallel"
+      wording is hardened to "tests first" in the same commit so the two
+      rules do not contradict on main. (Shipped in this commit.)
+
 ## Tech debt (carry-overs)
 
 - [ ] **Setup chunk headroom 9 KB** - `.size-limit.json` "Setup lazy
