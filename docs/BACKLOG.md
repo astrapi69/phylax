@@ -35,8 +35,11 @@ real human in front of a real browser / a screen reader / a market.
   needs sign-off.
 - **P-07-d** A11y screen-reader sweep (NVDA / VoiceOver / Orca /
   TalkBack). Requires at least one SR installed and walked.
-- **IM-05 Option B smoke walk**
-  ([`manual-smoke/im-05-option-b-merge.md`](manual-smoke/im-05-option-b-merge.md)).
+- **IM-06 field-level-merge smoke walk**
+  ([`manual-smoke/im-06-field-level-merge.md`](manual-smoke/im-06-field-level-merge.md)).
+  IM-06 shipped (merge engine plus conflict dialogs, full test suite
+  green) but is awaiting manual smoke verification before release.
+  Scenarios 1, 2, 2b were walked; scenarios 3-20 remain.
 - **AIP-01..05 smoke walk**
   ([`manual-smoke/ai-multi-provider.md`](manual-smoke/ai-multi-provider.md)).
 - **D-02 Custom domain** - blocked on the user picking a domain. Once

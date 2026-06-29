@@ -62,7 +62,8 @@ Project overall: 85 to 95 percent lines. The test suite must genuinely protect t
 Per-module targets, differentiated by risk:
 
 - `src/crypto/`: 100% lines, 100% branches. Hard requirement. Security-critical, no exceptions.
-- `src/db/` (repositories, schema): 95% lines minimum.
+- `src/db/repositories/`: 100% lines, branches, functions, and statements. This is the canonical figure, enforced as a per-module gate in `vite.config.ts`, and is intentionally stricter than the 95% `src/db/` floor below. The 100% was reached by adding real tests (TD-16), not by relaxing the bar; treat `vite.config.ts` as the source of truth if this prose ever drifts again.
+- `src/db/` (schema and other non-repository modules): 95% lines minimum.
 - `src/domain/`: 90% lines minimum.
 - `src/features/` (React components, hooks, flows): 85% lines minimum. Tested with React Testing Library, behavior not implementation.
 - `src/ui/` (shared dumb components): 85% lines minimum.
