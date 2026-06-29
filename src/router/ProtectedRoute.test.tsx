@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import 'fake-indexeddb/auto';
 import { lock } from '../crypto';
@@ -89,5 +89,30 @@ describe('ProtectedRoute', () => {
   it('shows loading state initially', () => {
     renderWithRouter(['/profile']);
     expect(screen.getByText('Laden...')).toBeInTheDocument();
+  });
+
+  it('redirects to /unlock when the keystore locks while mounted', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    await setupCompletedOnboarding(TEST_PASSWORD);
+    const { readMeta } = await import('../db/meta');
+    const { unlock } = await import('../crypto');
+    const meta = await readMeta();
+    await unlock(TEST_PASSWORD, new Uint8Array(meta?.salt ?? new ArrayBuffer(0)));
+
+    renderWithRouter(['/profile']);
+    await waitFor(() => {
+      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    });
+
+    // Auto-lock (or manual lock) fires onLockStateChange('locked'); the
+    // mounted guard must react and redirect to /unlock.
+    await act(async () => {
+      lock();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Unlock')).toBeInTheDocument();
+    });
+
+    warnSpy.mockRestore();
   });
 });

@@ -64,4 +64,26 @@ describe('EntryRouter', () => {
     expect(screen.queryByTestId('destination-unlock')).not.toBeInTheDocument();
     expect(screen.queryByTestId('destination-profile')).not.toBeInTheDocument();
   });
+
+  it('skips the navigation when unmounted before auth resolves (cancelled guard)', async () => {
+    // The cancelled guard must return before setTarget, so no "state
+    // update on an unmounted component" warning is logged.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let resolveMeta!: (value: boolean) => void;
+    vi.mocked(metaExists).mockReturnValue(
+      new Promise<boolean>((resolve) => {
+        resolveMeta = resolve;
+      }),
+    );
+    vi.mocked(getLockState).mockReturnValue('unlocked');
+
+    const { unmount } = renderAt('/');
+    unmount();
+    resolveMeta(true);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screen.queryByTestId('destination-profile')).not.toBeInTheDocument();
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
 });
