@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { fillNewPasswordPair } from './helpers';
 
 const VALID_PASSWORD = 'test-password-12';
 
@@ -35,8 +36,7 @@ test.describe('Onboarding: first-run complete flow', () => {
       page.getByRole('heading', { level: 1, name: 'Master-Passwort festlegen' }),
     ).toBeVisible();
 
-    await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
-    await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
+    await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
 
@@ -61,8 +61,7 @@ test.describe('Onboarding: setup validation', () => {
     await expect(page.getByText(/Mindestens 12 Zeichen/)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Phylax einrichten' })).toBeDisabled();
 
-    await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
-    await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
+    await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
 
@@ -76,8 +75,7 @@ test.describe('Onboarding: returning user unlock', () => {
   test.beforeEach(async ({ page }) => {
     await clearDatabase(page);
     await page.goto('/setup');
-    await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
-    await page.getByLabel('Passwort wiederholen').fill(VALID_PASSWORD);
+    await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
     await page.getByRole('button', { name: 'Phylax einrichten' }).click();
     await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({

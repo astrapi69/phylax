@@ -7,6 +7,7 @@ import {
   assertBackgroundRespectsTheme,
   assertNoA11yViolations,
   assertTheme,
+  fillNewPasswordPair,
   prepareTheme,
   resolvedTheme,
   type ThemeMode,
@@ -44,15 +45,14 @@ async function clearDatabase(page: Page) {
 }
 
 async function completeOnboarding(page: Page) {
-  await page.getByLabel('Master-Passwort').first().fill(DEFAULT_PASSWORD);
-  await page.getByLabel('Passwort wiederholen').fill(DEFAULT_PASSWORD);
+  // BUG-13: the password pair is filled via the WebKit-robust helper.
+  // The submit gate is validateSetup (length / confirm match / ack) in
+  // SetupView.tsx; the zxcvbn strength score is advisory and never
+  // blocks submit. The earlier "zxcvbn dictionary timing" note was a
+  // misdiagnosis: the real cause was Safari clearing the first
+  // new-password field, which fillNewPasswordPair repairs.
+  await fillNewPasswordPair(page, DEFAULT_PASSWORD);
   await page.getByLabel('Ich habe verstanden').check();
-  // Submit gates on the @zxcvbn-ts strength score (ADR-0014). The
-  // dictionary chunk is async-loaded; on webkit it sometimes lands
-  // later than Playwright's auto-actionability window so the click
-  // times out with "element is not enabled". Wait explicitly with
-  // a generous budget. Mirrors the dev-side `tests/e2e/helpers.ts`
-  // fix.
   const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
   await expect(submitBtn).toBeEnabled({ timeout: 30000 });
   await submitBtn.click();
