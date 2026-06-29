@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" fill="#1f2937"/>
-  <text x="256" y="330" text-anchor="middle" font-family="serif" font-size="240" font-weight="bold" fill="#ffffff">Φ</text>
+  <g transform="translate(256 256) scale(0.74) translate(-256 -256)" fill="none" stroke="#f4ecd6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M140 120 L372 120 L372 250 Q372 342 256 422 Q140 342 140 250 Z" stroke-width="24"/>
+    <path d="M158 256 L210 256 L226 230 L242 286 L256 150 L272 336 L288 256 L354 256" stroke-width="18"/>
+  </g>
 </svg>
