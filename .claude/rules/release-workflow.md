@@ -13,6 +13,10 @@ Prompt triggers: "Release new version", "New release", "Deploy new version".
 - Tests must be green: red tests block the release, no exceptions.
 - CHANGELOG is for humans: do not paste raw commit messages, summarize meaningfully.
 - Version bump follows SemVer, even in the 0.x phase.
+- Gitflow applies to releases too (ADR-0024): the `chore(release): vX.Y.Z`
+  commit lands on a `chore/release-vX.Y.Z` branch via a pull request with
+  green CI. The tag and the `git push origin main` steps below run on `main`
+  only after that PR has merged.
 
 ---
 
@@ -43,6 +47,7 @@ If the working tree is not clean, STOP and ask the user how to proceed.
 ## Step 2: Decide the version bump
 
 SemVer rules for Phylax:
+
 - **patch** (`0.1.0` -> `0.1.1`): bug fixes, dependency updates, doc fixes, no user-visible behavior change.
 - **minor** (`0.1.0` -> `0.2.0`): new features, new entry types, new export formats, UI additions. Backward-compatible storage schema.
 - **major** (`0.x.y` -> `1.0.0`): first stable release, OR a storage schema migration that requires user action.
@@ -76,20 +81,25 @@ Format: Keep a Changelog (https://keepachangelog.com).
 ## [0.2.0] - 2026-04-15
 
 ### Added
+
 - Medication entry type with start/end dates and dosage tracking [E-04]
 - PDF export now includes a date range filter [X-02]
 
 ### Changed
+
 - Auto-lock default reduced from 10 to 5 minutes [P-07]
 
 ### Fixed
+
 - Backup restore failed silently when ciphertext was truncated [B-03]
 
 ### Security
+
 - PBKDF2 iterations increased from 310,000 to 600,000 [F-09]
 ```
 
 Rules:
+
 - Group by Added / Changed / Fixed / Security / Removed.
 - Each entry references its task ID in square brackets.
 - "Security" entries are mandatory if anything in `src/crypto/` changed.

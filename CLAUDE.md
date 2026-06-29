@@ -104,6 +104,8 @@ Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (B
 - Task-IDs folgen dem Series-Prefix-Schema in `.claude/rules/task-series.md` (single source of truth: F, O, IM, V, T, I, AI, D, X, B, P, M, DP, E, R, I18N, IMP, AIP, ONB, DOC, S, BUG, TD, DEPS).
 - Beispiel: F-01 Vite-Setup, F-02 PWA-Config, O-01 Domain-Types
 - Ein Commit pro Task, Commit-Message enthält Task-ID in Klammern.
+- **Gitflow (ADR-0024):** Jeder Task läuft auf einem eigenen Feature-Branch (`feature/<TASK>-desc`, `fix/<BUG-NN>-desc`, `chore/<I-NN>-desc`, `docs/<TASK>-desc`); kein direkter Commit auf `main`. Merge nach `main` nur über einen Pull-Request mit grünem CI. Squash-Merge als Default (ein Commit pro Task), Merge-Commit nur, wenn ein PR mehrere eigenständige Task-Commits bündelt. Die frühere Direct-to-main-Konvention ist aufgehoben.
+- TDD-Reihenfolge auf dem Branch nach `.claude/rules/tdd.md` (Test zuerst bei Verhaltensänderungen; reine Doku-/Konfig-Änderungen sind ausgenommen).
 
 ## Was Claude Code nicht tun soll
 

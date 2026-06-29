@@ -67,8 +67,16 @@ Crypto changes are special. Order is mandatory:
 
 If a task in ROADMAP.md is ambiguous, do not invent a scope. Ask one targeted question, then wait. Bad: "I assumed you wanted X, so I built X, Y, and Z." Good: "Task E-04 says 'add medication reminders'. Should reminders be local-only browser notifications, or out of scope for the MVP?"
 
-## Commits
+## Commits and branches
 
+- Gitflow (ADR-0024): one feature branch per task, no direct commits to `main`.
+  Branch naming: `feature/<TASK>-desc`, `fix/<BUG-NN>-desc`,
+  `chore/<I-NN>-desc`, `docs/<TASK>-desc`.
+- Open a pull request targeting `main`. CI must be green (lint, typecheck,
+  unit + coverage, E2E dev + production, bundle size) before merging.
+- Merge strategy: squash by default (one commit per task on a linear `main`);
+  a merge commit is used only when a PR intentionally groups multiple distinct
+  task commits. Rebase-merge is not used.
 - One commit per task ID where possible.
 - Conventional Commits format: `feat(profile): add observation CRUD [O-04]`.
 - The task ID in square brackets is mandatory.
