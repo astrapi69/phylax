@@ -261,6 +261,13 @@ Follow-up not currently scheduled:
       `.claude/rules/release-workflow.md` are updated to match. Reverses the
       prior direct-to-main convention, whose four-week red `main`
       (2026-06-02..2026-06-29) motivated the change. (Shipped in this commit.)
+- [x] **I-08** Allow agent auto-merge for docs-only PRs. Amends
+      `docs/decisions/ADR-0024` with Decision point 7: a PR whose diff
+      touches documentation only (`*.md`, `docs/**`, `.claude/rules/*.md`,
+      and comparable docs surfaces) may be merged by the agent on green CI
+      without a maintainer click; every other PR keeps the human merge
+      gate, and the CI-green requirement is never bypassed. (Shipped in
+      this commit.)
 
 ## Tech debt (carry-overs)
 
