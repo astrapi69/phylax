@@ -287,6 +287,13 @@ profile-active-id resolution paths (stale id, throwing/absent
 local-provider `baseUrl` parse branch, and the router auth/profile
 guards including the `cancelled`-cleanup branches.
 
+Closed by **TD-17** (2026-06-29): the documentation drift between the
+`src/db/repositories/**` 100% gate in `vite.config.ts` and the 95%
+`src/db/` floor in `.claude/rules/quality-checks.md` is resolved.
+`quality-checks.md` now names the 100% repositories figure as canonical
+and points to `vite.config.ts` as the source of truth. Documentation
+only, no gate or code change.
+
 ## Working agreements
 
 - New work follows `.claude/rules/task-series.md` for prefix
