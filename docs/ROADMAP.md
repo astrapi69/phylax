@@ -248,6 +248,13 @@ Follow-up not currently scheduled:
       and `ai-workflow.md`. The `CLAUDE.md` "tests vor oder parallel"
       wording is hardened to "tests first" in the same commit so the two
       rules do not contradict on main. (Shipped in this commit.)
+- [x] **I-07** Return to Gitflow. New `docs/decisions/ADR-0024` documents
+      per-task feature branches, PR-to-`main` with required green CI, the
+      branch-naming scheme, and the squash-default / merge-commit-for-grouped
+      strategy; `CLAUDE.md`, `.claude/rules/ai-workflow.md`, and
+      `.claude/rules/release-workflow.md` are updated to match. Reverses the
+      prior direct-to-main convention, whose four-week red `main`
+      (2026-06-02..2026-06-29) motivated the change. (Shipped in this commit.)
 
 ## Tech debt (carry-overs)
 
