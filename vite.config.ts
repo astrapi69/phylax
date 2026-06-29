@@ -5,7 +5,27 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 import { readFileSync } from 'fs';
 
-const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
+  version: string;
+  author: string;
+  license: string;
+};
+
+// Inject build-time metadata into index.html so the JSON-LD structured-data
+// block and meta tags stay in sync with package.json (single source of truth).
+// Tokens use the @@NAME@@ delimiter to avoid colliding with Vite's native
+// %VAR% HTML env replacement and the `define` JS substitution.
+function htmlMetadata(meta: { version: string; author: string; license: string }) {
+  return {
+    name: 'phylax-html-metadata',
+    transformIndexHtml(html: string): string {
+      return html
+        .replace(/@@APP_VERSION@@/g, meta.version)
+        .replace(/@@APP_AUTHOR@@/g, meta.author)
+        .replace(/@@APP_LICENSE@@/g, meta.license);
+    },
+  };
+}
 
 // Base path differs by mode:
 // - production: served from GitHub Pages at astrapi69.github.io/phylax/ (D-01)
@@ -20,6 +40,7 @@ export default defineConfig(({ mode }) => {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
     plugins: [
+      htmlMetadata(pkg),
       react(),
       VitePWA({
         // BUG-01 fix: 'prompt' (not 'autoUpdate'). autoUpdate calls

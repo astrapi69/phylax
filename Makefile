@@ -19,6 +19,10 @@ clean: ## Remove node_modules, dist, and coverage
 icons: ## Generate PNG icons from SVG sources
 	node scripts/generate-icons.mjs
 
+.PHONY: og-images
+og-images: ## Generate Open Graph / Twitter social-preview cards (D-04)
+	node scripts/generate-og-images.mjs
+
 # -- Quality --
 
 lint: ## Run ESLint

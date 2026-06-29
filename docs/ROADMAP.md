@@ -211,7 +211,14 @@ Follow-up not currently scheduled:
 ## Deployment
 
 - [ ] **D-02** Custom domain (optional; requires registrar + CNAME +
-      DNS verification).
+      DNS verification). Also unlocks an authoritative host-root
+      `robots.txt`/`sitemap.xml` (see D-04 caveat).
+- [ ] **D-04 post-deploy validation** SEO/social metadata shipped
+      (`index.html` meta + Open Graph + Twitter Card + JSON-LD
+      `WebApplication`, `public/og-image{,-en}.png`, `robots.txt`,
+      `sitemap.xml`). Outstanding: one-time crawler validation walk
+      after the next deploy, per
+      [`d-04-seo-social-metadata.md`](manual-smoke/d-04-seo-social-metadata.md).
 - [ ] **D-03** PWABuilder packaging for app stores. Manifest-side
       prep done (`id`, `display_override`, `launch_handler` in
       `vite.config.ts`; maintainer runbook at

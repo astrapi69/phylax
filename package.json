@@ -2,6 +2,8 @@
   "name": "phylax",
   "private": true,
   "version": "1.1.0",
+  "author": "Asterios Raptis",
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=24"

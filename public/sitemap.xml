@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Minimal sitemap. Only the landing route "/" is genuinely crawlable.
+  All other routes (/profiles, /profile/*, /unlock, /settings, ...) are
+  auth-gated client-side and render nothing meaningful without an unlocked
+  vault, so they are intentionally omitted. Phylax uses client-side language
+  switching (no de/en URL segments), so there is a single canonical URL.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://astrapi69.github.io/phylax/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

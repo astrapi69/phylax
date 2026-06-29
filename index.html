@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)" />
-    <meta name="description" content="Dein lokales, verschluesseltes Gesundheitsprofil." />
+
+    <!-- Primary SEO -->
+    <meta
+      name="description"
+      content="Privacy-first health data PWA. Local AES-256 encryption, no cloud, no accounts. For yourself or as a caregiver profile for family members."
+    />
+    <meta
+      name="keywords"
+      content="privacy-first health, encrypted health record, local-first PWA, caregiver health management, zero-knowledge health app, Gesundheitsdaten lokal, verschlüsseltes Gesundheitstagebuch"
+    />
+    <meta name="author" content="@@APP_AUTHOR@@" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://astrapi69.github.io/phylax/" />
 
     <!--
       Flash-prevention: apply the dark class before React mounts. Logic is
@@ -45,8 +57,79 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Phylax" />
+    <meta name="application-name" content="Phylax" />
 
-    <title>Phylax</title>
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Phylax" />
+    <meta property="og:title" content="Phylax - Lebende Gesundheit, lokal verschlüsselt" />
+    <meta
+      property="og:description"
+      content="Privacy-first health data PWA. Local AES-256 encryption, no cloud, no accounts. For yourself or as a caregiver profile for family members."
+    />
+    <meta property="og:url" content="https://astrapi69.github.io/phylax/" />
+    <meta property="og:image" content="https://astrapi69.github.io/phylax/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Phylax - Lebende Gesundheit. Verlauf, Kontext, Datenhoheit."
+    />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Phylax - Lebende Gesundheit, lokal verschlüsselt" />
+    <meta
+      name="twitter:description"
+      content="Privacy-first health data PWA. Local AES-256 encryption, no cloud, no accounts. For yourself or as a caregiver profile for family members."
+    />
+    <meta name="twitter:image" content="https://astrapi69.github.io/phylax/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Phylax - Lebende Gesundheit. Verlauf, Kontext, Datenhoheit."
+    />
+
+    <!-- Structured data: WebApplication (HealthApplication category).
+         Version, author and license below are injected at build time from
+         package.json by the phylax-html-metadata Vite plugin, keeping them a
+         single source of truth. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Phylax",
+        "description": "Privacy-first health data PWA. Local AES-256 encryption, no cloud, no accounts. For yourself or as a caregiver profile for family members.",
+        "url": "https://astrapi69.github.io/phylax/",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Any (Progressive Web App)",
+        "softwareVersion": "@@APP_VERSION@@",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "@@APP_AUTHOR@@"
+        },
+        "inLanguage": ["de", "en"],
+        "featureList": [
+          "AES-256-GCM encryption with PBKDF2 key derivation",
+          "Local-first storage via Dexie/IndexedDB",
+          "PWA with offline support",
+          "Multi-profile (own + caregiver)",
+          "PDF export for medical visits",
+          "Multi-AI provider with BYOK",
+          "i18n: DE, EN"
+        ],
+        "license": "https://spdx.org/licenses/@@APP_LICENSE@@.html",
+        "screenshot": "https://astrapi69.github.io/phylax/og-image.png"
+      }
+    </script>
+
+    <title>Phylax - Lebende Gesundheit, lokal verschlüsselt</title>
   </head>
   <body>
     <div id="root"></div>
