@@ -98,6 +98,7 @@ boundary.
 | Feature          | Description                                                  | Status                                              |
 | ---------------- | ------------------------------------------------------------ | --------------------------------------------------- |
 | P-01             | [Mobile-first viewport sweep](p-01-mobile-sweep.md)          | Pending walk                                        |
+| P-07-d           | [Screen-reader sweep](p-07-d-screen-reader-sweep.md)         | Pending walk                                        |
 | P-06             | [Change master password](p-06-change-password.md)            | Complete (2026-04-30; P-06a fixed inline)           |
 | P-09             | [Error boundary](p-09-error-boundary.md)                     | Complete (2026-04-30; P-09a fixed inline)           |
 | P-16             | [Document row delete](p-16-document-row-delete.md)           | Complete (2026-04-30; BUG-03/04/05/06 fixed inline) |

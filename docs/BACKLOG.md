@@ -54,6 +54,10 @@ real human in front of a real browser / a screen reader / a market.
   Partner Center + Google Play console accounts, and submit.
   Cannot be automated (account credentials, screenshot
   judgement, store-policy decisions).
+- **D-04 post-deploy metadata validation** - blocked on a deploy that
+  includes D-04; run the one-time crawler verification for SEO + social
+  cards afterward. Manual walk at
+  [`manual-smoke/d-04-seo-social-metadata.md`](manual-smoke/d-04-seo-social-metadata.md).
 
 ## Tier 3 - Trigger-bound (wait for an external signal before shipping)
 
@@ -77,6 +81,24 @@ the trigger fires.
   providers. Trigger: a real-world deployment scenario demands it.
 - **B-05** Merge-mode backup import. Trigger: Phase 8 multi-profile
   planning or a multi-device-sync requirement.
+- **IM-06-polish-1** Synth-marker dedup. Trigger: user feedback
+  flagging `ProfileVersion` clutter after repeated merge imports.
+- **IM-06-polish-2** `submitResolutions` silent no-op outside
+  `conflict-resolution`. Trigger: programmer-error report or
+  smoke-walk finding.
+- **IM-06-polish-3** Value preview for mine / theirs picks in Step 5a.
+  Trigger: smoke walk or user frustration with blind picks.
+- **IM-06-polish-4** Preserve field-picks across mode-switch in the
+  conflict dialog. Trigger: smoke-walk scenario 10 finding or user
+  report of frustration.
+- **IM-06-polish-5** Radio click-target verification without `force` in
+  e2e. Trigger: smoke finding or user report of miss-clicks.
+- **M-05 import-as-new-profile** Backup import adds the incoming
+  profile to the existing vault instead of overwriting. Trigger:
+  real-user request, or scheduled work to unify merge engines.
+- **M-06** Rate-limit storage key scoping per vault (unlock and
+  backup-import). Trigger: user report of cross-profile lockout
+  confusion or multi-user device use case.
 - **X-10** All-profiles PDF export option, producing one document that
   spans every profile on the device rather than only the active one.
   Trigger: an explicit user request for a single PDF covering multiple

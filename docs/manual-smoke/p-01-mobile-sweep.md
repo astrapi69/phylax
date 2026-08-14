@@ -24,13 +24,36 @@ sticky-bar overlap, modal overflow under content-heavy fixtures.
 5. **Screenshot anything ambiguous** - Category C polish findings
    benefit from a snapshot for later review.
 
+## Condensed checklist
+
+- [ ] 360 px light mode: nav, core views, forms, import and export
+      dialogs, settings, onboarding, and AI chat fit without horizontal
+      scroll.
+- [ ] 360 px dark mode: repeat key screens, verify contrast and focus
+      rings.
+- [ ] Tap targets are at least 44x44 and sticky bars do not cover
+      content.
+- [ ] Errors and validation states are visible, dialogs dismiss
+      cleanly.
+- [ ] 768 px: nav switches to side panel, grids reflow as designed.
+- [ ] 1024 px: layout proportions and long-form text line length remain
+      readable.
+
+## Evidence log
+
+| Viewport | Screen or flow | Result | Notes or screenshot | Follow-up |
+| -------- | -------------- | ------ | ------------------- | --------- |
+| 360 px   |                |        |                     |           |
+| 768 px   |                |        |                     |           |
+| 1024 px  |                |        |                     |           |
+
 ## Viewports
 
-| Viewport | Use case |
-| -------- | -------- |
+| Viewport | Use case                                                          |
+| -------- | ----------------------------------------------------------------- |
 | 360 px   | Mobile floor (older Android phones; CLAUDE.md mobile-first floor) |
-| 768 px   | Tablet portrait, iPad mini, Tailwind `md` threshold |
-| 1024 px  | Tablet landscape / small desktop, Tailwind `lg` threshold |
+| 768 px   | Tablet portrait, iPad mini, Tailwind `md` threshold               |
+| 1024 px  | Tablet landscape / small desktop, Tailwind `lg` threshold         |
 
 ## Scenarios
 
@@ -192,5 +215,5 @@ acceptable. Final signature + date when the file is fully walked.
 - ☐ All Category A findings registered as `P-01a..n` ROADMAP sub-tasks
 - ☐ Audit-doc reference link still resolves
 
-Walker: ____________________
-Date: 2026-__-__
+Walker: ********\_\_\_\_********
+Date: 2026-**-**

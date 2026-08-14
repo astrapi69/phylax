@@ -45,6 +45,23 @@ References:
    scenario steps). Reset between scenarios via Settings → Daten
    zurücksetzen.
 
+## Condensed checklist
+
+- [ ] Disjoint merge inserts all entities without conflicts
+      (scenario 1).
+- [ ] Identical re-import is a no-op, no conflict dialog (scenario 2).
+- [ ] Conflict picks apply correctly for mine, theirs, and
+      field-by-field; confirm gates on missing picks (scenarios 4-9).
+- [ ] Mode switch clears per-field picks as designed (scenario 10).
+- [ ] ESC and Abbrechen cancel the import and preserve existing data
+      (scenarios 11-12).
+- [ ] Long values truncate with toggle; edge values render cleanly
+      (scenarios 13-14).
+- [ ] Synth profile-version marker writes after merge; note any
+      dedup-needed clutter (scenario 16).
+- [ ] Dark mode, 360 px fit, and 30+ conflict scale are acceptable
+      (scenarios 18-20).
+
 ## Scenarios
 
 ### 1. Disjoint profiles merge produces pure inserts, no conflicts
