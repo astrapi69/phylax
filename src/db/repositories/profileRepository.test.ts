@@ -170,6 +170,22 @@ describe('ProfileRepository', () => {
     lock();
   });
 
+  it('getCurrentProfile treats an empty stored active id as unset', async () => {
+    const created = await repo.create(makeProfileData());
+
+    // An empty string can be left behind by a partial write; it must
+    // behave exactly like a missing key, not like a stale id.
+    localStorage.setItem('phylax-active-profile', '');
+    try {
+      const current = await repo.getCurrentProfile();
+      expect(current?.id).toBe(created.id);
+    } finally {
+      localStorage.removeItem('phylax-active-profile');
+    }
+
+    lock();
+  });
+
   it('getCurrentProfile tolerates a missing localStorage global', async () => {
     const created = await repo.create(makeProfileData());
 

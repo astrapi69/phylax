@@ -141,6 +141,7 @@ export class DocumentRepository extends EncryptedRepository<Document> {
    * effect runs.
    */
   override async update(id: string, patch: DocumentPatch): Promise<Document> {
+    // Stryker disable next-line ConditionalExpression: the if(true) variant is equivalent, merged links of an already-persisted row always pass validateDocumentLinks because create/update enforce it on every write; both real branches are asserted by the conflict and skip-path tests
     if ('linkedObservationId' in patch || 'linkedLabValueId' in patch) {
       const existing = await this.getById(id);
       if (existing) {
