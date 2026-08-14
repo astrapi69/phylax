@@ -400,7 +400,6 @@ export function ObservationsView() {
   );
 }
 
-
 function CalendarToggle({
   dateOpen,
   onClick,

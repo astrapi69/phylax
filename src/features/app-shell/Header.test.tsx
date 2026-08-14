@@ -7,10 +7,7 @@ import { ThemeProvider } from '../theme';
 import { SearchProvider } from '../search-trigger';
 import { Header } from './Header';
 
-function renderHeader(
-  ui: ReactNode = <Header />,
-  options: { initialEntries?: string[] } = {},
-) {
+function renderHeader(ui: ReactNode = <Header />, options: { initialEntries?: string[] } = {}) {
   return render(
     <MemoryRouter initialEntries={options.initialEntries ?? ['/']}>
       <ThemeProvider>
@@ -76,9 +73,7 @@ describe('Header', () => {
     // (only shown when isOpen=false + hasActiveFilter) is hidden in
     // the auto-open default. Verify the "no indicator while open"
     // half here.
-    expect(
-      screen.queryByTestId('header-search-toggle-active-indicator'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('header-search-toggle-active-indicator')).not.toBeInTheDocument();
   });
 
   it('toggles the inline search bar when the magnifier is clicked', async () => {

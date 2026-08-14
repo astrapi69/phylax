@@ -31,13 +31,7 @@ describe('EmptyStatePanel', () => {
   });
 
   it('renders the supplied icon when provided', () => {
-    render(
-      <EmptyStatePanel
-        title="t"
-        body="b"
-        icon={<span data-testid="custom-icon">★</span>}
-      />,
-    );
+    render(<EmptyStatePanel title="t" body="b" icon={<span data-testid="custom-icon">★</span>} />);
     expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
   });
 

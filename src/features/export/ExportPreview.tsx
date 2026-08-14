@@ -58,8 +58,8 @@ export function ExportPreview({ open, onClose, content, onDownload }: ExportPrev
     content.kind === 'markdown'
       ? 'preview.title.markdown'
       : content.kind === 'pdf'
-      ? 'preview.title.pdf'
-      : 'preview.title.csv';
+        ? 'preview.title.pdf'
+        : 'preview.title.csv';
 
   return (
     <Modal
@@ -75,9 +75,7 @@ export function ExportPreview({ open, onClose, content, onDownload }: ExportPrev
       <ModalBody>
         {content.kind === 'markdown' && <MarkdownPreview text={content.text} />}
         {content.kind === 'pdf' && pdfUrl && <PdfPreview url={pdfUrl} title={t(titleKey)} />}
-        {content.kind === 'csv' && (
-          <CsvPreview headers={content.headers} rows={content.rows} />
-        )}
+        {content.kind === 'csv' && <CsvPreview headers={content.headers} rows={content.rows} />}
       </ModalBody>
       <ModalFooter>
         <button

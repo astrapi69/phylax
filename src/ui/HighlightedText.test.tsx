@@ -13,11 +13,7 @@ describe('HighlightedText', () => {
 
   it('wraps a single matched range in mark', () => {
     render(
-      <HighlightedText
-        text="hello world"
-        ranges={[{ start: 6, end: 11 }]}
-        startMatchIndex={5}
-      />,
+      <HighlightedText text="hello world" ranges={[{ start: 6, end: 11 }]} startMatchIndex={5} />,
     );
     const mark = document.querySelector('mark');
     expect(mark).not.toBeNull();

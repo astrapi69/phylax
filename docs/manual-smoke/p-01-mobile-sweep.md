@@ -215,5 +215,5 @@ acceptable. Final signature + date when the file is fully walked.
 - ☐ All Category A findings registered as `P-01a..n` ROADMAP sub-tasks
 - ☐ Audit-doc reference link still resolves
 
-Walker: ********\_\_\_\_********
+Walker: **\*\*\*\***\_\_\_\_**\*\*\*\***
 Date: 2026-**-**

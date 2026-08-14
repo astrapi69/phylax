@@ -17,8 +17,7 @@ export default [
         'error',
         {
           name: 'crypto',
-          message:
-            'crypto is restricted to src/crypto/. Import helpers from @/crypto instead.',
+          message: 'crypto is restricted to src/crypto/. Import helpers from @/crypto instead.',
         },
       ],
       'no-restricted-imports': [
@@ -31,8 +30,7 @@ export default [
             },
             {
               group: ['dexie', 'dexie/*'],
-              message:
-                'dexie is restricted to src/db/. Use repositories from @/db instead.',
+              message: 'dexie is restricted to src/db/. Use repositories from @/db instead.',
             },
           ],
         },

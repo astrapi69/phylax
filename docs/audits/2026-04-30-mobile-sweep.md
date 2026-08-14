@@ -7,16 +7,16 @@ manual eye-check checklist.
 
 ## Q-locks (confirmed)
 
-| Q | Lock |
-| - | ---- |
-| Q1 | Breakpoints: 360 / 768 / 1024 px |
-| Q2 | Single audit doc, Category A/B/C tags, sub-task IDs cross-referenced |
-| Q3 | Audit-only commit; Category A fixes ship as separate per-finding commits |
-| Q4 | Tier 1 spec runs on chromium project only (responsive bugs are CSS, not engine) |
-| Q5 | ConfirmDialog 360-px toggle-fit test bundled with this audit (IM-05 just shipped 6 toggles) |
-| Q6 | Include destructive flows (`/profile/create`, reset-all) and all routes users see |
-| Q7 | Skip dark × viewport matrix; P-02 already covered dark per screen |
-| Q8 | BUG-02 hamburger drawer documented as resolved precedent (not re-audited) |
+| Q   | Lock                                                                                        |
+| --- | ------------------------------------------------------------------------------------------- |
+| Q1  | Breakpoints: 360 / 768 / 1024 px                                                            |
+| Q2  | Single audit doc, Category A/B/C tags, sub-task IDs cross-referenced                        |
+| Q3  | Audit-only commit; Category A fixes ship as separate per-finding commits                    |
+| Q4  | Tier 1 spec runs on chromium project only (responsive bugs are CSS, not engine)             |
+| Q5  | ConfirmDialog 360-px toggle-fit test bundled with this audit (IM-05 just shipped 6 toggles) |
+| Q6  | Include destructive flows (`/profile/create`, reset-all) and all routes users see           |
+| Q7  | Skip dark × viewport matrix; P-02 already covered dark per screen                           |
+| Q8  | BUG-02 hamburger drawer documented as resolved precedent (not re-audited)                   |
 
 ## Method
 
@@ -25,7 +25,7 @@ manual eye-check checklist.
 `tests/e2e/viewport-sweep.spec.ts`. Per viewport × route:
 
 1. **No horizontal overflow**: `document.scrollingElement.scrollWidth ≤
-   viewport.width + 1px tolerance`. Catches fixed-pixel widths leaking
+viewport.width + 1px tolerance`. Catches fixed-pixel widths leaking
    past the floor.
 2. **Visible interactives have a non-zero bounding box**: every
    `a, button, [role="button"], input, select, textarea` that is not
@@ -56,14 +56,14 @@ content-heavy fixtures.
 
 ## Tier 1 results
 
-| Sweep | Result |
-| ----- | ------ |
-| 360 px public routes (4 screens) | PASS |
-| 768 px public routes (4 screens) | PASS |
-| 1024 px public routes (4 screens) | PASS |
-| 360 px protected routes (9 screens) | PASS |
-| 768 px protected routes (9 screens) | PASS |
-| 1024 px protected routes (9 screens) | PASS |
+| Sweep                                | Result |
+| ------------------------------------ | ------ |
+| 360 px public routes (4 screens)     | PASS   |
+| 768 px public routes (4 screens)     | PASS   |
+| 1024 px public routes (4 screens)    | PASS   |
+| 360 px protected routes (9 screens)  | PASS   |
+| 768 px protected routes (9 screens)  | PASS   |
+| 1024 px protected routes (9 screens) | PASS   |
 
 **6 / 6 sweeps green. Zero Category A or B findings from the
 automated tier.** The app is structurally clean at the responsive
@@ -96,7 +96,7 @@ icon button (`ObservationActions`, `LabReportActions`, `LabValueActions`).
   viewport, parent content box is `360 - 32 = 328 px`, dialog clamps
   to that via `w-full`. New unit test
   `ConfirmDialog.test.tsx::renders all six toggles when every entity
-  type is non-empty` asserts the structural invariants:
+type is non-empty` asserts the structural invariants:
   `w-full max-w-md` present, no fixed `w-[Npx]` override, no
   `whitespace-nowrap` on toggle labels (German plurals must wrap).
   Real-pixel layout verification is left to the Tier 1 Playwright

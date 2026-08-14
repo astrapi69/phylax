@@ -82,9 +82,7 @@ describe('OpenPointItem', () => {
 
   it('checkbox disabled while toggle in flight (togglingId === point.id)', () => {
     const point = makeOpenPoint({ id: 'op-flight' });
-    render(
-      <OpenPointItem point={point} form={makeFormStub({ togglingId: 'op-flight' })} />,
-    );
+    render(<OpenPointItem point={point} form={makeFormStub({ togglingId: 'op-flight' })} />);
     expect(screen.getByTestId('open-point-toggle-op-flight')).toBeDisabled();
   });
 

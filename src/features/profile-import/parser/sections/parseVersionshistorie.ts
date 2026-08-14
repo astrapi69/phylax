@@ -16,14 +16,14 @@ export function parseVersionshistorie(content: string): ParsedProfileVersion[] {
     const version = (row['Version'] ?? row['version'] ?? '').trim();
     const rawDate = (row['Datum'] ?? row['datum'] ?? row['Date'] ?? row['date'] ?? '').trim();
     const changeDescription = // TD-09 (a): accept both ASCII transliteration and Unicode forms.
-    (
-      row['Aenderung'] ??
-      row['\u00c4nderung'] ??
-      row['aenderung'] ??
-      row['\u00e4nderung'] ??
-      row['Beschreibung'] ??
-      ''
-    ).trim();
+      (
+        row['Aenderung'] ??
+        row['\u00c4nderung'] ??
+        row['aenderung'] ??
+        row['\u00e4nderung'] ??
+        row['Beschreibung'] ??
+        ''
+      ).trim();
 
     if (!version && !changeDescription) continue;
 

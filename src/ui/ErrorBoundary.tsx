@@ -139,14 +139,10 @@ function ErrorFallback({ error, errorInfo, onReload, onGoHome }: ErrorFallbackPr
       className="flex min-h-screen items-start justify-center bg-gray-50 p-6 dark:bg-gray-950"
     >
       <div className="w-full max-w-xl rounded-lg border border-red-200 bg-white p-6 shadow-sm dark:border-red-900 dark:bg-gray-900">
-        <h1
-          className="mb-3 flex items-center gap-2 text-xl font-bold text-red-800 dark:text-red-300"
-        >
+        <h1 className="mb-3 flex items-center gap-2 text-xl font-bold text-red-800 dark:text-red-300">
           <span aria-hidden>⚠</span> {t('error-boundary.heading')}
         </h1>
-        <p className="mb-4 text-sm text-gray-800 dark:text-gray-200">
-          {t('error-boundary.body')}
-        </p>
+        <p className="mb-4 text-sm text-gray-800 dark:text-gray-200">{t('error-boundary.body')}</p>
         <div className="mb-6 flex flex-wrap gap-3">
           <button
             type="button"

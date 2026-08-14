@@ -329,6 +329,14 @@ Follow-up not currently scheduled:
       names-as-passwords pass as "strong". Revisit if usability
       study, community feedback, or security review surfaces a
       concrete need.
+- [x] **TD-19** Repo-wide Prettier re-format after the DEPS-04
+      Prettier upgrade. `make format-check` was red on a clean
+      checkout (40 files): the upgrade changed formatting output
+      (combining-character width calculation, Markdown underscore
+      escaping) and lint-staged only re-formats touched files, so the
+      drift surfaced file by file. One `make format` pass, verified
+      idempotent (check green twice), no functional change. (Shipped
+      in this commit.)
 - [ ] **TD-14** Unify the proxy-profile wording between the predicate
       create-form radio ("Stellvertretend für jemand anderen") and the
       noun badge ("Stellvertreterprofil"), and resolve the EN

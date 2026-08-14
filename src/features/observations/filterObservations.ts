@@ -1,5 +1,10 @@
 import type { Observation } from '../../domain';
-import { isDateRangeActive, isInDateRangeEpoch, normalizeForSearch, type DateRange } from '../../lib';
+import {
+  isDateRangeActive,
+  isInDateRangeEpoch,
+  normalizeForSearch,
+  type DateRange,
+} from '../../lib';
 import type { ThemeGroup } from './useObservations';
 
 /**

@@ -104,19 +104,19 @@ sign-off:
   "Diese Seite wurde von Chrome blockiert" / "Not allowed to load
   local resource: blob:...". Three-step fix:
   1. Sandbox attribute change (`allow-scripts` -> `allow-scripts
-     allow-same-origin`) in commit `7a204d0`.
+allow-same-origin`) in commit `7a204d0`.
   2. Workbox `navigateFallbackDenylist: [/^blob:/]` so the SW
      stops intercepting blob URL navigations and returning the
      SPA shell, in commit `0975739`.
   3. Switch from `<iframe sandbox>` to `<object data
-     type="application/pdf">` so Chromium's PDF plugin handles the
+type="application/pdf">` so Chromium's PDF plugin handles the
      blob URL natively, in commit `9480597`. Registered as BUG-03.
 
 - **B / between scenarios** - Upload-success banner never vanished
   after delete; the green "{{filename}} wurde gespeichert" line
   stayed referencing a now-deleted document. Auto-dismiss after 5s
-  + manual ✕ close button added in commit `0ec42b3`. Registered as
-  BUG-04.
+  - manual ✕ close button added in commit `0ec42b3`. Registered as
+    BUG-04.
 
 - **A / scenario 3** - After a successful upload the new row did
   NOT appear in the list until the user navigated away and back.

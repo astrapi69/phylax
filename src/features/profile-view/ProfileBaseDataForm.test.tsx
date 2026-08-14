@@ -99,8 +99,12 @@ describe('ProfileBaseDataForm', () => {
     );
     expect(screen.getByTestId('profile-base-data-form-name')).toHaveValue('Bea');
     expect(screen.getByTestId('profile-base-data-form-birth-date')).toHaveValue('1980-05-12');
-    expect(screen.getByTestId('profile-base-data-form-diagnoses-input-0')).toHaveValue('Hypertonie');
-    expect(screen.getByTestId('profile-base-data-form-medications-input-0')).toHaveValue('Ramipril');
+    expect(screen.getByTestId('profile-base-data-form-diagnoses-input-0')).toHaveValue(
+      'Hypertonie',
+    );
+    expect(screen.getByTestId('profile-base-data-form-medications-input-0')).toHaveValue(
+      'Ramipril',
+    );
   });
 
   it('disables submit when name is empty', () => {

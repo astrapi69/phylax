@@ -1,12 +1,6 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  useModalTitleId,
-} from '../../ui';
+import { Modal, ModalBody, ModalFooter, ModalHeader, useModalTitleId } from '../../ui';
 import { PrivacyInfoContent } from './PrivacyInfoContent';
 
 interface PrivacyInfoPopoverProps {
