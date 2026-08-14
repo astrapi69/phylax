@@ -64,6 +64,21 @@ This file collects lessons that come from real development. It starts small and 
 - Playwright runs a real browser, so `crypto.subtle` works.
 - Use a separate Playwright project for E2E with a clean storage state. Otherwise the master password from one test leaks into the next.
 
+### Stryker static mutants (vitest runner)
+
+- Mutants flagged `static: true` can show up as "Survived" even when
+  the suite demonstrably kills them: the vitest runner activates
+  mutants per test, but static mutants execute during module load,
+  before activation, so the mutated branch never runs. Symptoms: the
+  report shows `testsCompleted` equal to the whole related suite and
+  the same mutant flips between "Timeout" and "Survived" across
+  machines (observed on profileRepository lines 85/94, TD-18).
+- Before writing tests against such a survivor, verify it manually:
+  apply the mutation in the source, run the module's test file, revert.
+  If a test fails, the mutant is a false positive; document it instead
+  of chasing it. Real survivors reproduce as green suites under the
+  applied mutation.
+
 ## i18n
 
 - Add new strings in DE and EN at the same time as the code. Adding them later guarantees they get forgotten.
