@@ -46,6 +46,10 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
 
 ## AI Provider polish (AIP-series)
 
+- [ ] **AIP-01..05 smoke walk** Manual smoke validation for the
+      multi-provider wizard and streaming. See
+      [`manual-smoke/ai-multi-provider.md`](manual-smoke/ai-multi-provider.md).
+      Maintainer-driven.
 - [ ] **AIP-polish-2** Generic structured-output abstraction.
       **Trigger:** a second provider needs tool calling (OpenAI
       function calling or Google function declarations). Current
@@ -105,6 +109,10 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       [ADR-0022](decisions/ADR-0022-im-06-field-level-merge.md).
       Spec: [`specs/IM-06-field-level-merge.md`](specs/IM-06-field-level-merge.md).
 
+- [ ] **IM-06 smoke walk** Manual smoke for scenarios 3-20 in
+      [`manual-smoke/im-06-field-level-merge.md`](manual-smoke/im-06-field-level-merge.md).
+      Scenarios 1, 2, 2b are already verified. Maintainer-driven.
+
 - [ ] **IM-06-polish-1** Synth-marker dedup. Multiple successive
       merge-imports accumulate one synthesized "Profil aus Datei
       importiert" `ProfileVersion` row per import. By design
@@ -153,6 +161,18 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       re-entered. Trigger: smoke-walk scenario 10 finding or
       user report of frustration. Not blocking IM-06 ship.
 
+## Phase 5 follow-up: Export
+
+- [ ] **X-10** All-profiles PDF export option, producing one document
+      that spans every profile on the device rather than only the
+      active one. Trigger: an explicit user request for a single PDF
+      covering multiple profiles, OR a maintainer-confirmed caregiver
+      workflow where exporting each profile separately is demonstrably
+      impractical (reported in a smoke walk or user message). The mere
+      existence of more than one profile does not fire this: per-profile
+      separation is the intended default and combining profiles in one
+      file carries a privacy cost.
+
 ## Internationalization (I18N-series)
 
 - [x] **I18N-03** Stellvertreter / caregiver-profile messaging on the
@@ -194,6 +214,12 @@ Follow-up not currently scheduled:
       Trigger: a real-user request, or scheduled work to unify the
       merge engines for both import paths.
 
+- [ ] **M-06** Rate-limit storage key scoping per vault (unlock and
+      backup-import). Current sessionStorage keys are global; revisit
+      if cross-profile lockout confusion appears on multi-user devices.
+      Trigger: user report of cross-profile lockout confusion or a
+      multi-user device use case.
+
 ## Phase 9: Derived Plans (future)
 
 - [ ] **DP-01** Diet plan template (target weight, caloric deficit,
@@ -217,7 +243,7 @@ Follow-up not currently scheduled:
       (`index.html` meta + Open Graph + Twitter Card + JSON-LD
       `WebApplication`, `public/og-image{,-en}.png`, `robots.txt`,
       `sitemap.xml`). Outstanding: one-time crawler validation walk
-      after the next deploy, per
+      after the next deploy (blocked until a deploy includes D-04), per
       [`d-04-seo-social-metadata.md`](manual-smoke/d-04-seo-social-metadata.md).
 - [ ] **D-03** PWABuilder packaging for app stores. Manifest-side
       prep done (`id`, `display_override`, `launch_handler` in
@@ -303,6 +329,18 @@ Follow-up not currently scheduled:
       names-as-passwords pass as "strong". Revisit if usability
       study, community feedback, or security review surfaces a
       concrete need.
+- [ ] **TD-14** Unify the proxy-profile wording between the predicate
+      create-form radio ("Stellvertretend für jemand anderen") and the
+      noun badge ("Stellvertreterprofil"), and resolve the EN
+      proxy-vs-caregiver lexical split. Trigger: user-reported
+      confusion, or a translation-review task that forces a canonical
+      noun decision.
+- [ ] **TD-15** Add a JSDoc note to `useExportData` stating that the
+      hook resolves the active profile only, so every export format is
+      scoped to the current profile and not to all profiles. Trigger:
+      any future PR modifying the data-loading or profile-resolution
+      logic in `src/features/export/useExportData.ts`, or a
+      maintainer-reported confusion about active-profile scoping.
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 

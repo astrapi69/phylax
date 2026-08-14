@@ -15,8 +15,8 @@
  * the unlock-flow counter. Backup-import creates its own limiter via
  * `createRateLimiter(BACKUP_IMPORT_STORAGE_KEY)` so that typos on one
  * flow do not affect the other. Multi-profile (Phase 8) may want
- * per-vault scoping. TODO [M-xx]: revisit storage-key shape when
- * multi-profile lands.
+ * per-vault scoping. TODO [M-06]: revisit storage-key shape for
+ * per-vault scoping.
  */
 
 export const FREE_ATTEMPTS = 3;
