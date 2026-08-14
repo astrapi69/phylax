@@ -262,6 +262,24 @@ describe('DocumentRepository (D-01 foundation)', () => {
       expect(blobs).toHaveLength(0);
     });
 
+    it('DocumentSizeLimitError carries a stable name and a message naming both byte counts', async () => {
+      // The name is the UI's error-classification contract (D-02 catch
+      // path); the message must name actual and limit bytes so a bug
+      // report is actionable without a debugger.
+      const oversized = new ArrayBuffer(DOCUMENT_SIZE_LIMIT_BYTES + 1);
+      const error: unknown = await repo
+        .create({ ...makeMetadata(), content: oversized })
+        .then(() => null)
+        .catch((e: unknown) => e);
+
+      if (!(error instanceof DocumentSizeLimitError)) {
+        throw new Error('expected DocumentSizeLimitError');
+      }
+      expect(error.name).toBe('DocumentSizeLimitError');
+      expect(error.message).toContain(`${DOCUMENT_SIZE_LIMIT_BYTES + 1} bytes`);
+      expect(error.message).toContain(`${DOCUMENT_SIZE_LIMIT_BYTES} bytes`);
+    });
+
     it('accepts content at exactly DOCUMENT_SIZE_LIMIT_BYTES', async () => {
       // Use a small marker pattern at boundaries instead of allocating
       // 10 MB of explicit data; verify byteLength equality only.
@@ -440,6 +458,25 @@ describe('DocumentRepository (D-01 foundation)', () => {
       if (!readBack) throw new Error('expected persisted document');
       expect(readBack.linkedObservationId).toBe('obs-existing');
       expect(readBack.linkedLabValueId).toBeUndefined();
+    });
+
+    it('update rejects a patch that sets the observation link while a lab-value link exists', async () => {
+      // Symmetric to the test above: the conflict must also be caught
+      // when the patch carries ONLY linkedObservationId, so the guard
+      // cannot silently degrade to checking just one key.
+      const created = await repo.create({
+        ...makeMetadata({ linkedLabValueId: 'lv-existing' }),
+        content: makeBytes(16),
+      });
+
+      await expect(repo.update(created.id, { linkedObservationId: 'obs-new' })).rejects.toThrow(
+        DocumentLinkConflictError,
+      );
+
+      const readBack = await repo.getById(created.id);
+      if (!readBack) throw new Error('expected persisted document');
+      expect(readBack.linkedLabValueId).toBe('lv-existing');
+      expect(readBack.linkedObservationId).toBeUndefined();
     });
 
     it('listByObservation returns only documents linked to the given observation', async () => {

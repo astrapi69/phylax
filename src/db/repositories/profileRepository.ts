@@ -94,7 +94,8 @@ function readStoredActiveProfileId(): string | null {
   if (typeof localStorage === 'undefined') return null;
   try {
     const v = localStorage.getItem('phylax-active-profile');
-    return v === null || v === '' ? null : v;
+    // Normalize both a missing key and an empty string to "no active id".
+    return v || null;
   } catch {
     return null;
   }
