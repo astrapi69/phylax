@@ -96,7 +96,9 @@ describe('ObservationsView', () => {
   it('shows the empty state with an import link when no observations exist', async () => {
     await mockLoadedState([]);
     renderView();
-    await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument(),
+    );
     const link = screen.getByRole('link', { name: /Importiere ein Profil/ });
     expect(link).toHaveAttribute('href', '/import');
   });
@@ -206,7 +208,9 @@ describe('ObservationsView', () => {
     it('hides the sort toggle when there are no observations', async () => {
       await mockLoadedState([]);
       renderView();
-      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument(),
+      );
       expect(screen.queryByRole('combobox', { name: 'Sortierung' })).not.toBeInTheDocument();
     });
   });
@@ -258,7 +262,9 @@ describe('ObservationsView', () => {
       // Even with `defaultOpen=true` the empty branch returns the
       // EmptyStatePanel and skips the sticky bar entirely.
       renderView({ defaultOpen: true });
-      await waitFor(() => expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByText(/Noch keine Beobachtungen erfasst/)).toBeInTheDocument(),
+      );
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
     });
 
@@ -397,7 +403,12 @@ describe('ObservationsView', () => {
         {
           theme: 'Recent',
           observations: [
-            makeObservation({ id: 'r1', theme: 'Recent', updatedAt: NOW, createdAt: NOW - TEN_DAYS }),
+            makeObservation({
+              id: 'r1',
+              theme: 'Recent',
+              updatedAt: NOW,
+              createdAt: NOW - TEN_DAYS,
+            }),
           ],
         },
         {

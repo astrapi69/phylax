@@ -89,4 +89,4 @@ Not covered yet:
 - [ ] TalkBack sweep complete
 - [ ] Category A findings registered as P-07-d-a..n in ROADMAP
 
-Walker: ********\_\_\_\_******** Date: 2026-**-**
+Walker: **\*\*\*\***\_\_\_\_**\*\*\*\*** Date: 2026-**-**

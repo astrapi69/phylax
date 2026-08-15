@@ -97,9 +97,7 @@ describe('filterOpenPoints', () => {
   });
 
   it('honours German collation via normalizeForSearch (case + diacritics)', () => {
-    const groups = [
-      group('Ärztliche Abklärung', [makeItem({ text: 'Termin vereinbaren' })]),
-    ];
+    const groups = [group('Ärztliche Abklärung', [makeItem({ text: 'Termin vereinbaren' })])];
     const result = filterOpenPoints(groups, { query: 'ARZTLICHE' });
     expect(result.groups).toHaveLength(1);
   });

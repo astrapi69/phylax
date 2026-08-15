@@ -90,7 +90,7 @@ describe('DocumentRowDeleteAction', () => {
     await user.click(screen.getByTestId(`document-row-delete-${doc.id}`));
 
     await waitFor(() => {
-      expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
     });
     expect(screen.getByTestId(`document-row-delete-message-${doc.id}`)).toHaveTextContent(
       /note\.pdf/,
@@ -110,9 +110,9 @@ describe('DocumentRowDeleteAction', () => {
     );
 
     await user.click(screen.getByTestId(`document-row-delete-${doc.id}`));
-    await waitFor(() => screen.getByRole("alertdialog"));
+    await waitFor(() => screen.getByRole('alertdialog'));
     await user.click(screen.getByRole('button', { name: /Abbrechen/i }));
-    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
     expect(onDeleted).not.toHaveBeenCalled();
   });
 
@@ -129,12 +129,12 @@ describe('DocumentRowDeleteAction', () => {
     );
 
     await user.click(screen.getByTestId(`document-row-delete-${doc.id}`));
-    await waitFor(() => screen.getByRole("alertdialog"));
+    await waitFor(() => screen.getByRole('alertdialog'));
     await user.click(screen.getByRole('button', { name: /Löschen bestätigen/i }));
 
     await waitFor(() => expect(onDeleted).toHaveBeenCalledOnce());
     // Dialog closes after success.
-    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
     // Document gone from DB.
     const repo = new DocumentRepository();
     expect(await repo.getById(doc.id)).toBeNull();
@@ -154,7 +154,7 @@ describe('DocumentRowDeleteAction', () => {
     );
 
     await user.click(screen.getByTestId(`document-row-delete-${doc.id}`));
-    await waitFor(() => screen.getByRole("alertdialog"));
+    await waitFor(() => screen.getByRole('alertdialog'));
     expect(screen.getByTestId(`document-row-delete-linked-${doc.id}`)).toBeInTheDocument();
   });
 });

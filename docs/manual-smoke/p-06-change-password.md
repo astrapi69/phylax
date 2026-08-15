@@ -58,7 +58,7 @@ operation, and the lock-unlock cycle on actual user-typed passwords.
 
 - **Steps**: `/settings` → change-password form. Type a wrong
   current password (anything not the actual one). Type valid new
-  + confirmation. Submit. Confirm via the modal.
+  - confirmation. Submit. Confirm via the modal.
 - **Expected**:
   - Inline red alert: "Das aktuelle Master-Passwort ist nicht
     korrekt."

@@ -15,7 +15,7 @@ A change-password flow has three problems to solve:
 
 1. **Verify current password.** The user is already unlocked, so the
    in-memory `currentKey` is valid, but valid only proves the vault
-   was unlocked *at some point*, not that the human at the keyboard
+   was unlocked _at some point_, not that the human at the keyboard
    right now knows the master password. A bystander or screen-share
    observer could change the password without authenticating.
 2. **Re-encrypt the entire vault.** All encrypted rows across ten

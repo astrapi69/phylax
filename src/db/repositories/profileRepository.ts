@@ -90,6 +90,13 @@ export class ProfileRepository extends EncryptedRepository<Profile> {
   }
 }
 
+// Note on Stryker: nightly runs may report "Survived" static mutants
+// in this function and in getCurrentProfile's storedId branch. These
+// are vitest-runner false positives: static mutants activate only
+// after module load, so the mutated branch never executes during the
+// run. Manual simulation (apply the mutation, run this file's tests)
+// kills them; see TD-18 and lessons-learned.md "Stryker static
+// mutants" before chasing them.
 function readStoredActiveProfileId(): string | null {
   if (typeof localStorage === 'undefined') return null;
   try {

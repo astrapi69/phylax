@@ -58,9 +58,7 @@ describe('OpenPointDeleteDialog', () => {
 
   it('renders text + context when context present', () => {
     const form = makeForm({
-      state: deleteState(
-        makeOpenPoint({ text: 'Blutabnahme im Mai', context: 'Hausarzt' }),
-      ),
+      state: deleteState(makeOpenPoint({ text: 'Blutabnahme im Mai', context: 'Hausarzt' })),
     });
     render(<OpenPointDeleteDialog form={form} />);
     const message = screen.getByTestId('open-point-delete-message');

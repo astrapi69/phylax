@@ -65,7 +65,7 @@ export function MarkdownContent({
   if (content.trim() === '') return null;
 
   return (
-    <div className={`prose prose-sm max-w-none dark:prose-invert ${className ?? ''}`.trim()}>
+    <div className={`prose prose-sm dark:prose-invert max-w-none ${className ?? ''}`.trim()}>
       <ReactMarkdown rehypePlugins={rehypePlugins}>{content}</ReactMarkdown>
     </div>
   );

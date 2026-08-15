@@ -277,5 +277,5 @@ smoke covers what automation cannot:
 - ☐ 360 px fit (scenario 15)
 - ☐ Lazy wizard load timing (scenario 16)
 
-Walker: ********\_\_\_\_********
+Walker: **\*\*\*\***\_\_\_\_**\*\*\*\***
 Date: 2026-**-**

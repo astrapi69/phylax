@@ -14,8 +14,5 @@
  * transliteration is over-engineering for the current scope.
  */
 export function normalizeForSearch(input: string): string {
-  return input
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
+  return input.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }

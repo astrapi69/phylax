@@ -10,13 +10,7 @@ import {
   ObservationRepository,
   SupplementRepository,
 } from '../../../db/repositories';
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  useModalTitleId,
-} from '../../../ui';
+import { Modal, ModalBody, ModalFooter, ModalHeader, useModalTitleId } from '../../../ui';
 import {
   computeDiff,
   commitFragment,

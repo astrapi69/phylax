@@ -501,17 +501,9 @@ describe('exportProfileAsMarkdown', () => {
 
     it('omits the appendix when the option is not set', () => {
       const profile = makeProfile();
-      const md = exportProfileAsMarkdown(
-        profile,
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        {},
-        [makeDoc({ linkedObservationId: 'obs-Schulter' })],
-      );
+      const md = exportProfileAsMarkdown(profile, [], [], [], [], [], [], {}, [
+        makeDoc({ linkedObservationId: 'obs-Schulter' }),
+      ]);
       expect(md).not.toContain('## Anhang');
     });
 

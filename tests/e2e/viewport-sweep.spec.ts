@@ -50,7 +50,10 @@ async function assertNoHorizontalOverflow(page: Page, width: Viewport, route: st
     const el = document.scrollingElement ?? document.documentElement;
     return el.scrollWidth;
   });
-  expect(scrollWidth, `${route} @ ${width}px horizontal overflow (scrollWidth=${scrollWidth})`).toBeLessThanOrEqual(width + 1);
+  expect(
+    scrollWidth,
+    `${route} @ ${width}px horizontal overflow (scrollWidth=${scrollWidth})`,
+  ).toBeLessThanOrEqual(width + 1);
 }
 
 async function assertVisibleInteractivesHaveBox(page: Page, width: Viewport, route: string) {

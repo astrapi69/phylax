@@ -22,12 +22,7 @@ describe('MatchNavButton', () => {
     const onClick = vi.fn();
     const user = userEvent.setup();
     render(
-      <MatchNavButton
-        direction="down"
-        onClick={onClick}
-        ariaLabel="Next"
-        testId="match-next"
-      />,
+      <MatchNavButton direction="down" onClick={onClick} ariaLabel="Next" testId="match-next" />,
     );
     await user.click(screen.getByTestId('match-next'));
     expect(onClick).toHaveBeenCalledOnce();
@@ -39,9 +34,7 @@ describe('MatchNavButton', () => {
     );
     let svg = screen.getByTestId('match').querySelector('svg');
     expect(svg?.getAttribute('style') ?? '').not.toContain('rotate(180deg)');
-    rerender(
-      <MatchNavButton direction="up" onClick={vi.fn()} ariaLabel="Prev" testId="match" />,
-    );
+    rerender(<MatchNavButton direction="up" onClick={vi.fn()} ariaLabel="Prev" testId="match" />);
     svg = screen.getByTestId('match').querySelector('svg');
     expect(svg?.getAttribute('style') ?? '').toContain('rotate(180deg)');
   });

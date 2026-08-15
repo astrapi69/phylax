@@ -74,12 +74,14 @@ export function AutoLockSection() {
       >
         {t('auto-lock.heading')}
       </h2>
-      <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-        {t('auto-lock.description')}
-      </p>
+      <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t('auto-lock.description')}</p>
       <fieldset>
         <legend className="sr-only">{t('auto-lock.legend')}</legend>
-        <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby="auto-lock-section-heading">
+        <div
+          className="flex flex-wrap gap-2"
+          role="radiogroup"
+          aria-labelledby="auto-lock-section-heading"
+        >
           {PRESETS.map((minutes) => {
             const isSelected = minutes === selected;
             return (

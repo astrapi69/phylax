@@ -28,10 +28,7 @@ describe('filterObservations', () => {
   });
 
   it('matches against the theme field', () => {
-    const groups = [
-      group('Schulter', { fact: 'X' }),
-      group('Knie', { fact: 'Y' }),
-    ];
+    const groups = [group('Schulter', { fact: 'X' }), group('Knie', { fact: 'Y' })];
     const result = filterObservations(groups, 'knie');
     expect(result.groups).toHaveLength(1);
     expect(result.groups[0]?.theme).toBe('Knie');
@@ -40,9 +37,7 @@ describe('filterObservations', () => {
   });
 
   it('matches against the fact field', () => {
-    const groups = [
-      group('Schulter', { fact: 'Stechender Schmerz' }, { fact: 'Druck' }),
-    ];
+    const groups = [group('Schulter', { fact: 'Stechender Schmerz' }, { fact: 'Druck' })];
     const result = filterObservations(groups, 'stechend');
     expect(result.groups).toHaveLength(1);
     expect(result.groups[0]?.observations).toHaveLength(1);
@@ -106,9 +101,7 @@ describe('filterObservations', () => {
   });
 
   it('AND terms can match across different fields of the same observation', () => {
-    const groups = [
-      group('Schulter', { fact: 'stechender schmerz', pattern: 'morgens akut' }),
-    ];
+    const groups = [group('Schulter', { fact: 'stechender schmerz', pattern: 'morgens akut' })];
     const result = filterObservations(groups, 'schulter schmerz');
     expect(result.matchCount).toBe(1);
   });

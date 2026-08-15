@@ -53,8 +53,12 @@ describe('filterLabReports', () => {
 
   it('filters by date range alone', () => {
     const input = [
-      rwv(makeReport({ id: 'r-old', reportDate: '2020-01-15' }), [makeValue({ reportId: 'r-old' })]),
-      rwv(makeReport({ id: 'r-new', reportDate: '2026-04-15' }), [makeValue({ reportId: 'r-new' })]),
+      rwv(makeReport({ id: 'r-old', reportDate: '2020-01-15' }), [
+        makeValue({ reportId: 'r-old' }),
+      ]),
+      rwv(makeReport({ id: 'r-new', reportDate: '2026-04-15' }), [
+        makeValue({ reportId: 'r-new' }),
+      ]),
     ];
     const result = filterLabReports(input, {
       dateRange: { from: '2025-01-01' },

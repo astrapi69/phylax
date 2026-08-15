@@ -26,6 +26,7 @@ walks, real-network checks. These ship as a smoke file in
 ### When to add a smoke file
 
 A feature commit ships a smoke file when:
+
 - New UI surface needs visual fit / hit-target verification
 - PWA / Service Worker / install / update flow changes
 - Cross-feature refactor with regression risk beyond the unit layer

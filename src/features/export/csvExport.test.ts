@@ -121,9 +121,7 @@ describe('exportLabValuesAsCsv', () => {
   it('quotes a reference range that contains the separator', () => {
     const csv = exportLabValuesAsCsv({
       labReports: [makeReport()],
-      labValues: [
-        makeValue({ referenceRange: '1; 3', assessment: undefined }),
-      ],
+      labValues: [makeValue({ referenceRange: '1; 3', assessment: undefined })],
       t: tFake,
       locale: 'de',
     });

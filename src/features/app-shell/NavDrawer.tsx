@@ -12,8 +12,7 @@ interface NavDrawerProps {
 }
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
-  const base =
-    'block min-h-[44px] rounded-sm px-4 py-3 text-base transition-colors no-underline';
+  const base = 'block min-h-[44px] rounded-sm px-4 py-3 text-base transition-colors no-underline';
   return isActive
     ? `${base} bg-blue-50 font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300`
     : `${base} text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-100`;
