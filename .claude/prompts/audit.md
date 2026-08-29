@@ -1,6 +1,6 @@
-# Phylax Codebase Audit Prompt
+# Befaro Codebase Audit Prompt
 
-Analyze the Phylax codebase and perform a systematic audit based on the following criteria. Phylax is a local-first, zero-knowledge React 18 + TypeScript PWA with no backend; non-negotiable principles in `CLAUDE.md` and `.claude/rules/` are authoritative.
+Analyze the Befaro codebase and perform a systematic audit based on the following criteria. Befaro is a local-first, zero-knowledge React 18 + TypeScript PWA with no backend; non-negotiable principles in `CLAUDE.md` and `.claude/rules/` are authoritative.
 
 ## 1. Test Validity
 
@@ -16,7 +16,7 @@ Analyze the Phylax codebase and perform a systematic audit based on the followin
 - Enforce the 3-layer model from `.claude/rules/architecture.md`: no `crypto.subtle` outside `src/crypto/`, no `dexie` outside `src/db/`, no React/Dexie imports in `src/domain/`. Flag every leak as Blocker.
 - Verify TS strictness: no `any` without an inline justification, no `// @ts-ignore`/`as unknown as` without comment, `noUncheckedIndexedAccess` respected.
 - Forbidden in production code (per `.claude/rules/coding-standards.md`): `console.log`, `alert/confirm/prompt`, em-dashes, inline secrets, third-party CDN URLs at runtime, medical-advice/diagnosis heuristics, telemetry/error-reporting calls.
-- Verify Storage-Key convention from `CLAUDE.md` (`phylax-`/`phylax.` prefix) for any new `localStorage`/`sessionStorage` key; flag if the reset hook (`src/features/reset/useResetAllData.ts`) would miss a key.
+- Verify Storage-Key convention from `CLAUDE.md` (`befaro-`/`befaro.` prefix) for any new `localStorage`/`sessionStorage` key; flag if the reset hook (`src/features/reset/useResetAllData.ts`) would miss a key.
 - Check error handling at system boundaries only (user input, AI provider calls); flag defensive code inside trusted internals.
 - Naming, file organization, and imports per `.claude/rules/code-hygiene.md`.
 
@@ -29,7 +29,7 @@ Analyze the Phylax codebase and perform a systematic audit based on the followin
 - Verify no runtime third-party network calls outside user-initiated AI requests with the user's own API key (Phase 3+). No Sentry, no analytics, no Google Fonts, no CDN.
 - PWA: service-worker config (`vite-plugin-pwa`), precache list, no external URLs cached, base path `/phylax/` for GH Pages (D-01).
 - Git workflow: Conventional Commits with task-ID brackets per `.claude/rules/task-series.md`, branch structure, `.gitignore` consistency.
-- No Poetry, no Docker (Phylax has no backend); flag any introduction.
+- No Poetry, no Docker (Befaro has no backend); flag any introduction.
 
 ## 4. Documentation and Structure
 

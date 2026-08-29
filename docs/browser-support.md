@@ -11,7 +11,7 @@ iOS Safari 16+; Chrome on Android 12+. No IE, no legacy Edge.
 
 ## PDF viewer (D-05)
 
-Phylax renders uploaded PDFs by creating a `blob:` URL from the
+Befaro renders uploaded PDFs by creating a `blob:` URL from the
 decrypted bytes and mounting it as the `src` of a native `<iframe>`
 with `sandbox="allow-scripts"` (see security note below).
 The browser decides how to render the blob.
@@ -48,7 +48,7 @@ The PDF iframe uses `sandbox="allow-scripts"`.
   means the iframe's effective origin is opaque (null): any
   JavaScript inside the PDF (e.g. embedded form logic, or a
   malicious PDF uploaded by a user) runs in an origin that cannot
-  read the Phylax origin's IndexedDB, localStorage, or in-memory
+  read the Befaro origin's IndexedDB, localStorage, or in-memory
   state. This mitigates the "malicious PDF exfiltrates encrypted
   health data" threat at negligible cost to normal PDFs, which do
   not rely on parent-origin access to render.
@@ -73,7 +73,7 @@ feedback surfaces a gap.
 
 PDF imports use `pdfjs-dist` dynamically-imported on first use. The
 pdf.js worker ships as a bundled chunk (Vite `?worker`), not a CDN
-fetch, per Phylax's no-runtime-third-party-network-calls posture.
+fetch, per Befaro's no-runtime-third-party-network-calls posture.
 
 - PDFs with an extractable text layer (≥100 chars per page on
   average) are processed locally. Only the extracted text goes to
@@ -106,7 +106,7 @@ so native scrollbars provide pan automatically).
 
 - Whitelisted MIME types: `image/png`, `image/jpeg`, `image/webp`.
   `image/svg+xml` is deliberately excluded because SVG can carry
-  script; it would bypass the Phylax sandboxing model. Enforced at
+  script; it would bypass the Befaro sandboxing model. Enforced at
   both the upload layer and the viewer dispatcher.
 - Zoom: +/- buttons, reset ("Fit") button, Ctrl+wheel, and keyboard
   shortcuts (`+`, `-`, `0`). Range 25% to 500% of natural size.

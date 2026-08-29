@@ -110,7 +110,7 @@ export function BackupExportSection() {
           <input
             type="text"
             name="username"
-            value="phylax"
+            value="befaro"
             autoComplete="username"
             readOnly
             hidden

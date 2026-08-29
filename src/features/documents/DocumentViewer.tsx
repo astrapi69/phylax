@@ -118,12 +118,12 @@ function PdfViewer({ url, filename }: { url: string; filename: string }) {
   // Security trade-off: `<object>` has no sandbox attribute. The PDF
   // viewer still runs as browser-managed code (not arbitrary HTML+JS)
   // and PDF-embedded JavaScript runs in a restricted Acrobat-style
-  // context that does NOT expose web-storage APIs. The Phylax master
+  // context that does NOT expose web-storage APIs. The Befaro master
   // key lives in a module-level variable inside `src/crypto/keyStore.
   // ts`, never in IndexedDB nor in any web-storage API; even worst-
   // case storage access from a PDF could not extract the unlocked
   // AES key. This matches the threat model documented in
-  // `docs/CONCEPT.md`: Phylax does not protect against browser
+  // `docs/CONCEPT.md`: Befaro does not protect against browser
   // exploits or compromised OS / browser.
   //
   // The fallback paragraph inside `<object>` renders only when the

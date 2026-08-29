@@ -60,7 +60,7 @@ second profile without destroying or duplicating existing data.
 
 ## Out-of-scope
 
-- Free-form three-way merge (origin / mine / theirs). Phylax has
+- Free-form three-way merge (origin / mine / theirs). Befaro has
   no concept of an "origin" version per entity, and the import
   source is a flat markdown document, not a versioned snapshot.
 - Cross-entity merge (e.g. "this lab value moved from report A to

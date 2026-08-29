@@ -1,4 +1,4 @@
-# Phylax Roadmap
+# Befaro Roadmap
 
 Aktiver Plan ab v1.1.0 (2026-05-02). Alle bis dahin abgeschlossenen
 Tasks liegen archiviert in
@@ -268,7 +268,7 @@ Follow-up not currently scheduled:
       `.claude/rules/tdd.md` ports the Red-Green-Refactor discipline,
       the four-test target (repro / happy / edge / boundary), the
       bug-repro-first rule, and the mechanical-refactor exceptions from
-      the adaptive-learner ruleset, adapted to the phylax frontend stack
+      the adaptive-learner ruleset, adapted to the befaro frontend stack
       (Vitest / tsc, no backend) and cross-referenced to
       `quality-checks.md`, `test-strategy.md`, `coding-standards.md`,
       and `ai-workflow.md`. The `CLAUDE.md` "tests vor oder parallel"
@@ -343,6 +343,19 @@ Follow-up not currently scheduled:
       proxy-vs-caregiver lexical split. Trigger: user-reported
       confusion, or a translation-review task that forces a canonical
       noun decision.
+- [ ] **TD-20** Migrate the legacy `phylax` persisted identifiers to
+      `befaro` after the R-06 app rename. Deliberately left unchanged
+      by R-06 so existing installations keep their data: Dexie DB name
+      `phylax`, all `phylax-`/`phylax.` localStorage/sessionStorage
+      keys (incl. `phylax-active-profile`), the encrypted verification
+      token `phylax-verification-v1`, and the backup format
+      identifiers (`type: "phylax-backup"`, `.phylax` extension;
+      format v2). Requires a real data migration (copy or dual-read,
+      tested per `lessons-learned.md` migration rules). Second
+      sub-item, blocked on the maintainer renaming the GitHub
+      repository: switch the Vite base path, manifest `id`, canonical
+      / OG / sitemap / robots URLs and repo links from `/phylax/` to
+      `/befaro/` (TODO markers sit in `vite.config.ts`).
 - [ ] **TD-15** Add a JSDoc note to `useExportData` stating that the
       hook resolves the active profile only, so every export format is
       scoped to the current profile and not to all profiles. Trigger:

@@ -5,7 +5,7 @@
 
 ## Context
 
-Phylax encrypts health data in IndexedDB. Three options for encryption granularity were considered:
+Befaro encrypts health data in IndexedDB. Three options for encryption granularity were considered:
 
 1. **Plaintext + master password gate**: no encryption, just access control at the app level.
 2. **One encrypted blob per row**: plaintext only for indexed structural fields (id, profileId, timestamps), all content in a single `payload: ArrayBuffer`.
@@ -22,7 +22,7 @@ Each row stores plaintext id, profileId, createdAt, updatedAt, and a single `pay
 - Simpler code: one encrypt/decrypt operation per row, one serialization format.
 - Leaks row count and approximate row size to an observer of the encrypted store.
 - Does NOT leak which fields are populated (option 3 would reveal this via the presence or absence of individual encrypted field columns).
-- Acceptable for Phylax's threat model: single-user, single-device. An attacker would need physical or remote-shell access to the device, in which case row metadata is the smallest concern.
+- Acceptable for Befaro's threat model: single-user, single-device. An attacker would need physical or remote-shell access to the device, in which case row metadata is the smallest concern.
 
 ## Alternatives rejected
 

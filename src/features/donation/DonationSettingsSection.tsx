@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { DonateLink } from './DonateLink';
 
 /**
- * Always-visible "Phylax unterstuetzen" section on the Settings screen.
+ * Always-visible "Befaro unterstuetzen" section on the Settings screen.
  *
  * S-01 is state-less: this section never stores or reads any flag. The
  * settings entry is a permanent, low-friction way to find the donation

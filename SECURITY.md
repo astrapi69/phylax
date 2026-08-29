@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-If you discover a security issue in Phylax, please report it privately
+If you discover a security issue in Befaro, please report it privately
 rather than opening a public issue.
 
 **Preferred:** use GitHub's private vulnerability reporting via the

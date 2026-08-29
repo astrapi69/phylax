@@ -163,7 +163,7 @@ async function loadPdfDocument(data: ArrayBuffer): Promise<PdfDocumentLike> {
   /* v8 ignore stop */
   const loadingTask = pdfjs.getDocument({
     data,
-    // Disable runtime font fetches - Phylax forbids third-party
+    // Disable runtime font fetches - Befaro forbids third-party
     // network calls. Worst case: missing-font glyphs render with
     // OS substitutes. Acceptable.
     disableFontFace: true,

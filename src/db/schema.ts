@@ -14,7 +14,7 @@ import type {
 } from './types';
 
 /**
- * Phylax IndexedDB database.
+ * Befaro IndexedDB database.
  *
  * Schema v1: eight tables for the living health profile model.
  * Schema v2: adds lab_reports and timeline_entries (per ADR-0007).
@@ -31,7 +31,7 @@ import type {
  * The meta table stores app-level settings. Salt and schemaVersion
  * are plaintext because they are needed before decryption is possible.
  */
-export class PhylaxDb extends Dexie {
+export class BefaroDb extends Dexie {
   profiles!: Dexie.Table<ProfileRow, string>;
   observations!: Dexie.Table<ObservationRow, string>;
   labValues!: Dexie.Table<LabValueRow, string>;
@@ -45,6 +45,9 @@ export class PhylaxDb extends Dexie {
   meta!: Dexie.Table<MetaRow, string>;
 
   constructor() {
+    // Legacy pre-rename database name. Existing vaults live in the
+    // 'phylax' IndexedDB database; renaming it would orphan user data.
+    // TODO [rename follow-up]: migrate persisted identifiers to 'befaro'.
     super('phylax');
 
     this.version(1).stores({
@@ -93,4 +96,4 @@ export class PhylaxDb extends Dexie {
 }
 
 /** Singleton database instance. Import this from src/db/index.ts. */
-export const db = new PhylaxDb();
+export const db = new BefaroDb();

@@ -36,7 +36,7 @@
     },
     "confirm": {
       "heading": "Confirm",
-      "body": "Change your master password now? Phylax re-encrypts your entire vault under the new key. The operation cannot be cancelled.",
+      "body": "Change your master password now? Befaro re-encrypts your entire vault under the new key. The operation cannot be cancelled.",
       "accept": "Yes, change"
     },
     "status": {
@@ -50,14 +50,14 @@
       "mismatch": "New password and confirmation do not match.",
       "same-as-current": "New password must differ from the current one.",
       "no-meta": "Vault metadata not found. Please reload the app.",
-      "locked": "Phylax is locked. Unlock first.",
+      "locked": "Befaro is locked. Unlock first.",
       "reencrypt-failed": "Re-encryption failed: {{detail}}. Your master password was not changed.",
       "partial-failure": "Vault was re-encrypted, but the app could not activate the new key in this session. Please lock and unlock again with the new password."
     }
   },
   "auto-lock": {
     "heading": "Auto-lock",
-    "description": "Phylax locks automatically after this period of inactivity. The master key is wiped from memory and you have to re-enter your password.",
+    "description": "Befaro locks automatically after this period of inactivity. The master key is wiped from memory and you have to re-enter your password.",
     "legend": "Select auto-lock interval",
     "preset-label_one": "{{count}} minute",
     "preset-label_other": "{{count}} minutes",
@@ -74,7 +74,7 @@
   },
   "danger-zone": {
     "heading": "Danger zone",
-    "description": "Permanently delete all Phylax data stored locally on this device. Profiles, observations, lab values, documents, AI configuration. No recovery path.",
+    "description": "Permanently delete all Befaro data stored locally on this device. Profiles, observations, lab values, documents, AI configuration. No recovery path.",
     "soft-reset-button": "Clear profile data (keep password)",
     "reset-button": "Delete all data"
   }

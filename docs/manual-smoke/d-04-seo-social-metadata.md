@@ -7,7 +7,10 @@ confirms third-party crawlers parse them correctly once the build is
 live at `https://astrapi69.github.io/phylax/`.
 
 Run it once after the first deploy that contains D-04, and again only
-if the metadata, the OG images, or the canonical URL change.
+if the metadata, the OG images, or the canonical URL change. The R-06
+rename to Befaro changed the metadata and the OG cards, so the walk
+below reflects the post-rename values; run it against the first deploy
+that contains R-06.
 
 ## Preconditions
 
@@ -24,15 +27,15 @@ if the metadata, the OG images, or the canonical URL change.
 
 1. **Facebook / Open Graph debugger**
    (https://developers.facebook.com/tools/debug/): paste the site
-   URL, Scrape Again. Expect title "Phylax - Lebende Gesundheit,
-   lokal verschlüsselt", the English description, and the OG card
-   preview (dark brand card, Phi wordmark, tagline, four feature
+   URL, Scrape Again. Expect title "Befaro - Dein lokaler
+   Gesundheitsbegleiter", the German description, and the OG card
+   preview (dark brand card, "B" wordmark, tagline, four feature
    glyphs). No "missing og:image" or "could not resolve image"
    warnings. Image must resolve to an absolute https URL.
 
 2. **Twitter / X card validator** (or https://opengraph.xyz as a
    stand-in if the official validator is gated): expect a
-   `summary_large_image` card with the same title, English
+   `summary_large_image` card with the same title, German
    description, and the 1200x630 image. Confirm no truncation
    warning on the image aspect ratio.
 
@@ -61,7 +64,7 @@ robots directive only from the host root
 (`https://astrapi69.github.io/robots.txt`), which belongs to the
 user GitHub Pages site, not this repo. The shipped `robots.txt` and
 its `Sitemap:` line therefore only take effect under a custom domain
-(D-02) where Phylax owns the host root. Until then they are correct
+(D-02) where Befaro owns the host root. Until then they are correct
 and harmless but not authoritative. Submitting the sitemap URL
 directly in Google Search Console is the interim path. Note this
 when checking indexing status.

@@ -66,7 +66,7 @@ export function ChangePasswordSection() {
       <form className="space-y-3" onSubmit={onSubmit}>
         {/* BUG-12: hidden username for password-manager association
             and Chrome a11y compliance. */}
-        <input type="text" name="username" value="phylax" autoComplete="username" readOnly hidden />
+        <input type="text" name="username" value="befaro" autoComplete="username" readOnly hidden />
         <PasswordInput
           id="current-password"
           label={t('change-password.field.current')}

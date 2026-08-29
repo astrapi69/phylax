@@ -13,7 +13,7 @@ describe('DonationOnboardingCard', () => {
   it('renders the welcome heading, description, both buttons, and the settings hint', () => {
     render(<DonationOnboardingCard onDismiss={vi.fn()} />);
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Willkommen bei Phylax' }),
+      screen.getByRole('heading', { level: 2, name: 'Willkommen bei Befaro' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Open-Source-Projekt eines einzelnen Entwicklers/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Projekt unterstützen/ })).toBeInTheDocument();

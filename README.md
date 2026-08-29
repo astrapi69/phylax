@@ -1,4 +1,4 @@
-# Phylax
+# Befaro
 
 Your local-first, zero-knowledge living health profile.
 
@@ -11,9 +11,9 @@ Your local-first, zero-knowledge living health profile.
 [![Bundle budget](https://img.shields.io/badge/bundle-%3C350%20KB-blue)](.size-limit.json)
 [![Donate using Liberapay](https://img.shields.io/liberapay/patrons/astrapi69.svg?logo=liberapay)](https://liberapay.com/astrapi69/donate)
 
-## What is Phylax
+## What is Befaro
 
-Phylax (Greek: phylax, "guardian") is a personal, data-sovereign health
+Befaro is a personal, data-sovereign health
 platform built as a Progressive Web App. All data stays on your device,
 encrypted with a master password you choose. There is no backend, no cloud,
 no telemetry, and no data collection.
@@ -25,7 +25,7 @@ three facets: what happened (fact), what recurs (pattern), and what you
 decided to do about it (self-regulation). The profile also tracks lab values,
 supplements, and open questions for your next doctor visit.
 
-Phylax supports AI-guided profile creation: you provide fragments (lab photos,
+Befaro supports AI-guided profile creation: you provide fragments (lab photos,
 medication names, verbal observations), and an AI structures them into your
 profile using your own API key. Multiple providers are supported - Anthropic,
 OpenAI, Google, Mistral, plus local models via LM Studio or Ollama (see
@@ -33,17 +33,17 @@ ADR-0019). The AI operates under a strict contract: it structures, it does
 not diagnose. You can also enter data manually or paste markdown from an
 external AI session.
 
-The name comes from the Greek phylax (guardian). Phylax is not a doctor, not
+Befaro (formerly Phylax, Greek for "guardian") is not a doctor and not
 a database, but a guardian of your health narrative.
 
-## Who is Phylax for
+## Who is Befaro for
 
 - Privacy-conscious individuals tracking their own health profile
 - Caregivers tracking dependents (elderly parent with dementia, child)
 - Anyone preparing for doctor visits with structured, fact-based notes
 - Developers interested in local-first, zero-backend PWA architecture
 
-Phylax is primarily designed for German-speaking users; the UI ships
+Befaro is primarily designed for German-speaking users; the UI ships
 bilingual (German + English) with auto-detection and a manual override.
 The developer documentation (this README, ADRs) is in English; the user-
 facing concept and roadmap docs are in German.
@@ -105,7 +105,7 @@ facing concept and roadmap docs are in German.
 
 ## Origin
 
-Phylax implements the "Living Health" concept by Asterios Raptis, a four-part
+Befaro implements the "Living Health" concept by Asterios Raptis, a four-part
 Medium series arguing that health is a user-led process, not a state managed
 by others.
 
@@ -126,26 +126,26 @@ The four parts cover:
 3. Caregiver profiles (elderly parent, dependent child)
 4. AI as a structuring partner, not a diagnostician
 
-Phylax is the practical implementation: a tool for carrying out steps 2-4 in
+Befaro is the practical implementation: a tool for carrying out steps 2-4 in
 daily life.
 
 ## Not a medical device
 
-Phylax is a personal data management tool. It does not provide medical
+Befaro is a personal data management tool. It does not provide medical
 advice, diagnosis, or treatment recommendations.
 
-AI in Phylax structures, it does not diagnose. The AI organizes what you
+AI in Befaro structures, it does not diagnose. The AI organizes what you
 bring in. It does not interpret your health data, recommend treatments, or
 replace professional medical judgment.
 
 If you are experiencing a medical emergency, contact your doctor or call
 emergency services immediately.
 
-Phylax helps you organize and store your own health records. Nothing more.
+Befaro helps you organize and store your own health records. Nothing more.
 
 ## Security
 
-Phylax encrypts all health data before writing it to the browser's
+Befaro encrypts all health data before writing it to the browser's
 IndexedDB:
 
 - **AES-256-GCM** encryption per record, with a unique 12-byte IV per write
@@ -157,7 +157,7 @@ IndexedDB:
 - **No network calls** except user-initiated AI requests with the user's own
   API key
 
-**Phylax protects against:**
+**Befaro protects against:**
 
 - An attacker reading your IndexedDB without the master password (encrypted
   at rest)
@@ -165,10 +165,10 @@ IndexedDB:
 - Cloud provider access (no cloud)
 - App developer access (no telemetry, no remote management)
 
-**Phylax does NOT protect against:**
+**Befaro does NOT protect against:**
 
 - Keyloggers or malware on your device
-- Malware reading your screen while Phylax is unlocked
+- Malware reading your screen while Befaro is unlocked
 - Physical coercion to reveal your master password
 - A forgotten master password (no recovery; data is lost)
 - A compromised browser or operating system
@@ -181,10 +181,10 @@ For the full security model, see [docs/CONCEPT.md](docs/CONCEPT.md).
 - **AI requests go directly from your browser to the provider you choose**
   (Anthropic, OpenAI, Google, Mistral, LM Studio, Ollama, or a custom
   OpenAI-compatible endpoint) using your own API key. Each provider has its
-  own retention and training policy; Phylax surfaces the relevant
+  own retention and training policy; Befaro surfaces the relevant
   disclaimer in-app at the point of provider selection. Local providers
   (LM Studio, Ollama) keep AI traffic on your own machine.
-- **Your provider account is yours**, not Phylax's. You can audit usage and
+- **Your provider account is yours**, not Befaro's. You can audit usage and
   revoke each key directly in the provider's console at any time.
 - **No telemetry, no analytics, no error reporting services.**
 
@@ -194,7 +194,7 @@ information in German at the point of use.
 
 ## Project status
 
-Phylax v1.0.0 shipped 2026-04-18. Subsequent work is post-1.0.0 polish
+Befaro v1.0.0 shipped 2026-04-18. Subsequent work is post-1.0.0 polish
 plus a few new feature phases. Closed phases:
 
 - **Phase 1 - Foundation**: crypto, storage, onboarding, auto-lock, PWA
@@ -244,8 +244,8 @@ the latest coverage audit.
 ### Try it live
 
 Open https://astrapi69.github.io/phylax/ in Chrome, Edge, or any
-Chromium-based browser. Click "Install Phylax" from the address bar (or
-three-dot menu) to add it to your home screen / app drawer. Phylax runs
+Chromium-based browser. Click "Install Befaro" from the address bar (or
+three-dot menu) to add it to your home screen / app drawer. Befaro runs
 entirely in the browser and works offline after the first visit.
 
 ### Run from source
@@ -255,7 +255,7 @@ you use nvm, `nvm use` picks up the `.nvmrc` version.
 
 ```bash
 git clone https://github.com/astrapi69/phylax.git
-cd phylax
+cd befaro
 npm install
 make dev          # http://localhost:6173
 ```
@@ -274,8 +274,8 @@ make preview      # http://localhost:6174
 ### Install as a PWA
 
 Once the production build is served (or once a deployed version is
-available), the browser will offer "Install Phylax" in the URL bar or via
-the three-dot menu. After install, Phylax runs offline and appears as a
+available), the browser will offer "Install Befaro" in the URL bar or via
+the three-dot menu. After install, Befaro runs offline and appears as a
 standalone app on the home screen or app drawer.
 
 ### Run tests
@@ -301,7 +301,7 @@ supported providers (ADR-0019):
 
 1. Get a key (or run a local model). For cloud providers, generate a key in
    the provider's console.
-2. In Phylax: Einstellungen -> KI-Assistent -> Anbieter verwalten -> add a
+2. In Befaro: Einstellungen -> KI-Assistent -> Anbieter verwalten -> add a
    provider, paste the key, accept the per-provider disclaimer, activate.
 3. Navigate to `/chat` and start a conversation. Use "Profil teilen" to let
    the AI see your current profile context (ephemeral, not persisted).
@@ -356,7 +356,7 @@ make icons        # Reads public/icons/source.svg, writes all PWA icon sizes
 
 ## Architecture
 
-Phylax uses a three-layer architecture enforced by ESLint:
+Befaro uses a three-layer architecture enforced by ESLint:
 
 **UI layer** (React 19 + TypeScript + Tailwind + Vite): functional
 components, hooks, feature folders. Never imports `crypto.subtle` or Dexie
@@ -403,7 +403,7 @@ src/
 
 ## Contributing
 
-Phylax is developed by a single person. For v1.0.0, pull requests are
+Befaro is developed by a single person. For v1.0.0, pull requests are
 deferred in favor of stabilization, but the following are welcome:
 
 - **Bug reports** via [GitHub Issues](https://github.com/astrapi69/phylax/issues)
@@ -417,7 +417,7 @@ standards that contributions will need to follow.
 
 ## Support the project
 
-Phylax is developed by a single person as an open-source project. If you
+Befaro is developed by a single person as an open-source project. If you
 find it useful, consider supporting its continued development.
 
 See [DONATE.md](DONATE.md) for options (Liberapay, GitHub Sponsors, Ko-fi,
@@ -438,7 +438,7 @@ fees, no account required for the donor.
 - [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm) for
   accessibility testing
 - [@resvg/resvg-js](https://github.com/yisibl/resvg-js) for icon generation
-- The AI providers Phylax supports as optional structuring partners:
+- The AI providers Befaro supports as optional structuring partners:
   [Anthropic Claude](https://www.anthropic.com/claude),
   [OpenAI](https://openai.com/),
   [Google Gemini](https://ai.google.dev/),

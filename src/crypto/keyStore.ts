@@ -1,5 +1,5 @@
 /**
- * In-memory key store for Phylax.
+ * In-memory key store for Befaro.
  *
  * Holds the derived AES-GCM CryptoKey while the app is unlocked.
  * No other module ever holds the key directly. Every encrypt/decrypt

@@ -22,7 +22,7 @@ describe('downloadBackup', () => {
   });
 
   it('creates a Blob URL and revokes it', () => {
-    downloadBackup('{"type":"phylax-backup"}', 'phylax-backup-test.phylax');
+    downloadBackup('{"type":"phylax-backup"}', 'befaro-backup-test.phylax');
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
   });
@@ -30,10 +30,10 @@ describe('downloadBackup', () => {
   it('appends and removes an anchor with the download attribute', () => {
     const appendSpy = vi.spyOn(document.body, 'appendChild');
     const removeSpy = vi.spyOn(document.body, 'removeChild');
-    downloadBackup('{}', 'phylax-backup-test.phylax');
+    downloadBackup('{}', 'befaro-backup-test.phylax');
     const anchor = appendSpy.mock.calls[0]?.[0] as HTMLAnchorElement;
     expect(anchor).toBeDefined();
-    expect(anchor.download).toBe('phylax-backup-test.phylax');
+    expect(anchor.download).toBe('befaro-backup-test.phylax');
     expect(removeSpy).toHaveBeenCalledWith(anchor);
     appendSpy.mockRestore();
     removeSpy.mockRestore();

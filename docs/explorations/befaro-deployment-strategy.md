@@ -1,8 +1,8 @@
-# Phylax D-Series: Deployment Master Plan
+# Befaro D-Series: Deployment Master Plan
 
-**Document purpose**: Strategic overview of all deployment paths for Phylax v1.0.0+. Not a task list - a reference document to inform decisions about where and when to distribute the app.
+**Document purpose**: Strategic overview of all deployment paths for Befaro v1.0.0+. Not a task list - a reference document to inform decisions about where and when to distribute the app.
 
-**Scope**: Phylax is a Progressive Web App (PWA) built with React 18 + Vite + TypeScript. Fully client-side, no backend, no database. Local-first architecture with IndexedDB storage and AES-256-GCM encryption.
+**Scope**: Befaro is a Progressive Web App (PWA) built with React 18 + Vite + TypeScript. Fully client-side, no backend, no database. Local-first architecture with IndexedDB storage and AES-256-GCM encryption.
 
 **Current state**: v1.0.0 tagged and released on GitHub. Not yet deployed anywhere. Users can only clone and build locally.
 
@@ -25,11 +25,11 @@
 
 ## D-01: GitHub Pages (first deployment)
 
-**Purpose**: Make Phylax publicly accessible via URL. Foundation for all other distribution paths (PWABuilder requires a live URL).
+**Purpose**: Make Befaro publicly accessible via URL. Foundation for all other distribution paths (PWABuilder requires a live URL).
 
 **What it produces**:
 
-- Phylax accessible at `https://astrapi69.github.io/phylax/`
+- Befaro accessible at `https://astrapi69.github.io/phylax/`
 - HTTPS automatic (Let's Encrypt via GitHub)
 - Service Worker functional
 - PWA installable from browser ("Add to Home Screen")
@@ -55,11 +55,11 @@
 
 ## D-02: Custom Domain (optional)
 
-**Purpose**: Professional URL like `phylax.dev` or `phylax.app` instead of GitHub subdomain.
+**Purpose**: Professional URL like `befaro.dev` or `befaro.app` instead of GitHub subdomain.
 
 **What it produces**:
 
-- Phylax at `https://phylax.dev` (or chosen domain)
+- Befaro at `https://befaro.dev` (or chosen domain)
 - HTTPS via GitHub's automatic Let's Encrypt
 - `base: '/'` in Vite (cleaner paths)
 - Better branding and memorability
@@ -83,11 +83,11 @@
 
 ## D-03: Microsoft Store
 
-**Purpose**: Windows users discover Phylax through native Store, install like any Windows app.
+**Purpose**: Windows users discover Befaro through native Store, install like any Windows app.
 
 **What it produces**:
 
-- Phylax listed in Microsoft Store
+- Befaro listed in Microsoft Store
 - Windows 10/11 users can install via Store UI
 - Automatic updates through Store mechanism
 - Runs as native-feeling Windows app via Edge WebView2
@@ -137,11 +137,11 @@
 
 ## D-04: F-Droid (Android FOSS)
 
-**Purpose**: Distribute Phylax to Android users via the FOSS-focused alternative to Google Play. Strong philosophical fit with Phylax's privacy-first, open-source positioning.
+**Purpose**: Distribute Befaro to Android users via the FOSS-focused alternative to Google Play. Strong philosophical fit with Befaro's privacy-first, open-source positioning.
 
 **What it produces**:
 
-- Phylax listed in F-Droid repository
+- Befaro listed in F-Droid repository
 - Android users with F-Droid installed can discover and install
 - Reviewers verify the app is genuinely FOSS (no telemetry, no proprietary dependencies)
 - Community-driven quality control
@@ -152,18 +152,18 @@
 - Build reproducibility (F-Droid builds from source)
 - No proprietary dependencies
 - TWA (Trusted Web Activity) wrapper via Bubblewrap
-- Complete source availability (✓ Phylax is MIT)
+- Complete source availability (✓ Befaro is MIT)
 
 **Review process**:
 
 - Community review: 2-8 weeks
 - Focuses on: licensing compliance, anti-features (tracking, ads), security
-- Phylax fits perfectly: MIT license, no telemetry, no ads, privacy-first
+- Befaro fits perfectly: MIT license, no telemetry, no ads, privacy-first
 
 **Advantages**:
 
 - Free
-- Exact fit with Phylax's philosophy
+- Exact fit with Befaro's philosophy
 - Audience explicitly cares about privacy/FOSS values
 - Signal quality: F-Droid listing = "this is truly open and respectful"
 
@@ -183,7 +183,7 @@
 
 **What it produces**:
 
-- Phylax listed on Play Store
+- Befaro listed on Play Store
 - Android users install via normal Play Store flow
 - Automatic updates
 - Runs via TWA (Trusted Web Activity) - indistinguishable from native app for most users
@@ -202,7 +202,7 @@
 - 1-3 days for new listings (was longer pre-2024)
 - Google scrutinizes new developer accounts more
 - Health apps may face additional medical-disclaimer checks
-- Phylax is NOT a medical device - must be explicit in listing to avoid category confusion
+- Befaro is NOT a medical device - must be explicit in listing to avoid category confusion
 
 **Store listing needs**:
 
@@ -212,7 +212,7 @@
 - Feature graphic 1024x500
 - High-res icon 512x512
 - Privacy policy URL (REQUIRED for Play Store)
-- Data safety form (disclose what data you collect - Phylax answer: "none")
+- Data safety form (disclose what data you collect - Befaro answer: "none")
 
 **Advantages**:
 
@@ -233,7 +233,7 @@
 
 ## D-06: Apple App Store (NOT recommended for v1.0)
 
-**Purpose**: iOS users could install Phylax like any iOS app.
+**Purpose**: iOS users could install Befaro like any iOS app.
 
 **Why not recommended**:
 
@@ -249,7 +249,7 @@
 - After significant user demand from iOS users
 - When budget can absorb 99€/year
 - When native iOS features are worth the complexity
-- iOS users can still use Phylax via Safari "Add to Home Screen"
+- iOS users can still use Befaro via Safari "Add to Home Screen"
 
 ---
 
@@ -267,7 +267,7 @@
 
 - Small user base compared to Play Store
 - Fire tablet users are a niche
-- Phylax would reach them via F-Droid if they sideload
+- Befaro would reach them via F-Droid if they sideload
 
 **Estimated effort**: 2-3 hours if pursued
 
@@ -307,7 +307,7 @@ Before ANY store submission, have ready:
 
 **Marketing copy**:
 
-- Short pitch (1 sentence): "Phylax is a privacy-first health profile PWA - your data encrypted on your device, no cloud, no tracking."
+- Short pitch (1 sentence): "Befaro is a privacy-first health profile PWA - your data encrypted on your device, no cloud, no tracking."
 - Medium pitch (2-3 paragraphs): introducing concept, features, who it's for
 - Full description: features list with benefits, use cases, philosophy
 - Keywords list for search optimization
@@ -325,10 +325,10 @@ Before ANY store submission, have ready:
 
 **Legal**:
 
-- Privacy policy URL (Phylax: minimal, mostly "we don't collect anything")
+- Privacy policy URL (Befaro: minimal, mostly "we don't collect anything")
 - Terms of service (optional but recommended)
 - Age rating appropriate declaration
-- Medical disclaimer reiteration (Phylax is NOT a medical device)
+- Medical disclaimer reiteration (Befaro is NOT a medical device)
 
 **Technical**:
 

@@ -5,14 +5,14 @@
 
 ## Context
 
-Phylax stores significant portions of profile content as Markdown: observations have Markdown-formatted fact/pattern/self-regulation fields, BaseData carries a free-form `contextNotes` Markdown field, timeline entries have Markdown bodies, and the import format is a Markdown document in the "Lebende Gesundheit" convention. Starting with the V-01 read-only profile overview, the UI needs to render these fields visually rather than showing raw Markdown source.
+Befaro stores significant portions of profile content as Markdown: observations have Markdown-formatted fact/pattern/self-regulation fields, BaseData carries a free-form `contextNotes` Markdown field, timeline entries have Markdown bodies, and the import format is a Markdown document in the "Lebende Gesundheit" convention. Starting with the V-01 read-only profile overview, the UI needs to render these fields visually rather than showing raw Markdown source.
 
 Two requirements drove the decision:
 
 1. **Safety.** Imported profiles can contain arbitrary content. Rendering raw HTML from an imported document would create an XSS path that defeats the local-first encrypted-storage threat model. Any renderer we adopt must default to treating HTML as text.
 2. **Consistency.** Markdown is rendered in multiple places across the app. Hand-rolling per-site styles, or writing our own Markdown parser, would silently diverge across components and invite regressions.
 
-Phylax's locked dependency list (coding-standards.md) otherwise forbids adding runtime dependencies without an ADR, so this decision is recorded here.
+Befaro's locked dependency list (coding-standards.md) otherwise forbids adding runtime dependencies without an ADR, so this decision is recorded here.
 
 ## Decision
 

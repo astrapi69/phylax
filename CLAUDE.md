@@ -1,17 +1,17 @@
-# CLAUDE.md - Phylax
+# CLAUDE.md - Befaro
 
-Dieses Dokument gibt Claude Code den Kontext für die Entwicklung von Phylax.
+Dieses Dokument gibt Claude Code den Kontext für die Entwicklung von Befaro.
 
-## Was ist Phylax
+## Was ist Befaro
 
-Phylax ist eine persönliche, datensouveräne Gesundheitsplattform als Progressive Web App, basierend auf dem Prinzip der lebenden Gesundheit. Der Nutzer erstellt und pflegt ein lebendes medizinisches Profil mit Beobachtungen (Fakt/Muster/Selbstregulation), Laborwerten, Ergänzungsplänen und offenen Punkten. Local-first, Zero-Knowledge, kein eigener Backend-Service. KI-gestützte Profilerstellung über API-Key des Nutzers. Siehe `docs/CONCEPT.md` für die vollständige Vision.
+Befaro ist eine persönliche, datensouveräne Gesundheitsplattform als Progressive Web App, basierend auf dem Prinzip der lebenden Gesundheit. Der Nutzer erstellt und pflegt ein lebendes medizinisches Profil mit Beobachtungen (Fakt/Muster/Selbstregulation), Laborwerten, Ergänzungsplänen und offenen Punkten. Local-first, Zero-Knowledge, kein eigener Backend-Service. KI-gestützte Profilerstellung über API-Key des Nutzers. Siehe `docs/CONCEPT.md` für die vollständige Vision.
 
 ## Nicht-verhandelbare Prinzipien
 
-1. **Kein Backend**: Jeder Vorschlag für einen Server wird abgelehnt. Phylax ist reine Browser-App.
+1. **Kein Backend**: Jeder Vorschlag für einen Server wird abgelehnt. Befaro ist reine Browser-App.
 2. **Keine eigenen externen Services**: Keine Fonts von Google, keine Analytics, keine CDN-Abhängigkeiten zur Laufzeit. Alles wird gebundled. Ausnahme: nutzerinitiierte KI-Requests mit eigenem API-Key des Nutzers an einen vom Nutzer gewählten KI-Anbieter (siehe ADR-0019).
 3. **Verschlüsselung vor Persistierung**: Kein Klartext darf jemals in IndexedDB landen. Tests müssen das absichern.
-4. **KI strukturiert, KI diagnostiziert nicht**: Die KI in Phylax ist ein Strukturierungspartner. Sie stellt keine Diagnosen, gibt keine Therapieempfehlungen und übernimmt keine klinische Verantwortung.
+4. **KI strukturiert, KI diagnostiziert nicht**: Die KI in Befaro ist ein Strukturierungspartner. Sie stellt keine Diagnosen, gibt keine Therapieempfehlungen und übernimmt keine klinische Verantwortung.
 5. **Keine medizinische Beratung**: Kein Code, der Diagnosen stellt oder Empfehlungen gibt. UI-Disclaimer an relevanten Stellen.
 6. **TypeScript strict mode**: `strict: true` in `tsconfig.json`, keine `any`-Types ohne explizite Begründung im Kommentar.
 7. **Keine Formatierung mit Em-Dashes**: In UI-Texten, Dokumentation und Kommentaren nur Bindestriche oder Kommata, keine Em-Dashes.
@@ -34,7 +34,7 @@ Keine weiteren Dependencies ohne Rücksprache. Jede neue Dependency erhöht die 
 ## Projektstruktur
 
 ```
-phylax/
+befaro/
 ├── docs/
 │   ├── CONCEPT.md
 │   └── ROADMAP.md
@@ -90,7 +90,7 @@ phylax/
 
 ### Browser-Storage-Key-Konvention
 
-Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (Bindestrich) oder `phylax.` (Punkt). Das Full-Data-Reset-Feature (`src/features/reset/useResetAllData.ts`) iteriert beide Stores anhand dieses Prefix-Musters und löscht alle passenden Keys; neue Keys, die nicht der Konvention folgen, überleben einen Reset und führen zu inkonsistentem App-Zustand. Beim Hinzufügen eines neuen Storage-Keys: Konvention einhalten, sonst Reset-Hook anpassen und dokumentieren.
+Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (Bindestrich) oder `phylax.` (Punkt). Der Prefix behält bewusst den alten App-Namen von vor dem Rename zu Befaro: bestehende Installationen halten ihre Daten unter diesen Keys, und die Migration persistierter Bezeichner (Storage-Keys, Dexie-DB-Name `phylax`, Verification-Token, Backup-Format-Marker) ist eine eigene, noch offene Task. Das Full-Data-Reset-Feature (`src/features/reset/useResetAllData.ts`) iteriert beide Stores anhand dieses Prefix-Musters und löscht alle passenden Keys; neue Keys, die nicht der Konvention folgen, überleben einen Reset und führen zu inkonsistentem App-Zustand. Beim Hinzufügen eines neuen Storage-Keys: Konvention einhalten, sonst Reset-Hook anpassen und dokumentieren.
 
 ### Testing
 
@@ -129,7 +129,7 @@ Alle `localStorage`- und `sessionStorage`-Keys verwenden den Prefix `phylax-` (B
 ## Referenzprojekte des Entwicklers
 
 - Bibliogon: github.com/astrapi69/bibliogon (Architektur-Patterns, Phasenstruktur)
-- PluginForge: github.com/astrapi69/pluginforge (nicht genutzt in Phylax, aber bekannt)
+- PluginForge: github.com/astrapi69/pluginforge (nicht genutzt in Befaro, aber bekannt)
 
 ## Sprache
 
@@ -149,7 +149,7 @@ Die Projekt-Dokumentation hat zwei primäre Leserschaften mit unterschiedlichen 
 **Deutsch:**
 
 - `CLAUDE.md` (primärer Leser: der Entwickler)
-- `docs/CONCEPT.md` (Domänenkonzept; Phylax adressiert primär den DE-Markt wegen ePA/gematik)
+- `docs/CONCEPT.md` (Domänenkonzept; Befaro adressiert primär den DE-Markt wegen ePA/gematik)
 - `docs/backup-format.md` (user-facing Dokumentation)
 - `docs/ROADMAP.md` (interne Planung, Entwickler-Perspektive)
 

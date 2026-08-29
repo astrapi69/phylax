@@ -11,10 +11,10 @@ for reuse in future projects.
 
 ## Decision
 
-Defer extraction. The module stays inside the Phylax repository until:
+Defer extraction. The module stays inside the Befaro repository until:
 
 - A second project needs the same crypto semantics, or
-- The API has proven stable through at least one full phase of Phylax development
+- The API has proven stable through at least one full phase of Befaro development
   (i.e., after the repository and feature layers are built on top of it)
 
 ## Consequences

@@ -22,7 +22,7 @@ function validEnvelope() {
     version: 1,
     type: 'phylax-backup',
     created: '2026-04-20T15:30:00Z',
-    source: { app: 'phylax', appVersion: '0.0.0' },
+    source: { app: 'befaro', appVersion: '0.0.0' },
     crypto: {
       algorithm: 'AES-256-GCM',
       kdf: 'PBKDF2-SHA256',
@@ -33,7 +33,7 @@ function validEnvelope() {
   };
 }
 
-function makePhylaxFile(name = 'mybackup.phylax'): File {
+function makeBefaroFile(name = 'mybackup.phylax'): File {
   return new File([JSON.stringify(validEnvelope())], name, { type: 'application/json' });
 }
 
@@ -76,11 +76,11 @@ describe('BackupImportSelectView', () => {
     renderView();
 
     const input = screen.getByLabelText('Datei auswählen') as HTMLInputElement;
-    await user.upload(input, makePhylaxFile('test.phylax'));
+    await user.upload(input, makeBefaroFile('test.phylax'));
 
     await waitFor(() => expect(screen.getByTestId('backup-metadata')).toBeInTheDocument());
     expect(screen.getByText('test.phylax')).toBeInTheDocument();
-    expect(screen.getByText('Phylax 0.0.0')).toBeInTheDocument();
+    expect(screen.getByText('Befaro 0.0.0')).toBeInTheDocument();
   });
 
   it('displays a parse error for invalid JSON', async () => {
@@ -107,7 +107,7 @@ describe('BackupImportSelectView', () => {
 
     await user.upload(
       screen.getByLabelText('Datei auswählen') as HTMLInputElement,
-      makePhylaxFile(),
+      makeBefaroFile(),
     );
     await waitFor(() => expect(screen.getByTestId('backup-metadata')).toBeInTheDocument());
 
@@ -141,7 +141,7 @@ describe('BackupImportSelectView', () => {
       const user = userEvent.setup();
       renderView();
       const input = screen.getByLabelText('Datei auswählen') as HTMLInputElement;
-      await user.upload(input, makePhylaxFile('test.phylax'));
+      await user.upload(input, makeBefaroFile('test.phylax'));
       await waitFor(() => expect(screen.getByText(pattern)).toBeInTheDocument());
     }
 
@@ -161,8 +161,8 @@ describe('BackupImportSelectView', () => {
 
     it('wrong-type surfaces the wrong-type message (lines 39-40)', async () => {
       await uploadAndExpect(
-        { kind: 'wrong-type', got: 'not-phylax' },
-        /keine Phylax-Backup-Datei/i,
+        { kind: 'wrong-type', got: 'not-befaro' },
+        /keine Befaro-Backup-Datei/i,
       );
     });
 

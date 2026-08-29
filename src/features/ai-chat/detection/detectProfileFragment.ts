@@ -1,5 +1,5 @@
 /**
- * Detect a Phylax profile-format fragment inside an AI message body.
+ * Detect a Befaro profile-format fragment inside an AI message body.
  *
  * The AI is instructed (via PROFILE_OUTPUT_FORMAT in the system prompt)
  * to emit new observations, lab values, supplements, and open points in a

@@ -174,7 +174,7 @@ describe('ProfileView', () => {
       await renderWithProfile(makeProfile());
       expect(screen.getByTestId('donation-onboarding-card')).toBeInTheDocument();
       expect(
-        screen.getByRole('heading', { level: 2, name: 'Willkommen bei Phylax' }),
+        screen.getByRole('heading', { level: 2, name: 'Willkommen bei Befaro' }),
       ).toBeInTheDocument();
     });
 

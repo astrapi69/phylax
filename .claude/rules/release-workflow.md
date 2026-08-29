@@ -1,6 +1,6 @@
 # Release Workflow
 
-Permanent workflow for Phylax releases. Read this when a release is on the table.
+Permanent workflow for Befaro releases. Read this when a release is on the table.
 
 Prompt triggers: "Release new version", "New release", "Deploy new version".
 
@@ -46,7 +46,7 @@ If the working tree is not clean, STOP and ask the user how to proceed.
 
 ## Step 2: Decide the version bump
 
-SemVer rules for Phylax:
+SemVer rules for Befaro:
 
 - **patch** (`0.1.0` -> `0.1.1`): bug fixes, dependency updates, doc fixes, no user-visible behavior change.
 - **minor** (`0.1.0` -> `0.2.0`): new features, new entry types, new export formats, UI additions. Backward-compatible storage schema.

@@ -8,7 +8,7 @@ vi.mock('../../crypto', async (importOriginal) => {
 import { encrypt, generateSalt, deriveKeyFromPassword } from '../../crypto';
 import { PBKDF2_ITERATIONS } from '../../crypto/constants';
 import { decryptBackup, SUPPORTED_INNER_SCHEMA_VERSION } from './decryptBackup';
-import type { ParsedPhylaxFile } from './parseBackupFile';
+import type { ParsedBefaroFile } from './parseBackupFile';
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = '';
@@ -23,7 +23,7 @@ async function makeBackup(
     rows: {},
     meta_settings: {},
   },
-): Promise<ParsedPhylaxFile> {
+): Promise<ParsedBefaroFile> {
   const salt = generateSalt();
   const key = await deriveKeyFromPassword(password, salt);
   const plaintext = new TextEncoder().encode(JSON.stringify(inner));
@@ -32,7 +32,7 @@ async function makeBackup(
     version: 1,
     type: 'phylax-backup',
     created: '2026-04-20T00:00:00Z',
-    source: { app: 'phylax', appVersion: '0.0.0' },
+    source: { app: 'befaro', appVersion: '0.0.0' },
     crypto: {
       algorithm: 'AES-256-GCM',
       kdf: 'PBKDF2-SHA256',
@@ -74,7 +74,7 @@ describe('decryptBackup', () => {
     const parsed = await makeBackup('correct-horse');
     const bytes = Array.from(atob(parsed.data), (c) => c.charCodeAt(0));
     bytes[bytes.length - 1] = (bytes[bytes.length - 1] ?? 0) ^ 0xff;
-    const tampered: ParsedPhylaxFile = {
+    const tampered: ParsedBefaroFile = {
       ...parsed,
       data: bytesToBase64(new Uint8Array(bytes)),
     };
@@ -91,11 +91,11 @@ describe('decryptBackup', () => {
     const key = await deriveKeyFromPassword(password, salt);
     const plaintextBytes = new TextEncoder().encode('not-json-at-all');
     const encrypted = await encrypt(key, plaintextBytes);
-    const parsed: ParsedPhylaxFile = {
+    const parsed: ParsedBefaroFile = {
       version: 1,
       type: 'phylax-backup',
       created: '2026-04-20T00:00:00Z',
-      source: { app: 'phylax', appVersion: '0.0.0' },
+      source: { app: 'befaro', appVersion: '0.0.0' },
       crypto: {
         algorithm: 'AES-256-GCM',
         kdf: 'PBKDF2-SHA256',
@@ -140,11 +140,11 @@ describe('decryptBackup', () => {
     // 0xC3 0x28 is an invalid UTF-8 continuation pair.
     const invalidBytes = new Uint8Array([0xc3, 0x28, 0x41]);
     const encrypted = await encrypt(key, invalidBytes);
-    const parsed: ParsedPhylaxFile = {
+    const parsed: ParsedBefaroFile = {
       version: 1,
       type: 'phylax-backup',
       created: '2026-04-20T00:00:00Z',
-      source: { app: 'phylax', appVersion: '0.0.0' },
+      source: { app: 'befaro', appVersion: '0.0.0' },
       crypto: {
         algorithm: 'AES-256-GCM',
         kdf: 'PBKDF2-SHA256',

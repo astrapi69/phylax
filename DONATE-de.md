@@ -1,6 +1,6 @@
-# Phylax unterstützen
+# Befaro unterstützen
 
-Phylax ist ein Open-Source-Projekt, das von einer Person gebaut und
+Befaro ist ein Open-Source-Projekt, das von einer Person gebaut und
 gepflegt wird. Abends und am Wochenende, neben einem Vollzeitjob und
 dem Familienleben. Keine Cloud, kein Tracking, keine Werbung. Deine
 Gesundheitsdaten bleiben verschlüsselt auf deinem Gerät.
@@ -8,11 +8,11 @@ Gesundheitsdaten bleiben verschlüsselt auf deinem Gerät.
 Das Projekt existiert, weil das Verwalten medizinischer Informationen
 für einen Haushalt eine ständige Aufgabe ist und die verfügbaren
 Tools entweder die Daten auf fremde Server schicken oder Privatsphäre
-als Nebensache behandeln. Phylax ist das Werkzeug, das ich für mich
+als Nebensache behandeln. Befaro ist das Werkzeug, das ich für mich
 selbst wollte. Gebaut so, dass es für alle funktioniert, die ihre
 eigenen Akten verwalten.
 
-Wenn Phylax dir hilft und du die Entwicklung unterstützen möchtest,
+Wenn Befaro dir hilft und du die Entwicklung unterstützen möchtest,
 sind Spenden sehr willkommen. Mehrere Optionen stehen zur Verfügung.
 
 ---
@@ -72,19 +72,19 @@ kein PayPal-Konto nötig, Kreditkarte funktioniert ebenfalls.
 
 ## Häufig gestellte Fragen
 
-### Wer baut Phylax?
+### Wer baut Befaro?
 
 Ein Entwickler, in der Freizeit. Die Arbeit findet rund um einen
 Vollzeitjob und einen Haushalt mit drei Kindern statt, eines davon
 lebt mit Autismus, Typ-1-Diabetes und Epilepsie. Dieser Kontext prägt
 die Prioritäten (Datenschutz, Offline-Fähigkeit, keine
-Anbieterbindung sind für mich nicht verhandelbar), aber Phylax ist
+Anbieterbindung sind für mich nicht verhandelbar), aber Befaro ist
 für jeden gedacht, der die Kontrolle über seine Gesundheitsdaten
 behalten möchte, nicht für eine einzelne Situation.
 
 ### Wofür werden Spenden verwendet?
 
-Phylax hat keine Förderung, keine Investoren und keine kommerzielle
+Befaro hat keine Förderung, keine Investoren und keine kommerzielle
 Unterstützung. Spenden decken:
 
 - **Entwicklungszeit.** Aktuell unbezahlt, eingepasst in Abende und
@@ -100,7 +100,7 @@ Unterstützung. Spenden decken:
 ### Bekomme ich eine Spendenquittung?
 
 Du erhältst eine Zahlungsbestätigung über die jeweilige Plattform.
-Da Phylax keine eingetragene gemeinnützige Organisation ist, sind
+Da Befaro keine eingetragene gemeinnützige Organisation ist, sind
 Spenden nicht steuerlich absetzbar.
 
 ### Was ist der Unterschied zwischen wiederkehrenden und einmaligen Spenden?
@@ -119,7 +119,7 @@ Abonnements.
 ### Sind Spenden anonym?
 
 Auf allen Plattformen kannst du auswählen, ob dein Name öffentlich
-angezeigt wird. Phylax selbst erhält keine Spenderinformationen über
+angezeigt wird. Befaro selbst erhält keine Spenderinformationen über
 das hinaus, was du aktiv teilst.
 
 ### Warum keine direkte Banküberweisung?
@@ -148,4 +148,4 @@ oder kontaktiere mich per E-Mail (siehe Profil).
 ---
 
 _Danke für deine Unterstützung. Jede Spende, egal wie klein, hilft,
-Phylax am Leben zu halten._
+Befaro am Leben zu halten._

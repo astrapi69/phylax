@@ -12,7 +12,7 @@ import {
 } from '../crypto';
 
 /**
- * Reset the Phylax database for test isolation.
+ * Reset the Befaro database for test isolation.
  * Deletes the database and re-opens a fresh instance.
  * Only for use in test files.
  */

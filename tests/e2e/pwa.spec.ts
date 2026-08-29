@@ -25,8 +25,8 @@ test.describe('PWA', () => {
     expect(response.status()).toBe(200);
 
     const manifest = await response.json();
-    expect(manifest.name).toBe('Phylax');
-    expect(manifest.short_name).toBe('Phylax');
+    expect(manifest.name).toBe('Befaro - Gesundheitsbegleiter');
+    expect(manifest.short_name).toBe('Befaro');
     expect(manifest.display).toBe('standalone');
     expect(manifest.start_url).toBe('/');
     expect(manifest.icons).toBeDefined();
@@ -78,6 +78,6 @@ test.describe('PWA', () => {
       const meta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
       return meta?.getAttribute('content');
     });
-    expect(appleTitle).toBe('Phylax');
+    expect(appleTitle).toBe('Befaro');
   });
 });

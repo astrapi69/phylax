@@ -29,7 +29,7 @@ describe('ConfirmDialog', () => {
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
   });
 
-  it('focuses cancel by default per Phylax convention', () => {
+  it('focuses cancel by default per Befaro convention', () => {
     render(<ConfirmDialog {...baseProps} onClose={vi.fn()} onConfirm={vi.fn()} />);
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Cancel' }));
   });

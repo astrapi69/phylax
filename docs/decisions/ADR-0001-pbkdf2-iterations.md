@@ -9,7 +9,7 @@ PBKDF2 iteration count directly determines the cost of brute-forcing a master pa
 
 OWASP recommended 600,000 iterations for PBKDF2-SHA256 as of 2023. Hardware improvements since then (faster GPUs, cheaper cloud instances) push the practical recommendation toward 1M+ for 2026.
 
-Phylax derives a single AES-256-GCM key from the master password on each unlock. The derivation is a one-time cost per session. The user experiences it as a brief spinner, not as ongoing latency.
+Befaro derives a single AES-256-GCM key from the master password on each unlock. The derivation is a one-time cost per session. The user experiences it as a brief spinner, not as ongoing latency.
 
 This decision must be made before F-10 (Dexie schema) because once ciphertexts are persisted against a specific iteration count, changing the count requires a migration strategy: derive with the old count to decrypt, re-encrypt with the new count.
 

@@ -18,7 +18,7 @@ content. A PDF with a text layer should be extracted locally and sent
 as text - cheaper, faster, and keeps the original image data on
 device.
 
-No existing dependency in Phylax can read PDFs.
+No existing dependency in Befaro can read PDFs.
 
 ### Options considered
 
@@ -50,7 +50,7 @@ document-import pipeline (Phase 4b IMP-02 onward).
 - **Worker bundled, not CDN.** Vite `?worker` suffix. The pdf.js
   worker JavaScript ships as a separate chunk in `dist/assets/`,
   precached by the service worker. **No external CDN fetch at
-  runtime.** Phylax's privacy posture (Nicht-verhandelbares Prinzip 2) forbids runtime third-party network calls; a CDN fetch for the
+  runtime.** Befaro's privacy posture (Nicht-verhandelbares Prinzip 2) forbids runtime third-party network calls; a CDN fetch for the
   worker would violate this. Bundling is the only acceptable path.
 - **No external resources.** pdf.js can fetch fonts from the web by
   default. Disabled via `disableFontFace: true` and `useSystemFonts:

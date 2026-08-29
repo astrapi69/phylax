@@ -116,7 +116,7 @@ describe('generateSystemPrompt', () => {
   });
 
   describe('output format', () => {
-    it('includes the Phylax profile-output format contract in every prompt', () => {
+    it('includes the Befaro profile-output format contract in every prompt', () => {
       const prompt = generateSystemPrompt({ profile: makeProfile(), observations: [] });
       expect(prompt).toMatch(/Format für Profil-Änderungen/);
       expect(prompt).toContain('### [Thema]');

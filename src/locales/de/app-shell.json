@@ -1,6 +1,6 @@
 {
   "header": {
-    "lock-aria-label": "Phylax sperren",
+    "lock-aria-label": "Befaro sperren",
     "lock": "Sperren",
     "open-nav": "Navigation öffnen",
     "search-filter-active": "Filter aktiv"
@@ -23,7 +23,7 @@
   },
   "error-boundary": {
     "heading": "Etwas ist schiefgelaufen",
-    "body": "Phylax konnte diese Seite nicht anzeigen. Lade die Anwendung neu oder kehre zur Startseite zurück. Deine Daten sind weiterhin verschlüsselt auf diesem Gerät gespeichert und gehen durch diesen Fehler nicht verloren.",
+    "body": "Befaro konnte diese Seite nicht anzeigen. Lade die Anwendung neu oder kehre zur Startseite zurück. Deine Daten sind weiterhin verschlüsselt auf diesem Gerät gespeichert und gehen durch diesen Fehler nicht verloren.",
     "action": {
       "reload": "Neu laden",
       "home": "Zur Startseite",

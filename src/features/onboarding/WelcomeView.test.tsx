@@ -25,9 +25,9 @@ describe('WelcomeView', () => {
     }
   });
 
-  it('renders the Phylax heading', () => {
+  it('renders the Befaro heading', () => {
     renderInRouter();
-    expect(screen.getByRole('heading', { level: 1, name: 'Phylax' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Befaro' })).toBeInTheDocument();
   });
 
   it('renders the tagline', () => {
@@ -69,7 +69,7 @@ describe('WelcomeView', () => {
 
   it('gives the h1 a programmatic focus target (tabIndex=-1)', () => {
     renderInRouter();
-    const h1 = screen.getByRole('heading', { level: 1, name: 'Phylax' });
+    const h1 = screen.getByRole('heading', { level: 1, name: 'Befaro' });
     expect(h1).toHaveAttribute('tabindex', '-1');
   });
 });

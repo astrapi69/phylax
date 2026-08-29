@@ -41,8 +41,8 @@ describe('stripMarkdown', () => {
   });
 
   it('expands link to "text (url)"', () => {
-    expect(stripMarkdown('Siehe [Phylax](https://example.com)')).toBe(
-      'Siehe Phylax (https://example.com)',
+    expect(stripMarkdown('Siehe [Befaro](https://example.com)')).toBe(
+      'Siehe Befaro (https://example.com)',
     );
   });
 

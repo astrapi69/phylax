@@ -1,6 +1,6 @@
 # D-03: PWABuilder packaging workflow
 
-How to turn the deployed Phylax PWA into installable Play Store
+How to turn the deployed Befaro PWA into installable Play Store
 and Microsoft Store packages via [PWABuilder](https://www.pwabuilder.com/).
 
 This file is the **maintainer-side runbook**. The repo-side prep
@@ -44,7 +44,7 @@ manual workflow that has to happen in a browser.
 
 ### 2. Generate the packages
 
-Two formats are relevant for Phylax:
+Two formats are relevant for Befaro:
 
 #### Microsoft Store (.msixbundle)
 
@@ -55,7 +55,7 @@ Two formats are relevant for Phylax:
    - Publisher ID: copy verbatim from the existing Partner Center
      account, format `CN=...` (PWABuilder will tell you to register
      a Microsoft Partner Center account if missing).
-   - Package identity name: `phylax`
+   - Package identity name: `befaro`
    - App version: match `package.json` (currently
      [`pkg.version`](../package.json) = `1.1.0`).
 4. Download the `.msixbundle`. Test-install locally before
@@ -69,7 +69,7 @@ Two formats are relevant for Phylax:
 3. Provide:
    - Application ID: `com.asterios.phylax` (reverse-domain
      convention).
-   - Display name: `Phylax`.
+   - Display name: `Befaro`.
    - Host: `astrapi69.github.io`.
    - Start URL: `/phylax/`.
    - App version code + name: bump on every store submission

@@ -90,7 +90,7 @@ export function UnlockView({ onUnlocked }: UnlockViewProps) {
             <input
               type="text"
               name="username"
-              value="phylax"
+              value="befaro"
               autoComplete="username"
               readOnly
               hidden

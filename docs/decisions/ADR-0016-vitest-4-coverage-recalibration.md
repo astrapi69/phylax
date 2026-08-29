@@ -18,7 +18,7 @@ in the V8 coverage provider:
 > We've now developed a new package that utilizes AST based analysis
 > for the V8 coverage.
 
-Practical impact on Phylax: measured coverage numbers dropped
+Practical impact on Befaro: measured coverage numbers dropped
 2-5 percentage points across the board. Not a code regression - the
 old numbers were systematically inflated by `v8-to-istanbul`'s loose
 remapping. The new AST-aware numbers reflect actual tested-vs-untested

@@ -6,14 +6,14 @@
  * value via the multi-provider config dialog.
  *
  * Browser-side note: providers differ in CORS behaviour when called
- * directly from a browser PWA. See `corsHint` per entry. Phylax has
+ * directly from a browser PWA. See `corsHint` per entry. Befaro has
  * no proxy server (local-first model, ADR direct-from-browser keys),
  * so providers with `corsHint: 'blocked'` cannot complete a real
  * request from the running app even when their config is saved. The
  * SetupWizard surfaces this via the per-provider `note` field.
  *
  * Lifted from the Bibliogon donor module on 2026-05-01 per the
- * IM-05-Option-B-style extraction pattern. Phylax-specific changes:
+ * IM-05-Option-B-style extraction pattern. Befaro-specific changes:
  * single-quote string style and named-export over default-export.
  */
 
@@ -59,7 +59,7 @@ export const PROVIDER_PRESETS: Record<string, ProviderPreset> = {
     modelSuggestions: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'],
     requiresApiKey: true,
     corsHint: 'blocked',
-    note: 'OpenAI blocks browser CORS. Requires a proxy that Phylax does not currently provide.',
+    note: 'OpenAI blocks browser CORS. Requires a proxy that Befaro does not currently provide.',
   },
   google: {
     id: 'google',
@@ -79,7 +79,7 @@ export const PROVIDER_PRESETS: Record<string, ProviderPreset> = {
     modelSuggestions: ['mistral-large-latest', 'mistral-medium-latest', 'mistral-small-latest'],
     requiresApiKey: true,
     corsHint: 'blocked',
-    note: 'Mistral blocks browser CORS as of 2026-04. Requires a proxy that Phylax does not currently provide.',
+    note: 'Mistral blocks browser CORS as of 2026-04. Requires a proxy that Befaro does not currently provide.',
   },
   lmstudio: {
     id: 'lmstudio',

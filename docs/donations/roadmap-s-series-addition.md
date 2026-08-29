@@ -10,7 +10,7 @@ Goal: Nutzer koennen das Projekt unterstuetzen. Hinweise sind dezent, respektvol
 
 Siehe `docs/donation-strategy.md` fuer vollstaendige Konzept-Dokumentation.
 
-- [ ] **S-01** Settings-Abschnitt "Phylax unterstuetzen" mit Projekt-Kontext und externem Link
+- [ ] **S-01** Settings-Abschnitt "Befaro unterstuetzen" mit Projekt-Kontext und externem Link
 - [ ] **S-02** Einmaliger Onboarding-Hinweis nach erstem Profil-Create/Import, mit "Verstanden"/"Unterstuetzen" Buttons und localStorage-Flag
 - [ ] **S-03** 90-Tage-Reminder-Banner auf Profile-View mit drei Dismiss-Pfaden (Spenden: +180 Tage, Nicht-jetzt: +90 Tage, Close: +90 Tage)
 

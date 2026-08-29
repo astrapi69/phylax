@@ -56,7 +56,7 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
           to="/profile"
           className="text-lg font-bold text-gray-900 no-underline dark:text-gray-100"
         >
-          Phylax
+          Befaro
         </Link>
       </div>
 

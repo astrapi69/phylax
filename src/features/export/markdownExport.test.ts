@@ -466,11 +466,11 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).toContain('Weird \\| Name');
   });
 
-  it('footer carries export date, Phylax version, and profile version', () => {
+  it('footer carries export date, Befaro version, and profile version', () => {
     const profile = makeProfile({ version: '1.3.5' });
     const md = exportProfileAsMarkdown(profile, [], [], [], [], [], []);
     expect(md).toMatch(/\*\*Export erstellt:\*\* \d{4}-\d{2}-\d{2}/);
-    expect(md).toContain('**Phylax-Version:** 1.0.0');
+    expect(md).toContain('**Befaro-Version:** 1.0.0');
     expect(md).toContain('**Profil-Version:** 1.3.5');
   });
 

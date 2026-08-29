@@ -1,6 +1,6 @@
 {
   "header": {
-    "lock-aria-label": "Lock Phylax",
+    "lock-aria-label": "Lock Befaro",
     "lock": "Lock",
     "open-nav": "Open navigation",
     "search-filter-active": "Filter active"
@@ -23,7 +23,7 @@
   },
   "error-boundary": {
     "heading": "Something went wrong",
-    "body": "Phylax could not render this page. Reload the app or return to the home screen. Your data stays encrypted on this device and is not lost by this error.",
+    "body": "Befaro could not render this page. Reload the app or return to the home screen. Your data stays encrypted on this device and is not lost by this error.",
     "action": {
       "reload": "Reload",
       "home": "Go to home",

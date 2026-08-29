@@ -33,15 +33,15 @@ test.describe('Navigation', () => {
   test('lock button redirects to unlock screen', async ({ page }) => {
     await setupAuthenticatedSession(page, { password: VALID_PASSWORD });
 
-    await page.getByLabel('Phylax sperren').click();
-    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+    await page.getByLabel('Befaro sperren').click();
+    await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
   });
 
   test('direct URL while locked redirects, returnTo restores after unlock', async ({ page }) => {
     await setupAuthenticatedSession(page, { password: VALID_PASSWORD });
 
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
 
     await unlockApp(page, { password: VALID_PASSWORD });
 

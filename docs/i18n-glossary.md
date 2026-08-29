@@ -1,6 +1,6 @@
 # German-English Terminology Glossary
 
-Single source of truth for Phylax UI translations.
+Single source of truth for Befaro UI translations.
 
 I18N-02 sub-commits (02-a through 02-e) reference this document. Future
 translation targets (ES/FR/EL under P-11 and later) start from this
@@ -26,7 +26,7 @@ reasoning note. Keep entries alphabetical within each section.
 | Laborwerte             | lab values             | not "lab results" (implies finalization)                       |
 | Medizinischer Befund   | medical finding        | observation card field                                         |
 | Muster                 | pattern                |                                                                |
-| Offene Punkte          | open points            | keep literal - Phylax-specific, not "tasks" or "action items"  |
+| Offene Punkte          | open points            | keep literal - Befaro-specific, not "tasks" or "action items"  |
 | Offener Punkt          | open point             | singular form                                                  |
 | Profil                 | profile                |                                                                |
 | Roh-Ausgabe            | raw output             | import cleanup flow (AI result)                                |

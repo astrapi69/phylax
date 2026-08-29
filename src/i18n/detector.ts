@@ -1,5 +1,5 @@
 /**
- * Initial language resolver for Phylax.
+ * Initial language resolver for Befaro.
  *
  * Consults in order:
  *   1. localStorage `phylax-language` (user's explicit preference set

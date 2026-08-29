@@ -166,7 +166,7 @@ function generate(
   doc.setProperties({
     title: t('pdf.metadata.title', { name }),
     author: name,
-    creator: 'Phylax',
+    creator: 'Befaro',
   });
 
   let y = MARGIN_MM;
@@ -740,7 +740,7 @@ function renderFooters(doc: JsPdfDoc, t: TFunction<'export'>, locale: string, no
  * at the bottom of a page with its first content paragraph orphaned
  * onto the next page. Approximate: a true keep-with-next would
  * pre-measure the first paragraph; this estimate is good enough for
- * the section sizes Phylax actually ships and avoids running the
+ * the section sizes Befaro actually ships and avoids running the
  * layout pass twice.
  */
 const HEADING_RESERVE_LINES = 4;

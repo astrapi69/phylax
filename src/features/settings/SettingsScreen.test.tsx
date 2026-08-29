@@ -39,7 +39,7 @@ describe('SettingsScreen', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'KI-Assistent' })).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Phylax unterstützen' }),
+      screen.getByRole('heading', { level: 2, name: 'Befaro unterstützen' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'Datenverwaltung' })).toBeInTheDocument();
     expect(

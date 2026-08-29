@@ -21,7 +21,7 @@ test.describe('Profile creation', () => {
     // Complete setup
     await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
-    await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+    await page.getByRole('button', { name: 'Befaro einrichten' }).click();
 
     // Wait for profile-create
     await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({

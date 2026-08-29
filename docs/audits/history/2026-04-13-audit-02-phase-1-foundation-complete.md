@@ -4,7 +4,7 @@
 
 ## 1. Executive summary
 
-Phase 1 (Foundation) of Phylax is functionally complete. Tasks F-01 through F-16 are done. The remaining two tasks (F-17 GitHub Actions CI, F-18 README finalization) are infrastructure and documentation, not functionality.
+Phase 1 (Foundation) of Befaro is functionally complete. Tasks F-01 through F-16 are done. The remaining two tasks (F-17 GitHub Actions CI, F-18 README finalization) are infrastructure and documentation, not functionality.
 
 The foundation delivers: a Vite-based PWA with master password onboarding, returning-user unlock with verification token, auto-lock after inactivity, an encrypted IndexedDB storage layer with a generic repository pattern, a responsive app shell with routing and protected routes, and five placeholder screens ready for Phase 2 features. The crypto layer (AES-256-GCM, PBKDF2 at 1.2M iterations, in-memory key store) is at 100% coverage. The overall project has 170 unit tests across 23 files and 18 E2E tests across 6 files, with 90.5% statement coverage project-wide.
 
@@ -52,7 +52,7 @@ Key invariants: `crypto.subtle` only in `src/crypto/`. Non-extractable keys. Fre
 
 ### Storage layer (`src/db/`)
 
-- **schema.ts**: `PhylaxDb` extends Dexie. 8 tables: profiles, observations, lab_values, supplements, open_points, profile_versions, documents, meta. All non-meta tables carry `profileId`. Compound indexes on `[profileId+createdAt]` for chronological tables. No content field indexes (privacy: theme/status/timing inside encrypted blob).
+- **schema.ts**: `BefaroDb` extends Dexie. 8 tables: profiles, observations, lab_values, supplements, open_points, profile_versions, documents, meta. All non-meta tables carry `profileId`. Compound indexes on `[profileId+createdAt]` for chronological tables. No content field indexes (privacy: theme/status/timing inside encrypted blob).
 - **types.ts**: `EncryptedRow` with id, profileId, createdAt (Unix ms), updatedAt (Unix ms), payload (ArrayBuffer). Per-table type aliases. `MetaRow` with plaintext salt and schemaVersion.
 - **repositories/encryptedRepository.ts**: Generic `EncryptedRepository<T extends DomainEntity>`. Serialization: domain -> JSON -> UTF-8 -> AES-GCM -> payload. Auto-ID, auto-timestamps. Update throws on immutable fields (id, profileId, createdAt). JSON limitations documented (Date, undefined, binary).
 - **meta.ts**: `writeMeta`, `readMeta`, `metaExists`. Singleton pattern with id='singleton'. `VERIFICATION_TOKEN = 'phylax-verification-v1'`.
@@ -212,7 +212,7 @@ No unauthorized dependencies detected.
 
 8. **Meta write failure rollback path not tested**: useOnboarding has a try/catch that locks keyStore if the Dexie transaction fails. This error branch is not tested. Adding a test requires mocking Dexie's transaction, which is complex but worthwhile.
 
-9. **Multiple Phylax tabs not coordinated**: Auto-lock in one tab does not affect another. Each tab has its own in-memory keyStore. Documented as a limitation.
+9. **Multiple Befaro tabs not coordinated**: Auto-lock in one tab does not affect another. Each tab has its own in-memory keyStore. Documented as a limitation.
 
 10. **Settings UI missing**: Auto-lock timeout is configurable in the data model but there is no UI to change it. Defaults to 5 minutes. Settings screen is P-05.
 
@@ -226,7 +226,7 @@ Phase 2 (Profile) builds on:
 - **Lock state** is plumbed through ProtectedRoute, onLockStateChange listeners, and auto-lock. Any new feature screen inside the app shell automatically inherits auth protection.
 - **Settings infrastructure** in MetaPayload is additive: new settings fields can be added to AppSettings without migration.
 - **Password validation** and **strength estimation** are reusable if Phase 2 adds password-related features.
-- **Test helpers** (resetDatabase, setupCompletedOnboarding) provide a clean starting state for any test that needs an authenticated Phylax instance.
+- **Test helpers** (resetDatabase, setupCompletedOnboarding) provide a clean starting state for any test that needs an authenticated Befaro instance.
 
 ## 9. Coverage summary table
 

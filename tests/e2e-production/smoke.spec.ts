@@ -53,7 +53,7 @@ async function completeOnboarding(page: Page) {
   // new-password field, which fillNewPasswordPair repairs.
   await fillNewPasswordPair(page, DEFAULT_PASSWORD);
   await page.getByLabel('Ich habe verstanden').check();
-  const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
+  const submitBtn = page.getByRole('button', { name: 'Befaro einrichten' });
   await expect(submitBtn).toBeEnabled({ timeout: 30000 });
   await submitBtn.click();
   await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
@@ -166,7 +166,7 @@ matrixTests('Smoke: onboarding', 'onboarding', async (page, { theme, sysPref }) 
 matrixTests('Smoke: unlock', 'unlock', async (page, { theme, sysPref }) => {
   await setupAuthenticatedState(page, theme, sysPref);
   await page.reload(); // clears in-memory key, returns to /unlock
-  await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
 });
 
 matrixTests('Smoke: unlock with error', 'unlock-error', async (page, { theme, sysPref }) => {

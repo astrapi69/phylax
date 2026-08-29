@@ -216,14 +216,14 @@ describe('useSoftReset', () => {
     expect(window.sessionStorage.getItem('phylax-backup-import-rate-limit')).toBe('{"failed":1}');
   });
 
-  it('does not touch non-Phylax localStorage keys', async () => {
-    window.localStorage.setItem('not-phylax-key', 'preserve');
+  it('does not touch non-Befaro localStorage keys', async () => {
+    window.localStorage.setItem('not-befaro-key', 'preserve');
     window.localStorage.setItem('phylax.persistence.dismissed.x', '1');
     const { result } = renderHook(() => useSoftReset());
     await act(async () => {
       await result.current.softReset();
     });
-    expect(window.localStorage.getItem('not-phylax-key')).toBe('preserve');
+    expect(window.localStorage.getItem('not-befaro-key')).toBe('preserve');
     expect(window.localStorage.getItem('phylax.persistence.dismissed.x')).toBeNull();
   });
 

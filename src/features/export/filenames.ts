@@ -1,9 +1,9 @@
 /**
- * File name convention for every Phylax export. YYYY-MM-DD date suffix so
+ * File name convention for every Befaro export. YYYY-MM-DD date suffix so
  * exports sort chronologically in a file manager.
  *
- * - Profile exports use the "phylax-profil-" base (shared between .md and .pdf).
- * - Lab-values CSV uses the "phylax-labor-" base because it is a lab-only
+ * - Profile exports use the "befaro-profil-" base (shared between .md and .pdf).
+ * - Lab-values CSV uses the "befaro-labor-" base because it is a lab-only
  *   export, not a full profile.
  */
 
@@ -13,13 +13,13 @@ function formatDate(now: Date): string {
 }
 
 export function generateMarkdownFilename(now: Date = new Date()): string {
-  return `phylax-profil-${formatDate(now)}.md`;
+  return `befaro-profil-${formatDate(now)}.md`;
 }
 
 export function generatePdfFilename(now: Date = new Date()): string {
-  return `phylax-profil-${formatDate(now)}.pdf`;
+  return `befaro-profil-${formatDate(now)}.pdf`;
 }
 
 export function generateCsvFilename(now: Date = new Date()): string {
-  return `phylax-labor-${formatDate(now)}.csv`;
+  return `befaro-labor-${formatDate(now)}.csv`;
 }

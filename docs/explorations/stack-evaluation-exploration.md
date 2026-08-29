@@ -1,7 +1,7 @@
 # Stack Evaluation for PWA Context
 
 **Date**: 2026-04-22
-**Purpose**: Honest assessment of whether the current Phylax dependency choices are optimal for a privacy-first PWA. Identifies where the stack is best-in-class, where it is pragmatic-but-not-optimal, and where alternatives might warrant consideration.
+**Purpose**: Honest assessment of whether the current Befaro dependency choices are optimal for a privacy-first PWA. Identifies where the stack is best-in-class, where it is pragmatic-but-not-optimal, and where alternatives might warrant consideration.
 
 Not an actionable task. Companion to `dependency-status-2026-04-22.md`.
 
@@ -18,7 +18,7 @@ Core PWA elements:
 
 Everything else is application-level decision, not PWA-specific requirement.
 
-## What Phylax needs on top
+## What Befaro needs on top
 
 - Local-first (no cloud)
 - Zero-knowledge E2E encryption (AES-GCM, PBKDF2)
@@ -45,7 +45,7 @@ Stack must deliver: PWA + local-first + crypto + storage + UI.
 
 **Preact is the obvious candidate not chosen.** Preact with `preact/compat` is essentially a drop-in replacement for React in many projects, yielding ~40 KB bundle savings. For a PWA where bundle size matters, this is material.
 
-**But**: Phylax is already on React 19 with substantial tooling. Switch would be a large migration. Pragmatically: stay on React.
+**But**: Befaro is already on React 19 with substantial tooling. Switch would be a large migration. Pragmatically: stay on React.
 
 ### Build: Vite + vite-plugin-pwa
 
@@ -83,7 +83,7 @@ Alternatives would be `tweetnacl`, `libsodium-wrappers`, `sjcl` - but Web Crypto
 **Okay but debatable.** zxcvbn is the classic choice for password strength estimation. But:
 
 - Setup chunk would be massive with language packs (~931 KB)
-- Phylax uses only `core + language-common` (~240 KB) per ADR-0014, making strength check weaker
+- Befaro uses only `core + language-common` (~240 KB) per ADR-0014, making strength check weaker
 - Alternative: no strength library at all, only length + complexity rules as client-side check
 
 For a single-user-on-device password, dictionary-attack-resistance estimation is not really needed. The password only protects locally against "someone grabs your unlocked device" - not against remote attacks. Password strength meter is a UX feature, not a security feature.
@@ -121,14 +121,14 @@ Tailwind is pragmatically right. Not the smallest bundle option, but productivit
 
 ### Router: react-router-dom v7
 
-**Okay, over-featured.** React Router v7 is massive - full data router features, loaders, actions, suspense, error boundaries. Phylax uses (per TD-05 investigation) only the legacy API (BrowserRouter + Routes+Route), not data router features.
+**Okay, over-featured.** React Router v7 is massive - full data router features, loaders, actions, suspense, error boundaries. Befaro uses (per TD-05 investigation) only the legacy API (BrowserRouter + Routes+Route), not data router features.
 
 **Alternatives:**
 
 - **@tanstack/router**: type-safe, performant, modern. Smaller bundles
-- **wouter**: 1.6 KB tiny router for React. No data features but irrelevant for Phylax
+- **wouter**: 1.6 KB tiny router for React. No data features but irrelevant for Befaro
 
-**Wouter would actually be more optimal for Phylax's usage pattern.** Only routing and navigation is used, no data loading features. react-router-dom v7 is overhead. Switching to wouter would save ~15-20 KB of bundle.
+**Wouter would actually be more optimal for Befaro's usage pattern.** Only routing and navigation is used, no data loading features. react-router-dom v7 is overhead. Switching to wouter would save ~15-20 KB of bundle.
 
 But: migration work, and react-router-dom works.
 
@@ -166,7 +166,7 @@ What is missing or debatable from a PWA-specific standpoint.
 
 ### Missing: direct Workbox access
 
-`vite-plugin-pwa` wraps Workbox but exposes it only partially. For complex caching strategies (stale-while-revalidate for API responses, cache-first for assets), direct Workbox config is needed. Phylax likely has default strategy - okay for simple PWAs, but customization is limited.
+`vite-plugin-pwa` wraps Workbox but exposes it only partially. For complex caching strategies (stale-while-revalidate for API responses, cache-first for assets), direct Workbox config is needed. Befaro likely has default strategy - okay for simple PWAs, but customization is limited.
 
 ### Missing: IDB + OPFS dual strategy
 
@@ -174,11 +174,11 @@ Modern PWAs can use Origin Private File System (OPFS) for better performance and
 
 ### Missing: Background Sync / Periodic Sync APIs
 
-If Phylax ever needs "sync when back online" features - Service Worker Background Sync API is not available out-of-the-box. vite-plugin-pwa does not help here. Manual in service worker code.
+If Befaro ever needs "sync when back online" features - Service Worker Background Sync API is not available out-of-the-box. vite-plugin-pwa does not help here. Manual in service worker code.
 
 ### Missing: Share Target / File Handler APIs
 
-A PWA can register as a share target (user shares content to Phylax from another app). Makes sense for a medical-data app (e.g., "share lab PDF to Phylax"). Would be defined in manifest, then service worker handles the event.
+A PWA can register as a share target (user shares content to Befaro from another app). Makes sense for a medical-data app (e.g., "share lab PDF to Befaro"). Would be defined in manifest, then service worker handles the event.
 
 ### Present: Web Crypto, IndexedDB, Manifest, Service Worker
 
@@ -216,7 +216,7 @@ Stack is good, not optimal. No acute switch recommendations.
 
 The current choices reflect sensible pragmatic trade-offs for a solo-dev long-lived project. Where better alternatives exist, the gap is bundle size, not functionality. Bundle size matters for PWAs (install-time download, mobile bandwidth), but ADR-0015 raised the budget to 350 KB and accepted eager locale loading, so bundle pressure is not currently binding.
 
-If Phylax's main bottleneck ever becomes bundle size or installation performance, Preact/compat + wouter would be the two lowest-risk-highest-value swaps.
+If Befaro's main bottleneck ever becomes bundle size or installation performance, Preact/compat + wouter would be the two lowest-risk-highest-value swaps.
 
 ---
 

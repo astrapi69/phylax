@@ -29,7 +29,7 @@ export interface BackupEnvelope {
   version: 1;
   type: 'phylax-backup';
   created: string;
-  source: { app: 'phylax'; appVersion: string };
+  source: { app: 'befaro'; appVersion: string };
   crypto: {
     algorithm: 'AES-256-GCM';
     kdf: 'PBKDF2-SHA256';
@@ -75,7 +75,7 @@ export async function createBackup(
       type: SUPPORTED_TYPE,
       created: now.toISOString(),
       source: {
-        app: 'phylax',
+        app: 'befaro',
         appVersion: typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '0.0.0',
       },
       crypto: {

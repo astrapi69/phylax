@@ -87,7 +87,7 @@ function isValidIsoDate(value: string): boolean {
 
 /**
  * State machine for the O-16 profile base-data edit form. Drives a
- * single edit mode (no create / no delete - Phylax is single-profile
+ * single edit mode (no create / no delete - Befaro is single-profile
  * per ADR; the profile already exists).
  *
  * Save side effects, in a single Dexie transaction (atomicity matches

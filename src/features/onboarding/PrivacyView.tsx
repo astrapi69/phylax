@@ -8,7 +8,7 @@ const SECTION_ORDER: readonly SectionKey[] = ['does', 'does-not', 'means'] as co
 
 /**
  * First-run privacy disclosure. Three informational paragraphs set
- * expectations: what Phylax does, what it does not, and what that means
+ * expectations: what Befaro does, what it does not, and what that means
  * for the user. The real data-loss acknowledgment happens on SetupView.
  */
 export function PrivacyView() {

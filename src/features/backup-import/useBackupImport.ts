@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { decryptBackup, type DecryptError } from './decryptBackup';
 import { populateVault, type PopulateError } from './populateVault';
-import type { ParsedPhylaxFile } from './parseBackupFile';
+import type { ParsedBefaroFile } from './parseBackupFile';
 import { createRateLimiter, BACKUP_IMPORT_STORAGE_KEY } from '../unlock/rateLimit';
 
 export type BackupImportStatus = 'idle' | 'deriving' | 'populating' | 'done' | 'error';
@@ -41,7 +41,7 @@ export interface UseBackupImportResult {
    * let an attacker double their attempts by alternating surfaces.
    */
   run: (
-    parsed: ParsedPhylaxFile,
+    parsed: ParsedBefaroFile,
     password: string,
   ) => Promise<{ ok: true; key: CryptoKey; hasProfile: boolean } | { ok: false }>;
   /** Reset error/status back to idle. Caller calls this on retry. */

@@ -63,7 +63,7 @@ import {
 const IMPORT_CHANGE_DESCRIPTION = 'Profil aus Datei importiert';
 
 /**
- * Import a parsed markdown profile into the Phylax database under a
+ * Import a parsed markdown profile into the Befaro database under a
  * chosen target profile.
  *
  * Transaction strategy (per ADR / IM-03a plan):

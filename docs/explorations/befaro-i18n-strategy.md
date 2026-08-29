@@ -1,10 +1,10 @@
-# Phylax i18n Strategy
+# Befaro i18n Strategy
 
-**Document purpose**: Strategic reference for internationalization when the time comes. Not a task list - a planning document that captures the approach, scope, and sequence for adding English (and potentially other languages) to Phylax.
+**Document purpose**: Strategic reference for internationalization when the time comes. Not a task list - a planning document that captures the approach, scope, and sequence for adding English (and potentially other languages) to Befaro.
 
-**Current state**: Phylax v1.0.0 ships with German UI only. All user-facing strings are hardcoded German. System prompts for AI are German. Parser expects German keywords ("Beobachtung", "Supplemente", etc.). Documentation (README, DONATE, CHANGELOG, SECURITY) is already in English.
+**Current state**: Befaro v1.0.0 ships with German UI only. All user-facing strings are hardcoded German. System prompts for AI are German. Parser expects German keywords ("Beobachtung", "Supplemente", etc.). Documentation (README, DONATE, CHANGELOG, SECURITY) is already in English.
 
-**User rationale for English support**: Lebende Gesundheit articles exist in both German and English, meaning the conceptual foundation has bilingual reach. English UI would enable Phylax to serve the same audience that has read the English articles.
+**User rationale for English support**: Lebende Gesundheit articles exist in both German and English, meaning the conceptual foundation has bilingual reach. English UI would enable Befaro to serve the same audience that has read the English articles.
 
 ---
 
@@ -57,7 +57,7 @@ Full i18n in one task would be 3-5 days of concentrated work with high risk of m
 
 ### Wave 1: Infrastructure (I18N-01)
 
-**Scope**: Make Phylax "translation-ready" without changing user experience.
+**Scope**: Make Befaro "translation-ready" without changing user experience.
 
 **Produces**:
 
@@ -180,7 +180,7 @@ Namespaces map to features. Same key across languages. Easy to spot missing tran
 
 1. Explicit user selection (stored in localStorage)
 2. Browser language (`navigator.language`)
-3. Fallback: German (Phylax's primary audience)
+3. Fallback: German (Befaro's primary audience)
 
 ### Language persistence
 
@@ -226,7 +226,7 @@ Critical decision: does the parser accept BOTH languages' keywords, or only the 
 **Option A: Both always accepted**
 
 - Parser recognizes "Beobachtung:" AND "Observation:" as the same field
-- User can import German-formatted markdown into English-UI Phylax (and vice versa)
+- User can import German-formatted markdown into English-UI Befaro (and vice versa)
 - More forgiving, better UX
 - Slightly more parser complexity
 
@@ -237,7 +237,7 @@ Critical decision: does the parser accept BOTH languages' keywords, or only the 
 - Cleaner mental model
 - Forces re-import if language changes
 
-**Lean: A (both accepted)**. Phylax's tolerant-parser philosophy applies here too. Users shouldn't be punished for having mixed-language data.
+**Lean: A (both accepted)**. Befaro's tolerant-parser philosophy applies here too. Users shouldn't be punished for having mixed-language data.
 
 ### NICHT_VERARBEITBAR fallback marker
 
@@ -260,7 +260,7 @@ Lean: **A**. Simpler detection code, no false-negatives from LLM translating the
 
 ### Phase 2: Wave 1 (Infrastructure)
 
-I18N-01 commits. Phylax is translation-ready. No user-visible change.
+I18N-01 commits. Befaro is translation-ready. No user-visible change.
 
 ### Phase 3: Wave 2 (Translation)
 
@@ -309,7 +309,7 @@ As features are added, German strings land first, English stays stale.
 **Good timing signals**:
 
 - Users explicitly request English
-- Server logs show non-German browser languages (if Phylax ever gets analytics)
+- Server logs show non-German browser languages (if Befaro ever gets analytics)
 - GitHub stars/issues show international interest
 - Stability in German version (no major refactors planned)
 
@@ -320,7 +320,7 @@ As features are added, German strings land first, English stays stale.
 - No feedback yet from initial German users
 - Budget/time constraints (i18n is a 4-7 day investment)
 
-**Phylax current state**: v1.0.0 just launched. Bad timing for i18n. Core features like export are still missing. User feedback has not yet arrived. Better to defer i18n until after Phase 5 (Export) and some user feedback cycles.
+**Befaro current state**: v1.0.0 just launched. Bad timing for i18n. Core features like export are still missing. User feedback has not yet arrived. Better to defer i18n until after Phase 5 (Export) and some user feedback cycles.
 
 ---
 

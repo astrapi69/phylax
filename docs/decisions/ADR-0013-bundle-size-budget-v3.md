@@ -39,7 +39,7 @@ CSS growth for new UI. The ADR-0010-era 250 KB project-wide ceiling
 starts to bind.
 
 The ceiling is not a hard physical constraint; it was chosen to keep
-Phylax installable on metered mobile connections. At 250 KB gzipped
+Befaro installable on metered mobile connections. At 250 KB gzipped
 over a slow 3G (50 kbps effective), the initial download is ~40
 seconds. At 300 KB the same download is ~48 seconds: noticeably
 slower, but still within PWA install expectations, especially because

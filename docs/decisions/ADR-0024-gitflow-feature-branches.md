@@ -5,7 +5,7 @@
 
 ## Context
 
-Phylax had been operating under an informal direct-to-main convention
+Befaro had been operating under an informal direct-to-main convention
 (solo developer, no pull requests). That convention was never captured
 in a dedicated ADR; it lived only as incidental prose in `docs/ROADMAP.md`
 and `ADR-0023` (the soft-reset "six-step direct-to-main track").

@@ -23,22 +23,22 @@ vi.mock('../../crypto', () => ({
 }));
 
 describe('Header', () => {
-  it('shows app name "Phylax"', () => {
+  it('shows app name "Befaro"', () => {
     renderHeader();
-    expect(screen.getByText('Phylax')).toBeInTheDocument();
+    expect(screen.getByText('Befaro')).toBeInTheDocument();
   });
 
   it('lock button calls lock()', async () => {
     const { lock } = await import('../../crypto');
     const user = userEvent.setup();
     renderHeader();
-    await user.click(screen.getByLabelText('Phylax sperren'));
+    await user.click(screen.getByLabelText('Befaro sperren'));
     expect(lock).toHaveBeenCalled();
   });
 
   it('app name links to /profile', () => {
     renderHeader();
-    const link = screen.getByText('Phylax');
+    const link = screen.getByText('Befaro');
     expect(link.closest('a')).toHaveAttribute('href', '/profile');
   });
 

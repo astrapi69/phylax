@@ -6,7 +6,7 @@
  * profile id; consumers read it through `useActiveProfile()` rather
  * than touching localStorage directly.
  *
- * Storage key follows the `phylax-` prefix convention from CLAUDE.md
+ * Storage key follows the `befaro-` prefix convention from CLAUDE.md
  * so the full-data-reset path in `src/features/reset/useResetAllData.ts`
  * sweeps it alongside other UI preferences.
  *

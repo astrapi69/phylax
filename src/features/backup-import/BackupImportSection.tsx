@@ -7,7 +7,7 @@ import { replaceStoredKey } from '../../crypto';
 import {
   parseBackupFile,
   type BackupMetadata,
-  type ParsedPhylaxFile,
+  type ParsedBefaroFile,
   type ParseError,
 } from './parseBackupFile';
 import { useBackupImport, type BackupImportError } from './useBackupImport';
@@ -93,7 +93,7 @@ export function BackupImportSection() {
   const navigate = useNavigate();
   const importer = useBackupImport();
 
-  const [parsed, setParsed] = useState<ParsedPhylaxFile | null>(null);
+  const [parsed, setParsed] = useState<ParsedBefaroFile | null>(null);
   const [metadata, setMetadata] = useState<BackupMetadata | null>(null);
   const [parseError, setParseError] = useState<ParseError | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
@@ -242,7 +242,7 @@ export function BackupImportSection() {
                 {t('select.metadata.source')}
               </dt>
               <dd className="text-gray-900 dark:text-gray-100">
-                Phylax {metadata.sourceAppVersion}
+                Befaro {metadata.sourceAppVersion}
               </dd>
             </dl>
           )}

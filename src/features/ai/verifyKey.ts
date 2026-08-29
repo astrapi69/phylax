@@ -9,7 +9,7 @@
  * Lifted from the Bibliogon donor module on 2026-05-01. The
  * `AiVerifyConfig` shape is local to this module so it can stand
  * alone without depending on the donor's `store.ts` (rejected per
- * the multi-AI-provider integration plan; Phylax stores the AI
+ * the multi-AI-provider integration plan; Befaro stores the AI
  * config under its existing `MetaPayload` blob).
  */
 

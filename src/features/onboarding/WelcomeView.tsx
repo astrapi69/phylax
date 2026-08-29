@@ -15,7 +15,7 @@ const ICON_FOR: Record<TrustKey, () => ReactElement> = {
 };
 
 /**
- * First-run entry screen. Three trust signals summarize Phylax's
+ * First-run entry screen. Three trust signals summarize Befaro's
  * local-first principles before the user commits to setup. Primary CTA
  * advances to /privacy; secondary link routes to /backup/import/select
  * for users arriving with an existing backup file.
@@ -38,7 +38,7 @@ export function WelcomeView() {
             tabIndex={-1}
             className="mb-2 text-4xl font-bold text-gray-900 focus:outline-hidden dark:text-gray-100"
           >
-            Phylax
+            Befaro
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">{t('welcome.tagline')}</p>
         </header>

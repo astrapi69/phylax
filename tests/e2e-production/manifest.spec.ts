@@ -22,8 +22,8 @@ test.describe('PWA manifest (production build)', () => {
     expect(response.status()).toBe(200);
 
     const manifest = await response.json();
-    expect(manifest.name).toBe('Phylax');
-    expect(manifest.short_name).toBe('Phylax');
+    expect(manifest.name).toBe('Befaro - Gesundheitsbegleiter');
+    expect(manifest.short_name).toBe('Befaro');
     expect(manifest.display).toBe('standalone');
     // D-01: production build uses /phylax/ base for GitHub Pages deployment.
     expect(manifest.start_url).toBe('/phylax/');

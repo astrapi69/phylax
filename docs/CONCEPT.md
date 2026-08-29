@@ -1,10 +1,10 @@
-# Phylax - Konzept
+# Befaro - Konzept
 
 ## Vision
 
-Phylax (griechisch phylax, "Wächter") ist eine persönliche, datensouveräne Gesundheitsplattform als Progressive Web App. Alle Daten bleiben lokal auf dem Gerät des Nutzers, verschlüsselt mit einem Master-Passwort. Kein Backend, keine Cloud, keine Telemetrie, keine Datensammlung.
+Befaro (früher Phylax, griechisch für "Wächter") ist eine persönliche, datensouveräne Gesundheitsplattform als Progressive Web App. Alle Daten bleiben lokal auf dem Gerät des Nutzers, verschlüsselt mit einem Master-Passwort. Kein Backend, keine Cloud, keine Telemetrie, keine Datensammlung.
 
-Phylax basiert auf dem Prinzip der **lebenden Gesundheit**: Gesundheit ist kein Zustand, den Fachleute messen und verwalten, sondern ein Prozess, den der Mensch selbst führt. Die App hilft dem Nutzer, ein **lebendes medizinisches Profil** zu erstellen, zu pflegen und zu versionieren, das als strukturierte Gesprächsbasis für Arztbesuche dient.
+Befaro basiert auf dem Prinzip der **lebenden Gesundheit**: Gesundheit ist kein Zustand, den Fachleute messen und verwalten, sondern ein Prozess, den der Mensch selbst führt. Die App hilft dem Nutzer, ein **lebendes medizinisches Profil** zu erstellen, zu pflegen und zu versionieren, das als strukturierte Gesprächsbasis für Arztbesuche dient.
 
 Das Profil ersetzt keine Patientenakte und keine ärztliche Beratung. Es ist das personenzentrierte Gegenstück zur institutionellen Akte: zusammengeführt statt fragmentiert, verlaufsgesteuert statt vergangenheitsfixiert, faktenbasiert statt fremdinterpretierend.
 
@@ -16,8 +16,8 @@ Konzeptuelle Grundlage ist die Artikelserie [Lebende Gesundheit](https://asterio
 2. **Zero-Knowledge**: Daten werden vor dem Schreiben verschlüsselt. Ohne Master-Passwort sind sie unlesbar.
 3. **Kein Backend**: Keine Server, keine eigenen APIs, keine Accounts. Nur HTML, JS, CSS.
 4. **Offline-fähig**: Funktioniert vollständig ohne Internetverbindung (PWA mit Service Worker).
-5. **KI strukturiert, KI diagnostiziert nicht**: Die KI in Phylax ist ein Strukturierungspartner. Sie stellt keine Diagnosen, gibt keine Therapieempfehlungen und übernimmt keine klinische Verantwortung. Sie strukturiert, was der Nutzer einbringt.
-6. **Keine medizinische Beratung**: Phylax ist ein Dokumentationstool, kein Medizinprodukt. Kein Code, der Diagnosen stellt oder Empfehlungen gibt.
+5. **KI strukturiert, KI diagnostiziert nicht**: Die KI in Befaro ist ein Strukturierungspartner. Sie stellt keine Diagnosen, gibt keine Therapieempfehlungen und übernimmt keine klinische Verantwortung. Sie strukturiert, was der Nutzer einbringt.
+6. **Keine medizinische Beratung**: Befaro ist ein Dokumentationstool, kein Medizinprodukt. Kein Code, der Diagnosen stellt oder Empfehlungen gibt.
 7. **Datenhoheit**: Der Nutzer entscheidet, was dokumentiert wird. Nicht das Kliniksystem, nicht die App.
 
 ## Vier Säulen der lebenden Gesundheit
@@ -31,16 +31,16 @@ Das Konzept beruht auf vier Säulen:
 
 ## Core Principle: Structure, Never Diagnose
 
-Phylax is a structuring tool, not a diagnostic system. It helps the user organize their own observations, lab values, and health decisions, but it never substitutes for medical judgment.
+Befaro is a structuring tool, not a diagnostic system. It helps the user organize their own observations, lab values, and health decisions, but it never substitutes for medical judgment.
 
 This has concrete implications across the application:
 
 - **Every derived output carries a disclaimer.** Plans (diet, training, supplements, medications) generated from the profile data always include a visible reminder that the plan is a structured suggestion, not a medical prescription, and must be reviewed with a qualified healthcare provider.
 - **Interpretations are labeled.** When the profile contains interpretive content (patterns, hypotheses about causes), the source is explicit: user self-assessment, AI-generated analysis, or quoted from a medical professional. The three are never conflated.
-- **No automated decisions about treatment.** Phylax does not recommend dose changes, medication adjustments, or treatment stops based on data patterns. It surfaces patterns for the user to discuss with their doctor.
+- **No automated decisions about treatment.** Befaro does not recommend dose changes, medication adjustments, or treatment stops based on data patterns. It surfaces patterns for the user to discuss with their doctor.
 - **AI assistance is transparent.** Any AI-generated content (analyses, plan suggestions) is marked as such in the UI and stored with provenance metadata, so the user and their doctor can distinguish self-observation from machine-generated text.
 
-This principle is not a legal disclaimer appended to the UI. It shapes feature decisions: a feature that subtly encourages the user to treat Phylax as an authority is a feature that violates the principle and should not be built.
+This principle is not a legal disclaimer appended to the UI. It shapes feature decisions: a feature that subtly encourages the user to treat Befaro as an authority is a feature that violates the principle and should not be built.
 
 ## Zielgruppe
 
@@ -51,7 +51,7 @@ This principle is not a legal disclaimer appended to the UI. It shapes feature d
 
 ## Abgrenzung zu bestehenden Lösungen
 
-| Lösung              | Unterschied zu Phylax                                                                             |
+| Lösung              | Unterschied zu Befaro                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------- |
 | ePA (Deutschland)   | Zentral gespeichert bei Krankenkasse, kein strukturiertes Profil im Sinne der lebenden Gesundheit |
 | Apple Health        | iOS-only, kein Export für Ärzte, Fokus Fitness, keine Beobachtungsstruktur                        |
@@ -61,7 +61,7 @@ This principle is not a legal disclaimer appended to the UI. It shapes feature d
 
 ## Das medizinische Profil
 
-Das zentrale Artefakt in Phylax ist das **medizinische Profil** - ein lebendes, versioniertes Markdown-Dokument. Es wird verschlüsselt gespeichert, als Markdown angezeigt und exportiert.
+Das zentrale Artefakt in Befaro ist das **medizinische Profil** - ein lebendes, versioniertes Markdown-Dokument. Es wird verschlüsselt gespeichert, als Markdown angezeigt und exportiert.
 
 ### Profilstruktur
 
@@ -103,7 +103,7 @@ Datum, Änderung, Quelle
 
 ### Beobachtungsmodell
 
-Jede gesundheitliche Beobachtung in Phylax hat drei Facetten:
+Jede gesundheitliche Beobachtung in Befaro hat drei Facetten:
 
 - **Beobachtung (Fakt)**: Was ist konkret passiert? Was zeigen die Daten?
 - **Muster (Verlauf)**: Was wiederholt sich - zeitlich, situativ, körperlich?
@@ -136,14 +136,14 @@ Das Profil dokumentiert ehrlich, was es nicht weiss:
 
 ## KI als Strukturierungspartner
 
-Die KI in Phylax ist der **primäre Eingabeweg** für die Profilerstellung. Der Nutzer bringt Fragmente mit (Laborbefunde, Medikamentenfotos, mündliche Beobachtungen), und die KI strukturiert sie in das Profilformat.
+Die KI in Befaro ist der **primäre Eingabeweg** für die Profilerstellung. Der Nutzer bringt Fragmente mit (Laborbefunde, Medikamentenfotos, mündliche Beobachtungen), und die KI strukturiert sie in das Profilformat.
 
 ### Workflow
 
 1. Nutzer hinterlegt seinen eigenen API-Key bei einem Anbieter seiner Wahl (Anthropic, OpenAI, Google, Mistral, oder lokale Modelle via LM Studio / Ollama / ein eigenes OpenAI-kompatibles Endpoint, siehe ADR-0019), verschlüsselt gespeichert
 2. Nutzer startet eine geführte Profilsitzung
 3. Die KI folgt dem **Prompt-Vertrag**: sie fragt, strukturiert, markiert Unsicherheiten
-4. Chat-Nachrichten sind **ephemeral** - sie werden nicht von Phylax gespeichert
+4. Chat-Nachrichten sind **ephemeral** - sie werden nicht von Befaro gespeichert
 5. Am Ende produziert die KI ein strukturiertes Markdown-Profil-Fragment
 6. Der Nutzer prüft das Ergebnis und übernimmt es in sein Profil
 7. Das Profil wird versioniert (1.0, 1.1, 1.2...)
@@ -174,11 +174,11 @@ Der vollständige Prompt ist in der Artikelserie dokumentiert (Teil 1: Eigenprof
 Nutzer, die keine KI verwenden möchten (oder können), haben zwei Wege:
 
 - **Manueller Modus**: Formularbasierte Eingabe von Beobachtungen, Laborwerten und offenen Punkten
-- **Paste-in-Modus**: Nutzer führt eine KI-Sitzung extern (ChatGPT, Claude App) und fügt das resultierende Markdown in Phylax ein
+- **Paste-in-Modus**: Nutzer führt eine KI-Sitzung extern (ChatGPT, Claude App) und fügt das resultierende Markdown in Befaro ein
 
 ## Stellvertreterprofil
 
-Phylax unterstützt strukturell das Führen eines Profils für eine andere Person (Stellvertreterprofil). Anwendungsfälle: ältere Eltern mit Demenz, Kinder, Menschen mit geistiger Einschränkung.
+Befaro unterstützt strukturell das Führen eines Profils für eine andere Person (Stellvertreterprofil). Anwendungsfälle: ältere Eltern mit Demenz, Kinder, Menschen mit geistiger Einschränkung.
 
 Im MVP wird genau ein Profil pro Installation unterstützt. Das Datenmodell enthält von Anfang an ein `profileId`-Feld, damit Multi-Profil-Unterstützung später ohne Schema-Migration möglich ist.
 
@@ -236,20 +236,20 @@ Die vier Säulen der lebenden Gesundheit verschieben sich beim Stellvertreterpro
 ### KI-Sicherheit
 
 - API-Calls gehen direkt vom Browser des Nutzers zum KI-Anbieter. Kein Zwischenserver.
-- Chat-Nachrichten werden nicht in Phylax gespeichert. Nur das vom Nutzer bestätigte Profil-Fragment wird persistiert.
+- Chat-Nachrichten werden nicht in Befaro gespeichert. Nur das vom Nutzer bestätigte Profil-Fragment wird persistiert.
 - Der API-Key verlässt das Gerät nur in verschlüsselten HTTPS-Requests an den gewählten Anbieter.
 - Der Nutzer kann den API-Key jederzeit löschen und die KI-Funktion deaktivieren.
 
 ### KI-Anbieterwahl (AIP-01..05, ADR-0019)
 
-Phylax unterstützt mehrere KI-Anbieter; jeder hat seine eigene Retentions- und Trainings-Policy:
+Befaro unterstützt mehrere KI-Anbieter; jeder hat seine eigene Retentions- und Trainings-Policy:
 
 - **Anthropic**: 30 Tage Retention für Safety-Review, anschliessend Auto-Delete; keine Trainingsverwendung.
 - **OpenAI / Google / Mistral**: jeweils eigene Policies; im Wizard wird die anbieterspezifische Hinweistexte angezeigt, bevor der Nutzer den Anbieter aktiviert.
 - **LM Studio / Ollama**: lokale Inferenz; Daten verlassen das Gerät nicht.
 - **Custom OpenAI-kompatibles Endpoint**: der Nutzer trägt selbst Verantwortung für die Wahl des Endpoints.
 
-Threat-Model-Delta: jeder API-Key gehört dem Nutzer, nicht Phylax. Die Wahl des Anbieters verlagert das Vertrauensziel; der Nutzer muss pro Anbieter selbst entscheiden, welche Inhalte er in den Chat überträgt.
+Threat-Model-Delta: jeder API-Key gehört dem Nutzer, nicht Befaro. Die Wahl des Anbieters verlagert das Vertrauensziel; der Nutzer muss pro Anbieter selbst entscheiden, welche Inhalte er in den Chat überträgt.
 
 ## Datenmodell
 

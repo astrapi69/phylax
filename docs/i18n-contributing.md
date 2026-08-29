@@ -1,6 +1,6 @@
-# Contributing translations to Phylax
+# Contributing translations to Befaro
 
-Phylax uses [i18next](https://www.i18next.com/) with
+Befaro uses [i18next](https://www.i18next.com/) with
 [react-i18next](https://react.i18next.com/) for UI strings. Every
 user-facing string lives in a JSON file under `src/locales/<lang>/`
 keyed by namespace. German is the primary language; additional

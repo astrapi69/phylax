@@ -99,7 +99,7 @@ export async function setupAuthenticatedSession(
   await fillNewPasswordPair(page, password);
   await page.getByLabel('Ich habe verstanden').check();
 
-  const submitBtn = page.getByRole('button', { name: 'Phylax einrichten' });
+  const submitBtn = page.getByRole('button', { name: 'Befaro einrichten' });
   await expect(submitBtn).toBeEnabled({ timeout: 30000 });
   await submitBtn.click();
 

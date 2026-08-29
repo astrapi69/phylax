@@ -24,11 +24,11 @@
     "headline": "Du hältst den einzigen Schlüssel.",
     "section": {
       "does": {
-        "title": "Was Phylax tut",
+        "title": "Was Befaro tut",
         "body": "Speichert deine Einträge verschlüsselt in diesem Browser. Niemand außer dir kann sie lesen."
       },
       "does-not": {
-        "title": "Was Phylax nicht tut",
+        "title": "Was Befaro nicht tut",
         "body": "Keine Server-Kommunikation. Keine Passwort-Wiederherstellung. Kein Support, der \"das Passwort zurücksetzt\"."
       },
       "means": {
@@ -59,7 +59,7 @@
       "acknowledge": "Ich habe verstanden"
     },
     "submit": {
-      "label": "Phylax einrichten",
+      "label": "Befaro einrichten",
       "deriving": "Einrichtung läuft..."
     },
     "deriving-hint": "Schlüssel wird aus deinem Passwort abgeleitet. Das kann einen Moment dauern.",

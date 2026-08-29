@@ -61,13 +61,13 @@ const VARIANTS = [
   {
     out: 'public/og-image.png',
     lang: 'de',
-    tagline: 'Lebende Gesundheit - Verlauf, Kontext, Datenhoheit',
+    tagline: 'Dein lokaler Gesundheitsbegleiter - ohne Cloud',
     features: ['Verschlüsselt', 'PDF-Export', 'Mehrprofil', 'Keine Cloud'],
   },
   {
     out: 'public/og-image-en.png',
     lang: 'en',
-    tagline: 'Living Health - Trajectory, Context, Data Sovereignty',
+    tagline: 'Your local health companion - no cloud',
     features: ['Encrypted', 'PDF export', 'Multi-profile', 'No cloud'],
   },
 ];
@@ -91,9 +91,9 @@ function buildSvg(variant) {
     <rect width="${WIDTH}" height="${HEIGHT}" fill="${BG}"/>
     <rect x="40" y="40" width="${WIDTH - 80}" height="${HEIGHT - 80}" rx="28" fill="${PANEL}"/>
 
-    <!-- Wordmark: Phi mark + Phylax -->
-    <text x="104" y="210" font-family="DejaVu Serif, serif" font-size="140" font-weight="bold" fill="${WHITE}">&#934;</text>
-    <text x="280" y="210" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="116" font-weight="bold" fill="${WHITE}">Phylax</text>
+    <!-- Wordmark: B mark + Befaro -->
+    <text x="104" y="210" font-family="DejaVu Serif, serif" font-size="140" font-weight="bold" fill="${ACCENT}">B</text>
+    <text x="230" y="210" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="116" font-weight="bold" fill="${WHITE}">Befaro</text>
 
     <!-- Tagline -->
     <text x="104" y="320" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="40" fill="${MUTED}">${variant.tagline}</text>

@@ -101,7 +101,7 @@ function fieldsFrom(point: OpenPoint): OpenPointFormFields {
  *
  * Toggle path is independent of the modal lifecycle - a checkbox
  * click inside the list fires `toggle(point)` directly without
- * opening anything. Phylax convention: await-confirm (no optimistic
+ * opening anything. Befaro convention: await-confirm (no optimistic
  * UI). The brief in-flight window is exposed via `togglingId` so the
  * checkbox can disable to prevent double-click races.
  */

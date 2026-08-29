@@ -4,15 +4,15 @@ import { generateMarkdownFilename, generatePdfFilename, generateCsvFilename } fr
 describe('filenames', () => {
   const fixedDate = new Date(Date.UTC(2026, 3, 18, 14, 30));
 
-  it('generateMarkdownFilename uses phylax-profil- base and YYYY-MM-DD suffix', () => {
-    expect(generateMarkdownFilename(fixedDate)).toBe('phylax-profil-2026-04-18.md');
+  it('generateMarkdownFilename uses befaro-profil- base and YYYY-MM-DD suffix', () => {
+    expect(generateMarkdownFilename(fixedDate)).toBe('befaro-profil-2026-04-18.md');
   });
 
-  it('generatePdfFilename shares the phylax-profil- base with .pdf extension', () => {
-    expect(generatePdfFilename(fixedDate)).toBe('phylax-profil-2026-04-18.pdf');
+  it('generatePdfFilename shares the befaro-profil- base with .pdf extension', () => {
+    expect(generatePdfFilename(fixedDate)).toBe('befaro-profil-2026-04-18.pdf');
   });
 
-  it('generateCsvFilename uses phylax-labor- base because CSV is lab-only', () => {
-    expect(generateCsvFilename(fixedDate)).toBe('phylax-labor-2026-04-18.csv');
+  it('generateCsvFilename uses befaro-labor- base because CSV is lab-only', () => {
+    expect(generateCsvFilename(fixedDate)).toBe('befaro-labor-2026-04-18.csv');
   });
 });

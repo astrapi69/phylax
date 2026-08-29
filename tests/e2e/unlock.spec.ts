@@ -11,7 +11,7 @@ test.describe('Unlock flow', () => {
   });
 
   test('after setup and reload, unlock screen appears', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
   });
 
   test('wrong password shows error, user can retry', async ({ page }) => {
@@ -37,6 +37,6 @@ test.describe('Unlock flow', () => {
     });
 
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
   });
 });

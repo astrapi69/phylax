@@ -17,7 +17,7 @@ const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
 // %VAR% HTML env replacement and the `define` JS substitution.
 function htmlMetadata(meta: { version: string; author: string; license: string }) {
   return {
-    name: 'phylax-html-metadata',
+    name: 'befaro-html-metadata',
     transformIndexHtml(html: string): string {
       return html
         .replace(/@@APP_VERSION@@/g, meta.version)
@@ -32,6 +32,7 @@ function htmlMetadata(meta: { version: string; author: string; license: string }
 // - development: served from localhost at the root for dev ergonomics
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
+  // TODO: update base path after GitHub repo rename to /befaro/
   const base = isProduction ? '/phylax/' : '/';
 
   return {
@@ -63,10 +64,14 @@ export default defineConfig(({ mode }) => {
           // browser update path use `id` to detect "same app, new
           // version" rather than re-installing under a new identity
           // when start_url changes. Keep stable across releases.
+          // Kept at the legacy /phylax/ value so installed PWAs update
+          // in place instead of re-installing as a new app.
+          // TODO: revisit together with the base path after the GitHub
+          // repo rename to /befaro/.
           id: '/phylax/',
-          name: 'Phylax',
-          short_name: 'Phylax',
-          description: 'Dein lokales, verschluesseltes Gesundheitsprofil.',
+          name: 'Befaro - Gesundheitsbegleiter',
+          short_name: 'Befaro',
+          description: 'Dein lokaler, verschlüsselter Gesundheitsbegleiter.',
           lang: 'de',
           dir: 'ltr',
           start_url: base,
@@ -122,7 +127,7 @@ export default defineConfig(({ mode }) => {
           // resolve the blob URL natively against the document's
           // origin), which is exactly what the document viewer needs.
           navigateFallbackDenylist: [/^blob:/],
-          // No runtime caching: Phylax has no external resources.
+          // No runtime caching: Befaro has no external resources.
           // All assets are bundled and cached via precaching.
           //
           // BUG-01 follow-up: silent update strategy.

@@ -35,7 +35,7 @@ describe('createBackup', () => {
 
     expect(result.envelope.version).toBe(1);
     expect(result.envelope.type).toBe('phylax-backup');
-    expect(result.envelope.source.app).toBe('phylax');
+    expect(result.envelope.source.app).toBe('befaro');
     expect(typeof result.envelope.source.appVersion).toBe('string');
     expect(result.envelope.crypto.algorithm).toBe('AES-256-GCM');
     expect(result.envelope.crypto.kdf).toBe('PBKDF2-SHA256');

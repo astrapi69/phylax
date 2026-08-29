@@ -53,19 +53,19 @@ Vite 8 switches from Rollup/esbuild to Rolldown+Oxc as core build tools. This is
 
 **Breaking changes:**
 
-- Plugin API may be incompatible (depending on plugin usage in Phylax)
+- Plugin API may be incompatible (depending on plugin usage in Befaro)
 - `optimizeDeps.esbuildOptions` deprecated in favor of `optimizeDeps.rolldownOptions`
 - `build.rollupOptions.output.format: 'system'` and `'amd'` no longer supported
 - Browser targets stricter: Baseline Widely Available as of 2026-01-01
 - `parseAst` / `parseAstAsync` deprecated in favor of `parseSync` / `parse`
 
-**Node requirement:** 20.19+ or 22.12+. No impact for Phylax (on 24).
+**Node requirement:** 20.19+ or 22.12+. No impact for Befaro (on 24).
 
 **Compatibility:** `@vitejs/plugin-react ^4.3.4` must be checked for Vite 8 compatibility. `vite-plugin-pwa ^1.2.0` as well.
 
-**Intermediate path:** `rolldown-vite@7.2.2` available as Vite-7-with-Rolldown, if migrating in two steps is preferred (Vite 6 -> Vite 7+Rolldown -> Vite 8). Probably not needed for Phylax, single-step Vite 6 -> 8 should work.
+**Intermediate path:** `rolldown-vite@7.2.2` available as Vite-7-with-Rolldown, if migrating in two steps is preferred (Vite 6 -> Vite 7+Rolldown -> Vite 8). Probably not needed for Befaro, single-step Vite 6 -> 8 should work.
 
-**Effort:** moderate to high. Depends on how many plugins Phylax actually uses and whether they are Vite-8 compatible.
+**Effort:** moderate to high. Depends on how many plugins Befaro actually uses and whether they are Vite-8 compatible.
 
 ### Vitest 3 -> 4 (released 2026-03-ish)
 
@@ -81,7 +81,7 @@ Vitest 4.x supports Vite 6, 7, and 8. When Vite is upgraded, Vitest should follo
 
 **Compatibility:** `@vitest/coverage-v8` must upgrade alongside to 4.x. `jsdom ^25.0.1` stays, `@vitest/ui` if used.
 
-**Effort:** low if Phylax does not use Vitest deep internals. Moderate if test setup has custom matchers or hooks.
+**Effort:** low if Befaro does not use Vitest deep internals. Moderate if test setup has custom matchers or hooks.
 
 ### TypeScript 5.7 -> 6.0 (released 2026-03-23)
 
@@ -91,14 +91,14 @@ TS 6 is explicitly the "last JavaScript-based version". TS 7 will be Go-native w
 
 **Breaking changes:**
 
-- `strict: true` is now default (Phylax has this set already, likely)
+- `strict: true` is now default (Befaro has this set already, likely)
 - `target` default on ES2025
 - `module` default on esnext
 - `--stableTypeOrdering` flag for TS7 compatibility
 - `--baseUrl` and `moduleResolution: node` deprecated
 - Compiler less context-sensitive for functions without `this`
 
-**Effort:** low to moderate. Well-typed codebases like Phylax likely need few fixes. `--deprecation` flag shows all problem spots before the bump.
+**Effort:** low to moderate. Well-typed codebases like Befaro likely need few fixes. `--deprecation` flag shows all problem spots before the bump.
 
 **After TS6:** TS7 arrives Q4 2026 or 2027, brings massive performance but substantial breaking changes. TS6 is therefore actually a recommended intermediate step.
 
@@ -121,7 +121,7 @@ Tailwind 4 is a ground-up rewrite with the Oxide engine. Full rebuild 3.5x faste
 
 **Compatibility:** `prettier-plugin-tailwindcss ^0.6.11`, `@tailwindcss/typography ^0.5.19`, `autoprefixer ^10.4.20`, `postcss ^8.4.49` - all must be checked for Tailwind 4 compatible versions.
 
-**Effort:** high. Config migration is mechanical, but `@apply` sites and custom component patterns need manual review. Phylax has 231 KB main JS with heavy Tailwind class usage - expect many review spots.
+**Effort:** high. Config migration is mechanical, but `@apply` sites and custom component patterns need manual review. Befaro has 231 KB main JS with heavy Tailwind class usage - expect many review spots.
 
 ---
 
@@ -133,7 +133,7 @@ Tailwind 4 is a ground-up rewrite with the Oxide engine. Full rebuild 3.5x faste
 
 **1. TypeScript 5 -> 6** (separate task)
 
-Bridge release is explicitly designed low-friction. With `--deprecation` flag before the bump, all warning spots can be identified ex-ante. Typecheck gets stricter through `strict: true` default, but Phylax has this already, presumably. Single commit `chore(deps): upgrade TypeScript to 6.0`.
+Bridge release is explicitly designed low-friction. With `--deprecation` flag before the bump, all warning spots can be identified ex-ante. Typecheck gets stricter through `strict: true` default, but Befaro has this already, presumably. Single commit `chore(deps): upgrade TypeScript to 6.0`.
 
 **Risk:** low. TS team explicitly prioritized backward compatibility.
 **Effort:** 1-2h.
@@ -151,7 +151,7 @@ Bundle delta can go positive (Rolldown generates smaller bundles) or negative (c
 
 **3. Tailwind 3 -> 4** (separate task, largest scope)
 
-Largest migration. Own work block. `npx @tailwindcss/upgrade` handles bulk, then manual review round through components. Check breaking changes on browser requirements vs Phylax target browsers.
+Largest migration. Own work block. `npx @tailwindcss/upgrade` handles bulk, then manual review round through components. Check breaking changes on browser requirements vs Befaro target browsers.
 
 **Risk:** high. Config paradigm shift and `@apply` edge cases are historical stumbling blocks.
 **Effort:** 4-8h including UX test of all theme variants.
@@ -179,14 +179,14 @@ Three rational timing options:
 
 - TS 6 is bridge to TS 7 (Q4 2026+). If TS 7 arrives soon, better direct jump to TS 7 (once stable).
 - Vite 8 is 1 month old (March 2026). Ecosystem plugins may still have edge cases.
-- Phylax is single-dev project. No pressure updates due to security issues on current versions.
+- Befaro is single-dev project. No pressure updates due to security issues on current versions.
 
 **For immediate upgrade:**
 
 - TS 6 is bridge release, deliberately low-friction.
 - Vite 8 + Vitest 4 performance gain is real (Rolldown).
 - Tailwind 4 build performance significantly better (3.5x-100x depending on scenario).
-- If Phylax is planned long-lived, upgrade debt is easier paid down early than late.
+- If Befaro is planned long-lived, upgrade debt is easier paid down early than late.
 
 ---
 

@@ -26,7 +26,7 @@ its own modal (`<ModalBody>` error banner), no transient floating UI.
 The two `JSDoc` blocks on `ObservationForm.tsx` and `LabReportForm.tsx`
 explicitly call out the anti-pattern ("toast that would dismiss the
 modal first"). Silent SW updates (BUG-01 third iteration) removed the
-remaining update-prompt surface, so Phylax has no live use case for a
+remaining update-prompt surface, so Befaro has no live use case for a
 generic Toast component. If a future feature needs transient
 confirmations (e.g., copy-to-clipboard ACK, undo affordance), it
 registers a fresh task with a concrete use case rather than reviving

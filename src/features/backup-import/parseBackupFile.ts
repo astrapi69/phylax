@@ -16,7 +16,7 @@ export const SALT_BYTE_LENGTH = 32;
 export const MIN_ITERATIONS = 100_000;
 export const MAX_ITERATIONS = 10_000_000;
 
-export interface ParsedPhylaxFile {
+export interface ParsedBefaroFile {
   version: 1;
   type: 'phylax-backup';
   created: string;
@@ -46,7 +46,7 @@ export type ParseError =
   | { kind: 'corrupted'; detail: string };
 
 export type ParseResult =
-  | { valid: true; parsed: ParsedPhylaxFile; metadata: BackupMetadata }
+  | { valid: true; parsed: ParsedBefaroFile; metadata: BackupMetadata }
   | { valid: false; error: ParseError };
 
 const REQUIRED_FIELDS: ReadonlyArray<string> = [
@@ -211,7 +211,7 @@ export async function parseBackupFile(file: File): Promise<ParseResult> {
     };
   }
 
-  const typed: ParsedPhylaxFile = {
+  const typed: ParsedBefaroFile = {
     version: 1,
     type: 'phylax-backup',
     created: obj.created as string,

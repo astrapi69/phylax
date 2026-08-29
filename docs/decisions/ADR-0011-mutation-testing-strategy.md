@@ -5,7 +5,7 @@
 
 ## Context
 
-Phylax has 590 unit tests with 95%+ line coverage across crypto, DB,
+Befaro has 590 unit tests with 95%+ line coverage across crypto, DB,
 and domain modules. Line coverage measures whether code is executed
 during testing, not whether the tests make meaningful assertions about
 the code's behavior. A test that calls a function but never checks its
