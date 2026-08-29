@@ -7,6 +7,6 @@ test.describe('Auto-lock', () => {
 
     // Reload simulates session end (keyStore cleared)
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Phylax entsperren' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Befaro entsperren' })).toBeVisible();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Row shapes for the Phylax IndexedDB schema.
+ * Row shapes for the Befaro IndexedDB schema.
  *
  * Every non-meta row stores its domain data inside a single `payload` field
  * (ArrayBuffer containing IV + ciphertext + auth tag, per F-07's wire format).
@@ -16,7 +16,7 @@ export interface EncryptedRow {
   id: string;
   /** Profile this record belongs to. Present on every non-meta row. */
   profileId: string;
-  /** Unix milliseconds when the record was created in Phylax */
+  /** Unix milliseconds when the record was created in Befaro */
   createdAt: number;
   /** Unix milliseconds when the record was last updated */
   updatedAt: number;

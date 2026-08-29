@@ -29,7 +29,7 @@ export interface ModalProps {
    */
   role?: ModalRole;
   /**
-   * Default `false` (Phylax convention: mid-flow dialogs avoid
+   * Default `false` (Befaro convention: mid-flow dialogs avoid
    * accidental dismissal). Pass `true` for opt-in dismissable modals
    * where backdrop click safely closes.
    */
@@ -80,7 +80,7 @@ const SIZE_CLASS: Record<ModalSize, string> = {
  * responsibility (compose with `ModalHeader` / `ModalBody` /
  * `ModalFooter` for the standard layout).
  *
- * Defaults follow Phylax convention rather than generic modal-library
+ * Defaults follow Befaro convention rather than generic modal-library
  * conventions: backdrop-click does NOT close (mid-flow data-loss
  * avoidance), focus lands on first-focusable not last action button
  * (HTML5 native dialog semantics).

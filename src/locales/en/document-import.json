@@ -11,7 +11,7 @@
   "consent": {
     "pdf-rasterization": {
       "title": "PDF will be uploaded as images",
-      "explanation": "This PDF has no extractable text. Phylax must send the pages as images to the AI provider so the content can be classified.",
+      "explanation": "This PDF has no extractable text. Befaro must send the pages as images to the AI provider so the content can be classified.",
       "consequence": "The image data leaves your device and is processed by the AI provider.",
       "remember-checkbox": "Remember for this session (until next browser restart)",
       "confirm-button": "Process",

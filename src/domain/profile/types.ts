@@ -57,7 +57,7 @@ export interface BaseData {
 /**
  * The top-level profile entity.
  *
- * One per Phylax installation in the MVP. Contains base data,
+ * One per Befaro installation in the MVP. Contains base data,
  * warning signs, external references, and version metadata.
  *
  * The self-regulation summary ("Selbstregulationsverhalten") is NOT

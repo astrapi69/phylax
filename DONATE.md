@@ -1,16 +1,16 @@
-# Support Phylax
+# Support Befaro
 
-Phylax is an open-source project built and maintained by one person, in
+Befaro is an open-source project built and maintained by one person, in
 evenings and weekends around full-time work and family life. No cloud,
 no tracking, no ads. Your health data stays encrypted on your device.
 
 The project exists because keeping medical information organised for a
 household is a constant task, and the available tools either ship the
 data to someone else's servers or treat privacy as an afterthought.
-Phylax is the tool I wanted for myself, built so it works for anyone
+Befaro is the tool I wanted for myself, built so it works for anyone
 managing their own records.
 
-If Phylax helps you and you would like to support its development,
+If Befaro helps you and you would like to support its development,
 donations are very welcome. Several options are available below.
 
 ---
@@ -69,18 +69,18 @@ on the donor side, credit card works as well.
 
 ## Frequently Asked Questions
 
-### Who builds Phylax?
+### Who builds Befaro?
 
 One developer, in spare time. The work happens around a full-time job
 and a household with three kids, one of whom lives with autism, type 1
 diabetes, and epilepsy. That context shapes priorities (privacy, offline
-capability, no vendor lock-in are non-negotiable for me), but Phylax is
+capability, no vendor lock-in are non-negotiable for me), but Befaro is
 designed for anyone who wants control over their health records, not
 for any one person's situation.
 
 ### What are donations used for?
 
-Phylax has no funding, no investors, and no commercial backing.
+Befaro has no funding, no investors, and no commercial backing.
 Donations cover:
 
 - **Development time.** Currently unpaid, fitted into evenings and
@@ -95,7 +95,7 @@ Donations cover:
 ### Do I receive a donation receipt?
 
 You receive a payment confirmation through the respective platform.
-Since Phylax is not a registered non-profit, donations are not
+Since Befaro is not a registered non-profit, donations are not
 tax-deductible.
 
 ### What is the difference between recurring and one-time donations?
@@ -113,7 +113,7 @@ platforms have account settings for managing subscriptions.
 ### Are donations anonymous?
 
 On all platforms, you can choose whether your name is displayed publicly.
-Phylax itself receives no donor information beyond what you actively
+Befaro itself receives no donor information beyond what you actively
 choose to share.
 
 ### Why no direct bank transfer?
@@ -141,4 +141,4 @@ or reach out via email (see project profile).
 ---
 
 _Thank you for your support. Every donation, no matter how small, helps
-keep Phylax alive._
+keep Befaro alive._

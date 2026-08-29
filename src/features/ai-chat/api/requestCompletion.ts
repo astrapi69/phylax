@@ -28,7 +28,7 @@ const DEFAULT_MAX_TOKENS = 4096;
  *
  * Browser-origin call uses the same
  * `anthropic-dangerous-direct-browser-access` header as the chat
- * path (Phylax's local-first model: user supplies their own key,
+ * path (Befaro's local-first model: user supplies their own key,
  * no backend proxy).
  *
  * Cancellation via `AbortSignal` rejects the returned Promise with

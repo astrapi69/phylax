@@ -52,7 +52,7 @@ type TestResult = 'idle' | 'ok' | 'fail';
  *   - Cloud providers with `corsHint: 'blocked'`: a prominent amber
  *     warning surfaces above the API-key field (step 1) explaining
  *     that the configuration can be saved but live calls will fail
- *     until Phylax has a proxy. The wizard does NOT prevent saving
+ *     until Befaro has a proxy. The wizard does NOT prevent saving
  *     blocked providers; users may want to pre-stage the config for
  *     a future proxy or use it with a personal CORS workaround.
  *
@@ -264,7 +264,7 @@ export default function AiSetupWizard({ open, onClose, initial, onSaved }: AiSet
                     // hit the same wall and resolved it via
                     // type=text + CSS masking; the wizard inherits
                     // the same fix because the wizard now owns
-                    // every API-key entry in Phylax.
+                    // every API-key entry in Befaro.
                     //
                     // Render as `type="text"` always so password
                     // managers never classify the field as

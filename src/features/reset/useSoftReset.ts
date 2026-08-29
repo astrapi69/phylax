@@ -54,7 +54,7 @@ export interface UseSoftResetResult {
  * key (the user stays unlocked).
  *
  * Compare to `useResetAllData` (hard reset) which deletes the
- * entire Dexie database, wipes every Phylax-prefixed
+ * entire Dexie database, wipes every Befaro-prefixed
  * localStorage / sessionStorage key, clears caches + service
  * worker, and reloads the app to onboarding.
  *

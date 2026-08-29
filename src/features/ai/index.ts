@@ -3,7 +3,7 @@
  *
  * This commit ships the provider adapters + presets + connection-test
  * helper without touching any existing UI or storage. Subsequent
- * commits in the series wire these into Phylax's encrypted MetaPayload
+ * commits in the series wire these into Befaro's encrypted MetaPayload
  * (Commit 2), introduce the AiSetupWizard (Commit 3), and refactor
  * existing AI call sites to a single `aiCall()` helper that consumes
  * `LLMClient` (Commit 4).

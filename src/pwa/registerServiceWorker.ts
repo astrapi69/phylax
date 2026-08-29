@@ -12,7 +12,7 @@ import { registerSW } from 'virtual:pwa-register';
  * The returned `updateSW(true)` is intentionally unused by the app:
  * calling it sends a SKIP_WAITING postMessage AND reloads the page
  * programmatically, which is the BUG-01 mid-session reload that
- * wipes the in-memory keyStore. Phylax has no UI that triggers it.
+ * wipes the in-memory keyStore. Befaro has no UI that triggers it.
  * The hook is still surfaced in the type signature so a future
  * consumer (e.g. an explicit "Update jetzt anwenden" admin gesture)
  * can opt into the reload semantics deliberately.

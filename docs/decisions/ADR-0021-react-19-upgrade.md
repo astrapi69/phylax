@@ -5,7 +5,7 @@
 
 ## Context
 
-Phylax was bootstrapped on React 18 (see CLAUDE.md "Tech-Stack (fix)"
+Befaro was bootstrapped on React 18 (see CLAUDE.md "Tech-Stack (fix)"
 and `.claude/rules/architecture.md`). React 19 stable has been out
 since December 2024. The runtime upgrade landed in commit `9f69132
 chore(react): upgrade to React 19.2.5 [TD-02]` on 2026-04-21 without
@@ -53,13 +53,13 @@ No collateral upgrades were required.
 
 React 19 ships a new server-rendering surface (`react-dom/server` is
 still importable but the recommended entry shifted to `react-dom/
-static`). Phylax does not server-render: there is no backend
+static`). Befaro does not server-render: there is no backend
 (Nicht-verhandelbares Prinzip 1) and the production build is a static
 SPA bundle. The SSR API change has no surface in this codebase.
 
 The new React 19 hooks (`use`, `useFormStatus`, `useFormState`,
 `useOptimistic`, `useActionState`) introduce no new attack surface
-relevant to the Phylax threat model (`.claude/rules/architecture.md`
+relevant to the Befaro threat model (`.claude/rules/architecture.md`
 "Threat model"). The auto-lock and crypto-key-in-memory contracts are
 unaffected: React state never holds the master key (the key lives in
 `src/crypto/keyStore.ts` module scope).
@@ -81,7 +81,7 @@ contains nothing this codebase used.
 - Aligns with the Node 24 runtime refresh (commit `83c3db0`).
 - Unblocks future adoption of React 19-native features
   (`useOptimistic` for the import flow, `use` for resource Suspense)
-  if and when they fit a real Phylax requirement.
+  if and when they fit a real Befaro requirement.
 
 ### Negative
 

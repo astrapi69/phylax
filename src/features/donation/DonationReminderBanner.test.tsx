@@ -84,7 +84,7 @@ describe('DonationReminderBanner', () => {
     const profileId = await seedSession(100);
     render(<DonationReminderBanner profileId={profileId} />);
     await waitFor(() => expect(screen.getByTestId('donation-reminder-banner')).toBeInTheDocument());
-    expect(screen.getByText(/Du nutzt Phylax jetzt seit \d+ Monaten/)).toBeInTheDocument();
+    expect(screen.getByText(/Du nutzt Befaro jetzt seit \d+ Monaten/)).toBeInTheDocument();
   });
 
   it('"Unterstützen" updates state to donated + today and hides the banner', async () => {

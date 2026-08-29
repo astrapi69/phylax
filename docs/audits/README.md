@@ -1,6 +1,6 @@
 # Coverage Audits
 
-This folder holds coverage audit reports for Phylax.
+This folder holds coverage audit reports for Befaro.
 
 ## Convention
 

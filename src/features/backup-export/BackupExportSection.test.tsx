@@ -80,7 +80,7 @@ describe('BackupExportSection', () => {
     await waitFor(() =>
       expect(screen.getByText(/Backup mit dem eingegebenen Passwort/i)).toBeInTheDocument(),
     );
-    expect(screen.getByText(/phylax-backup-\d{8}-\d{6}\.phylax/)).toBeInTheDocument();
+    expect(screen.getByText(/befaro-backup-\d{8}-\d{6}\.phylax/)).toBeInTheDocument();
   });
 
   it('renders an error message when the keystore is locked', async () => {

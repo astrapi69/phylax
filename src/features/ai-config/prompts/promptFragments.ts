@@ -54,8 +54,8 @@ Erfinde keine Informationen. Wenn etwas fehlt, frage den Nutzer.`;
 
 /**
  * Output contract for profile updates. Instructs the AI to emit new
- * observations, lab values, supplements, and open points in the Phylax
- * Markdown format so the IM-01 parser can read them directly. Phylax
+ * observations, lab values, supplements, and open points in the Befaro
+ * Markdown format so the IM-01 parser can read them directly. Befaro
  * detects these blocks in the AI response and shows a preview/commit
  * action to the user.
  *
@@ -64,7 +64,7 @@ Erfinde keine Informationen. Wenn etwas fehlt, frage den Nutzer.`;
 export const PROFILE_OUTPUT_FORMAT = `WICHTIG: Format für Profil-Änderungen
 
 Wenn du neue Beobachtungen, Supplemente oder offene Punkte strukturierst,
-verwende das Phylax-Format. Nur so kann der Nutzer sie direkt übernehmen.
+verwende das Befaro-Format. Nur so kann der Nutzer sie direkt übernehmen.
 
 Beobachtung (pro Thema ein Block; die Feldnamen in **fett** sind erforderlich):
 
@@ -103,7 +103,7 @@ Regeln:
 - Keine bestehenden Einträge aus dem geteilten Profil kopieren,
   nur Neues oder Änderungen formulieren
 - Bei Unsicherheit lieber nachfragen statt zu strukturieren
-- Kein "# Profil: ..." am Anfang; Phylax setzt den Rahmen automatisch
+- Kein "# Profil: ..." am Anfang; Befaro setzt den Rahmen automatisch
 - Wenn der Nutzer nur eine Frage stellt oder du nur Kontext erklärst,
   keinen Block erzeugen
 

@@ -22,7 +22,7 @@ test.describe('Onboarding: first-run complete flow', () => {
   test('/ -> /welcome -> /privacy -> /setup -> /profile/create', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveURL(/\/welcome$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Phylax' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Befaro' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Einrichten starten' }).click();
     await expect(page).toHaveURL(/\/privacy$/);
@@ -38,7 +38,7 @@ test.describe('Onboarding: first-run complete flow', () => {
 
     await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
-    await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+    await page.getByRole('button', { name: 'Befaro einrichten' }).click();
 
     await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
       timeout: 10_000,
@@ -59,11 +59,11 @@ test.describe('Onboarding: setup validation', () => {
 
     await page.getByLabel('Master-Passwort').fill('short');
     await expect(page.getByText(/Mindestens 12 Zeichen/)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Phylax einrichten' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Befaro einrichten' })).toBeDisabled();
 
     await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
-    await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+    await page.getByRole('button', { name: 'Befaro einrichten' }).click();
 
     await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
       timeout: 10_000,
@@ -77,7 +77,7 @@ test.describe('Onboarding: returning user unlock', () => {
     await page.goto('/setup');
     await fillNewPasswordPair(page, VALID_PASSWORD);
     await page.getByLabel('Ich habe verstanden').check();
-    await page.getByRole('button', { name: 'Phylax einrichten' }).click();
+    await page.getByRole('button', { name: 'Befaro einrichten' }).click();
     await expect(page.getByRole('heading', { name: 'Neues Profil erstellen' })).toBeVisible({
       timeout: 10_000,
     });
@@ -86,7 +86,7 @@ test.describe('Onboarding: returning user unlock', () => {
   test('reload lands on /unlock and correct password proceeds', async ({ page }) => {
     await page.reload();
     await expect(page).toHaveURL(/\/unlock/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Phylax entsperren' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Befaro entsperren' })).toBeVisible();
 
     await page.getByLabel('Master-Passwort').fill(VALID_PASSWORD);
     await page.getByRole('button', { name: 'Entsperren' }).click();
@@ -190,7 +190,7 @@ test.describe('Onboarding: backup import from welcome', () => {
         version: 1,
         type: 'phylax-backup',
         created: '2026-04-20T00:00:00Z',
-        source: { app: 'phylax', appVersion: '0.0.0' },
+        source: { app: 'befaro', appVersion: '0.0.0' },
         crypto: {
           algorithm: 'AES-256-GCM',
           kdf: 'PBKDF2-SHA256',
@@ -234,6 +234,6 @@ test.describe('Onboarding: defensive routes', () => {
     // Router; the fix routes fresh installs through /welcome.
     await page.goto('/onboarding');
     await expect(page).toHaveURL(/\/welcome$/, { timeout: 5_000 });
-    await expect(page.getByRole('heading', { level: 1, name: 'Phylax' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Befaro' })).toBeVisible();
   });
 });

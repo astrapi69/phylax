@@ -1,7 +1,7 @@
 {
   "select": {
     "heading": "Backup importieren",
-    "description": "Wähle die zuvor erstellte Phylax-Backup-Datei. Das Backup wird mit dem Passwort entschlüsselt, mit dem es erstellt wurde.",
+    "description": "Wähle die zuvor erstellte Befaro-Backup-Datei. Das Backup wird mit dem Passwort entschlüsselt, mit dem es erstellt wurde.",
     "file-picker-label": "Datei auswählen",
     "no-file-selected": "Keine Datei ausgewählt.",
     "metadata": {
@@ -14,13 +14,13 @@
     "back-to-welcome": "Zurück zur Startseite",
     "overwrite-warning": {
       "title": "Achtung: Import überschreibt bestehende Daten",
-      "body": "Dein aktuelles Phylax-Profil wird durch den Import vollständig ersetzt. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "body": "Dein aktuelles Befaro-Profil wird durch den Import vollständig ersetzt. Diese Aktion kann nicht rückgängig gemacht werden.",
       "acknowledge": "Ich verstehe, dass die Daten überschrieben werden."
     }
   },
   "section": {
     "heading": "Backup wiederherstellen",
-    "description": "Stelle ein zuvor exportiertes verschlüsseltes Phylax-Backup (.phylax) wieder her. Die aktuellen Daten werden vollständig durch die Inhalte des Backups ersetzt.",
+    "description": "Stelle ein zuvor exportiertes verschlüsseltes Befaro-Backup (.phylax) wieder her. Die aktuellen Daten werden vollständig durch die Inhalte des Backups ersetzt.",
     "file-picker-label": "Backup-Datei auswählen",
     "acknowledge-checkbox": "Ich verstehe, dass die aktuellen Daten überschrieben werden.",
     "password-label": "Backup-Passwort",
@@ -54,7 +54,7 @@
     "invalid-json": "Die ausgewählte Datei ist kein gültiges JSON.",
     "missing-field": "Datei unvollständig. Fehlt: {{field}}",
     "unsupported-version": "Datei-Version {{version}} wird nicht unterstützt.",
-    "wrong-type": "Das ist keine Phylax-Backup-Datei.",
+    "wrong-type": "Das ist keine Befaro-Backup-Datei.",
     "too-large": "Datei zu groß ({{size}} MB). Maximal 50 MB erlaubt.",
     "corrupted": "Backup ist beschädigt oder unvollständig.",
     "wrong-password": "Falsches Passwort. Backup konnte nicht entschlüsselt werden.",

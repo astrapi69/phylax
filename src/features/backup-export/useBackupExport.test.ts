@@ -83,7 +83,7 @@ describe('useBackupExport', () => {
     });
     await waitFor(() => expect(result.current.state.kind).toBe('downloaded'));
     if (result.current.state.kind === 'downloaded') {
-      expect(result.current.state.filename).toMatch(/^phylax-backup-\d{8}-\d{6}\.phylax$/);
+      expect(result.current.state.filename).toMatch(/^befaro-backup-\d{8}-\d{6}\.phylax$/);
     }
   });
 

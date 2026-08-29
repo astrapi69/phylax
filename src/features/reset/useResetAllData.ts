@@ -2,20 +2,28 @@ import { useCallback, useState } from 'react';
 import { db } from '../../db/schema';
 import { lock } from '../../crypto';
 
-/** Dexie database name. Wipe target for `indexedDB.deleteDatabase`. */
+/**
+ * Dexie database name. Wipe target for `indexedDB.deleteDatabase`.
+ * Keeps the legacy pre-rename name: existing vaults live in the
+ * 'phylax' database and renaming it would orphan user data.
+ * TODO [rename follow-up]: migrate persisted identifiers to 'befaro'.
+ */
 export const DEXIE_DB_NAME = 'phylax';
 
 /**
- * Storage key prefix convention for Phylax. All localStorage and
+ * Storage key prefix convention for Befaro. All localStorage and
  * sessionStorage keys use either `phylax-` (hyphen) or `phylax.` (dot).
- * The full-data reset relies on this convention to enumerate keys
- * without maintaining a hand-curated list. New keys MUST follow the
- * convention or they will not be cleared by reset.
+ * The prefix keeps the legacy pre-rename app name on purpose: existing
+ * installations already hold data under these keys, and renaming
+ * persisted identifiers is a separate migration task (see the rename
+ * note in CLAUDE.md). The full-data reset relies on this convention to
+ * enumerate keys without maintaining a hand-curated list. New keys MUST
+ * follow the convention or they will not be cleared by reset.
  *
  * See `CLAUDE.md` "Browser storage key convention" for the project
  * rule.
  */
-const PHYLAX_STORAGE_KEY_PATTERN = /^phylax[.-]/;
+const STORAGE_KEY_PATTERN = /^phylax[.-]/;
 
 export type ResetStep =
   | 'idle'
@@ -69,10 +77,10 @@ export interface UseResetAllDataResult {
  * 2. Dexie `db.close()` to release IndexedDB connection locks.
  * 3. `indexedDB.deleteDatabase('phylax')` with `onsuccess` / `onerror` /
  *    `onblocked` Promise wrapping. `onblocked` surfaces via the
- *    `blocked` flag - caller's UI shows a "close other Phylax tabs"
+ *    `blocked` flag - caller's UI shows a "close other Befaro tabs"
  *    message and lets the user retry.
  * 4. Iterate `localStorage` and `sessionStorage`, remove every key
- *    matching the Phylax prefix convention.
+ *    matching the Befaro prefix convention.
  * 5. Iterate `caches.keys()` and delete each.
  * 6. `navigator.serviceWorker.getRegistration()?.unregister()`.
  * 7. `window.location.replace(import.meta.env.BASE_URL)` for clean
@@ -158,7 +166,8 @@ function errorMessage(err: unknown): string {
 }
 
 /**
- * Wipe Phylax-prefixed keys from a Storage instance. Two-pass
+ * Wipe keys matching the storage prefix convention (legacy `phylax`
+ * prefix, see STORAGE_KEY_PATTERN) from a Storage instance. Two-pass
  * (collect-then-remove) because removing during iteration shifts
  * indices on a live `Storage` object.
  */
@@ -166,7 +175,7 @@ function wipeStorageByPrefix(storage: Storage): void {
   const keysToRemove: string[] = [];
   for (let i = 0; i < storage.length; i++) {
     const key = storage.key(i);
-    if (key && PHYLAX_STORAGE_KEY_PATTERN.test(key)) {
+    if (key && STORAGE_KEY_PATTERN.test(key)) {
       keysToRemove.push(key);
     }
   }

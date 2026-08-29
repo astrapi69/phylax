@@ -6,6 +6,6 @@ describe('vitest sanity check', () => {
   });
 
   it('handles string matching', () => {
-    expect('phylax').toContain('phyla');
+    expect('befaro').toContain('befa');
   });
 });

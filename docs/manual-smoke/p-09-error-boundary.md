@@ -75,7 +75,7 @@ real browser, dark-mode contrast, and the no-data-loss promise.
 ### 5. No-data-loss verification
 
 - **Steps**: Reproduce the trigger throw. Wait on the boundary
-  fallback for 30 seconds. Close the browser tab. Reopen Phylax in
+  fallback for 30 seconds. Close the browser tab. Reopen Befaro in
   a new tab (with the trigger rolled back). Unlock with your
   password.
 - **Expected**:

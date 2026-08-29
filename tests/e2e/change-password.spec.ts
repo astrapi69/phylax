@@ -40,9 +40,9 @@ test('change master password: full lock-unlock cycle', async ({ page }) => {
     timeout: 30000,
   });
 
-  // Lock via the header lock button (aria-label "Phylax sperren").
-  await page.getByRole('button', { name: /Phylax sperren/i }).click();
-  await expect(page.getByRole('heading', { name: /Phylax entsperren/i })).toBeVisible();
+  // Lock via the header lock button (aria-label "Befaro sperren").
+  await page.getByRole('button', { name: /Befaro sperren/i }).click();
+  await expect(page.getByRole('heading', { name: /Befaro entsperren/i })).toBeVisible();
 
   // Old password is rejected.
   await unlockApp(page, { password: OLD_PASSWORD });

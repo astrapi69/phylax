@@ -22,7 +22,7 @@ function validEnvelope() {
     version: 1,
     type: 'phylax-backup',
     created: '2026-04-20T15:30:00Z',
-    source: { app: 'phylax', appVersion: '0.0.0' },
+    source: { app: 'befaro', appVersion: '0.0.0' },
     crypto: {
       algorithm: 'AES-256-GCM',
       kdf: 'PBKDF2-SHA256',

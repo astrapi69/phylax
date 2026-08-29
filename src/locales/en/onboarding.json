@@ -24,11 +24,11 @@
     "headline": "You hold the only key.",
     "section": {
       "does": {
-        "title": "What Phylax does",
+        "title": "What Befaro does",
         "body": "Stores your entries encrypted in this browser. Nobody but you can read them."
       },
       "does-not": {
-        "title": "What Phylax does not do",
+        "title": "What Befaro does not do",
         "body": "No server communication. No password recovery. No support that \"resets your password\"."
       },
       "means": {
@@ -59,7 +59,7 @@
       "acknowledge": "I understand"
     },
     "submit": {
-      "label": "Set up Phylax",
+      "label": "Set up Befaro",
       "deriving": "Setting up..."
     },
     "deriving-hint": "Deriving the key from your password. This may take a moment.",

@@ -5,10 +5,10 @@
 
 ## Context
 
-Phylax shipped a single destructive-action surface in the settings
+Befaro shipped a single destructive-action surface in the settings
 danger zone: the full hard-reset (`useResetAllData`,
 `ResetDialog`). Hard-reset deletes the entire Dexie database, wipes
-every Phylax-prefixed `localStorage` / `sessionStorage` key, clears
+every Befaro-prefixed `localStorage` / `sessionStorage` key, clears
 caches plus the service worker, and reloads the app to onboarding.
 That flow assumes the user wants to start over completely, including
 master-password rotation and full re-onboarding.
@@ -69,13 +69,13 @@ data tables and calls `Table.clear()` on each:
 | `supplements`, `open_points`                         | `phylax-language`, `phylax-theme`       |
 | `profile_versions`, `documents`                      | Sort + display preferences              |
 | `document_blobs`, `timeline_entries`                 | AI disclaimer ack, donation flag        |
-| `phylax.persistence.*` localStorage (profile-scoped) | Rate-limiter keys (`phylax.*` security) |
+| `phylax.persistence.*` localStorage (profile-scoped) | Rate-limiter keys (`befaro.*` security) |
 
 The `meta` table is excluded from the transaction scope. Salt,
 schema version, and the encrypted `meta.payload` (which carries
 AppSettings + multi-AI-provider config per ADR-0019) all stay
 byte-equal preserved. `localStorage` wipe is scoped by the
-`/^phylax\.persistence\./` regex; profile-scoped UI state
+`/^befaro\.persistence\./` regex; profile-scoped UI state
 (currently only `phylax.persistence.dismissed.{profileId}` from
 PersistentStorageBanner) is the only matched surface.
 
@@ -95,7 +95,7 @@ during soft reset. `getLockState()` stays `'unlocked'` across the
 wipe. The user does not see a lock screen and does not retype the
 master password.
 
-Reasoning: the cryptographic invariant on which Phylax's threat
+Reasoning: the cryptographic invariant on which Befaro's threat
 model depends is "the key in memory is the key derived from the
 typed master password" (ADR-0001 plus ADR-0018). Soft reset does
 not change the master password, so the key in memory is still

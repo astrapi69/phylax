@@ -61,6 +61,6 @@ repository").
 
 ## Nicht adoptiert
 
-- Cross-Package- oder Monorepo-Sharing: entfällt, Phylax ist ein einzelnes
+- Cross-Package- oder Monorepo-Sharing: entfällt, Befaro ist ein einzelnes
   Paket (`architecture.md` "Single repository").
 - Plugin-/Extension-Wiederverwendung: entfällt, kein Plugin-System.

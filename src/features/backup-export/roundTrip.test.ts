@@ -103,7 +103,7 @@ describe('B-02 round-trip', () => {
       if (!backup.ok) return;
 
       // Simulate "user downloads, then user imports on a fresh install".
-      const file = new File([backup.json], 'phylax-backup-test.phylax', {
+      const file = new File([backup.json], 'befaro-backup-test.phylax', {
         type: 'application/json',
       });
 

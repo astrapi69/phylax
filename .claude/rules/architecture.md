@@ -12,7 +12,7 @@ The Domain layer NEVER imports from React or Dexie directly. It defines interfac
 
 ## Single repository
 
-Phylax is a single repo, single package. No backend. No microservices. No plugin system. If a feature feels like it should be a plugin, it is most likely premature abstraction. Build it inline, refactor later if a second consumer appears.
+Befaro is a single repo, single package. No backend. No microservices. No plugin system. If a feature feels like it should be a plugin, it is most likely premature abstraction. Build it inline, refactor later if a second consumer appears.
 
 ## Frontend (React + TypeScript)
 
@@ -71,7 +71,7 @@ src/
 
 ## Storage layer
 
-- IndexedDB via Dexie. One database `phylax`, schema versioned via Dexie migrations.
+- IndexedDB via Dexie. One database `befaro`, schema versioned via Dexie migrations.
 - Tables: `profiles`, `observations`, `lab_values`, `supplements`, `open_points`, `profile_versions`, `documents`, `meta` (salt, settings, schema version, encrypted API key).
 - Every record stored as `{ id, profileId, createdAt, updatedAt, ciphertext, iv }`. Plaintext fields are NEVER persisted. All entities carry a `profileId` field from day one (MVP uses a single profile, multi-profile is a future phase).
 - Search/filter happens in-memory after decryption. No plaintext indexes. Acceptable because the dataset is small (single user, personal profile).
@@ -84,7 +84,7 @@ src/
 - Master key lives only in a module-level variable inside `crypto/`, never written to storage.
 - Auto-lock clears the in-memory key after configurable inactivity (default 5 minutes).
 
-## Threat model (what Phylax protects against, what it does not)
+## Threat model (what Befaro protects against, what it does not)
 
 Protects against: stolen device while app is locked, curious bystanders, cloud breaches (no cloud), supply-chain telemetry leakage (no telemetry).
 
@@ -99,6 +99,6 @@ This is documented in the README and the onboarding flow, in plain language.
 - No user accounts.
 - No cloud storage.
 - No telemetry, no analytics, no error reporting services.
-- No medical advice features. Phylax is a documentation tool, not a medical device. AI structures, AI does not diagnose.
+- No medical advice features. Befaro is a documentation tool, not a medical device. AI structures, AI does not diagnose.
 - No own backend service for AI. API calls go directly from the browser to the user's chosen provider (OpenAI / Anthropic) using the user's own API key.
 - Chat messages from AI sessions are ephemeral and NEVER persisted. Only the user-confirmed profile fragment is saved.

@@ -1,7 +1,7 @@
 {
   "select": {
     "heading": "Import backup",
-    "description": "Select the Phylax backup file you created earlier. The backup is decrypted with the password it was created with.",
+    "description": "Select the Befaro backup file you created earlier. The backup is decrypted with the password it was created with.",
     "file-picker-label": "Choose file",
     "no-file-selected": "No file selected.",
     "metadata": {
@@ -14,13 +14,13 @@
     "back-to-welcome": "Back to welcome",
     "overwrite-warning": {
       "title": "Warning: import replaces existing data",
-      "body": "Your current Phylax profile will be fully replaced by the import. This action cannot be undone.",
+      "body": "Your current Befaro profile will be fully replaced by the import. This action cannot be undone.",
       "acknowledge": "I understand that the data will be overwritten."
     }
   },
   "section": {
     "heading": "Restore backup",
-    "description": "Restore a previously exported encrypted Phylax backup (.phylax). Current data will be fully replaced by the contents of the backup.",
+    "description": "Restore a previously exported encrypted Befaro backup (.phylax). Current data will be fully replaced by the contents of the backup.",
     "file-picker-label": "Choose backup file",
     "acknowledge-checkbox": "I understand that current data will be overwritten.",
     "password-label": "Backup password",
@@ -54,7 +54,7 @@
     "invalid-json": "The selected file is not valid JSON.",
     "missing-field": "File incomplete. Missing: {{field}}",
     "unsupported-version": "File version {{version}} is not supported.",
-    "wrong-type": "This is not a Phylax backup file.",
+    "wrong-type": "This is not a Befaro backup file.",
     "too-large": "File too large ({{size}} MB). Maximum 50 MB allowed.",
     "corrupted": "Backup is damaged or incomplete.",
     "wrong-password": "Wrong password. Backup could not be decrypted.",

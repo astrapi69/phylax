@@ -4,10 +4,10 @@ import { DonationSettingsSection } from './DonationSettingsSection';
 import { DONATION_URL } from './constants';
 
 describe('DonationSettingsSection', () => {
-  it('renders the "Phylax unterstützen" h2 and the description paragraph', () => {
+  it('renders the "Befaro unterstützen" h2 and the description paragraph', () => {
     render(<DonationSettingsSection />);
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Phylax unterstützen' }),
+      screen.getByRole('heading', { level: 2, name: 'Befaro unterstützen' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Open-Source-Projekt/)).toBeInTheDocument();
     expect(screen.getByText(/ohne Werbung/)).toBeInTheDocument();
@@ -24,7 +24,7 @@ describe('DonationSettingsSection', () => {
   it('is addressable via aria-labelledby so nested landmarks stay accessible', () => {
     render(<DonationSettingsSection />);
     const section = screen
-      .getByRole('heading', { level: 2, name: 'Phylax unterstützen' })
+      .getByRole('heading', { level: 2, name: 'Befaro unterstützen' })
       .closest('section');
     expect(section).toHaveAttribute('aria-labelledby', 'donation-section-heading');
   });

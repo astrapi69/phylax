@@ -136,7 +136,7 @@ function PdfPreview({ url, title }: { url: string; title: string }) {
   // sandbox="allow-scripts" matches DocumentViewer's PDF iframe so the
   // browser's built-in PDF viewer (Chromium pdfium, Firefox pdf.js,
   // Safari WebKit PDF) runs while the embedded JS is denied access to
-  // the Phylax origin's IndexedDB / localStorage / in-memory keys.
+  // the Befaro origin's IndexedDB / localStorage / in-memory keys.
   return (
     <iframe
       src={url}

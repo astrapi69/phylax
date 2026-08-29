@@ -55,7 +55,7 @@ export function isTextMimeType(mime: string): mime is TextMimeType {
  * HEIC / HEIF MIME types. Recognized for purposes of producing a
  * specific localized error message during import (instead of the
  * generic "unsupported file type"), but NOT in the accepted set -
- * Phylax does not bundle a HEIC decoder (per ADR-0017 and the IMP-02
+ * Befaro does not bundle a HEIC decoder (per ADR-0017 and the IMP-02
  * decision rationale: ~100 KB lazy chunk for an edge case where the
  * iOS share-sheet auto-converts to JPEG anyway). Users who manually
  * upload `.heic` files see the targeted error and can re-export as

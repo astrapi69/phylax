@@ -71,7 +71,7 @@ Profil-Version 1.0
 | Kategorie              | Präparat             | Empfehlung  | Begründung               |
 | ---------------------- | -------------------- | ----------- | ------------------------ |
 | Beibehalten (täglich)  | Vitamin D3 (Pure)    | 2000 IE/Tag | Niedriger Spiegel        |
-| Beibehalten (täglich)  | Magnesium (Citrat)   | 400 mg/Tag  | Krampfprophylaxe         |
+| Beibehalten (täglich)  | Magnesium (Citrat)   | 400 mg/Tag  | Krampfprobefaroe         |
 | Beibehalten (3x/Woche) | Omega-3 (Norsan)     | 5 ml        | Entzündungsmodulation    |
 | Beibehalten (2x/Woche) | Zink (Bisglycinat)   | 25 mg       | Immunmodulation          |
 | Pausiert               | Glucosamin-Komplex   | 1500 mg/Tag | Vor Blutabnahme pausiert |

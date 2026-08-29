@@ -21,9 +21,9 @@ multi-provider client: provider presets, a two-adapter `LLMClient`
 covering OpenAI-compatible and Anthropic-native endpoints, a
 per-provider connection-test helper. The donor also carried a
 parallel encryption pipeline and a separate passphrase prompt that
-duplicated Phylax's master-password-derived AES-GCM-256 keystore
+duplicated Befaro's master-password-derived AES-GCM-256 keystore
 (ADR-0001 + ADR-0018). The integration question was which donor
-artefacts to absorb and which to reject in favour of Phylax's
+artefacts to absorb and which to reject in favour of Befaro's
 existing infrastructure.
 
 This ADR records the architectural decisions taken across the
@@ -55,10 +55,10 @@ instances. The streaming path translates these into the existing
 `ChatError` shape so the four UI consumers continue to render
 errors via the unchanged `errorMessageFor(t, error)` helper.
 
-### 2. Phylax crypto reuse (donor crypto rejected)
+### 2. Befaro crypto reuse (donor crypto rejected)
 
 The donor's `crypto.ts` (600 000 PBKDF2 iterations, separate
-passphrase) was rejected. Phylax already runs 1.2M PBKDF2-SHA256
+passphrase) was rejected. Befaro already runs 1.2M PBKDF2-SHA256
 per ADR-0001 with the master-password-derived AES-GCM-256 key
 held in the `keyStore` singleton, and ADR-0018's three-phase
 re-encryption pipeline already covers the meta payload that the
@@ -110,10 +110,10 @@ reality:
 
 | Provider  | corsHint         | Browser callable directly?                                                                                |
 | --------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
-| Anthropic | `anthropic-flag` | Yes, with the dangerous-direct-browser-access opt-in (key visible in DevTools, accepted Phylax trade-off) |
+| Anthropic | `anthropic-flag` | Yes, with the dangerous-direct-browser-access opt-in (key visible in DevTools, accepted Befaro trade-off) |
 | Google    | `ok`             | Yes, the Gemini OpenAI-compat endpoint allows browser CORS                                                |
-| OpenAI    | `blocked`        | No, requires a proxy Phylax does not provide                                                              |
-| Mistral   | `blocked`        | No, requires a proxy Phylax does not provide                                                              |
+| OpenAI    | `blocked`        | No, requires a proxy Befaro does not provide                                                              |
+| Mistral   | `blocked`        | No, requires a proxy Befaro does not provide                                                              |
 | LM Studio | `local`          | Yes if the user enables CORS in the local server                                                          |
 | Ollama    | `local`          | Yes if the user sets `OLLAMA_ORIGINS`                                                                     |
 | Custom    | `local`          | User's responsibility                                                                                     |
@@ -123,7 +123,7 @@ Mistral being unusable today: the wizard renders them with an
 amber warning above the API-key field on step 2, the
 configuration is allowed to save, `verifyKey` surfaces the failure
 cleanly, and the user gets an educational signal about what's
-possible once Phylax has a proxy infrastructure. Removing them
+possible once Befaro has a proxy infrastructure. Removing them
 would force a code change later when proxies arrive; keeping them
 behind a warning is no-cost and forward-compatible.
 
@@ -159,7 +159,7 @@ the stored shape transparently.
 boundary scoped to the click trigger. The wizard chunk does not
 ship in the main JS bundle; users who never open the wizard pay
 zero cost beyond the small `AISettingsSection` summary surface.
-First lazy boundary in the Phylax codebase; pattern is documented
+First lazy boundary in the Befaro codebase; pattern is documented
 inline.
 
 ### 7. Donor extraction lessons
@@ -178,7 +178,7 @@ AbortError` from the local fetch catch and returned
 
 Both bugs are donor inheritance: they were latent in Bibliogon
 because the donor's call sites didn't depend on the abort path
-the same way Phylax does. Lesson: integration testing against a
+the same way Befaro does. Lesson: integration testing against a
 real consumer surfaces semantic gaps that donor unit tests alone
 do not.
 
@@ -187,7 +187,7 @@ for archiving the 6 non-DE/EN translations to
 `docs/extracted-modules/`. The donor `/tmp/ai-config-module/`
 directory was cleaned before that archive task could complete; the
 ports' DE+EN strings were re-derived from the donor wizard's
-inline English fallbacks plus Phylax conventions. Future P-11
+inline English fallbacks plus Befaro conventions. Future P-11
 (ES/FR/EL translations) derives from the current DE+EN
 `setup-wizard.*` keys, not from the donor source. The
 `EXTRACTION-PATTERN.md` template recipe (donor's contribution to
@@ -198,7 +198,7 @@ extraction pattern by this series.
 
 - **Pattern reuse**: future feature integrations from external
   sources follow the same REJECT/PORT/COPY decision matrix.
-  Phylax-existing infrastructure is reused, not duplicated.
+  Befaro-existing infrastructure is reused, not duplicated.
 - **Streaming abstraction available**: `aiStream` is the
   canonical multi-provider streaming entry point. New text-only
   streaming use cases (a future "summarise this document"
@@ -218,16 +218,16 @@ extraction pattern by this series.
 
 ## Alternatives rejected
 
-- **Donor `crypto.ts`**: weaker iterations (600 000 vs Phylax's
+- **Donor `crypto.ts`**: weaker iterations (600 000 vs Befaro's
   1.2M, ADR-0001), parallel keystore, separate passphrase
-  prompt. Rejected; Phylax's existing encryption pipeline is
+  prompt. Rejected; Befaro's existing encryption pipeline is
   used.
 - **Donor `PassphrasePrompt`**: separate AI passphrase. Rejected;
-  Phylax's `UnlockView` already covers authentication, AI
+  Befaro's `UnlockView` already covers authentication, AI
   config sits inside the same `meta.payload` blob, no second
   passphrase needed.
 - **Donor `store.ts`**: parallel raw IndexedDB DB for AI config.
-  Rejected; the Phylax Dexie `meta.payload` covers it, no new
+  Rejected; the Befaro Dexie `meta.payload` covers it, no new
   table introduced (Q3 from the integration spec; corrected
   during pre-flight).
 - **Extending `LLMClient` with tool_use + multimodal for

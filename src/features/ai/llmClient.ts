@@ -8,12 +8,12 @@
  * CORS reality: see `providers.ts` `corsHint`. Most cloud providers
  * BLOCK browser CORS. Anthropic works only with the
  * `anthropic-dangerous-direct-browser-access: true` opt-in header,
- * which exposes the key in DevTools -- acceptable for Phylax's
+ * which exposes the key in DevTools -- acceptable for Befaro's
  * "bring your own key" model, NOT for a multi-tenant SaaS.
  *
  * Streaming: SSE for both adapters. Use `stream(...)` to opt in.
  *
- * Lifted from the Bibliogon donor module on 2026-05-01. Phylax-
+ * Lifted from the Bibliogon donor module on 2026-05-01. Befaro-
  * specific changes: single-quote string style, no other behavioural
  * differences.
  */

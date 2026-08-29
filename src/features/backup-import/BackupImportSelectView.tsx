@@ -7,7 +7,7 @@ import { metaExists } from '../../db/meta';
 import {
   parseBackupFile,
   type ParseError,
-  type ParsedPhylaxFile,
+  type ParsedBefaroFile,
   type BackupMetadata,
 } from './parseBackupFile';
 
@@ -50,7 +50,7 @@ export function BackupImportSelectView() {
   const navigate = useNavigate();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const [parsed, setParsed] = useState<ParsedPhylaxFile | null>(null);
+  const [parsed, setParsed] = useState<ParsedBefaroFile | null>(null);
   const [metadata, setMetadata] = useState<BackupMetadata | null>(null);
   const [parseError, setParseError] = useState<ParseError | null>(null);
   const [vaultExists, setVaultExists] = useState(false);
@@ -163,7 +163,7 @@ export function BackupImportSelectView() {
             <dt className="font-medium text-gray-700 dark:text-gray-300">
               {t('select.metadata.source')}
             </dt>
-            <dd className="text-gray-900 dark:text-gray-100">Phylax {metadata.sourceAppVersion}</dd>
+            <dd className="text-gray-900 dark:text-gray-100">Befaro {metadata.sourceAppVersion}</dd>
           </dl>
         )}
 

@@ -6,7 +6,7 @@ import { LICENSE_TEXT } from './licenseText';
  * Static license-text view at /license.
  *
  * Renders the verbatim repo-root LICENSE file inside the app shell so
- * users can read the terms offline without leaving Phylax. P-12 second
+ * users can read the terms offline without leaving Befaro. P-12 second
  * half: privacy was already at /privacy via ONB-01b; this completes
  * the in-app legal surface.
  *

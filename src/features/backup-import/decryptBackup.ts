@@ -7,7 +7,7 @@
  */
 
 import { deriveKeyFromPassword, decrypt } from '../../crypto';
-import { base64ToBytes, type ParsedPhylaxFile } from './parseBackupFile';
+import { base64ToBytes, type ParsedBefaroFile } from './parseBackupFile';
 
 export const SUPPORTED_INNER_SCHEMA_VERSION = 2;
 
@@ -86,7 +86,7 @@ function isDomainRow(x: unknown): x is DomainRow {
  * without re-deriving.
  */
 export async function decryptBackup(
-  parsed: ParsedPhylaxFile,
+  parsed: ParsedBefaroFile,
   password: string,
 ): Promise<DecryptResult> {
   let saltBytes: Uint8Array;

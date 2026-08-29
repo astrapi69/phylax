@@ -1,4 +1,4 @@
-# Phylax Maintenance Notes
+# Befaro Maintenance Notes
 
 Operational notes for maintainers. Not user-facing. Lives alongside
 `ROADMAP.md` and the ADRs in `decisions/`.
@@ -10,16 +10,16 @@ and deploys to https://astrapi69.github.io/phylax-docs/.
 
 ### Why a separate repo
 
-The Phylax PWA owns `astrapi69.github.io/phylax/` (set via `vite.config.ts`
+The Befaro PWA owns `astrapi69.github.io/phylax/` (set via `vite.config.ts`
 `base: '/phylax/'`). Hosting docs at a subpath of the same Pages site
 would conflict with the service worker scope and require merging two
 build artifacts into one Pages upload. The separate-repo split keeps
 both deploy pipelines independent: doc changes never trigger a PWA
 rebuild, and a PWA breakage never blocks doc updates.
 
-Bibliogon (the MkDocs setup that Phylax docs were templated from) does
+Bibliogon (the MkDocs setup that Befaro docs were templated from) does
 not have this conflict because Bibliogon is a Tauri/desktop app with
-no web deployment competing for the subpath. Phylax's PWA constraint
+no web deployment competing for the subpath. Befaro's PWA constraint
 is the load-bearing reason for the split.
 
 ### Glossary sync discipline
@@ -35,7 +35,7 @@ Sync is a manual review-checklist discipline:
    update `docs/i18n-glossary.md` in the same PR.
 2. When `docs/i18n-glossary.md` changes, open a corresponding doc-site
    PR in `phylax-docs` updating any pages that use the affected term.
-3. Doc-site PRs link back to the Phylax PR that triggered them.
+3. Doc-site PRs link back to the Befaro PR that triggered them.
 
 Code-enforced glossary sync (e.g., a CI step that compares term lists)
 is intentionally out of scope. The cost of solo-maintainer review
@@ -65,7 +65,7 @@ each repo's commit log focused on its own concerns.
 
 Per the exploration document (`docs/explorations/exploration-user-documentation.md`):
 
-- **Phase-triggered, not commit-triggered.** When a Phylax phase
+- **Phase-triggered, not commit-triggered.** When a Befaro phase
   closes, the affected doc pages get reviewed. Per-commit doc churn
   burns out solo maintainers.
 - **High self-explanation threshold.** If a feature is intuitive
@@ -78,7 +78,7 @@ Both repos are MIT-licensed. Both use Conventional Commits. Both
 deploy via GitHub Pages with `permissions: pages: write, id-token: write`.
 
 The doc-site CI is independent: pushes to `phylax-docs/main` trigger
-its own build + deploy workflow. The Phylax CI workflow chain (CI ->
+its own build + deploy workflow. The Befaro CI workflow chain (CI ->
 Deploy to GitHub Pages) is unrelated and unchanged.
 
 ## Other operational notes

@@ -2,7 +2,7 @@ const GERMAN_MONTHS: Record<string, string> = {
   januar: '01',
   februar: '02',
   // TD-09 (a): accept both the ASCII transliteration (`maerz`) and the
-  // Unicode form (`märz`) so real ePA exports and Phylax's own
+  // Unicode form (`märz`) so real ePA exports and Befaro's own
   // post-TD-09-c Unicode export both parse.
   maerz: '03',
   märz: '03',

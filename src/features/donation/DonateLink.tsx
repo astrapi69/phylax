@@ -23,7 +23,7 @@ interface DonateLinkProps {
  * Reusable external link to the donation landing page (DONATE.md).
  *
  * Always opens in a new tab with `rel="noopener noreferrer"` so the
- * donation page cannot reach back into Phylax via `window.opener`.
+ * donation page cannot reach back into Befaro via `window.opener`.
  * The donation URL is centralized in constants.ts - the component
  * never takes an href prop.
  */

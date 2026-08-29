@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { PasswordVisibilityToggle } from '../../ui';
 import { unlockWithKey } from '../../crypto';
-import type { ParsedPhylaxFile } from './parseBackupFile';
+import type { ParsedBefaroFile } from './parseBackupFile';
 import { useBackupImport, type BackupImportError } from './useBackupImport';
 
 function renderImportError(error: BackupImportError, t: TFunction<'backup-import'>): string {
@@ -27,7 +27,7 @@ function renderImportError(error: BackupImportError, t: TFunction<'backup-import
 }
 
 interface LocationStateShape {
-  parsed?: ParsedPhylaxFile;
+  parsed?: ParsedBefaroFile;
   fileName?: string;
 }
 
@@ -94,7 +94,7 @@ export function BackupImportUnlockView() {
           <input
             type="text"
             name="username"
-            value="phylax"
+            value="befaro"
             autoComplete="username"
             readOnly
             hidden

@@ -16,7 +16,7 @@ describe('AIDisclaimer', () => {
   it('point 2 names the BYOK model (user-owned Anthropic account and key)', () => {
     render(<AIDisclaimer onConfirm={vi.fn()} onCancel={vi.fn()} />);
     expect(screen.getByText(/über deinen eigenen Anthropic-Account/)).toBeInTheDocument();
-    expect(screen.getByText(/direkten Kunden, nicht Phylax/)).toBeInTheDocument();
+    expect(screen.getByText(/direkten Kunden, nicht Befaro/)).toBeInTheDocument();
   });
 
   it('point 2 names the 30-day retention window and auto-deletion', () => {

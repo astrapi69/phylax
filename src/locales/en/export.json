@@ -6,7 +6,7 @@
     "working": "Preparing export...",
     "markdown": {
       "title": "Markdown (.md)",
-      "description": "Full profile in Living Health format; importable back into Phylax."
+      "description": "Full profile in Living Health format; importable back into Befaro."
     },
     "pdf": {
       "title": "PDF (.pdf)",
@@ -85,16 +85,16 @@
   },
   "pdf": {
     "metadata": {
-      "title": "Phylax health profile of {{name}}"
+      "title": "Befaro health profile of {{name}}"
     },
     "header": {
-      "title": "Phylax · Health profile of {{name}}",
+      "title": "Befaro · Health profile of {{name}}",
       "generated": "Generated on {{date}}"
     },
-    "footer": "Phylax · {{date}}",
+    "footer": "Befaro · {{date}}",
     "running-header": "{{name}} · Page {{page}} / {{total}}",
     "cover": {
-      "subtitle": "Phylax · Health profile",
+      "subtitle": "Befaro · Health profile",
       "generated": "Generated on {{date}}"
     },
     "section": {

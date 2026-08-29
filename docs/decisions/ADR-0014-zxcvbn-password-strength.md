@@ -6,7 +6,7 @@
 ## Context
 
 The master password is the sole protection for every encrypted row in
-Phylax. A weak password undermines AES-256-GCM no matter how solid the
+Befaro. A weak password undermines AES-256-GCM no matter how solid the
 crypto layer is. The first-run SetupView (ONB-01c) needs a strength
 indicator that goes beyond length-and-character-class heuristics.
 
@@ -14,8 +14,8 @@ The existing `estimateStrength()` in `src/features/onboarding/passwordValidation
 applies three tiers (weak/fair/strong) based on length, character
 classes, and a small blocklist of common patterns. It cannot detect
 sequential keyboard walks, date patterns, leetspeak of common words,
-or context-specific tokens like "phylax". A user who types
-`Phylax2026!` gets green-lighted as "strong" even though the pattern
+or context-specific tokens like "befaro". A user who types
+`Befaro2026!` gets green-lighted as "strong" even though the pattern
 is trivially enumerable.
 
 `zxcvbn` (Dropbox, 2012) is the industry reference for realistic
@@ -160,7 +160,7 @@ converts stall into explicit error, logs a diagnostic via
 
 Language-pack inclusion is an open question, not a scheduled task.
 Rollback is cheap: changing `useLazyZxcvbn.ts` and the allowed-list
-suffices. Phylax has no telemetry by principle, so there is no
+suffices. Befaro has no telemetry by principle, so there is no
 automatic signal that will trigger revisit. Consider adding language
 packs if a separate evaluation (usability study, community feedback,
 security review) surfaces a clear need.

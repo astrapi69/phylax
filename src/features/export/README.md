@@ -21,8 +21,8 @@ choice; each export is client-side only (no server, no network).
   IM-01 parser.
 - `download.ts`: `triggerDownload(content, filename, mimeType)` Blob +
   anchor click helper, reused by every export format.
-- `filenames.ts`: `phylax-profil-YYYY-MM-DD.{md,pdf}` and
-  `phylax-labor-YYYY-MM-DD.csv` generators.
+- `filenames.ts`: `befaro-profil-YYYY-MM-DD.{md,pdf}` and
+  `befaro-labor-YYYY-MM-DD.csv` generators.
 - `exportOptions.ts`: shared `ExportOptions` type (date range, theme
   filter, linked documents). Accepted by every export function so filter
   UIs land in X-03 / X-04 / X-05 without refactoring the contract.

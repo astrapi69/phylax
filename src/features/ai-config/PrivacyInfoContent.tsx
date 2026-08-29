@@ -16,12 +16,12 @@ export function PrivacyInfoContent() {
     <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
       <section>
         <h4 className="mb-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
-          {t('privacy-info.phylax-section.heading')}
+          {t('privacy-info.befaro-section.heading')}
         </h4>
         <ul className="list-disc space-y-1 pl-5">
-          <li>{t('privacy-info.phylax-section.bullet-1')}</li>
-          <li>{t('privacy-info.phylax-section.bullet-2')}</li>
-          <li>{t('privacy-info.phylax-section.bullet-3')}</li>
+          <li>{t('privacy-info.befaro-section.bullet-1')}</li>
+          <li>{t('privacy-info.befaro-section.bullet-2')}</li>
+          <li>{t('privacy-info.befaro-section.bullet-3')}</li>
         </ul>
       </section>
 

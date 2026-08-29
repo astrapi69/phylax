@@ -1,12 +1,12 @@
-# Phylax Spenden-Strategie
+# Befaro Spenden-Strategie
 
 ## Grundprinzip
 
-Phylax ist ein privates Gesundheits-Werkzeug. Spenden-Hinweise duerfen den Nutzer nicht stoeren, nicht manipulieren, nicht zwischen ihn und seine Daten stehen. Drei Sichtbarkeitsebenen, alle mit hartem Opt-Out-Weg und ohne Dark Patterns.
+Befaro ist ein privates Gesundheits-Werkzeug. Spenden-Hinweise duerfen den Nutzer nicht stoeren, nicht manipulieren, nicht zwischen ihn und seine Daten stehen. Drei Sichtbarkeitsebenen, alle mit hartem Opt-Out-Weg und ohne Dark Patterns.
 
 ## Ebene 1: Permanenter Link in den Einstellungen
 
-Neuer Abschnitt in Settings: **"Phylax unterstuetzen"**.
+Neuer Abschnitt in Settings: **"Befaro unterstuetzen"**.
 
 Inhalt:
 
@@ -21,7 +21,7 @@ Immer verfuegbar, nie aufdringlich. Benutzer finden es wenn sie danach suchen.
 Nach Abschluss des ersten Profile-Creates oder nach dem ersten erfolgreichen Markdown-Import wird eine Info-Karte angezeigt:
 
 ```
-Phylax wird als Open-Source-Projekt ohne Tracking, ohne Cloud,
+Befaro wird als Open-Source-Projekt ohne Tracking, ohne Cloud,
 ohne Werbung entwickelt. Wenn dir die App hilft und du das
 Projekt unterstuetzen moechtest:
 
@@ -30,7 +30,7 @@ Projekt unterstuetzen moechtest:
 Du findest diesen Hinweis jederzeit in den Einstellungen.
 ```
 
-Beim Klick auf "Verstanden": Flag `phylax-donation-onboarding-seen = true` in localStorage. Nie wieder angezeigt ausser explizit via Settings aufgerufen.
+Beim Klick auf "Verstanden": Flag `befaro-donation-onboarding-seen = true` in localStorage. Nie wieder angezeigt ausser explizit via Settings aufgerufen.
 
 Beim Klick auf "Projekt unterstuetzen": oeffnet externen Link in neuem Tab UND setzt das Flag. Der Nutzer kommt nach einer Spende zurueck und wird nicht erneut gefragt.
 
@@ -40,7 +40,7 @@ Nach 90 Tagen aktiver Nutzung (gemessen ab erstem ProfileVersion-Eintrag) ersche
 
 ```
 +--------------------------------------------------------------+
-| Du nutzt Phylax jetzt seit 3 Monaten. Wenn dir das Projekt   |
+| Du nutzt Befaro jetzt seit 3 Monaten. Wenn dir das Projekt   |
 | gefaellt: [Unterstuetzen]           [Nicht jetzt]   [x]      |
 +--------------------------------------------------------------+
 ```
@@ -56,7 +56,7 @@ Regeln:
 ## Anti-Patterns (explizit NICHT machen)
 
 - Kein Modal-Popup beim App-Start
-- Keine Nag-Screens mit Zaehlern ("Sie haben Phylax 47 Mal geoeffnet...")
+- Keine Nag-Screens mit Zaehlern ("Sie haben Befaro 47 Mal geoeffnet...")
 - Keine Spenden-Prompts waehrend aktiver Workflows (Import, Chat, Commit)
 - Keine animierten Banner oder auffaellige Farben
 - Keine Countdown-Timer oder "limited time" Framing
@@ -96,7 +96,7 @@ Mehrere Kanaele parallel anbieten. Nutzer entscheiden selbst. Keine Bevorzugung 
 
 Drei unabhaengige Tasks, klein genug fuer jeweils 20-45 Minuten:
 
-**S-01**: Settings-Section "Phylax unterstuetzen" (Ebene 1)
+**S-01**: Settings-Section "Befaro unterstuetzen" (Ebene 1)
 
 - Neuer Abschnitt in SettingsScreen
 - Kurzer Text + externer Link
@@ -141,7 +141,7 @@ Wenn Nutzer sich ueber die Reminder beschweren: Ebene 3 entschaerfen (laengerer 
 
 Vor Implementierung der S-Serie zu klaeren:
 
-1. **Landingpage-URL**: Eigene Domain (phylax.app/unterstuetzen) oder GitHub README Section oder beides?
+1. **Landingpage-URL**: Eigene Domain (befaro.app/unterstuetzen) oder GitHub README Section oder beides?
 2. **Erstes Set an Kanaelen**: Welche zwei bis drei starten als erste? (Vorschlag: GitHub Sponsors + Liberapay + Bank-Link)
 3. **Sprache der Landingpage**: Nur Deutsch oder auch Englisch?
 4. **Datum-Format fuer Reminder-Logik**: ISO-String oder Unix-Timestamp? (ISO lesbarer, Timestamp rechnerfreundlicher)

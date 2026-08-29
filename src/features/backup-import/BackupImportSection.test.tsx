@@ -43,7 +43,7 @@ async function makeBackupBlob(password: string): Promise<File> {
     version: 1,
     type: 'phylax-backup',
     created: '2026-04-20T00:00:00Z',
-    source: { app: 'phylax', appVersion: '0.0.0' },
+    source: { app: 'befaro', appVersion: '0.0.0' },
     crypto: {
       algorithm: 'AES-256-GCM',
       kdf: 'PBKDF2-SHA256',
@@ -52,7 +52,7 @@ async function makeBackupBlob(password: string): Promise<File> {
     },
     data: bytesToBase64(new Uint8Array(ciphertext)),
   });
-  return new File([fileBody], 'phylax-test-backup.phylax', { type: 'application/json' });
+  return new File([fileBody], 'befaro-test-backup.phylax', { type: 'application/json' });
 }
 
 beforeEach(async () => {
@@ -323,8 +323,8 @@ describe('BackupImportSection', () => {
 
     it('wrong-type surfaces the wrong-type message', async () => {
       await uploadAndExpect(
-        { kind: 'wrong-type', got: 'not-phylax' },
-        /keine Phylax-Backup-Datei/i,
+        { kind: 'wrong-type', got: 'not-befaro' },
+        /keine Befaro-Backup-Datei/i,
       );
     });
 
@@ -351,7 +351,7 @@ describe('BackupImportSection', () => {
           version: 1,
           type: 'phylax-backup',
           created: meta.created ?? '2026-04-20T00:00:00Z',
-          source: { app: 'phylax', appVersion: '0.0.0' },
+          source: { app: 'befaro', appVersion: '0.0.0' },
           crypto: {
             algorithm: 'AES-256-GCM',
             kdf: 'PBKDF2-SHA256',

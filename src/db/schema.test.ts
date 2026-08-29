@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import Dexie from 'dexie';
-import { PhylaxDb } from './schema';
+import { BefaroDb } from './schema';
 import type { ObservationRow, MetaRow } from './types';
 
 const EXPECTED_TABLES = [
@@ -17,12 +17,12 @@ const EXPECTED_TABLES = [
   'meta',
 ];
 
-let db: PhylaxDb;
+let db: BefaroDb;
 
 beforeEach(async () => {
   // Delete any existing database to ensure a clean state
   await Dexie.delete('phylax');
-  db = new PhylaxDb();
+  db = new BefaroDb();
 });
 
 function makeRow(overrides: Partial<ObservationRow> = {}): ObservationRow {
@@ -36,7 +36,7 @@ function makeRow(overrides: Partial<ObservationRow> = {}): ObservationRow {
   };
 }
 
-describe('PhylaxDb schema', () => {
+describe('BefaroDb schema', () => {
   it('opens cleanly on first access', async () => {
     await db.open();
     expect(db.isOpen()).toBe(true);
@@ -181,7 +181,7 @@ describe('PhylaxDb schema', () => {
     await db.observations.put(row);
     db.close();
 
-    const db2 = new PhylaxDb();
+    const db2 = new BefaroDb();
     const result = await db2.observations.get('persist-test');
     expect(result).toBeDefined();
     expect(result?.id).toBe('persist-test');

@@ -32,9 +32,9 @@ test.describe('Backup export', () => {
     await page.getByRole('button', { name: 'Backup erstellen' }).click();
     const download = await downloadPromise;
 
-    // Filename follows the phylax-backup-YYYYMMDD-HHmmss.phylax pattern.
+    // Filename follows the befaro-backup-YYYYMMDD-HHmmss.phylax pattern.
     const suggested = download.suggestedFilename();
-    expect(suggested).toMatch(/^phylax-backup-\d{8}-\d{6}\.phylax$/);
+    expect(suggested).toMatch(/^befaro-backup-\d{8}-\d{6}\.phylax$/);
 
     // Read the downloaded file contents and verify envelope shape.
     const stream = await download.createReadStream();
@@ -54,7 +54,7 @@ test.describe('Backup export', () => {
 
     expect(parsed.version).toBe(1);
     expect(parsed.type).toBe('phylax-backup');
-    expect(parsed.source.app).toBe('phylax');
+    expect(parsed.source.app).toBe('befaro');
     expect(parsed.crypto.algorithm).toBe('AES-256-GCM');
     expect(parsed.crypto.kdf).toBe('PBKDF2-SHA256');
     expect(parsed.crypto.iterations).toBe(1_200_000);

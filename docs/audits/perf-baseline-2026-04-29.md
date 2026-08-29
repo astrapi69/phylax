@@ -95,7 +95,7 @@ existing `LoadingSpinner` in `UnlockView`. Outside TTI scope.
 
 ## Conclusion
 
-Phylax is well under its perf budget on both bundle size and
+Befaro is well under its perf budget on both bundle size and
 simulated TTI for v1.0.0. P-08 closes; bundle ceiling continues to
 gate via CI.
 

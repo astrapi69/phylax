@@ -1,4 +1,4 @@
-# Phylax Backlog
+# Befaro Backlog
 
 Prioritised execution order for the open items in
 [`ROADMAP.md`](ROADMAP.md). The ROADMAP groups tasks by phase / series;
@@ -63,6 +63,13 @@ real human in front of a real browser / a screen reader / a market.
 
 These have explicit trigger conditions in ROADMAP. Do nothing until
 the trigger fires.
+
+- **TD-20** Legacy `phylax` identifier migration after the R-06
+  rename (Dexie DB name, storage keys, verification token, backup
+  format v2) plus the `/phylax/` -> `/befaro/` base-path/URL switch.
+  Trigger for the URL part: the maintainer renames the GitHub
+  repository. The data-migration part is deliberately deferred until
+  a migration plan with forward tests exists (see ROADMAP TD-20).
 
 - **P-11** ES / FR / EL translations. Trigger: bug-clean state PLUS
   per-language scope spec, where bug-clean is defined as: no open

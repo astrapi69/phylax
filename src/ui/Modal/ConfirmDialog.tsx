@@ -20,7 +20,7 @@ export interface ConfirmDialogProps {
    * - `default`: blue confirm button, role="dialog".
    * - `destructive`: red confirm button, role="alertdialog" (immediate
    *   screen-reader announcement; for irreversible flows). Cancel
-   *   focused on mount per Phylax convention.
+   *   focused on mount per Befaro convention.
    */
   variant?: ConfirmDialogVariant;
   /**
@@ -51,7 +51,7 @@ export interface ConfirmDialogProps {
  * Convenience wrapper around `<Modal>` for the ubiquitous title +
  * body + cancel/confirm pattern.
  *
- * Defaults follow Phylax convention (5 of 8 existing dialogs default
+ * Defaults follow Befaro convention (5 of 8 existing dialogs default
  * to cancel-focus, regardless of variant): cancel button is focused
  * on mount. Callers needing confirm-default focus override via the
  * underlying `<Modal initialFocusRef>` (use `<Modal>` directly).

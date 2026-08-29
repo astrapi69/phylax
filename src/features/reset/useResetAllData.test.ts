@@ -113,7 +113,7 @@ describe('useResetAllData', () => {
     vi.unstubAllEnvs();
   });
 
-  it('calls indexedDB.deleteDatabase with the Phylax DB name', async () => {
+  it('calls indexedDB.deleteDatabase with the Befaro DB name', async () => {
     const { spy } = installDeleteDbStub('success');
     stubLocation();
 
@@ -125,7 +125,7 @@ describe('useResetAllData', () => {
     expect(spy).toHaveBeenCalledWith(DEXIE_DB_NAME);
   });
 
-  it('clears Phylax-prefixed localStorage keys and leaves unrelated keys untouched', async () => {
+  it('clears Befaro-prefixed localStorage keys and leaves unrelated keys untouched', async () => {
     installDeleteDbStub('success');
     stubLocation();
 
@@ -149,13 +149,13 @@ describe('useResetAllData', () => {
     expect(window.localStorage.getItem('shopping-list')).toBe('milk');
   });
 
-  it('clears Phylax-prefixed sessionStorage keys (rate-limit) and leaves unrelated keys untouched', async () => {
+  it('clears Befaro-prefixed sessionStorage keys (rate-limit) and leaves unrelated keys untouched', async () => {
     installDeleteDbStub('success');
     stubLocation();
 
     window.sessionStorage.setItem('phylax-unlock-rate-limit', '{"failed":3}');
     window.sessionStorage.setItem('phylax-backup-import-rate-limit', '{"failed":1}');
-    window.sessionStorage.setItem('not-phylax-session-key', 'preserve');
+    window.sessionStorage.setItem('not-befaro-session-key', 'preserve');
 
     const { result } = renderHook(() => useResetAllData());
     await act(async () => {
@@ -164,7 +164,7 @@ describe('useResetAllData', () => {
 
     expect(window.sessionStorage.getItem('phylax-unlock-rate-limit')).toBeNull();
     expect(window.sessionStorage.getItem('phylax-backup-import-rate-limit')).toBeNull();
-    expect(window.sessionStorage.getItem('not-phylax-session-key')).toBe('preserve');
+    expect(window.sessionStorage.getItem('not-befaro-session-key')).toBe('preserve');
   });
 
   it('surfaces blocked flag when indexedDB.deleteDatabase fires onblocked', async () => {
@@ -219,7 +219,7 @@ describe('useResetAllData', () => {
     installDeleteDbStub('success');
     stubLocation();
 
-    const cacheNames = ['phylax-precache-v1', 'workbox-runtime', 'unrelated-cache'];
+    const cacheNames = ['befaro-precache-v1', 'workbox-runtime', 'unrelated-cache'];
     const deleteSpy = vi.fn(async () => true);
     const cachesShim = {
       keys: vi.fn(async () => cacheNames),

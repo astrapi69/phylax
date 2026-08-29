@@ -6,7 +6,7 @@
 
 ## Context
 
-Phylax is a PWA targeting mobile users on potentially slow or metered
+Befaro is a PWA targeting mobile users on potentially slow or metered
 connections. The quality checks rule (`.claude/rules/quality-checks.md`)
 sets a hard ceiling of 250 KB gzipped for the initial JS bundle. Without
 a per-commit gate, drift toward that ceiling goes unnoticed until it is

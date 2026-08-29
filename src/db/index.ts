@@ -1,4 +1,4 @@
-export { db, PhylaxDb } from './schema';
+export { db, BefaroDb } from './schema';
 export type {
   EncryptedRow,
   ProfileRow,

@@ -9,11 +9,11 @@
     <!-- Primary SEO -->
     <meta
       name="description"
-      content="Datensouveräne Gesundheits-PWA. Lokale AES-256-Verschlüsselung, keine Cloud, keine Konten. Für dich selbst oder als Betreuungsprofil für Angehörige."
+      content="Befaro: dein lokaler, verschlüsselter Gesundheitsbegleiter. Verwalte Befunde, Laborwerte und Medikamente ohne Cloud, ohne Konto, ohne Datenweitergabe."
     />
     <meta
       name="keywords"
-      content="privacy-first health, encrypted health record, local-first PWA, caregiver health management, zero-knowledge health app, Gesundheitsdaten lokal, verschlüsseltes Gesundheitstagebuch"
+      content="Gesundheit, Befunde, Laborwerte, Medikamente, Datenschutz, lokal, verschlüsselt, PWA, Gesundheitsakte, health app, privacy-first"
     />
     <meta name="author" content="@@APP_AUTHOR@@" />
     <meta name="robots" content="index, follow" />
@@ -56,16 +56,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Phylax" />
-    <meta name="application-name" content="Phylax" />
+    <meta name="apple-mobile-web-app-title" content="Befaro" />
+    <meta name="application-name" content="Befaro" />
 
     <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Phylax" />
-    <meta property="og:title" content="Phylax - Lebende Gesundheit, lokal verschlüsselt" />
+    <meta property="og:site_name" content="Befaro" />
+    <meta property="og:title" content="Befaro - Dein lokaler Gesundheitsbegleiter" />
     <meta
       property="og:description"
-      content="Datensouveräne Gesundheits-PWA. Lokale AES-256-Verschlüsselung, keine Cloud, keine Konten. Für dich selbst oder als Betreuungsprofil für Angehörige."
+      content="Verwalte Befunde, Laborwerte und Medikamente lokal und verschlüsselt. Ohne Cloud, ohne Konto, ohne Datenweitergabe."
     />
     <meta property="og:url" content="https://astrapi69.github.io/phylax/" />
     <meta property="og:image" content="https://astrapi69.github.io/phylax/og-image.png" />
@@ -73,36 +73,39 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Phylax - Lebende Gesundheit. Verlauf, Kontext, Datenhoheit."
+      content="Befaro - Dein lokaler Gesundheitsbegleiter. Lokal, verschlüsselt, ohne Cloud."
     />
     <meta property="og:locale" content="de_DE" />
     <meta property="og:locale:alternate" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Phylax - Lebende Gesundheit, lokal verschlüsselt" />
+    <meta name="twitter:title" content="Befaro - Dein lokaler Gesundheitsbegleiter" />
     <meta
       name="twitter:description"
-      content="Datensouveräne Gesundheits-PWA. Lokale AES-256-Verschlüsselung, keine Cloud, keine Konten. Für dich selbst oder als Betreuungsprofil für Angehörige."
+      content="Verwalte Befunde, Laborwerte und Medikamente lokal und verschlüsselt. Ohne Cloud, ohne Konto."
     />
     <meta name="twitter:image" content="https://astrapi69.github.io/phylax/og-image.png" />
     <meta
       name="twitter:image:alt"
-      content="Phylax - Lebende Gesundheit. Verlauf, Kontext, Datenhoheit."
+      content="Befaro - Dein lokaler Gesundheitsbegleiter. Lokal, verschlüsselt, ohne Cloud."
     />
 
     <!-- Structured data: WebApplication (HealthApplication category).
          Version, author and license below are injected at build time from
-         package.json by the phylax-html-metadata Vite plugin, keeping them a
+         package.json by the befaro-html-metadata Vite plugin, keeping them a
          single source of truth. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Phylax",
-        "description": "Datensouveräne Gesundheits-PWA. Lokale AES-256-Verschlüsselung, keine Cloud, keine Konten. Für dich selbst oder als Betreuungsprofil für Angehörige.",
+        "name": "Befaro",
+        "description": "Lokaler, verschlüsselter Gesundheitsbegleiter. Verwalte Befunde, Laborwerte und Medikamente ohne Cloud.",
         "url": "https://astrapi69.github.io/phylax/",
         "applicationCategory": "HealthApplication",
+        "applicationSubCategory": "Personal Health Record",
+        "isAccessibleForFree": true,
+        "permissions": "none",
         "operatingSystem": "Any (Progressive Web App)",
         "softwareVersion": "@@APP_VERSION@@",
         "offers": {
@@ -129,10 +132,18 @@
       }
     </script>
 
-    <title>Phylax - Lebende Gesundheit, lokal verschlüsselt</title>
+    <title>Befaro - Dein lokaler Gesundheitsbegleiter</title>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Text anchor for crawlers that do not execute JavaScript (D-04). -->
+    <noscript>
+      <h1>Befaro</h1>
+      <p>
+        Befaro ist ein lokaler, verschlüsselter Gesundheitsbegleiter. Bitte aktiviere JavaScript, um
+        die App zu nutzen.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -21,7 +21,7 @@ export interface AIConfigState {
 }
 
 /**
- * Classification of an API key's format. Purely heuristic: Phylax never
+ * Classification of an API key's format. Purely heuristic: Befaro never
  * validates keys against the live API. A "suspicious" key is still saved.
  */
 export type KeyFormatWarning = 'ok' | 'suspicious';

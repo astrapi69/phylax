@@ -1,7 +1,7 @@
 /**
  * Filename formatter for `.phylax` backup exports.
  *
- * `phylax-backup-YYYYMMDD-HHmmss.phylax` in local time.
+ * `befaro-backup-YYYYMMDD-HHmmss.phylax` in local time.
  *
  * Rationale:
  *   - ISO-ordered prefix: sortable in file managers
@@ -26,5 +26,5 @@ export function formatBackupFilename(date: Date = new Date()): string {
   const hh = pad2(date.getHours());
   const mi = pad2(date.getMinutes());
   const ss = pad2(date.getSeconds());
-  return `phylax-backup-${yyyy}${mm}${dd}-${hh}${mi}${ss}.phylax`;
+  return `befaro-backup-${yyyy}${mm}${dd}-${hh}${mi}${ss}.phylax`;
 }

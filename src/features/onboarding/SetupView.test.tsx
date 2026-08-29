@@ -65,7 +65,7 @@ describe('SetupView', () => {
   it('disables submit until password, confirm, and acknowledgment are valid', async () => {
     const user = userEvent.setup();
     renderInRouter();
-    const submit = screen.getByRole('button', { name: 'Phylax einrichten' });
+    const submit = screen.getByRole('button', { name: 'Befaro einrichten' });
     expect(submit).toBeDisabled();
 
     await user.type(screen.getByLabelText('Master-Passwort'), VALID_PASSWORD);
@@ -85,7 +85,7 @@ describe('SetupView', () => {
     await user.type(screen.getByLabelText('Master-Passwort'), VALID_PASSWORD);
     await user.type(screen.getByLabelText('Passwort wiederholen'), VALID_PASSWORD);
     await user.click(screen.getByLabelText('Ich habe verstanden'));
-    await user.click(screen.getByRole('button', { name: 'Phylax einrichten' }));
+    await user.click(screen.getByRole('button', { name: 'Befaro einrichten' }));
 
     await waitFor(
       () => expect(screen.getByTestId('destination-profile-create')).toBeInTheDocument(),
@@ -105,7 +105,7 @@ describe('SetupView', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Set your master password' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Set up Phylax' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Set up Befaro' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
   });
 
@@ -219,7 +219,7 @@ describe('SetupView', () => {
     // Submit is still disabled until acknowledged, but we fire a raw
     // submit event on the form to exercise handleSubmit's showError
     // path (SetupView lines 210-213).
-    const form = screen.getByRole('button', { name: 'Phylax einrichten' }).closest('form');
+    const form = screen.getByRole('button', { name: 'Befaro einrichten' }).closest('form');
     if (!form) throw new Error('form not found');
     fireEvent.submit(form);
 

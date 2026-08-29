@@ -101,7 +101,7 @@ describe('UnlockView', () => {
     const { default: i18n } = await import('../../i18n/config');
     await i18n.changeLanguage('en');
     renderUnlock();
-    expect(screen.getByRole('heading', { level: 1, name: 'Unlock Phylax' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Unlock Befaro' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Import data from backup' })).toBeInTheDocument();
     await i18n.changeLanguage('de');
   });

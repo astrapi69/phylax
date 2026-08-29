@@ -12,7 +12,7 @@ describe('ConsentDialog', () => {
   it('renders the pdf-rasterization title and explanation', () => {
     render(<ConsentDialog reason="pdf-rasterization" onGrant={vi.fn()} onDecline={vi.fn()} />);
     expect(screen.getByText('PDF wird als Bilder hochgeladen')).toBeInTheDocument();
-    expect(screen.getByText(/Phylax muss die Seiten als Bilder/)).toBeInTheDocument();
+    expect(screen.getByText(/Befaro muss die Seiten als Bilder/)).toBeInTheDocument();
   });
 
   it('focuses the cancel button on mount', () => {

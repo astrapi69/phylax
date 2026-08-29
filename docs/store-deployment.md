@@ -1,6 +1,6 @@
-# Phylax Store Deployment Guide
+# Befaro Store Deployment Guide
 
-How to publish Phylax to the major application stores. Phylax is a
+How to publish Befaro to the major application stores. Befaro is a
 PWA, so most stores accept it via a PWABuilder-generated wrapper;
 Apple App Store needs a manual Capacitor / Xcode step. None of this
 flow is automated; the runbook below is the maintainer's
@@ -56,7 +56,7 @@ identity + start URL → download `.aab` + Digital Asset Links JSON.
 2. Place the DAL JSON at
    `https://astrapi69.github.io/.well-known/assetlinks.json` -
    this lives in the `astrapi69.github.io` repo (org / user
-   pages), NOT in the Phylax repo, because the path is on the
+   pages), NOT in the Befaro repo, because the path is on the
    apex host.
 3. Upload `.aab` to Play Console → internal testing track →
    verify DAL → promote to production.
@@ -104,9 +104,9 @@ Two viable paths:
 #### Option B: Capacitor wrapper
 
 1. Run `npm i @capacitor/core @capacitor/cli @capacitor/ios` in a
-   fork of the Phylax repo (do NOT pollute main package.json -
+   fork of the Befaro repo (do NOT pollute main package.json -
    Capacitor is iOS-only and pollutes the dependency surface).
-2. `npx cap init Phylax com.asterios.phylax`.
+2. `npx cap init Befaro com.asterios.phylax`.
 3. `npx cap add ios`.
 4. Build the production bundle (`make build`) and copy `dist/`
    into the Capacitor iOS project as the web layer.
@@ -115,7 +115,7 @@ Two viable paths:
 **Apple-specific gotchas:**
 
 - Apple rejects PWAs that "merely link to a web app" without
-  added value. The current Phylax build offers
+  added value. The current Befaro build offers
   install-as-a-PWA already; the App Store version needs a
   meaningful difference (e.g., share-extension, file-handler).
   Consider implementing Web Share Target + Open-with handlers
@@ -196,7 +196,7 @@ F-Droid is "out of scope".
 - Each store's review feedback is non-deterministic; an
   automation that re-submits on rejection can quickly hit a
   store-side rate limit (Apple in particular).
-- Phylax's local-first architecture
+- Befaro's local-first architecture
   (`.claude/rules/architecture.md`) explicitly avoids backend
   services; an automated submission pipeline contradicts that
   posture.

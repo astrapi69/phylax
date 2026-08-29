@@ -14,7 +14,7 @@ export interface PersistentStorageBannerProps {
 
 /**
  * localStorage key template for per-profile dismiss flag. Per-profile
- * (not global) because Phylax has a multi-profile phase on the
+ * (not global) because Befaro has a multi-profile phase on the
  * roadmap (Phase 8); one profile dismissing should not suppress the
  * banner on another profile that might benefit from seeing it.
  */

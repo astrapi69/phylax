@@ -21,7 +21,7 @@ describe('PrivacyInfoPopover', () => {
     const heading = document.getElementById(labelledby);
     expect(heading?.textContent).toMatch(/Datenschutz beim KI-Chat/i);
     expect(screen.getByRole('heading', { name: 'Datenschutz beim KI-Chat' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Was Phylax macht' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Was Befaro macht' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was Anthropic macht' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was du kontrollierst' })).toBeInTheDocument();
   });

@@ -6,7 +6,7 @@ import { composeExtractorPrompt, type ExtractorName } from './promptTemplates';
  * System prompts and tool schemas for the IMP-03 classifier and
  * per-class extractors.
  *
- * All prompts are German because Phylax's primary market is the
+ * All prompts are German because Befaro's primary market is the
  * DACH region; medical documents arrive in German. The structuring
  * principles inherit the AI-03 system prompt's contract:
  * structure-only, no diagnosis, mark uncertainties.

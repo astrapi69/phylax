@@ -31,7 +31,7 @@ vi.mock('./populateVault', async () => {
 import { encrypt, generateSalt, deriveKeyFromPassword, lock } from '../../crypto';
 import { PBKDF2_ITERATIONS } from '../../crypto/constants';
 import { resetDatabase } from '../../db/test-helpers';
-import type { ParsedPhylaxFile } from './parseBackupFile';
+import type { ParsedBefaroFile } from './parseBackupFile';
 import { useBackupImport } from './useBackupImport';
 import { BACKUP_IMPORT_STORAGE_KEY, createRateLimiter } from '../unlock/rateLimit';
 
@@ -41,7 +41,7 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-async function makeBackup(password: string): Promise<ParsedPhylaxFile> {
+async function makeBackup(password: string): Promise<ParsedBefaroFile> {
   const salt = generateSalt();
   const key = await deriveKeyFromPassword(password, salt);
   const inner = {
@@ -57,7 +57,7 @@ async function makeBackup(password: string): Promise<ParsedPhylaxFile> {
     version: 1,
     type: 'phylax-backup',
     created: '2026-04-20T00:00:00Z',
-    source: { app: 'phylax', appVersion: '0.0.0' },
+    source: { app: 'befaro', appVersion: '0.0.0' },
     crypto: {
       algorithm: 'AES-256-GCM',
       kdf: 'PBKDF2-SHA256',

@@ -346,7 +346,7 @@ function buildFooter(version: string, lastUpdateReason: string | undefined): str
     '---',
     '',
     `**Export erstellt:** ${exportedAt}`,
-    `**Phylax-Version:** 1.0.0`,
+    `**Befaro-Version:** 1.0.0`,
     `**Profil-Version:** ${version}`,
   ];
   if (lastUpdateReason) {

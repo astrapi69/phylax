@@ -5,7 +5,7 @@ import { PrivacyInfoContent } from './PrivacyInfoContent';
 describe('PrivacyInfoContent', () => {
   it('renders all three section headings', () => {
     render(<PrivacyInfoContent />);
-    expect(screen.getByRole('heading', { name: 'Was Phylax macht' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Was Befaro macht' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was Anthropic macht' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Was du kontrollierst' })).toBeInTheDocument();
   });

@@ -62,7 +62,7 @@ describe('Modal', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  it('backdrop click does NOT close by default (Phylax convention)', async () => {
+  it('backdrop click does NOT close by default (Befaro convention)', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     render(<Harness onClose={onClose} />);

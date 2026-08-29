@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable */
 /**
- * Seed a Phylax browser session for manual smoke walks.
+ * Seed a Befaro browser session for manual smoke walks.
  *
  * Drives Chromium via Playwright through onboarding, profile-create,
  * and one or two markdown imports. Leaves the browser open at the
@@ -84,7 +84,7 @@ async function onboardAndCreateProfile(page) {
   await page.getByLabel('Master-Passwort').first().fill(PASSWORD);
   await page.getByLabel('Passwort wiederholen').fill(PASSWORD);
   await page.getByLabel('Ich habe verstanden').check();
-  const submit = page.getByRole('button', { name: 'Phylax einrichten' });
+  const submit = page.getByRole('button', { name: 'Befaro einrichten' });
   await submit.waitFor({ state: 'visible' });
   for (let i = 0; i < 60 && !(await submit.isEnabled()); i++) {
     await page.waitForTimeout(500);

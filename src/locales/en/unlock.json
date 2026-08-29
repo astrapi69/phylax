@@ -1,5 +1,5 @@
 {
-  "title": "Unlock Phylax",
+  "title": "Unlock Befaro",
   "subtitle": "Enter your master password to continue.",
   "deriving-spinner": "Unlocking...",
   "done-alert": "Unlocked.",
@@ -23,6 +23,6 @@
   "forgotten-password-link": "Forgot your password? Delete all data and start over",
   "error": {
     "wrong-password": "Wrong password.",
-    "no-meta": "Setup was not completed. Please set up Phylax again."
+    "no-meta": "Setup was not completed. Please set up Befaro again."
   }
 }

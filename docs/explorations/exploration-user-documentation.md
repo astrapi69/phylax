@@ -1,4 +1,4 @@
-# Phylax User Documentation: Exploration
+# Befaro User Documentation: Exploration
 
 > Status: Discussion basis, not a final plan
 > Date: 2026-04-27
@@ -7,7 +7,7 @@
 
 ## Summary
 
-Phylax has a productive code base (v1.0.0 shipped) but no structured user-facing documentation. The gap grows with feature depth. This document explores options for a documentation approach and proposes a concrete first iteration.
+Befaro has a productive code base (v1.0.0 shipped) but no structured user-facing documentation. The gap grows with feature depth. This document explores options for a documentation approach and proposes a concrete first iteration.
 
 **Recommendation in brief:** A hybrid approach with an MkDocs-based external doc site at `astrapi69.github.io/phylax-docs/` (or analogous to Bibliogon at `help/` setup), in-app help links from relevant screens, and an opt-in onboarding tour for first-time users. Content draws from the existing four-part article series with the planned fifth article as synthesis, all part of the umbrella series "From Theory to Practice".
 
@@ -17,11 +17,11 @@ The docs should be in DE+EN parallel from the start, matching the app's locale s
 
 ## 1. User Group Analysis
 
-Phylax serves multiple user types with divergent needs. The docs need to reach all of them without alienating any.
+Befaro serves multiple user types with divergent needs. The docs need to reach all of them without alienating any.
 
 ### 1.1 Primary User: Health-Conscious Self-Manager
 
-A person who wants to structurally document their own health data. Medium to high tech affinity (can use a browser, understands "backup", but is not a developer). Wants to use Phylax because:
+A person who wants to structurally document their own health data. Medium to high tech affinity (can use a browser, understands "backup", but is not a developer). Wants to use Befaro because:
 
 - Data belongs to them, not to a cloud
 - Encryption is communicated comprehensibly
@@ -29,14 +29,14 @@ A person who wants to structurally document their own health data. Medium to hig
 
 What this person needs:
 
-- Quick "First Steps" (from "open Phylax" to "first profile created" in 5-10 minutes)
+- Quick "First Steps" (from "open Befaro" to "first profile created" in 5-10 minutes)
 - Clear explanations of what happens when (e.g., "what if I forget my password")
 - Workflows for common tasks: add an entry, import a report, create a backup
 - Not too much theory at once, but access to theory when wanted
 
 ### 1.2 Secondary User: Tech-Affine Power User
 
-A developer or tech professional who uses Phylax as a tool, possibly self-hosting, possibly contributing to the codebase. Wants:
+A developer or tech professional who uses Befaro as a tool, possibly self-hosting, possibly contributing to the codebase. Wants:
 
 - Architecture overview
 - Threat model
@@ -52,9 +52,9 @@ A person who manages data for someone else (parent for child, adult for a depend
 
 ### 1.4 Quaternary User: Curious Observers
 
-Heard about Phylax, wants to understand what it is and whether it's for them. Needs:
+Heard about Befaro, wants to understand what it is and whether it's for them. Needs:
 
-- What is Phylax (not: what can Phylax do)
+- What is Befaro (not: what can Befaro do)
 - Why does it exist
 - How does it differ from Apple Health, Google Fit, MyFitnessPal etc.
 - Conceptual entry point ("Living Health")
@@ -63,7 +63,7 @@ This audience often hits the docs as their first touchpoint. The first 30 second
 
 ### 1.5 Prioritization
 
-Phylax is freshly v1.0.0, user base is presumably small. Doc investments need to pay off. Priority order:
+Befaro is freshly v1.0.0, user base is presumably small. Doc investments need to pay off. Priority order:
 
 1. **1.4 (Curious) and 1.1 (Self-managers)** - combined ~80% of doc traffic
 2. **1.2 (Power users)** - link existing material, don't duplicate
@@ -106,7 +106,7 @@ Structured by user journey rather than feature list:
 
 **A. Getting Started**
 
-- What is Phylax (1 page, clear, narrative)
+- What is Befaro (1 page, clear, narrative)
 - Why Living Health (link to article series for depth)
 - First Steps (5 minutes, guided first impression)
 - Understanding Concepts (Profile, Observation, Timeline, Encryption)
@@ -169,26 +169,26 @@ Structured by user journey rather than feature list:
 
 | Option             | Advantages                                                        | Disadvantages                                                    |
 | ------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Markdown in repo   | Version control, PR reviews, Phylax-stack-consistent              | Rendered only on GitHub, no search, no in-app access             |
+| Markdown in repo   | Version control, PR reviews, Befaro-stack-consistent              | Rendered only on GitHub, no search, no in-app access             |
 | MkDocs Static Site | Search, nice navigation, mobile-friendly, multi-language possible | Build pipeline needed, external URL                              |
 | In-app help view   | Contextual, no tab switch, offline                                | Double maintenance, app bundle grows, no SEO                     |
-| Notion/GitBook     | Quick to start, collab features                                   | Lock-in, external dependency, against Phylax privacy-first ethos |
+| Notion/GitBook     | Quick to start, collab features                                   | Lock-in, external dependency, against Befaro privacy-first ethos |
 | Onboarding tour    | Just-in-time learning, low threshold                              | Only explains the first step, no reference work                  |
 
 ### 3.2 Recommendation: Hybrid Approach Analogous to Bibliogon
 
-**Confirmed:** Bibliogon's MkDocs setup lives in the `help/` folder of that project and is reusable as a template for Phylax. This saves significant setup work.
+**Confirmed:** Bibliogon's MkDocs setup lives in the `help/` folder of that project and is reusable as a template for Befaro. This saves significant setup work.
 
 Three components that work together:
 
 **Component 1: MkDocs site as canonical reference work.**
 
-- Hosting: GitHub Pages, either at `astrapi69.github.io/phylax-docs/` (separate repo) or as subpath in the Phylax repo
+- Hosting: GitHub Pages, either at `astrapi69.github.io/phylax-docs/` (separate repo) or as subpath in the Befaro repo
 - All content from the backbone (Section 2.2)
 - Search, navigation, mobile-responsive
 - Versioned via Git
 - DE and EN parallel from day one
-- Bibliogon-MkDocs setup from `help/` as the starting template - clone, adjust theming/colors/navigation for Phylax, populate content
+- Bibliogon-MkDocs setup from `help/` as the starting template - clone, adjust theming/colors/navigation for Befaro, populate content
 
 **Component 2: In-app help links.**
 
@@ -206,18 +206,18 @@ Three components that work together:
 - Implementation: own feature in `src/features/onboarding-tour/` or as extension of the existing onboarding flow
 - **User-confirmed: tour must be offered, not forced.** Setup completion does not block on tour completion.
 
-### 3.3 Why This Hybrid Approach Fits Phylax
+### 3.3 Why This Hybrid Approach Fits Befaro
 
-- **MkDocs site** is the Phylax-consistent way: Markdown source, Git-versioned, statically generated, no tracking. Matches privacy-first philosophy.
-- **In-app links** instead of in-app rendering keep the bundle lean (Phylax watches its bundle budget, currently ~280KB of 380KB). Docs in the bundle would be counterproductive.
+- **MkDocs site** is the Befaro-consistent way: Markdown source, Git-versioned, statically generated, no tracking. Matches privacy-first philosophy.
+- **In-app links** instead of in-app rendering keep the bundle lean (Befaro watches its bundle budget, currently ~280KB of 380KB). Docs in the bundle would be counterproductive.
 - **Onboarding tour** meets users where they first stand. The subsequent doc link leads to deeper sources.
-- **Bibliogon pattern as template** saves work: what works there can be reused by Phylax. The `help/` folder convention keeps doc tooling next to but not inside the production code.
+- **Bibliogon pattern as template** saves work: what works there can be reused by Befaro. The `help/` folder convention keeps doc tooling next to but not inside the production code.
 
 ---
 
 ## 4. Multi-Language Strategy
 
-Phylax is DE+EN active (see I18N-02), with FR/ES/EL planned. Doc languages need to co-evolve with the app.
+Befaro is DE+EN active (see I18N-02), with FR/ES/EL planned. Doc languages need to co-evolve with the app.
 
 ### 4.1 Decision: DE + EN parallel from the start
 
@@ -246,7 +246,7 @@ The exact enforcement mechanism is its own discussion when iteration 1 starts.
 
 ### 5.1 Who Maintains the Docs
 
-Currently: solo maintainer (Aster). This is real and matches Phylax reality.
+Currently: solo maintainer (Aster). This is real and matches Befaro reality.
 
 Implications for doc design:
 
@@ -276,7 +276,7 @@ The exploration document proposes a hybrid approach. The first iteration should 
 
 - MkDocs site setup using Bibliogon's `help/` as template
 - Basic navigation analogous to content backbone (Sections A-G), but initially only:
-  - A.1 "What is Phylax" (1 page, freshly written)
+  - A.1 "What is Befaro" (1 page, freshly written)
   - A.3 "First Steps" (step-by-step setup tutorial)
   - B "Daily Use" (5 pages, one per feature)
   - C.4 "Creating and restoring backups" (critical, large surface)
@@ -321,7 +321,7 @@ Before Iteration 1 starts, small steps could deliver value immediately:
 
 ---
 
-## 7. Phylax-Specific Considerations
+## 7. Befaro-Specific Considerations
 
 ### 7.1 Privacy-First Consistency
 
@@ -336,7 +336,7 @@ GitHub Pages itself logs accesses, which is acceptable and transparent.
 
 ### 7.2 No Medical Advice
 
-Phylax-ROADMAP explicitly lists "Medical advice, treatment recommendations, or interpretation of health data" as out-of-scope. The docs must hold this line:
+Befaro-ROADMAP explicitly lists "Medical advice, treatment recommendations, or interpretation of health data" as out-of-scope. The docs must hold this line:
 
 - Docs show **how** to record data, not **which** data to record
 - Examples in docs are generic, no "this is good diabetes tracking"
@@ -350,9 +350,9 @@ For EN docs: same discipline, glossary defines canonical English terms ("Observa
 
 ### 7.4 Version Awareness
 
-Phylax v1.0.0 just landed, but features keep coming. Docs must clarify which version they describe:
+Befaro v1.0.0 just landed, but features keep coming. Docs must clarify which version they describe:
 
-- Footer with "As of: Phylax v1.0.x" or similar
+- Footer with "As of: Befaro v1.0.x" or similar
 - For larger version jumps, a version switcher (MkDocs supports this) or noted doc state per phase
 
 ---
@@ -361,7 +361,7 @@ Phylax v1.0.0 just landed, but features keep coming. Docs must clarify which ver
 
 To clarify before Iteration 1:
 
-1. **Hosting domain:** `astrapi69.github.io/phylax-docs/` (separate repo) or subpath in Phylax repo (`astrapi69.github.io/phylax/docs/`)? Separate repo is cleaner for deploy cycles, but two repos to maintain. Bibliogon's `help/` lives inside the bibliogon repo, so the existing pattern is "subpath, single repo".
+1. **Hosting domain:** `astrapi69.github.io/phylax-docs/` (separate repo) or subpath in Befaro repo (`astrapi69.github.io/phylax/docs/`)? Separate repo is cleaner for deploy cycles, but two repos to maintain. Bibliogon's `help/` lives inside the bibliogon repo, so the existing pattern is "subpath, single repo".
 
 2. **~~Are the four articles publicly linkable?~~** ✅ Resolved: yes, public on Medium. Parts 1-2 in EN, full DE series. Parts 3-4 EN translation in progress.
 
@@ -369,7 +369,7 @@ To clarify before Iteration 1:
 
 4. **Onboarding tour format:** Tour within the app (interactive with spotlight/highlight library) or simpler as a static setup guide in the onboarding flow? First is more powerful, second is faster to implement. Decision can defer to Iteration-2.
 
-5. **Search engine visibility:** Should the doc site be indexable (Google finds it) or deliberately not? Phylax privacy ethos could speak for nofollow, but then the docs don't reach potential users. Lean: indexable. Privacy of users using the app is independent from discoverability of the docs.
+5. **Search engine visibility:** Should the doc site be indexable (Google finds it) or deliberately not? Befaro privacy ethos could speak for nofollow, but then the docs don't reach potential users. Lean: indexable. Privacy of users using the app is independent from discoverability of the docs.
 
 6. **Contribution path:** Should external people be able to submit doc pull requests? If yes, a CONTRIBUTING.md and review workflow are needed. Lean: defer to Iteration-3 or beyond. Solo maintainer first, community contribution later.
 
@@ -391,7 +391,7 @@ Instead:
 
 ## 10. Summary
 
-Phylax needs user docs. The recommendation is a hybrid approach with:
+Befaro needs user docs. The recommendation is a hybrid approach with:
 
 - **MkDocs site** as canonical work, analogous to Bibliogon (`help/` template reusable)
 - **In-app help links** for context access without bundle bloat

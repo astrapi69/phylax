@@ -5,9 +5,9 @@
 
 ## Context
 
-Phylax needs a dark mode to be comfortable to use on mobile devices and in low-light environments. The theme choice must persist across reloads, respect the system preference when the user has not expressed one, and apply without a visible flash of the wrong theme on load. It also needs to work on screens that render before the IndexedDB database is available (onboarding and unlock), because asking someone to unlock the app with a bright white flash is both irritating and, for some users, accessibility-breaking.
+Befaro needs a dark mode to be comfortable to use on mobile devices and in low-light environments. The theme choice must persist across reloads, respect the system preference when the user has not expressed one, and apply without a visible flash of the wrong theme on load. It also needs to work on screens that render before the IndexedDB database is available (onboarding and unlock), because asking someone to unlock the app with a bright white flash is both irritating and, for some users, accessibility-breaking.
 
-Two persistence options exist: IndexedDB (the rest of Phylax's data) or localStorage (the web platform's default for preferences). And two UX options exist: a binary toggle (light / dark) or a three-state toggle (light / dark / auto).
+Two persistence options exist: IndexedDB (the rest of Befaro's data) or localStorage (the web platform's default for preferences). And two UX options exist: a binary toggle (light / dark) or a three-state toggle (light / dark / auto).
 
 ## Decision
 
@@ -22,7 +22,7 @@ Theme lives in `localStorage` under the key `phylax-theme`. Values: `'light'`, `
 
 ### Three-state model
 
-`light` / `dark` / `auto`. `auto` resolves reactively to the current value of `window.matchMedia('(prefers-color-scheme: dark)')`. When a user in `auto` changes their system theme, Phylax follows without a reload.
+`light` / `dark` / `auto`. `auto` resolves reactively to the current value of `window.matchMedia('(prefers-color-scheme: dark)')`. When a user in `auto` changes their system theme, Befaro follows without a reload.
 
 The alternative (binary toggle with an implicit auto-follow on first load) hides the third state from the user and gives no way to say "always dark, even on a light-themed system". The explicit third option is worth the one extra radio.
 
@@ -77,7 +77,7 @@ Palette choices:
 
 - One place (`<ThemeProvider>`) owns the state. Every component reads via `useTheme()` or, more commonly, via the `dark:` class and Tailwind's variant system.
 - Flash-free on first load, including the unlock screen.
-- Auto mode lets users who change their system theme at sunset have the app follow without touching Phylax.
+- Auto mode lets users who change their system theme at sunset have the app follow without touching Befaro.
 - The ADR color table prevents drift in future view tasks.
 
 ### Trade-offs

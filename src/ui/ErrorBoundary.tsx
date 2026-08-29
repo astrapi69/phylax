@@ -29,7 +29,7 @@ interface ErrorBoundaryState {
  * home) and a collapsible `<details>` block carrying the raw error
  * message + stack so users can copy-paste the diagnostic into a bug
  * report. No telemetry, no error reporting service - per CLAUDE.md
- * Phylax does not call out to any third-party from runtime code.
+ * Befaro does not call out to any third-party from runtime code.
  *
  * Single top-level boundary for v1.0; per-route boundaries are a
  * deferred refinement until a concrete failure mode justifies them.

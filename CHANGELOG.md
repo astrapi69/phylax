@@ -1,11 +1,37 @@
 # Changelog
 
-All notable changes to Phylax will be documented in this file.
+All notable changes to Befaro will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- **App renamed from Phylax to Befaro** [R-06]. Repo-wide rename of
+  all branding: UI strings and i18n locales, PWA manifest (`name`
+  "Befaro - Gesundheitsbegleiter", `short_name` "Befaro", new
+  description), `package.json` name, docs, ADRs, rules, code
+  identifiers and comments, PDF/Markdown/CSV export filename bases
+  (`befaro-profil-`, `befaro-labor-`) and the backup filename base
+  (`befaro-backup-`). The SEO foundation from D-04 is refreshed for
+  the new name in the same commit: new German meta description and
+  keywords, Open Graph / Twitter titles and descriptions
+  ("Befaro - Dein lokaler Gesundheitsbegleiter"), regenerated OG
+  cards (`make og-images`, new "B" wordmark), JSON-LD gains
+  `applicationSubCategory: "Personal Health Record"`,
+  `isAccessibleForFree` and `permissions: "none"`, a `<noscript>`
+  text anchor for non-JS crawlers, and `lastmod` in `sitemap.xml`.
+  Deliberately NOT renamed, to keep existing installations and
+  backups working (identifier migration tracked as TD-20): the
+  Dexie database name `phylax`, every `phylax-`/`phylax.`
+  localStorage/sessionStorage key, the encrypted verification token
+  `phylax-verification-v1`, the backup format identifiers
+  (`type: "phylax-backup"`, `.phylax` extension), and the GitHub
+  URLs plus GitHub Pages base path `/phylax/` (incl. the stable
+  manifest `id`), which follow only after the maintainer renames
+  the GitHub repository itself.
 
 ### Added
 
@@ -17,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tags, and a JSON-LD `WebApplication` block with
   `applicationCategory: HealthApplication`. Version, author, and
   license in the structured data are injected at build time from
-  `package.json` by a new `phylax-html-metadata` Vite plugin
+  `package.json` by a new `befaro-html-metadata` Vite plugin
   (single source of truth; `author` and `license` fields added to
   `package.json`). The primary description is English for wider
   reach; the title stays German (`lang="de"`) with a `de_DE` /
@@ -357,7 +383,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **M-01..M-05: Multi-profile activation** (four-phase direct-to-main
-  track, five commits 2026-06-02). Lifts Phylax from the single-
+  track, five commits 2026-06-02). Lifts Befaro from the single-
   profile MVP into a working multi-profile installation. The schema
   has carried `profileId` on every entity row since day one
   (`.claude/rules/architecture.md`), so this work is purely the UI
@@ -472,7 +498,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      "Name · Seite N / total" right-aligned in secondary gray
      under a thin accent rule. Page numbers moved out of the
      footer into the running header; footer simplified to
-     "Phylax · {{date}}" in muted gray.
+     "Befaro · {{date}}" in muted gray.
 
   5. **Orphan protection** at section / theme-group / entry
      boundaries. Soft keep-with-next reservations
@@ -520,9 +546,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (optionally hidden) username fields for accessibility".** Every
   master-password form (unlock, setup, backup export, backup import,
   change password) now includes a hidden `<input
-autocomplete="username" value="phylax">` so password managers can
+autocomplete="username" value="befaro">` so password managers can
   associate the password with a stable account hint and Chrome's
-  a11y check passes. The constant `phylax` is reused across all five
+  a11y check passes. The constant `befaro` is reused across all five
   forms because they all accept the same master credential
   (backup encryption derives from the master password); a single
   hint keeps password-manager entries consolidated rather than
@@ -562,7 +588,7 @@ action required to upgrade.
 
 #### AI assistant
 
-- Multi-AI-Provider support (AIP-01..05): the AI assistant now talks to seven provider presets (Anthropic, OpenAI, Google, Mistral, LM Studio, Ollama, custom) through a multi-adapter `LLMClient` (Anthropic native + OpenAI-compatible). New `aiStream` helper at `src/features/ai/aiCall.ts` unifies streaming text across providers and replaces the deleted `streamCompletion` / `anthropicClient.ts`; `useChat` and `requestCleanup` migrate transparently. Storage-layer change: `MetaPayload.aiConfig` evolves from a single `AIProviderConfig` to `MultiProviderAIConfig = { providers: AIProviderConfig[]; activeProviderId }`; legacy single-shape vaults migrate automatically on read with a defence-in-depth parser (malformed entries dropped, duplicate ids deduplicated last-wins, `activeProviderId` repaired when it points outside the list). UI-layer change: AISettingsSection is now a 230-LOC summary view with provider label + masked API key + model + "Anbieter verwalten" / "KI deaktivieren" buttons; the new three-step `AiSetupWizard` mounts via `React.lazy` + `Suspense fallback={null}` so the wizard chunk only ships when the user clicks. CORS-blocked providers (OpenAI, Mistral) save with a clear amber warning on wizard step 2 explaining that browser-direct calls require a proxy Phylax does not yet provide. Decision A2 keeps `requestCompletion` + `tool_use` Anthropic-only because cross-provider tool-call protocols differ; a generic structured-output abstraction is a deliberate future task. Foundation reused: master-password-derived AES-GCM-256 key (ADR-0001), encrypted `meta.payload` blob, ADR-0018 P-06 reencryption pipeline (multi-provider AI config rides along, no `TABLES_TO_REENCRYPT` change). Architecture documented in ADR-0019; manual smoke at `docs/manual-smoke/ai-multi-provider.md`.
+- Multi-AI-Provider support (AIP-01..05): the AI assistant now talks to seven provider presets (Anthropic, OpenAI, Google, Mistral, LM Studio, Ollama, custom) through a multi-adapter `LLMClient` (Anthropic native + OpenAI-compatible). New `aiStream` helper at `src/features/ai/aiCall.ts` unifies streaming text across providers and replaces the deleted `streamCompletion` / `anthropicClient.ts`; `useChat` and `requestCleanup` migrate transparently. Storage-layer change: `MetaPayload.aiConfig` evolves from a single `AIProviderConfig` to `MultiProviderAIConfig = { providers: AIProviderConfig[]; activeProviderId }`; legacy single-shape vaults migrate automatically on read with a defence-in-depth parser (malformed entries dropped, duplicate ids deduplicated last-wins, `activeProviderId` repaired when it points outside the list). UI-layer change: AISettingsSection is now a 230-LOC summary view with provider label + masked API key + model + "Anbieter verwalten" / "KI deaktivieren" buttons; the new three-step `AiSetupWizard` mounts via `React.lazy` + `Suspense fallback={null}` so the wizard chunk only ships when the user clicks. CORS-blocked providers (OpenAI, Mistral) save with a clear amber warning on wizard step 2 explaining that browser-direct calls require a proxy Befaro does not yet provide. Decision A2 keeps `requestCompletion` + `tool_use` Anthropic-only because cross-provider tool-call protocols differ; a generic structured-output abstraction is a deliberate future task. Foundation reused: master-password-derived AES-GCM-256 key (ADR-0001), encrypted `meta.payload` blob, ADR-0018 P-06 reencryption pipeline (multi-provider AI config rides along, no `TABLES_TO_REENCRYPT` change). Architecture documented in ADR-0019; manual smoke at `docs/manual-smoke/ai-multi-provider.md`.
 
 #### Documents and import
 
@@ -622,11 +648,11 @@ action required to upgrade.
 - BUG-02 hamburger drawer: replaces the bottom-nav that broke on mobile keyboard.
 - BUG-03 / 04 / 05 / 06 documents fixes: linked-entity surfacing, delete-cascade visibility, viewer focus-trap, MIME-type detection edge cases.
 - BUG-07 / 08 / 09 / 10 ai-config fixes: API-key masking via CSS (BUG-10), dropdown timing on the wizard, settings refresh after save (BUG-08), webkit-on-CI smoke regressions, plus general resilience around config persistence.
-- E2E production-build regressions: webkit zxcvbn timing on `Phylax einrichten` button, import-confirm dialog heading rename, and the webkit driver bug on navigation while offline (skipped on webkit; chromium and firefox cover the offline-cache contract).
+- E2E production-build regressions: webkit zxcvbn timing on `Befaro einrichten` button, import-confirm dialog heading rename, and the webkit driver bug on navigation while offline (skipped on webkit; chromium and firefox cover the offline-cache contract).
 
 ### Security
 
-- Architecture decision: ADR-0019 documents the Multi-AI-Provider architecture: adapter pattern via `LLMClient`, Phylax crypto reuse (no parallel encryption pipeline), Decision A2 streaming-vs-structured-output split, single-shape -> multi-shape migration on read with idempotent defence-in-depth, lazy-load wizard, and the donor extraction lessons (two donor bugs caught and fixed during integration: `verifyOpenAI` AbortError swallow -> re-throw, `LLMClient.postJson` AbortError wrap -> re-throw). Multi-provider AI configurations ride on the existing encrypted `meta.payload` blob; the ADR-0018 P-06 reencryption pipeline handles them automatically without a `TABLES_TO_REENCRYPT` change.
+- Architecture decision: ADR-0019 documents the Multi-AI-Provider architecture: adapter pattern via `LLMClient`, Befaro crypto reuse (no parallel encryption pipeline), Decision A2 streaming-vs-structured-output split, single-shape -> multi-shape migration on read with idempotent defence-in-depth, lazy-load wizard, and the donor extraction lessons (two donor bugs caught and fixed during integration: `verifyOpenAI` AbortError swallow -> re-throw, `LLMClient.postJson` AbortError wrap -> re-throw). Multi-provider AI configurations ride on the existing encrypted `meta.payload` blob; the ADR-0018 P-06 reencryption pipeline handles them automatically without a `TABLES_TO_REENCRYPT` change.
 - Architecture decision: ADR-0018 documents the change-master-password three-phase pipeline, the sudo-pattern verification, the same-salt rationale, the reference-counted auto-lock pause, the no-cancellation policy, the Phase 2 commit + Phase 3 throw recovery path, and the deferred memory-streaming trigger.
 - Architecture decision: ADR-0017 introduces `pdfjs-dist` for client-side PDF parsing in the Phase 4b document-import pipeline; bundling the worker (no CDN fetch at runtime) preserves the no-third-party-network-call posture.
 - Architecture decision: ADR-0020 introduces `jspdf-autotable` for tabular sections of the PDF export; co-loaded with jsPDF in the same lazy chunk; no new external resources.
@@ -639,7 +665,7 @@ action required to upgrade.
 
 ## [1.0.0] - 2026-04-18
 
-First public release. Phylax is a privacy-first, local-first health profile
+First public release. Befaro is a privacy-first, local-first health profile
 Progressive Web App. All data is encrypted on your device; there is no
 backend, no cloud, no telemetry. AI features are opt-in and use the user's
 own Anthropic API key.
@@ -669,12 +695,12 @@ own Anthropic API key.
 
 #### AI assistant
 
-- Optional AI structuring partner via Anthropic Claude with bring-your-own-API-key model; key stored encrypted, never transmitted to a Phylax server (AI-01, AI-11)
+- Optional AI structuring partner via Anthropic Claude with bring-your-own-API-key model; key stored encrypted, never transmitted to a Befaro server (AI-01, AI-11)
 - Activation disclaimer that must be accepted before the key is persisted; disclaimer acceptance remembered in localStorage (AI-02)
 - System prompt contract: structures user input, never diagnoses, never interprets lab values clinically, flags uncertainty, emits profile updates in a parser-compatible markdown format (AI-03)
 - Proxy-profile system prompt extension that distinguishes observed versus reported information and adapts caregiver-perspective language (AI-04)
 - Ephemeral chat UI with streaming responses, "Profil teilen" context sharing, and clear assistant labeling; chat messages never persist to storage (AI-05, AI-10)
-- Structured-fragment detection that recognizes Phylax-format blocks in AI replies and surfaces a one-click "In Profil uebernehmen" button (AI-07)
+- Structured-fragment detection that recognizes Befaro-format blocks in AI replies and surfaces a one-click "In Profil uebernehmen" button (AI-07)
 - Commit preview modal with field-level diff, three-bucket display (new / changed / unchanged), version-description input, and tolerant merge semantics (AI-08)
 - Guided session mode that walks the user through observations, supplements, and open points in sequence with progress pills and inline end-confirmation (AI-06)
 - AI-assisted cleanup fallback when the markdown parser cannot read pasted input; routes cleaned output through the normal import flow on success, surfaces the raw AI output when cleanup still fails (AI-09)
@@ -694,7 +720,7 @@ own Anthropic API key.
 
 #### Donation integration
 
-- Settings section "Phylax unterstuetzen" with an always-visible external link to DONATE.md (Liberapay, GitHub Sponsors, Ko-fi, PayPal) (S-01)
+- Settings section "Befaro unterstuetzen" with an always-visible external link to DONATE.md (Liberapay, GitHub Sponsors, Ko-fi, PayPal) (S-01)
 - One-time onboarding hint on the Profile view, dismissible via "Projekt unterstuetzen" or "Verstanden" and remembered in localStorage (S-02)
 - 90-day reminder banner on the Profile view with three dismiss paths (support, not now, close), with cooldown heuristics (90 days after dismiss, 180 days after donating) (S-03)
 

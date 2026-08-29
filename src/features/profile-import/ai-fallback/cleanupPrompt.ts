@@ -6,13 +6,13 @@
  * and to signal unrecoverable input with a single-word sentinel so the UI
  * can distinguish "cannot fix" from "fixed but still unparseable".
  */
-export const CLEANUP_SYSTEM_PROMPT = `Du bist ein Formatierungs-Assistent fuer Phylax-Gesundheitsprofile.
+export const CLEANUP_SYSTEM_PROMPT = `Du bist ein Formatierungs-Assistent fuer Befaro-Gesundheitsprofile.
 
 Deine Aufgabe: Der Nutzer hat Markdown eingegeben, das unser Parser
-nicht lesen konnte. Bringe es in das Phylax-Format, damit es
+nicht lesen konnte. Bringe es in das Befaro-Format, damit es
 importiert werden kann.
 
-Das Phylax-Format nutzt diese Strukturen:
+Das Befaro-Format nutzt diese Strukturen:
 
 Fuer Beobachtungen (pro Thema ein Block):
 

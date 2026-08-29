@@ -1,4 +1,9 @@
-# Phylax Backup-Format (`.phylax`)
+# Befaro Backup-Format (`.phylax`)
+
+Hinweis zum Rename: Die App heisst seit dem Rename Befaro. Die
+Format-Bezeichner (`.phylax`-Endung, `type: "phylax-backup"`) behalten
+bewusst den alten Namen, damit bestehende Backups importierbar bleiben.
+Ein Format-v2 mit neuen Bezeichnern ist eine eigene, noch offene Task.
 
 Version: 1
 Status: authoritative for ONB-01e onward
@@ -8,11 +13,11 @@ Referenziert durch: `src/features/backup-import/`, ADR-folgende Backup-Create-Ta
 
 ## Ueberblick
 
-Das `.phylax`-Format ist der einzige Weg, ein Phylax-Profil zwischen
+Das `.phylax`-Format ist der einzige Weg, ein Befaro-Profil zwischen
 Geraeten oder Browser-Instanzen zu uebertragen. Es enthaelt die
 vollstaendige Gesundheitshistorie als verschluesselten Datencontainer.
 Zero-Knowledge: ohne das Master-Passwort, mit dem das Backup erstellt
-wurde, ist die Datei nicht entschluesselbar und Phylax kann sie nicht
+wurde, ist die Datei nicht entschluesselbar und Befaro kann sie nicht
 wiederherstellen.
 
 Die Import-Route ist `src/features/backup-import/`. Die Create-Route
@@ -31,7 +36,7 @@ diesem Format.
   "type": "phylax-backup",
   "created": "2026-04-20T15:30:00Z",
   "source": {
-    "app": "phylax",
+    "app": "befaro",
     "appVersion": "0.0.0"
   },
   "crypto": {
@@ -46,18 +51,18 @@ diesem Format.
 
 ### Pflichtfelder
 
-| Feld                | Typ     | Inhalt                                                              |
-| ------------------- | ------- | ------------------------------------------------------------------- |
-| `version`           | integer | Format-Version. V1 = `1`. Unbekannte Versionen -> Import bricht ab. |
-| `type`              | string  | Muss exakt `"phylax-backup"` sein. Schuetzt vor Verwechslung.       |
-| `created`           | string  | ISO-8601 UTC-Zeitstempel der Backup-Erstellung. Nur informativ.     |
-| `source.app`        | string  | Erzeugende App. Muss `"phylax"` sein.                               |
-| `source.appVersion` | string  | `package.json#version` zum Zeitpunkt der Erstellung.                |
-| `crypto.algorithm`  | string  | Muss `"AES-256-GCM"` sein. V1 unterstuetzt nur diesen Algorithmus.  |
-| `crypto.kdf`        | string  | Muss `"PBKDF2-SHA256"` sein.                                        |
-| `crypto.iterations` | integer | PBKDF2-Iterationen. Gueltiger Bereich: `100_000` bis `10_000_000`.  |
-| `crypto.salt`       | string  | Base64-kodiert, exakt 32 Byte nach Dekodierung.                     |
-| `data`              | string  | Base64-kodierte verschluesselte Payload (siehe unten).              |
+| Feld                | Typ     | Inhalt                                                                                                                                 |
+| ------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`           | integer | Format-Version. V1 = `1`. Unbekannte Versionen -> Import bricht ab.                                                                    |
+| `type`              | string  | Muss exakt `"phylax-backup"` sein. Schuetzt vor Verwechslung.                                                                          |
+| `created`           | string  | ISO-8601 UTC-Zeitstempel der Backup-Erstellung. Nur informativ.                                                                        |
+| `source.app`        | string  | Erzeugende App, nur informativ (nicht validiert). Neue Backups schreiben `"befaro"`; Backups von vor dem App-Rename tragen `"phylax"`. |
+| `source.appVersion` | string  | `package.json#version` zum Zeitpunkt der Erstellung.                                                                                   |
+| `crypto.algorithm`  | string  | Muss `"AES-256-GCM"` sein. V1 unterstuetzt nur diesen Algorithmus.                                                                     |
+| `crypto.kdf`        | string  | Muss `"PBKDF2-SHA256"` sein.                                                                                                           |
+| `crypto.iterations` | integer | PBKDF2-Iterationen. Gueltiger Bereich: `100_000` bis `10_000_000`.                                                                     |
+| `crypto.salt`       | string  | Base64-kodiert, exakt 32 Byte nach Dekodierung.                                                                                        |
+| `data`              | string  | Base64-kodierte verschluesselte Payload (siehe unten).                                                                                 |
 
 ### `data`-Feld
 
@@ -119,14 +124,14 @@ unvalidierte Kompat-Oberflaeche in V1.
   Ciphertext-Modifikation. Veraenderte Dateien schlagen bei der
   Entschluesselung fehl - das ist das korrekte Verhalten.
 - **Zero-Knowledge**: Der Inhalt ist ohne das erzeugende Master-Passwort
-  kryptografisch nicht zugaenglich. Phylax besitzt keinen
+  kryptografisch nicht zugaenglich. Befaro besitzt keinen
   Wiederherstellungsmechanismus.
 
 ### Was das Format nicht adressiert
 
 1. **Passwort-Substitution**: Das Import-Passwort wird zum neuen
    Master-Passwort auf dem Zielgeraet. Wer ein Backup mit dem Passwort
-   "password123" erstellt, installiert Phylax neu mit genau diesem
+   "password123" erstellt, installiert Befaro neu mit genau diesem
    Master-Passwort. Das ist Spezifikation, kein Bug.
 2. **Downgrade-Angriff auf `iterations`**: Die Krypto-Parameter liegen
    in der Datei. Ein Angreifer mit Schreibzugriff auf die Datei koennte
@@ -214,7 +219,7 @@ Nach Entschluesselung:
   "version": 1,
   "type": "phylax-backup",
   "created": "2026-04-20T15:30:00Z",
-  "source": { "app": "phylax", "appVersion": "0.0.0" },
+  "source": { "app": "befaro", "appVersion": "0.0.0" },
   "crypto": {
     "algorithm": "AES-256-GCM",
     "kdf": "PBKDF2-SHA256",

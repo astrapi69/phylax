@@ -5,7 +5,7 @@
 
 ## Context
 
-Phylax derives the AES-256-GCM data key from the master password via
+Befaro derives the AES-256-GCM data key from the master password via
 PBKDF2-SHA256 with 1.2M iterations (ADR-0001). The salt is stored in
 plaintext in the singleton `meta` row; every other row in IndexedDB
 stores its domain data inside an encrypted `payload`. P-06 lets the

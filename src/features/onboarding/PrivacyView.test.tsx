@@ -38,10 +38,10 @@ describe('PrivacyView', () => {
 
   it('renders all three section titles and bodies', () => {
     renderInRouter();
-    expect(screen.getByRole('heading', { level: 2, name: 'Was Phylax tut' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Was Befaro tut' })).toBeInTheDocument();
     expect(screen.getByText(/Speichert deine Einträge verschlüsselt/)).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Was Phylax nicht tut' }),
+      screen.getByRole('heading', { level: 2, name: 'Was Befaro nicht tut' }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Keine Server-Kommunikation/)).toBeInTheDocument();
     expect(
@@ -82,7 +82,7 @@ describe('PrivacyView', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'You hold the only key.' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: 'What Phylax does' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'What Befaro does' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Got it, continue' })).toBeInTheDocument();
   });
 });

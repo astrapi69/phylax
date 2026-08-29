@@ -1,5 +1,5 @@
 {
-  "title": "Phylax entsperren",
+  "title": "Befaro entsperren",
   "subtitle": "Gib dein Master-Passwort ein, um fortzufahren.",
   "deriving-spinner": "Entsperren...",
   "done-alert": "Entsperrt.",
@@ -23,6 +23,6 @@
   "forgotten-password-link": "Passwort vergessen? Alle Daten löschen und neu starten",
   "error": {
     "wrong-password": "Falsches Passwort.",
-    "no-meta": "Einrichtung nicht abgeschlossen. Bitte richte Phylax neu ein."
+    "no-meta": "Einrichtung nicht abgeschlossen. Bitte richte Befaro neu ein."
   }
 }

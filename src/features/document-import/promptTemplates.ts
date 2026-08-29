@@ -21,7 +21,7 @@ import type { DocumentType } from './types';
  *    extract_lab_values: return empty") are reserved for high-value
  *    cases only, not blanket "impossible combo" guards.
  *
- * All text is German - matching the rest of the Phylax AI prompt
+ * All text is German - matching the rest of the Befaro AI prompt
  * surface (`STRUCTURE_ONLY`, `CLASSIFICATION_SYSTEM_PROMPT`,
  * `extractorSystemPrompt`) and the primary language of the input
  * documents (DACH healthcare).
