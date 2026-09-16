@@ -315,6 +315,24 @@ Follow-up not currently scheduled:
       and out-of-scope fixes are surfaced, not folded in silently.
       Cross-referenced to `ADR-0024`, `tdd.md`, `lessons-learned.md`, and
       `ai-workflow.md`. (Shipped in this commit.)
+- [x] **I-11** External-resource audit and outbound-connection
+      disclosure. New `docs/audits/external-resources-2026-09-16.md`
+      documents every host referenced in the production build (`dist/`),
+      traced to its actual trigger in source, not just grepped;
+      confirms Befaro loads no Google Fonts, no CDN, no analytics, and
+      that the workbox precache manifest has zero external URLs. New
+      root `PRIVACY.md` documents every outbound connection Befaro can
+      make (multi-provider AI calls per ADR-0019, GitHub Pages hosting,
+      service worker precache, browser-side update checks) and what is
+      stored locally, with automatic-vs-user-action and switch-off-able
+      columns. New guard `scripts/audit-external-resources.mjs` scans
+      `dist/**/*.{js,html,json}` for `https?://` hosts and fails CI if
+      one appears outside its written-justification allowlist; unit
+      tests in `scripts/audit-external-resources.test.mjs`; wired into
+      `make test-external-resources` (also part of `ci-local-full`) and
+      the CI `build` job. No cookie banner needed: the audit found no
+      non-essential storage or tracking to consent to. (Shipped in this
+      commit.)
 
 ## Tech debt (carry-overs)
 

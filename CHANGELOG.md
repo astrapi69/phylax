@@ -35,6 +35,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **External-resource audit and outbound-connection disclosure**
+  [I-11]. New `docs/audits/external-resources-2026-09-16.md` traces
+  every host referenced in the production build to its actual trigger
+  in source (multi-provider AI presets per ADR-0019, inert strings
+  bundled in third-party libraries, own domain); confirms no Google
+  Fonts, no CDN, no analytics, and a workbox precache manifest with
+  zero external URLs. New root `PRIVACY.md` documents every outbound
+  connection and local-storage location, marked automatic vs.
+  user-action and switch-off-able. New guard
+  `scripts/audit-external-resources.mjs` (with unit tests) scans the
+  built artifact for disallowed external hosts and fails CI on a new,
+  unallowlisted one; wired into `make test-external-resources` and the
+  CI `build` job. No cookie banner added: the audit found nothing
+  non-essential to consent to.
 - **SEO and social-sharing metadata** [D-04]. The PWA shipped with
   no discoverability surface: search engines saw an empty shell and
   shared links (Slack, WhatsApp, LinkedIn, X) rendered blank
