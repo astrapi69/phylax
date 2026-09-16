@@ -75,8 +75,19 @@ describe('ChangePasswordSection', () => {
     await user.click(screen.getByRole('button', { name: /master-passwort ändern/i }));
     await user.click(screen.getByRole('button', { name: /Ja, ändern/i }));
 
-    await waitFor(() =>
-      expect(screen.getByText(/Master-Passwort wurde erfolgreich geändert/i)).toBeInTheDocument(),
+    // BUG-15: this path runs two real PBKDF2 derivations at
+    // PBKDF2_ITERATIONS (verify the current password, derive the new
+    // key) plus a full vault re-encryption before `status.kind`
+    // reaches 'done'. The default waitFor timeout (1000ms) is tuned
+    // for cheap assertions and races the real crypto cost on a slower
+    // CPU, exactly the failure class UnlockView.test.tsx,
+    // DangerZoneSection.test.tsx and SetupView.test.tsx already guard
+    // against with an explicit 5000ms timeout; this assertion was
+    // missing the same treatment.
+    await waitFor(
+      () =>
+        expect(screen.getByText(/Master-Passwort wurde erfolgreich geändert/i)).toBeInTheDocument(),
+      { timeout: 5000 },
     );
 
     // Form-clear runs in a useEffect that fires on the same `status.kind === 'done'`
