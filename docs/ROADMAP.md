@@ -334,6 +334,35 @@ Follow-up not currently scheduled:
       non-essential storage or tracking to consent to. (Shipped in this
       commit.)
 
+## Legal disclosure (P-series follow-up)
+
+- [ ] **P-16** Impressum and full Datenschutzerklaerung as in-app
+      pages, reachable via a global footer (`src/ui/LegalFooter.tsx`,
+      mounted once in `App.tsx`) on every screen, not just Settings.
+      Builds on the existing P-12 surface (`/privacy` stays the short
+      first-run onboarding disclosure, `/license` the MIT text
+      unchanged); adds `/impressum` (`ImpressumView`) and
+      `/datenschutz` (`DatenschutzView`) as new routes reachable
+      without unlocking the vault (outside SetupFlowGuard/
+      ProtectedRoute, Section 5 DDG requires immediate accessibility).
+      Datenschutz covers the full DSGVO-relevant sections: hosting,
+      local storage (Art. 6(1)(f) DSGVO), encryption, optional AI
+      chat, no cookies/tracking, data subject rights (factual
+      enumeration: Auskunft, Loeschung, Widerspruch). New `impressum`
+      and `privacy-policy` i18n namespaces (DE+EN, key parity
+      verified). Direct-link/reload on GitHub Pages already works via
+      the existing `cp dist/index.html dist/404.html` SPA fallback in
+      `.github/workflows/deploy.yml`; verified rather than re-added.
+      New Playwright coverage in `tests/e2e/legal.spec.ts` (direct
+      URL, hard reload, footer links). Scaffold shipped in this
+      commit; **stays open** because the responsible-party fields
+      (name, address, email, VAT id) are `[TODO: ...]` placeholders
+      and the Datenschutz text has not had its lawyer pass yet, per
+      the CC prompt's explicit gate. Both pages render a visible
+      "Entwurf" (draft) notice until that happens. Do not remove the
+      draft notice or treat this item as done before both conditions
+      are met.
+
 ## Tech debt (carry-overs)
 
 - [ ] **Setup chunk headroom 9 KB** - `.size-limit.json` "Setup lazy

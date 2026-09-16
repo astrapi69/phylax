@@ -1,0 +1,47 @@
+{
+  "heading": "Datenschutzerklärung",
+  "intro": "Diese Seite beschreibt sachlich, welche Daten Befaro verarbeitet und wohin sie gelangen können. Technische Grundlage ist die Bestandsaufnahme in PRIVACY.md im Projekt-Repository.",
+  "draft-notice": "Entwurf: Diese Datenschutzerklärung wird derzeit anwaltlich geprüft und ist noch nicht final.",
+  "controller": {
+    "heading": "Verantwortlicher",
+    "name-label": "Name",
+    "name-value": "[TODO: Vollständiger Name eintragen]",
+    "address-label": "Anschrift",
+    "address-value": "[TODO: Ladungsfähige Anschrift eintragen]",
+    "email-label": "E-Mail",
+    "email-value": "[TODO: Kontakt-E-Mail-Adresse eintragen]"
+  },
+  "section": {
+    "hosting": {
+      "heading": "Hosting über GitHub Pages",
+      "body": "Befaro wird als statische Webseite über GitHub Pages (Microsoft) ausgeliefert. Bei jedem Seitenaufruf verarbeitet GitHub automatisch technische Zugriffsdaten (unter anderem IP-Adresse, User-Agent, angefragte URL) im üblichen Server-Log-Umfang. Empfänger: GitHub, Sitz in den USA (Drittland).",
+      "link-label": "GitHub Privacy Statement"
+    },
+    "local-storage": {
+      "heading": "Lokale Speicherung auf dem Endgerät",
+      "body": "Befaro speichert Gesundheitsdaten (Beobachtungen, Laborwerte, Ergänzungspläne, offene Punkte, Dokumente) ausschließlich lokal im Browser (IndexedDB) sowie Einstellungen in localStorage. Diese Daten werden nicht an einen Server übertragen, Befaro hat keinen eigenen Server. Rechtsgrundlage für diese lokale Verarbeitung ist die Erforderlichkeit nach Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer funktionierenden App)."
+    },
+    "encryption": {
+      "heading": "Verschlüsselung",
+      "body": "Gesundheitsdaten werden vor dem Speichern mit AES-256-GCM verschlüsselt, der Schlüssel wird per PBKDF2 aus dem Master-Passwort abgeleitet. Der Schlüssel liegt ausschließlich lokal im Arbeitsspeicher des Geräts, während die App entsperrt ist, und wird niemals gespeichert oder übertragen. Ohne Master-Passwort ist eine Entschlüsselung nicht möglich."
+    },
+    "ai-chat": {
+      "heading": "Optionaler KI-Chat",
+      "body": "Die KI-Funktion ist standardmäßig deaktiviert und wird nur aktiv, wenn der Nutzer in den Einstellungen einen KI-Anbieter mit eigenem API-Key hinterlegt und danach selbst eine Chat-Anfrage stellt. Dabei werden die eingegebenen Nachrichten an den gewählten Anbieter übertragen (zum Beispiel Anthropic, OpenAI, Google oder Mistral, je nach Auswahl), teilweise mit Sitz in den USA (Drittland). Es findet kein automatischer Zugriff auf gespeicherte Gesundheitsdaten statt, und Chat-Nachrichten werden von Befaro selbst nicht gespeichert. Die Datenschutzerklärung des jeweils gewählten Anbieters ist beim Einrichten des KI-Zugangs in der App verlinkt."
+    },
+    "no-tracking": {
+      "heading": "Keine Cookies, kein Tracking, keine Analytics",
+      "body": "Befaro setzt keine Cookies, keine Analyse- oder Tracking-Dienste und keine Werbenetzwerke ein. Es findet keine Auswertung des Nutzungsverhaltens statt. Ein Cookie-Banner entfällt deshalb bewusst."
+    },
+    "rights": {
+      "heading": "Rechte der betroffenen Person",
+      "intro": "Über die Gesundheitsdaten, die ausschließlich lokal auf dem eigenen Gerät liegen, verfügt allein der Nutzer selbst, über die App-Funktionen oder durch Löschen der Browserdaten. Für die bei GitHub Pages anfallenden technischen Zugriffsdaten bestehen gegenüber GitHub als Hoster insbesondere folgende Rechte:",
+      "list": {
+        "access": "Auskunft über die verarbeiteten Daten",
+        "deletion": "Löschung der verarbeiteten Daten",
+        "objection": "Widerspruch gegen die Verarbeitung"
+      }
+    }
+  },
+  "back": "Zurück"
+}

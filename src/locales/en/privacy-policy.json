@@ -1,0 +1,47 @@
+{
+  "heading": "Privacy Policy",
+  "intro": "This page factually describes what data Befaro processes and where it can go. The technical basis is the inventory in PRIVACY.md in the project repository.",
+  "draft-notice": "Draft: this privacy policy is currently under legal review and is not yet final.",
+  "controller": {
+    "heading": "Data controller",
+    "name-label": "Name",
+    "name-value": "[TODO: enter full name]",
+    "address-label": "Address",
+    "address-value": "[TODO: enter service address]",
+    "email-label": "Email",
+    "email-value": "[TODO: enter contact email address]"
+  },
+  "section": {
+    "hosting": {
+      "heading": "Hosting via GitHub Pages",
+      "body": "Befaro is delivered as a static website via GitHub Pages (Microsoft). On every page load, GitHub automatically processes standard technical access data (including IP address, user agent, requested URL) at typical server-log scope. Recipient: GitHub, based in the USA (a third country).",
+      "link-label": "GitHub Privacy Statement"
+    },
+    "local-storage": {
+      "heading": "Local storage on the device",
+      "body": "Befaro stores health data (observations, lab values, supplement plans, open points, documents) exclusively locally in the browser (IndexedDB), plus settings in localStorage. This data is never transmitted to a server, Befaro has no server of its own. The legal basis for this local processing is necessity under Art. 6(1)(f) GDPR (legitimate interest in a functioning app)."
+    },
+    "encryption": {
+      "heading": "Encryption",
+      "body": "Health data is encrypted with AES-256-GCM before it is stored; the key is derived from the master password via PBKDF2. The key exists only locally in the device's memory while the app is unlocked and is never stored or transmitted. Decryption is impossible without the master password."
+    },
+    "ai-chat": {
+      "heading": "Optional AI chat",
+      "body": "The AI feature is disabled by default and only becomes active if the user configures an AI provider with their own API key in settings and then sends a chat request themselves. When they do, the entered messages are sent to the chosen provider (for example Anthropic, OpenAI, Google, or Mistral, depending on selection), some of which are based in the USA (a third country). There is no automatic access to stored health data, and Befaro itself never persists chat messages. The chosen provider's own privacy policy is linked in the app while setting up AI access."
+    },
+    "no-tracking": {
+      "heading": "No cookies, no tracking, no analytics",
+      "body": "Befaro uses no cookies, no analytics or tracking services, and no advertising networks. No usage behavior is evaluated. A cookie banner is therefore deliberately omitted."
+    },
+    "rights": {
+      "heading": "Data subject rights",
+      "intro": "Health data, which lives exclusively on the user's own device, is controlled entirely by the user themselves, through the app's own features or by clearing browser data. For the technical access data that GitHub Pages processes, the following rights apply against GitHub as the host, among others:",
+      "list": {
+        "access": "Access to the processed data",
+        "deletion": "Deletion of the processed data",
+        "objection": "Objection to the processing"
+      }
+    }
+  },
+  "back": "Back"
+}

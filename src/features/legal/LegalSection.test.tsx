@@ -16,4 +16,16 @@ describe('LegalSection', () => {
     const licenseLink = screen.getByTestId('legal-link-license');
     expect(licenseLink).toHaveAttribute('href', '/license');
   });
+
+  it('renders impressum + datenschutz links (P-16)', () => {
+    render(
+      <MemoryRouter>
+        <LegalSection />
+      </MemoryRouter>,
+    );
+    const impressumLink = screen.getByTestId('legal-link-impressum');
+    expect(impressumLink).toHaveAttribute('href', '/impressum');
+    const datenschutzLink = screen.getByTestId('legal-link-datenschutz');
+    expect(datenschutzLink).toHaveAttribute('href', '/datenschutz');
+  });
 });

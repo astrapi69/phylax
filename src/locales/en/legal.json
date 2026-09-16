@@ -9,5 +9,9 @@
     "heading": "License",
     "intro": "Befaro is open source under the MIT license. The full license text follows below.",
     "back-to-settings": "Back to settings"
+  },
+  "footer": {
+    "impressum-link": "Legal Notice",
+    "privacy-policy-link": "Privacy"
   }
 }

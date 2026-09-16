@@ -30,6 +30,8 @@ import backupExportDE from '../locales/de/backup-export.json';
 import resetDE from '../locales/de/reset.json';
 import documentImportDE from '../locales/de/document-import.json';
 import legalDE from '../locales/de/legal.json';
+import impressumDE from '../locales/de/impressum.json';
+import privacyPolicyDE from '../locales/de/privacy-policy.json';
 
 /**
  * Lazy-loaded EN locale resources. `import.meta.glob` (without
@@ -78,6 +80,8 @@ export const NAMESPACES = [
   'reset',
   'document-import',
   'legal',
+  'impressum',
+  'privacy-policy',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -191,6 +195,8 @@ void i18n
         reset: resetDE,
         'document-import': documentImportDE,
         legal: legalDE,
+        impressum: impressumDE,
+        'privacy-policy': privacyPolicyDE,
       },
     },
     partialBundledLanguages: true,

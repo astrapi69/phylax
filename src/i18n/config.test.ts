@@ -24,13 +24,15 @@ describe('i18n config', () => {
     }
   });
 
-  it('NAMESPACES length matches the declared count (27 feature-aligned namespaces)', () => {
+  it('NAMESPACES length matches the declared count (29 feature-aligned namespaces)', () => {
     // I18N-01l-b added `app-shell`, `theme`, `documents`, `not-found`.
     // ONB-01e added `backup-import`. B-02 added `backup-export`. Reset
     // feature added `reset`. IMP-02 added `document-import`. BUG-01
     // follow-up removed `pwa-update` (silent updates, no UI). P-12
-    // added `legal` (license + privacy in-app).
-    expect(NAMESPACES).toHaveLength(27);
+    // added `legal` (license + privacy in-app). I-11/P-16 added
+    // `impressum` and `privacy-policy` (full Datenschutzerklaerung,
+    // distinct from the short onboarding `/privacy` teaser).
+    expect(NAMESPACES).toHaveLength(29);
   });
 
   it('defaultNS is common', () => {

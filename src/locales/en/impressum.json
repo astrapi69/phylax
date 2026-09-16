@@ -1,0 +1,23 @@
+{
+  "heading": "Legal Notice (Impressum)",
+  "intro": "Information pursuant to Section 5 of the German Digital Services Act (DDG) and Section 18 (2) of the German Interstate Media Treaty (MStV).",
+  "draft-notice": "Draft: this page is not yet complete. The responsible-party details are missing and will be added before publication.",
+  "responsible": {
+    "heading": "Responsible for content",
+    "name-label": "Name",
+    "name-value": "[TODO: enter full name]",
+    "address-label": "Address",
+    "address-value": "[TODO: enter service address]",
+    "email-label": "Email",
+    "email-value": "[TODO: enter contact email address]",
+    "vat-id-label": "VAT ID",
+    "vat-id-value": "[TODO: enter VAT ID if applicable, otherwise remove this line]"
+  },
+  "disclaimer": {
+    "heading": "Liability notice",
+    "content-body": "Befaro is a private, non-commercial open-source project. No guarantee is given for the correctness, completeness, or timeliness of the content provided.",
+    "links-body": "This app does not link to third-party websites with their own editorial content. Outbound links (for example to AI provider documentation or the donation page) lead to services this project has no control over."
+  },
+  "see-also-privacy-policy": "See also the full privacy policy.",
+  "back": "Back"
+}

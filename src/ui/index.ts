@@ -31,3 +31,4 @@ export {
   type ConfirmDialogProps,
   type ConfirmDialogVariant,
 } from './Modal';
+export { LegalFooter } from './LegalFooter';
