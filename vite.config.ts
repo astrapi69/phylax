@@ -193,7 +193,7 @@ export default defineConfig(({ mode }) => {
         './src/crypto/test-setup.ts',
         './src/test/setup.ts',
       ],
-      include: ['src/**/*.test.{ts,tsx}'],
+      include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.mjs'],
       // Vitest 4 expanded the default `toFake` list to include
       // `queueMicrotask`, `requestAnimationFrame`, and friends. React 18's
       // scheduler relies on `queueMicrotask` to flush effects after

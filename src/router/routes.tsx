@@ -23,7 +23,7 @@ import { DocumentViewer } from '../features/documents/DocumentViewer';
 import { SettingsScreen } from '../features/settings';
 import { ImportFlow } from '../features/profile-import/ui';
 import { ChatView } from '../features/ai-chat';
-import { LicenseView } from '../features/legal';
+import { LicenseView, ImpressumView, DatenschutzView } from '../features/legal';
 import { NotFound } from '../features/not-found/NotFound';
 
 function ProfileCreatePage() {
@@ -81,6 +81,9 @@ function ProfileCreatePage() {
  * - /backup/import/select, /backup/import/unlock: encrypted backup
  *   import flow (stubs in ONB-01a; filled in ONB-01e). Distinct from
  *   /import which handles Markdown profile import.
+ * - /impressum, /datenschutz: legal notice and full Datenschutzerklaerung
+ *   (P-16). Reachable without unlocking, unlike /license which lives
+ *   inside the protected shell.
  * - All full-screen routes (above) render without the app shell.
  * - /profile/create is protected but does NOT require an existing profile.
  * - Feature routes are protected AND require a profile.
@@ -104,6 +107,12 @@ export function AppRoutes() {
       <Route path="/backup/import/select" element={<BackupImportSelectView />} />
       <Route path="/backup/import/unlock" element={<BackupImportUnlockView />} />
       <Route path="/unlock" element={<UnlockView />} />
+
+      {/* P-16: legal pages, reachable without unlocking the vault
+          (Section 5 DDG requires the legal notice to be immediately
+          accessible, not gated behind a login). */}
+      <Route path="/impressum" element={<ImpressumView />} />
+      <Route path="/datenschutz" element={<DatenschutzView />} />
 
       {/* Protected route: profile creation (no RequireProfile) */}
       <Route

@@ -35,6 +35,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Impressum and full Datenschutzerklaerung scaffold** [P-16]. New
+  `/impressum` and `/datenschutz` in-app routes, reachable without
+  unlocking the vault, plus a global `LegalFooter` mounted once in
+  `App.tsx` so both are one click away from every screen (Section 5
+  DDG requires the legal notice to be immediately accessible, not
+  gated behind Settings). Datenschutz covers hosting, local storage,
+  encryption, the optional AI chat, no cookies/tracking, and a
+  factual enumeration of data subject rights, sourced from the new
+  `PRIVACY.md`. New `impressum` and `privacy-policy` i18n namespaces
+  (DE+EN). Both pages show a visible draft notice and `[TODO: ...]`
+  placeholders for the responsible party's name, address, email and
+  VAT id, no invented data; **not to be treated as legally complete
+  or announced as published until those placeholders are filled in
+  and the Datenschutz text has had a lawyer pass.** New Playwright
+  coverage (`tests/e2e/legal.spec.ts`) for direct-URL access and a
+  hard reload.
+- **External-resource audit and outbound-connection disclosure**
+  [I-11]. New `docs/audits/external-resources-2026-09-16.md` traces
+  every host referenced in the production build to its actual trigger
+  in source (multi-provider AI presets per ADR-0019, inert strings
+  bundled in third-party libraries, own domain); confirms no Google
+  Fonts, no CDN, no analytics, and a workbox precache manifest with
+  zero external URLs. New root `PRIVACY.md` documents every outbound
+  connection and local-storage location, marked automatic vs.
+  user-action and switch-off-able. New guard
+  `scripts/audit-external-resources.mjs` (with unit tests) scans the
+  built artifact for disallowed external hosts and fails CI on a new,
+  unallowlisted one; wired into `make test-external-resources` and the
+  CI `build` job. No cookie banner added: the audit found nothing
+  non-essential to consent to.
+
+### Fixed
+
+- **ChangePasswordSection success-banner assertion timing out under
+  real PBKDF2 cost** [BUG-15]. The happy-path test's `waitFor` for the
+  success banner used testing-library's default 1000ms timeout, racing
+  two real `PBKDF2_ITERATIONS`-strength derivations (verify current
+  password, derive new key) plus a full vault re-encryption. Sibling
+  tests exercising the same crypto cost
+  (`UnlockView.test.tsx`, `DangerZoneSection.test.tsx`,
+  `SetupView.test.tsx`) already use an explicit `{ timeout: 5000 }`;
+  this assertion was missing the same treatment and failed
+  deterministically, not just under load. Reproduced in isolation
+  (zero other processes running) before fixing, per `tdd.md`.
+
 - **SEO and social-sharing metadata** [D-04]. The PWA shipped with
   no discoverability surface: search engines saw an empty shell and
   shared links (Slack, WhatsApp, LinkedIn, X) rendered blank

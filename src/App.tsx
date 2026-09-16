@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAutoLock, useSavedAutoLockMinutes } from './features/auto-lock';
 import { setupServiceWorker } from './pwa/registerServiceWorker';
 import { AppRoutes } from './router/routes';
+import { LegalFooter } from './ui';
 
 function App() {
   // P-05: read the persisted auto-lock-minutes setting from the
@@ -25,7 +26,20 @@ function App() {
     setupServiceWorker(() => undefined);
   }, []);
 
-  return <AppRoutes />;
+  // P-16: the legal footer is mounted once here, outside the route
+  // tree, so /impressum and /datenschutz stay reachable from every
+  // screen (including pre-unlock onboarding routes) without touching
+  // each view individually. A flex column keeps it at the end of
+  // normal document flow rather than overlaying fixed-position shell
+  // chrome (Header/NavBar use `fixed`, unaffected by this wrapper).
+  return (
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-1">
+        <AppRoutes />
+      </div>
+      <LegalFooter />
+    </div>
+  );
 }
 
 export default App;

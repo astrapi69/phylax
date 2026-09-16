@@ -315,6 +315,53 @@ Follow-up not currently scheduled:
       and out-of-scope fixes are surfaced, not folded in silently.
       Cross-referenced to `ADR-0024`, `tdd.md`, `lessons-learned.md`, and
       `ai-workflow.md`. (Shipped in this commit.)
+- [x] **I-11** External-resource audit and outbound-connection
+      disclosure. New `docs/audits/external-resources-2026-09-16.md`
+      documents every host referenced in the production build (`dist/`),
+      traced to its actual trigger in source, not just grepped;
+      confirms Befaro loads no Google Fonts, no CDN, no analytics, and
+      that the workbox precache manifest has zero external URLs. New
+      root `PRIVACY.md` documents every outbound connection Befaro can
+      make (multi-provider AI calls per ADR-0019, GitHub Pages hosting,
+      service worker precache, browser-side update checks) and what is
+      stored locally, with automatic-vs-user-action and switch-off-able
+      columns. New guard `scripts/audit-external-resources.mjs` scans
+      `dist/**/*.{js,html,json}` for `https?://` hosts and fails CI if
+      one appears outside its written-justification allowlist; unit
+      tests in `scripts/audit-external-resources.test.mjs`; wired into
+      `make test-external-resources` (also part of `ci-local-full`) and
+      the CI `build` job. No cookie banner needed: the audit found no
+      non-essential storage or tracking to consent to. (Shipped in this
+      commit.)
+
+## Legal disclosure (P-series follow-up)
+
+- [ ] **P-16** Impressum and full Datenschutzerklaerung as in-app
+      pages, reachable via a global footer (`src/ui/LegalFooter.tsx`,
+      mounted once in `App.tsx`) on every screen, not just Settings.
+      Builds on the existing P-12 surface (`/privacy` stays the short
+      first-run onboarding disclosure, `/license` the MIT text
+      unchanged); adds `/impressum` (`ImpressumView`) and
+      `/datenschutz` (`DatenschutzView`) as new routes reachable
+      without unlocking the vault (outside SetupFlowGuard/
+      ProtectedRoute, Section 5 DDG requires immediate accessibility).
+      Datenschutz covers the full DSGVO-relevant sections: hosting,
+      local storage (Art. 6(1)(f) DSGVO), encryption, optional AI
+      chat, no cookies/tracking, data subject rights (factual
+      enumeration: Auskunft, Loeschung, Widerspruch). New `impressum`
+      and `privacy-policy` i18n namespaces (DE+EN, key parity
+      verified). Direct-link/reload on GitHub Pages already works via
+      the existing `cp dist/index.html dist/404.html` SPA fallback in
+      `.github/workflows/deploy.yml`; verified rather than re-added.
+      New Playwright coverage in `tests/e2e/legal.spec.ts` (direct
+      URL, hard reload, footer links). Scaffold shipped in this
+      commit; **stays open** because the responsible-party fields
+      (name, address, email, VAT id) are `[TODO: ...]` placeholders
+      and the Datenschutz text has not had its lawyer pass yet, per
+      the CC prompt's explicit gate. Both pages render a visible
+      "Entwurf" (draft) notice until that happens. Do not remove the
+      draft notice or treat this item as done before both conditions
+      are met.
 
 ## Tech debt (carry-overs)
 

@@ -1,0 +1,23 @@
+{
+  "heading": "Impressum",
+  "intro": "Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG) und § 18 Abs. 2 Medienstaatsvertrag (MStV).",
+  "draft-notice": "Entwurf: Diese Seite ist noch nicht vollständig. Die Angaben zur verantwortlichen Person fehlen und werden vor Veröffentlichung ergänzt.",
+  "responsible": {
+    "heading": "Verantwortlich für den Inhalt",
+    "name-label": "Name",
+    "name-value": "[TODO: Vollständiger Name eintragen]",
+    "address-label": "Anschrift",
+    "address-value": "[TODO: Ladungsfähige Anschrift eintragen]",
+    "email-label": "E-Mail",
+    "email-value": "[TODO: Kontakt-E-Mail-Adresse eintragen]",
+    "vat-id-label": "USt-IdNr.",
+    "vat-id-value": "[TODO: USt-IdNr. eintragen, falls vorhanden, sonst Zeile entfernen]"
+  },
+  "disclaimer": {
+    "heading": "Haftungshinweis",
+    "content-body": "Befaro ist ein privates, nicht-kommerzielles Open-Source-Projekt. Für die Richtigkeit, Vollständigkeit und Aktualität der bereitgestellten Inhalte wird keine Gewähr übernommen.",
+    "links-body": "Diese App verlinkt nicht auf fremde Webseiten mit eigenen redaktionellen Inhalten. Ausgehende Links (zum Beispiel zu KI-Anbieter-Dokumentation oder zur Spendenseite) führen zu Diensten, auf deren Inhalte kein Einfluss besteht."
+  },
+  "see-also-privacy-policy": "Siehe auch die vollständige Datenschutzerklärung.",
+  "back": "Zurück"
+}

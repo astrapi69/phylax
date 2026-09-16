@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production size test-bundle-size test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build seed-smoke check ci-local-fast ci-local-full
+.PHONY: help dev preview install clean icons lint lint-fix format format-check typecheck test test-watch test-coverage test-e2e test-e2e-ui test-e2e-production size test-bundle-size test-external-resources test-mutation-dry test-mutation-quick test-mutation-repos test-mutation-parser test-mutation-import test-mutation build seed-smoke check ci-local-fast ci-local-full
 
 # -- Development --
 
@@ -68,6 +68,9 @@ size: ## Run size-limit against an existing dist/ build (no rebuild)
 
 test-bundle-size: build size ## Build then check production bundle against size-limit budgets
 
+test-external-resources: build ## Build then scan dist/ for disallowed external hosts (allowlist in scripts/audit-external-resources.mjs)
+	node scripts/audit-external-resources.mjs
+
 test-mutation-dry: ## Validate Stryker config without running mutations
 	npx stryker run --dryRunOnly
 
@@ -100,7 +103,7 @@ check: lint typecheck test build ## Run lint, typecheck, test, and build (CI gat
 
 ci-local-fast: lint typecheck test ## Fast CI check (no build, no E2E)
 
-ci-local-full: lint typecheck test test-bundle-size test-e2e test-e2e-production ## Full CI check (coverage runs in GitHub Actions CI only)
+ci-local-full: lint typecheck test test-bundle-size test-external-resources test-e2e test-e2e-production ## Full CI check (coverage runs in GitHub Actions CI only)
 
 # -- Meta --
 

@@ -108,6 +108,8 @@ jobs:
       - run: make build
       - name: Check bundle size (size-limit, budgets in .size-limit.json)
         run: make size
+      - name: Check for disallowed external hosts (allowlist in scripts/audit-external-resources.mjs)
+        run: node scripts/audit-external-resources.mjs
       - name: Bundle size summary
         if: always()
         run: |
