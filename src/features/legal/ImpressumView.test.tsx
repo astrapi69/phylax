@@ -14,25 +14,40 @@ describe('ImpressumView', () => {
     expect(screen.getByText(/Digitale-Dienste-Gesetz/)).toBeInTheDocument();
   });
 
-  it('shows a draft notice, since the responsible-party fields are placeholders', () => {
+  it('renders the responsible party name, address and email, no placeholders', () => {
     render(
       <MemoryRouter>
         <ImpressumView />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('alert')).toHaveTextContent('Entwurf');
+    const address = screen.getByTestId('impressum-address');
+    expect(address).toHaveTextContent('Asterios Raptis');
+    expect(address).toHaveTextContent('Seestraße 68');
+    expect(address).toHaveTextContent('71638 Ludwigsburg');
+    expect(screen.queryByText(/\[TODO/)).not.toBeInTheDocument();
+    const emailLink = screen.getByRole('link', { name: 'asterios.raptis@web.de' });
+    expect(emailLink).toHaveAttribute('href', 'mailto:asterios.raptis@web.de');
   });
 
-  it('renders TODO placeholders for name, address, email and VAT id, no invented data', () => {
+  it('has no VAT id section, since none applies', () => {
     render(
       <MemoryRouter>
         <ImpressumView />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/\[TODO: Vollständiger Name eintragen\]/)).toBeInTheDocument();
-    expect(screen.getByText(/\[TODO: Ladungsfähige Anschrift eintragen\]/)).toBeInTheDocument();
-    expect(screen.getByText(/\[TODO: Kontakt-E-Mail-Adresse eintragen\]/)).toBeInTheDocument();
-    expect(screen.getByText(/\[TODO: USt-IdNr\. eintragen/)).toBeInTheDocument();
+    expect(screen.queryByText(/USt-IdNr/)).not.toBeInTheDocument();
+  });
+
+  it('covers liability for content, liability for links, copyright and dispute resolution', () => {
+    render(
+      <MemoryRouter>
+        <ImpressumView />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Haftung für Inhalte')).toBeInTheDocument();
+    expect(screen.getByText('Haftung für Links')).toBeInTheDocument();
+    expect(screen.getByText('Urheberrecht')).toBeInTheDocument();
+    expect(screen.getByText('Verbraucherstreitbeilegung')).toBeInTheDocument();
   });
 
   it('links onward to the full privacy policy', () => {
@@ -41,7 +56,7 @@ describe('ImpressumView', () => {
         <ImpressumView />
       </MemoryRouter>,
     );
-    const link = screen.getByText('Siehe auch die vollständige Datenschutzerklärung.');
+    const link = screen.getByText('Siehe auch die Datenschutzerklärung.');
     expect(link.closest('a')).toHaveAttribute('href', '/datenschutz');
   });
 });

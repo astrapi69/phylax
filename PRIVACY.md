@@ -85,11 +85,11 @@ wird, kein automatischer Reload mitten in der Sitzung
 
 ## 5. Lokale Speicherung auf dem Geraet
 
-| Speicherort                                | Inhalt                                                                                                                                                                                                                        | Loeschen                                                                                                  |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| IndexedDB (`befaro`-DB)                    | Verschluesselte Gesundheitsdaten (Beobachtungen, Laborwerte, Ergaenzungen, offene Punkte, Dokumente, Profile), verschluesselt mit AES-256-GCM, Schluessel existiert nur im Arbeitsspeicher waehrend einer entsperrten Sitzung | Vollstaendiger Reset in den Einstellungen (Danger Zone), oder Browser-Daten fuer diese Seite loeschen     |
-| localStorage (`phylax-`/`phylax.`-Praefix) | Einstellungen (Theme, Sprache, Auto-Lock-Dauer), Verification-Token, Backup-Format-Marker, Spenden-Erinnerungsstatus. Kein Klartext von Gesundheitsdaten.                                                                     | Reset-Funktion in den Einstellungen (iteriert alle `phylax-`/`phylax.`-Keys), oder Browser-Daten loeschen |
-| Service Worker Cache                       | Anwendungsdateien fuer Offline-Betrieb (keine Nutzerdaten)                                                                                                                                                                    | Browser-Daten fuer diese Seite loeschen                                                                   |
+| Speicherort                                              | Inhalt                                                                                                                                                                                                                                                                                                       | Loeschen                                                                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| IndexedDB (Datenbankname weiterhin `phylax`, siehe R-06) | Verschluesselte Gesundheitsdaten (Beobachtungen, Laborwerte, Ergaenzungen, offene Punkte, Dokumente, Profile) und ein optional hinterlegter KI-API-Schlüssel, alle verschluesselt mit AES-256-GCM als Teil des Meta-Payloads; Schluessel existiert nur im Arbeitsspeicher waehrend einer entsperrten Sitzung | Vollstaendiger Reset in den Einstellungen (Danger Zone), oder Browser-Daten fuer diese Seite loeschen     |
+| localStorage (`phylax-`/`phylax.`-Praefix)               | Einstellungen (Theme, Sprache, Auto-Lock-Dauer), Verification-Token, Backup-Format-Marker, Spenden-Erinnerungsstatus. Kein Klartext von Gesundheitsdaten.                                                                                                                                                    | Reset-Funktion in den Einstellungen (iteriert alle `phylax-`/`phylax.`-Keys), oder Browser-Daten loeschen |
+| Service Worker Cache                                     | Anwendungsdateien fuer Offline-Betrieb (keine Nutzerdaten)                                                                                                                                                                                                                                                   | Browser-Daten fuer diese Seite loeschen                                                                   |
 
 Nichts davon verlaesst das Geraet automatisch. Es gibt keine
 Server-Synchronisation.
@@ -105,5 +105,6 @@ Server-Synchronisation.
 
 ## Fragen
 
-Fragen zu diesem Dokument an aster.raptis@gmail.com (gleicher Kontakt
-wie in [`SECURITY.md`](SECURITY.md)).
+Fragen zu diesem Dokument an asterios.raptis@web.de (gleicher Kontakt
+wie im [Impressum](src/locales/de/impressum.json) und in der
+[Datenschutzerklärung](src/locales/de/privacy-policy.json)).

@@ -35,22 +35,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Impressum and full Datenschutzerklaerung scaffold** [P-16]. New
+- **Impressum and full Datenschutzerklaerung** [P-16]. New
   `/impressum` and `/datenschutz` in-app routes, reachable without
   unlocking the vault, plus a global `LegalFooter` mounted once in
   `App.tsx` so both are one click away from every screen (Section 5
   DDG requires the legal notice to be immediately accessible, not
-  gated behind Settings). Datenschutz covers hosting, local storage,
-  encryption, the optional AI chat, no cookies/tracking, and a
-  factual enumeration of data subject rights, sourced from the new
-  `PRIVACY.md`. New `impressum` and `privacy-policy` i18n namespaces
-  (DE+EN). Both pages show a visible draft notice and `[TODO: ...]`
-  placeholders for the responsible party's name, address, email and
-  VAT id, no invented data; **not to be treated as legally complete
-  or announced as published until those placeholders are filled in
-  and the Datenschutz text has had a lawyer pass.** New Playwright
-  coverage (`tests/e2e/legal.spec.ts`) for direct-URL access and a
-  hard reload.
+  gated behind Settings). Content and structure mirror the Bibliogon
+  Impressum / Datenschutzerklaerung (sibling project, same operator),
+  adapted for Befaro's health-data context: encrypted (not plaintext)
+  local storage including an optional AI API key, multi-provider AI
+  chat with real per-provider privacy-policy links (Anthropic,
+  OpenAI, Google, Mistral), no URL-based import, GitHub Pages
+  hosting, and all six DSGVO rights plus the right to complain to a
+  supervisory authority. Responsible-party data (name, address,
+  email; no VAT id, none applies) supplied by the maintainer, no
+  invented data. New `impressum` and `privacy-policy` i18n namespaces
+  (DE+EN, key parity verified). New Playwright coverage
+  (`tests/e2e/legal.spec.ts`) for direct-URL access and a hard
+  reload. **Ships as final content pending a lawyer pass on the
+  Datenschutz text**, tracked in `docs/ROADMAP.md` P-16.
 - **External-resource audit and outbound-connection disclosure**
   [I-11]. New `docs/audits/external-resources-2026-09-16.md` traces
   every host referenced in the production build to its actual trigger

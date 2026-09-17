@@ -1,47 +1,73 @@
 {
   "heading": "Datenschutzerklärung",
-  "intro": "Diese Seite beschreibt sachlich, welche Daten Befaro verarbeitet und wohin sie gelangen können. Technische Grundlage ist die Bestandsaufnahme in PRIVACY.md im Projekt-Repository.",
-  "draft-notice": "Entwurf: Diese Datenschutzerklärung wird derzeit anwaltlich geprüft und ist noch nicht final.",
+  "stand": "Stand: 17. September 2026",
+  "intro": "Diese Erklärung gilt für die öffentliche Web-Version von Befaro unter astrapi69.github.io/phylax.",
   "controller": {
     "heading": "Verantwortlicher",
-    "name-label": "Name",
-    "name-value": "[TODO: Vollständiger Name eintragen]",
-    "address-label": "Anschrift",
-    "address-value": "[TODO: Ladungsfähige Anschrift eintragen]",
+    "name": "Asterios Raptis",
+    "address-line1": "Seestraße 68",
+    "address-line2": "71638 Ludwigsburg",
+    "address-line3": "Deutschland",
     "email-label": "E-Mail",
-    "email-value": "[TODO: Kontakt-E-Mail-Adresse eintragen]"
+    "email-value": "asterios.raptis@web.de"
+  },
+  "summary": {
+    "heading": "Das Wichtigste in Kürze",
+    "list": {
+      "no-server": "Befaro hat keinen eigenen Server. Deine Gesundheitsdaten, Einstellungen und ein hinterlegter KI-API-Schlüssel liegen verschlüsselt ausschließlich in deinem Browser (IndexedDB und localStorage). Der Betreiber sieht sie nicht.",
+      "no-tracking": "Die App setzt keine Cookies und nutzt keine Analyse- oder Tracking-Dienste. Schriften und Skripte sind mitgeliefert und werden nicht von Dritten geladen.",
+      "hosting": "Beim Aufruf der Seiten verarbeitet GitHub als Hoster deine IP-Adresse. Alles andere geht nur dann an Dritte, wenn du eine Funktion nutzt, die das erfordert, zum Beispiel den optionalen KI-Chat."
+    }
   },
   "section": {
     "hosting": {
-      "heading": "Hosting über GitHub Pages",
-      "body": "Befaro wird als statische Webseite über GitHub Pages (Microsoft) ausgeliefert. Bei jedem Seitenaufruf verarbeitet GitHub automatisch technische Zugriffsdaten (unter anderem IP-Adresse, User-Agent, angefragte URL) im üblichen Server-Log-Umfang. Empfänger: GitHub, Sitz in den USA (Drittland).",
+      "heading": "Hosting bei GitHub Pages",
+      "body": "Die App wird von GitHub Pages ausgeliefert, einem Dienst der GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. Bei jedem Aufruf verarbeitet GitHub die IP-Adresse deines Geräts und die üblichen Verbindungsdaten (Zeitpunkt, aufgerufene Datei, Browsertyp) zu Sicherheitszwecken; nach Angaben von GitHub werden diese Daten nur für die Betriebssicherheit gespeichert und nicht an den Betreiber weitergegeben.",
       "link-label": "GitHub Privacy Statement"
     },
     "local-storage": {
-      "heading": "Lokale Speicherung auf dem Endgerät",
-      "body": "Befaro speichert Gesundheitsdaten (Beobachtungen, Laborwerte, Ergänzungspläne, offene Punkte, Dokumente) ausschließlich lokal im Browser (IndexedDB) sowie Einstellungen in localStorage. Diese Daten werden nicht an einen Server übertragen, Befaro hat keinen eigenen Server. Rechtsgrundlage für diese lokale Verarbeitung ist die Erforderlichkeit nach Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer funktionierenden App)."
+      "heading": "Speicherung im Browser",
+      "body": "Alle Daten, die du in der App anlegst (Beobachtungen, Laborwerte, Ergänzungspläne, offene Punkte, Dokumente, Profile), speichert dein Browser lokal und verschlüsselt mit AES-256-GCM in IndexedDB (Datenbankname weiterhin `phylax`); Einstellungen wie Theme, Sprache und Auto-Lock-Dauer liegen in localStorage. Die Dateien der App selbst hält ein Service Worker vor, damit sie offline startet. Diese Speicherung ist für den Betrieb der App erforderlich; es wird nichts an einen Server übertragen. Du kannst deine Daten jederzeit als Backup exportieren und in den Einstellungen löschen (Danger Zone: vollständiger Reset) oder die Website-Daten in deinem Browser entfernen."
     },
-    "encryption": {
-      "heading": "Verschlüsselung",
-      "body": "Gesundheitsdaten werden vor dem Speichern mit AES-256-GCM verschlüsselt, der Schlüssel wird per PBKDF2 aus dem Master-Passwort abgeleitet. Der Schlüssel liegt ausschließlich lokal im Arbeitsspeicher des Geräts, während die App entsperrt ist, und wird niemals gespeichert oder übertragen. Ohne Master-Passwort ist eine Entschlüsselung nicht möglich."
+    "api-key": {
+      "heading": "KI-API-Schlüssel",
+      "body": "Dein API-Schlüssel für einen KI-Anbieter wird, falls du ihn hinterlegst, ebenfalls nur lokal gespeichert. Anders als reiner Klartext ist er Teil der verschlüsselten Vault-Daten (AES-256-GCM) und wird beim Sperren der App zusammen mit den übrigen Daten unlesbar, bis du dich erneut mit deinem Master-Passwort entsperrst. Du entfernst ihn in den Einstellungen (KI-Zugang)."
+    },
+    "update-check": {
+      "heading": "Update-Prüfung",
+      "body": "Neue Versionen der Web-App lädt dein Browser automatisch im Hintergrund über den Service Worker von GitHub Pages, also vom selben Hoster wie die App selbst. Es findet keine zusätzliche Abfrage bei einem separaten Update-Dienst statt. Eine neu geladene Version wird erst beim nächsten eigenständigen Neuladen der Seite aktiv, nicht mitten in einer laufenden Sitzung."
     },
     "ai-chat": {
       "heading": "Optionaler KI-Chat",
-      "body": "Die KI-Funktion ist standardmäßig deaktiviert und wird nur aktiv, wenn der Nutzer in den Einstellungen einen KI-Anbieter mit eigenem API-Key hinterlegt und danach selbst eine Chat-Anfrage stellt. Dabei werden die eingegebenen Nachrichten an den gewählten Anbieter übertragen (zum Beispiel Anthropic, OpenAI, Google oder Mistral, je nach Auswahl), teilweise mit Sitz in den USA (Drittland). Es findet kein automatischer Zugriff auf gespeicherte Gesundheitsdaten statt, und Chat-Nachrichten werden von Befaro selbst nicht gespeichert. Die Datenschutzerklärung des jeweils gewählten Anbieters ist beim Einrichten des KI-Zugangs in der App verlinkt."
+      "body": "KI-gestützte Funktionen sind nur aktiv, wenn du in den Einstellungen einen eigenen API-Schlüssel eines Anbieters hinterlegst: Anthropic, OpenAI, Google, Mistral, ein lokales LM Studio oder Ollama, oder eine selbst gewählte Adresse. Dann sendet dein Browser die im Chat eingegebenen Nachrichten direkt an diesen Anbieter. Es findet kein automatischer Zugriff auf deine gespeicherten Gesundheitsdaten statt, und Befaro selbst speichert Chat-Nachrichten nicht. Der Betreiber von Befaro ist an dieser Übermittlung nicht beteiligt und erhält keine Daten. Das Vertragsverhältnis besteht zwischen dir und dem gewählten Anbieter; es gelten dessen Datenschutzhinweise.",
+      "providers-intro": "Datenschutzhinweise der unterstützten Anbieter:"
+    },
+    "file-import": {
+      "heading": "Import von Dateien",
+      "body": "Befaro importiert Profile ausschließlich aus lokal ausgewählten Dateien (Markdown, PDF, ePA-Dokumente). Dabei wird nichts aus dem Internet nachgeladen und keine Datei an einen Server übertragen."
+    },
+    "external-links": {
+      "heading": "Externe Links",
+      "body": "Die App enthält Links zu externen Angeboten, unter anderem zu GitHub (Spendenseite, Quellcode) und zu den Datenschutzhinweisen der KI-Anbieter. Erst mit dem Klick verlässt du die App; ab dann gelten die Datenschutzhinweise des jeweiligen Anbieters. Es sind keine Skripte oder Schaltflächen dieser Anbieter eingebettet."
     },
     "no-tracking": {
       "heading": "Keine Cookies, kein Tracking, keine Analytics",
       "body": "Befaro setzt keine Cookies, keine Analyse- oder Tracking-Dienste und keine Werbenetzwerke ein. Es findet keine Auswertung des Nutzungsverhaltens statt. Ein Cookie-Banner entfällt deshalb bewusst."
     },
     "rights": {
-      "heading": "Rechte der betroffenen Person",
-      "intro": "Über die Gesundheitsdaten, die ausschließlich lokal auf dem eigenen Gerät liegen, verfügt allein der Nutzer selbst, über die App-Funktionen oder durch Löschen der Browserdaten. Für die bei GitHub Pages anfallenden technischen Zugriffsdaten bestehen gegenüber GitHub als Hoster insbesondere folgende Rechte:",
-      "list": {
-        "access": "Auskunft über die verarbeiteten Daten",
-        "deletion": "Löschung der verarbeiteten Daten",
-        "objection": "Widerspruch gegen die Verarbeitung"
-      }
+      "heading": "Deine Rechte",
+      "intro": "Du hast gegenüber dem Verantwortlichen das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch, und du kannst dich bei einer Datenschutzaufsichtsbehörde beschweren.",
+      "practical": "Da der Betreiber deine Inhalte nicht besitzt, richten sich Auskunfts- und Löschbegehren zu diesen Daten an dein eigenes Gerät: Einstellungen › Backup-Export, oder Danger Zone › vollständiger Reset."
     }
   },
+  "contact": {
+    "heading": "Kontakt per E-Mail",
+    "body": "Wenn du dem Betreiber eine E-Mail schreibst, werden deine Angaben zur Bearbeitung der Anfrage gespeichert und gelöscht, sobald die Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen."
+  },
+  "changes": {
+    "heading": "Änderungen",
+    "body": "Diese Erklärung wird angepasst, wenn sich die App oder die Rechtslage ändert. Das Datum der jeweils aktuellen Fassung steht oben."
+  },
+  "see-also-impressum": "Siehe auch das Impressum.",
   "back": "Zurück"
 }
