@@ -345,23 +345,27 @@ Follow-up not currently scheduled:
       `/datenschutz` (`DatenschutzView`) as new routes reachable
       without unlocking the vault (outside SetupFlowGuard/
       ProtectedRoute, Section 5 DDG requires immediate accessibility).
-      Datenschutz covers the full DSGVO-relevant sections: hosting,
-      local storage (Art. 6(1)(f) DSGVO), encryption, optional AI
-      chat, no cookies/tracking, data subject rights (factual
-      enumeration: Auskunft, Loeschung, Widerspruch). New `impressum`
-      and `privacy-policy` i18n namespaces (DE+EN, key parity
-      verified). Direct-link/reload on GitHub Pages already works via
-      the existing `cp dist/index.html dist/404.html` SPA fallback in
-      `.github/workflows/deploy.yml`; verified rather than re-added.
-      New Playwright coverage in `tests/e2e/legal.spec.ts` (direct
-      URL, hard reload, footer links). Scaffold shipped in this
-      commit; **stays open** because the responsible-party fields
-      (name, address, email, VAT id) are `[TODO: ...]` placeholders
-      and the Datenschutz text has not had its lawyer pass yet, per
-      the CC prompt's explicit gate. Both pages render a visible
-      "Entwurf" (draft) notice until that happens. Do not remove the
-      draft notice or treat this item as done before both conditions
-      are met.
+      Content and structure mirror the Bibliogon Impressum /
+      Datenschutzerklaerung (sibling project, same operator), adapted
+      for Befaro: encrypted (not plaintext) local storage including
+      the AI API key, multi-provider AI chat with real per-provider
+      privacy-policy links, no URL-based import, GitHub Pages
+      hosting, all six DSGVO rights (Auskunft, Berichtigung,
+      Loeschung, Einschraenkung, Datenuebertragbarkeit, Widerspruch)
+      plus the right to complain to a supervisory authority. Real
+      responsible-party data supplied by Aster (name, address, email;
+      no VAT id, none applies) replaces the initial `[TODO: ...]`
+      placeholders; the draft notice was removed accordingly. New
+      `impressum` and `privacy-policy` i18n namespaces (DE+EN, key
+      parity verified). Direct-link/reload on GitHub Pages already
+      works via the existing `cp dist/index.html dist/404.html` SPA
+      fallback in `.github/workflows/deploy.yml`; verified rather
+      than re-added. New Playwright coverage in
+      `tests/e2e/legal.spec.ts` (direct URL, hard reload, footer
+      links). Shipped in this commit; **stays open** only because the
+      Datenschutz text has not had a lawyer pass yet. If that review
+      surfaces changes, they land as a follow-up commit on this same
+      task id.
 
 ## Tech debt (carry-overs)
 

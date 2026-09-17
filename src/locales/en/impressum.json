@@ -1,23 +1,40 @@
 {
   "heading": "Legal Notice (Impressum)",
-  "intro": "Information pursuant to Section 5 of the German Digital Services Act (DDG) and Section 18 (2) of the German Interstate Media Treaty (MStV).",
-  "draft-notice": "Draft: this page is not yet complete. The responsible-party details are missing and will be added before publication.",
+  "intro": "Information pursuant to Section 5 of the German Digital Services Act (DDG).",
   "responsible": {
     "heading": "Responsible for content",
-    "name-label": "Name",
-    "name-value": "[TODO: enter full name]",
-    "address-label": "Address",
-    "address-value": "[TODO: enter service address]",
+    "name": "Asterios Raptis",
+    "address-line1": "Seestraße 68",
+    "address-line2": "71638 Ludwigsburg",
+    "address-line3": "Germany",
     "email-label": "Email",
-    "email-value": "[TODO: enter contact email address]",
-    "vat-id-label": "VAT ID",
-    "vat-id-value": "[TODO: enter VAT ID if applicable, otherwise remove this line]"
+    "email-value": "asterios.raptis@web.de"
   },
-  "disclaimer": {
-    "heading": "Liability notice",
-    "content-body": "Befaro is a private, non-commercial open-source project. No guarantee is given for the correctness, completeness, or timeliness of the content provided.",
-    "links-body": "This app does not link to third-party websites with their own editorial content. Outbound links (for example to AI provider documentation or the donation page) lead to services this project has no control over."
+  "mstv": {
+    "heading": "Responsible for content under Section 18 (2) of the German Interstate Media Treaty (MStV)",
+    "body": "Asterios Raptis, address as above."
   },
-  "see-also-privacy-policy": "See also the full privacy policy.",
+  "offer": {
+    "heading": "About this offering",
+    "body": "Befaro is an open-source, local-first health platform under the MIT license. Use is free of charge; no sales take place through these pages. The app links to the privacy notices of the supported AI providers, plus a voluntary donation option via GitHub (Liberapay, GitHub Sponsors, Ko-fi, PayPal)."
+  },
+  "liability-content": {
+    "heading": "Liability for content",
+    "body": "The content of these pages and of the app was created with the greatest care. However, the operator gives no guarantee for the correctness, completeness, or timeliness of the content. Health data that users create in the app stays on their own device; each user is responsible for their own content. Befaro is a documentation tool, not a medical device; it does not make diagnoses and does not replace medical advice."
+  },
+  "liability-links": {
+    "heading": "Liability for links",
+    "body": "The app and these pages contain links to external third-party websites over whose content the operator has no control. The respective provider or operator of those pages is always responsible for such external content. The linked pages were checked for possible legal violations at the time of linking; permanent monitoring of linked content is not reasonable without concrete evidence of a violation. Such links will be removed immediately upon becoming aware of a legal violation."
+  },
+  "copyright": {
+    "heading": "Copyright",
+    "body": "Befaro's source code is licensed under the MIT license. Third-party trademarks and logos (for example GitHub, Anthropic, OpenAI, Google, Mistral) belong to their respective owners."
+  },
+  "dispute-resolution": {
+    "heading": "Consumer dispute resolution",
+    "body": "The operator is neither willing nor obligated to participate in dispute resolution proceedings before a consumer arbitration board (Section 36 VSBG)."
+  },
+  "stand": "Last updated: September 17, 2026.",
+  "see-also-privacy-policy": "See also the privacy policy.",
   "back": "Back"
 }

@@ -1,17 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { WarningCallout } from '../../ui';
 
 /**
  * Legal notice (Impressum) per Section 5 DDG / Section 18(2) MStV.
  *
  * Standalone full-screen route reachable without unlocking the vault
  * (no AppShell, no ProtectedRoute), so a first-time visitor or a
- * locked user can read it. The responsible-party fields are
- * placeholders until the maintainer fills them in; the draft notice
- * makes that state visible in the UI rather than silently shipping
- * incorrect legal information.
+ * locked user can read it. Content and structure mirror the
+ * Bibliogon Impressum (sibling project, same operator), adapted for
+ * Befaro's health-data context.
  */
 export function ImpressumView() {
   const { t } = useTranslation('impressum');
@@ -36,47 +34,51 @@ export function ImpressumView() {
           <p className="text-sm text-gray-600 dark:text-gray-400">{t('intro')}</p>
         </header>
 
-        <WarningCallout severity="warning">{t('draft-notice')}</WarningCallout>
-
-        <section aria-labelledby="impressum-responsible-heading" className="space-y-2">
+        <section aria-labelledby="impressum-responsible-heading" className="space-y-1">
           <h2
             id="impressum-responsible-heading"
             className="text-base font-semibold text-gray-900 dark:text-gray-100"
           >
             {t('responsible.heading')}
           </h2>
-          <dl className="space-y-1 text-sm text-gray-800 dark:text-gray-200">
-            <div>
-              <dt className="inline font-medium">{t('responsible.name-label')}: </dt>
-              <dd className="inline">{t('responsible.name-value')}</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium">{t('responsible.address-label')}: </dt>
-              <dd className="inline">{t('responsible.address-value')}</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium">{t('responsible.email-label')}: </dt>
-              <dd className="inline">{t('responsible.email-value')}</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium">{t('responsible.vat-id-label')}: </dt>
-              <dd className="inline">{t('responsible.vat-id-value')}</dd>
-            </div>
-          </dl>
+          <p className="text-sm text-gray-800 dark:text-gray-200" data-testid="impressum-address">
+            {t('responsible.name')}
+            <br />
+            {t('responsible.address-line1')}
+            <br />
+            {t('responsible.address-line2')}
+            <br />
+            {t('responsible.address-line3')}
+          </p>
+          <p className="text-sm text-gray-800 dark:text-gray-200">
+            {t('responsible.email-label')}:{' '}
+            <a
+              href={`mailto:${t('responsible.email-value')}`}
+              className="text-blue-700 underline hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
+            >
+              {t('responsible.email-value')}
+            </a>
+          </p>
         </section>
 
-        <section aria-labelledby="impressum-disclaimer-heading" className="space-y-2">
+        <section aria-labelledby="impressum-mstv-heading" className="space-y-1">
           <h2
-            id="impressum-disclaimer-heading"
+            id="impressum-mstv-heading"
             className="text-base font-semibold text-gray-900 dark:text-gray-100"
           >
-            {t('disclaimer.heading')}
+            {t('mstv.heading')}
           </h2>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{t('disclaimer.content-body')}</p>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{t('disclaimer.links-body')}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{t('mstv.body')}</p>
         </section>
 
-        <p className="text-sm">
+        <TextSection id="offer" t={t} />
+        <TextSection id="liability-content" t={t} />
+        <TextSection id="liability-links" t={t} />
+        <TextSection id="copyright" t={t} />
+        <TextSection id="dispute-resolution" t={t} />
+
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('stand')}{' '}
           <Link
             to="/datenschutz"
             className="text-blue-700 underline hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
@@ -94,5 +96,24 @@ export function ImpressumView() {
         </button>
       </article>
     </main>
+  );
+}
+
+type SectionId =
+  | 'offer'
+  | 'liability-content'
+  | 'liability-links'
+  | 'copyright'
+  | 'dispute-resolution';
+
+function TextSection({ id, t }: { id: SectionId; t: (key: string) => string }) {
+  const titleId = `impressum-${id}-heading`;
+  return (
+    <section aria-labelledby={titleId} className="space-y-1">
+      <h2 id={titleId} className="text-base font-semibold text-gray-900 dark:text-gray-100">
+        {t(`${id}.heading`)}
+      </h2>
+      <p className="text-sm text-gray-700 dark:text-gray-300">{t(`${id}.body`)}</p>
+    </section>
   );
 }

@@ -70,6 +70,21 @@ export const ALLOWLIST = [
     reason:
       'Link in DatenschutzView (P-16) to the GitHub Privacy Statement, target="_blank", opened only on click.',
   },
+  {
+    host: 'openai.com',
+    reason:
+      'Link in DatenschutzView (P-16) to OpenAI\'s own privacy policy, target="_blank", opened only on click.',
+  },
+  {
+    host: 'policies.google.com',
+    reason:
+      'Link in DatenschutzView (P-16) to Google\'s own privacy policy, target="_blank", opened only on click.',
+  },
+  {
+    host: 'mistral.ai',
+    reason:
+      'Link in DatenschutzView (P-16) to Mistral\'s own privacy policy, target="_blank", opened only on click.',
+  },
   // Inert strings bundled inside third-party library code, never fetched
   {
     host: 'react.dev',

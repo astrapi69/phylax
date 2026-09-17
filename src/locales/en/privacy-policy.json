@@ -1,47 +1,73 @@
 {
   "heading": "Privacy Policy",
-  "intro": "This page factually describes what data Befaro processes and where it can go. The technical basis is the inventory in PRIVACY.md in the project repository.",
-  "draft-notice": "Draft: this privacy policy is currently under legal review and is not yet final.",
+  "stand": "Last updated: September 17, 2026",
+  "intro": "This policy applies to the public web version of Befaro at astrapi69.github.io/phylax.",
   "controller": {
     "heading": "Data controller",
-    "name-label": "Name",
-    "name-value": "[TODO: enter full name]",
-    "address-label": "Address",
-    "address-value": "[TODO: enter service address]",
+    "name": "Asterios Raptis",
+    "address-line1": "Seestraße 68",
+    "address-line2": "71638 Ludwigsburg",
+    "address-line3": "Germany",
     "email-label": "Email",
-    "email-value": "[TODO: enter contact email address]"
+    "email-value": "asterios.raptis@web.de"
+  },
+  "summary": {
+    "heading": "In short",
+    "list": {
+      "no-server": "Befaro has no server of its own. Your health data, settings, and a saved AI API key live encrypted exclusively in your browser (IndexedDB and localStorage). The operator never sees them.",
+      "no-tracking": "The app sets no cookies and uses no analytics or tracking services. Fonts and scripts are bundled and never loaded from a third party.",
+      "hosting": "When you load the pages, GitHub as the host processes your IP address. Everything else only reaches a third party when you use a feature that requires it, for example the optional AI chat."
+    }
   },
   "section": {
     "hosting": {
       "heading": "Hosting via GitHub Pages",
-      "body": "Befaro is delivered as a static website via GitHub Pages (Microsoft). On every page load, GitHub automatically processes standard technical access data (including IP address, user agent, requested URL) at typical server-log scope. Recipient: GitHub, based in the USA (a third country).",
+      "body": "The app is delivered by GitHub Pages, a service of GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. On every page load, GitHub processes your device's IP address and standard connection data (timestamp, requested file, browser type) for security purposes; per GitHub's own statement, this data is retained only for operational security and is not shared with the operator.",
       "link-label": "GitHub Privacy Statement"
     },
     "local-storage": {
-      "heading": "Local storage on the device",
-      "body": "Befaro stores health data (observations, lab values, supplement plans, open points, documents) exclusively locally in the browser (IndexedDB), plus settings in localStorage. This data is never transmitted to a server, Befaro has no server of its own. The legal basis for this local processing is necessity under Art. 6(1)(f) GDPR (legitimate interest in a functioning app)."
+      "heading": "Storage in the browser",
+      "body": "All data you create in the app (observations, lab values, supplement plans, open points, documents, profiles) is stored locally by your browser and encrypted with AES-256-GCM in IndexedDB (the database is still named `phylax`); settings such as theme, language, and auto-lock duration live in localStorage. A service worker keeps the app's own files available so it starts offline. This storage is necessary for the app to function; nothing is transmitted to a server. You can export your data as a backup at any time and delete it in settings (Danger Zone: full reset), or remove the site's data in your browser."
     },
-    "encryption": {
-      "heading": "Encryption",
-      "body": "Health data is encrypted with AES-256-GCM before it is stored; the key is derived from the master password via PBKDF2. The key exists only locally in the device's memory while the app is unlocked and is never stored or transmitted. Decryption is impossible without the master password."
+    "api-key": {
+      "heading": "AI API key",
+      "body": "If you save an API key for an AI provider, it is likewise stored only locally. Unlike plain text, it is part of the encrypted vault data (AES-256-GCM) and, along with everything else, becomes unreadable once the app locks, until you unlock again with your master password. You remove it in settings (AI access)."
+    },
+    "update-check": {
+      "heading": "Update checks",
+      "body": "Your browser automatically fetches new versions of the web app in the background via the GitHub Pages service worker, the same host as the app itself. No separate update service is queried. A newly loaded version only becomes active on the next independent page reload, never mid-session."
     },
     "ai-chat": {
       "heading": "Optional AI chat",
-      "body": "The AI feature is disabled by default and only becomes active if the user configures an AI provider with their own API key in settings and then sends a chat request themselves. When they do, the entered messages are sent to the chosen provider (for example Anthropic, OpenAI, Google, or Mistral, depending on selection), some of which are based in the USA (a third country). There is no automatic access to stored health data, and Befaro itself never persists chat messages. The chosen provider's own privacy policy is linked in the app while setting up AI access."
+      "body": "AI-assisted features only become active if you configure your own API key for a provider in settings: Anthropic, OpenAI, Google, Mistral, a local LM Studio or Ollama instance, or a custom endpoint. When you do, your browser sends the messages you type in the chat directly to that provider. There is no automatic access to your stored health data, and Befaro itself never persists chat messages. Befaro's operator is not involved in this transmission and receives no data. The contractual relationship is between you and the chosen provider; that provider's own privacy notice applies.",
+      "providers-intro": "Privacy notices of the supported providers:"
+    },
+    "file-import": {
+      "heading": "File import",
+      "body": "Befaro imports profiles exclusively from locally selected files (Markdown, PDF, ePA documents). Nothing is fetched from the internet during import, and no file is transmitted to a server."
+    },
+    "external-links": {
+      "heading": "External links",
+      "body": "The app contains links to external offerings, including GitHub (donation page, source code) and the AI providers' privacy notices. You only leave the app once you click; from then on, the respective provider's own privacy notice applies. No scripts or widgets from these providers are embedded."
     },
     "no-tracking": {
       "heading": "No cookies, no tracking, no analytics",
       "body": "Befaro uses no cookies, no analytics or tracking services, and no advertising networks. No usage behavior is evaluated. A cookie banner is therefore deliberately omitted."
     },
     "rights": {
-      "heading": "Data subject rights",
-      "intro": "Health data, which lives exclusively on the user's own device, is controlled entirely by the user themselves, through the app's own features or by clearing browser data. For the technical access data that GitHub Pages processes, the following rights apply against GitHub as the host, among others:",
-      "list": {
-        "access": "Access to the processed data",
-        "deletion": "Deletion of the processed data",
-        "objection": "Objection to the processing"
-      }
+      "heading": "Your rights",
+      "intro": "You have the right to access, rectification, erasure, restriction of processing, data portability, and objection against the controller, and you may lodge a complaint with a data protection supervisory authority.",
+      "practical": "Since the operator does not hold your content, access and deletion requests for that data are addressed to your own device instead: Settings › Backup export, or Danger Zone › full reset."
     }
   },
+  "contact": {
+    "heading": "Contact by email",
+    "body": "If you email the operator, your details are stored to process the request and deleted once the request is resolved and no statutory retention obligations apply."
+  },
+  "changes": {
+    "heading": "Changes",
+    "body": "This policy is updated whenever the app or the legal situation changes. The date of the current version is shown above."
+  },
+  "see-also-impressum": "See also the legal notice (Impressum).",
   "back": "Back"
 }
