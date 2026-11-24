@@ -9,6 +9,10 @@ concurrency:
   group: mutation-${{ github.ref }}
   cancel-in-progress: true
 
+# Least privilege for the GITHUB_TOKEN: the job only reads the repository.
+permissions:
+  contents: read
+
 jobs:
   mutation:
     name: Mutation Tests

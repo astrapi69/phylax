@@ -326,6 +326,11 @@ Follow-up not currently scheduled:
       gehen nach `develop`, `main` trägt nur Releases und Hotfixes, das
       Deployment folgt `main`. CI läuft auf beiden Branches. Der
       Default-Branch ist eine Repo-Einstellung, kein Commit.
+- [x] **I-15** Minimale `GITHUB_TOKEN`-Rechte in den Workflows. `ci.yml`
+      und `mutation-nightly.yml` setzen `permissions: contents: read` auf
+      Workflow-Ebene; nur der Deploy-Job hebt seine Rechte selbst an.
+      Schließt die sechs CodeQL-Meldungen
+      `actions/missing-workflow-permissions`.
 - [x] **I-11** External-resource audit and outbound-connection
       disclosure. New `docs/audits/external-resources-2026-09-16.md`
       documents every host referenced in the production build (`dist/`),
