@@ -40,16 +40,6 @@ verdoppelt neue Sponsoren im ersten Jahr.
 
 ---
 
-## Flattr
-
-Mikrospenden-Plattform, bei der Unterstützer ein monatliches Budget
-festlegen und es auf Creator verteilen. FOSS-freundlich, etabliert in
-der Open-Source-Community.
-
-**Link:** https://flattr.com/@astrapi69
-
----
-
 ## Ko-fi
 
 Für einmalige Unterstützung ohne Kontozwang. "Spendier mir einen
@@ -105,14 +95,14 @@ Spenden nicht steuerlich absetzbar.
 
 ### Was ist der Unterschied zwischen wiederkehrenden und einmaligen Spenden?
 
-Wiederkehrende Spenden (über Liberapay, GitHub Sponsors oder Flattr)
+Wiederkehrende Spenden (über Liberapay oder GitHub Sponsors)
 helfen, Entwicklungszeit langfristig zu planen. Einmalige Spenden
 (über Ko-fi oder PayPal) sind genauso willkommen, besonders wenn
 ein bestimmtes Feature dir geholfen hat.
 
 ### Kann ich meine wiederkehrende Spende ändern oder kündigen?
 
-Ja, jederzeit über die jeweilige Plattform. Alle vier
+Ja, jederzeit über die jeweilige Plattform. Beide
 Wiederkehr-Plattformen haben Konto-Einstellungen zur Verwaltung von
 Abonnements.
 
@@ -130,7 +120,7 @@ professionalisieren die Zahlungsabwicklung.
 
 ### Welche Plattform soll ich wählen?
 
-- **Datenschutzfokussiert:** Liberapay oder Flattr
+- **Datenschutzfokussiert:** Liberapay
 - **Entwickler-Community:** GitHub Sponsors
 - **Schnelle einmalige Unterstützung:** Ko-fi
 - **Größte Reichweite:** PayPal
