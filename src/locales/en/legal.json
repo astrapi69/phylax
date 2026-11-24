@@ -2,7 +2,8 @@
   "section": {
     "heading": "Legal",
     "description": "Privacy disclosure and license for this app.",
-    "privacy-link": "Privacy",
+    "privacy-link": "Privacy at a glance",
+    "privacy-policy-link": "Privacy policy",
     "license-link": "License"
   },
   "license": {
