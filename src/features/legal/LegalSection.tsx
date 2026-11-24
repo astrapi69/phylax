@@ -14,6 +14,10 @@ import { useTranslation } from 'react-i18next';
  *     footer on every screen; listed here too for discoverability
  *     inside Settings.
  *
+ * `/privacy` and `/datenschutz` are two different pages. Each carries
+ * its own section label (BUG-16); the short footer label "Datenschutz"
+ * on both rendered two identical buttons side by side.
+ *
  * Anchors are real `<Link>` elements so keyboard activation,
  * right-click "open in new tab", and browser preloading all behave
  * normally; matches the pattern set by ImportProfileLinkButton.
@@ -56,7 +60,7 @@ export function LegalSection() {
           data-testid="legal-link-datenschutz"
           className="flex min-h-[44px] items-center rounded-sm border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 no-underline transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
         >
-          {t('footer.privacy-policy-link')}
+          {t('section.privacy-policy-link')}
         </Link>
       </div>
     </section>
