@@ -475,19 +475,60 @@ describe('exportProfileAsMarkdown', () => {
       return exportProfileAsMarkdown(makeProfile(), [], [], [], [supplementNamed(name)], [], []);
     }
 
-    it('writes a backslash in a cell unchanged', () => {
-      expect(exportSupplement('Pfad C:\\Daten')).toContain('| täglich | Pfad C:\\Daten |');
+    it('escapes a backslash in a cell', () => {
+      expect(exportSupplement('Pfad C:\\Daten')).toContain('| täglich | Pfad C:\\\\Daten |');
     });
 
-    it('loses the part after a pipe on re-import', () => {
-      const result = parseProfile(exportSupplement('Zink | Kupfer'));
-      expect(result.supplements[0]?.name).toBe('Zink \\');
+    it('escapes a backslash before a pipe so the pipe stays escaped', () => {
+      // The value is a\|b. It is written as a\\\|b: an escaped
+      // backslash, then an escaped pipe.
+      expect(exportSupplement('a\\|b')).toContain('| täglich | a\\\\\\|b |');
     });
 
-    it('turns a backslash before a pipe into an escaped backslash and an open pipe', () => {
-      // The value is a\|b. Only the pipe is escaped, so the cell reads
-      // a\\|b: an escaped backslash followed by a cell boundary.
-      expect(exportSupplement('a\\|b')).toContain('| täglich | a\\\\|b |');
+    it.each([
+      ['a pipe', 'Zink | Kupfer'],
+      ['a backslash', 'Pfad C:\\Daten'],
+      ['a backslash before a pipe', 'a\\|b'],
+      ['a trailing backslash', 'Dosis\\'],
+      ['a trailing pipe', 'Dosis|'],
+      ['doubled backslashes', 'a\\\\b'],
+      ['neither', 'Magnesium 400'],
+    ])('round-trips a supplement name with %s', (_label, name) => {
+      const result = parseProfile(exportSupplement(name));
+      expect(result.supplements).toHaveLength(1);
+      expect(result.supplements[0]?.name).toBe(name);
+      expect(result.supplements[0]?.category).toBe('daily');
+    });
+
+    it('round-trips lab value cells with pipes and backslashes', () => {
+      const report: LabReport = {
+        id: 'r1',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportDate: '2026-03-01',
+        categoryAssessments: {},
+      };
+      const value: LabValue = {
+        id: 'v1',
+        profileId: 'p1',
+        createdAt: 0,
+        updatedAt: 0,
+        reportId: 'r1',
+        category: 'Blutbild',
+        parameter: 'Ratio A|B',
+        result: '1\\2',
+        unit: 'mg\\|dl',
+        referenceRange: '3|4',
+        assessment: 'ok\\',
+      };
+      const md = exportProfileAsMarkdown(makeProfile(), [], [report], [value], [], [], []);
+      const parsed = parseProfile(md).labValues[0];
+      expect(parsed?.parameter).toBe('Ratio A|B');
+      expect(parsed?.result).toBe('1\\2');
+      expect(parsed?.unit).toBe('mg\\|dl');
+      expect(parsed?.referenceRange).toBe('3|4');
+      expect(parsed?.assessment).toBe('ok\\');
     });
   });
 
