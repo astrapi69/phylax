@@ -60,4 +60,21 @@ describe('parseMarkdownTable', () => {
     const rows = parseMarkdownTable(md);
     expect(rows[0]?.['Kategorie']).toBe('**Täglich**');
   });
+
+  describe('escaped characters in cells (BUG-17)', () => {
+    it('treats an escaped pipe as a cell boundary', () => {
+      const md = ['| Kategorie | Präparat |', '|---|---|', '| täglich | Zink \\| Kupfer |'].join(
+        '\n',
+      );
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['Präparat']).toBe('Zink \\');
+    });
+
+    it('keeps a doubled backslash as two characters', () => {
+      const md = ['| A | B |', '|---|---|', '| x\\\\y | 2 |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('x\\\\y');
+      expect(rows[0]?.['B']).toBe('2');
+    });
+  });
 });

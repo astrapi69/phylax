@@ -466,6 +466,31 @@ describe('exportProfileAsMarkdown', () => {
     expect(md).toContain('Weird \\| Name');
   });
 
+  describe('table cells with backslashes and pipes (BUG-17)', () => {
+    function supplementNamed(name: string): Supplement {
+      return { id: 's1', profileId: 'p1', createdAt: 0, updatedAt: 0, name, category: 'daily' };
+    }
+
+    function exportSupplement(name: string): string {
+      return exportProfileAsMarkdown(makeProfile(), [], [], [], [supplementNamed(name)], [], []);
+    }
+
+    it('writes a backslash in a cell unchanged', () => {
+      expect(exportSupplement('Pfad C:\\Daten')).toContain('| täglich | Pfad C:\\Daten |');
+    });
+
+    it('loses the part after a pipe on re-import', () => {
+      const result = parseProfile(exportSupplement('Zink | Kupfer'));
+      expect(result.supplements[0]?.name).toBe('Zink \\');
+    });
+
+    it('turns a backslash before a pipe into an escaped backslash and an open pipe', () => {
+      // The value is a\|b. Only the pipe is escaped, so the cell reads
+      // a\\|b: an escaped backslash followed by a cell boundary.
+      expect(exportSupplement('a\\|b')).toContain('| täglich | a\\\\|b |');
+    });
+  });
+
   it('footer carries export date, Befaro version, and profile version', () => {
     const profile = makeProfile({ version: '1.3.5' });
     const md = exportProfileAsMarkdown(profile, [], [], [], [], [], []);
