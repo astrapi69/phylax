@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getDisplayName } from '../../../domain';
 import type { Profile } from '../../../domain';
 import { ProfileRepository } from '../../../db/repositories';
+import { useActiveProfile } from '../../active-profile';
 import { useImport, EMPTY_COUNTS, type EntityCounts } from '../import';
 import type { ParseResult } from '../parser/types';
 import { ImportCleanupScreen } from '../ai-fallback';
@@ -45,6 +46,7 @@ export function ImportFlow() {
   const { t } = useTranslation('import');
   const navigate = useNavigate();
   const importState = useImport();
+  const { activeProfileId } = useActiveProfile();
   const [sourceLabel, setSourceLabel] = useState<string>('');
   const [profilesById, setProfilesById] = useState<Record<string, Profile>>({});
   const reloadProfilesRef = useRef<() => Promise<void>>(async () => {});
@@ -105,11 +107,21 @@ export function ImportFlow() {
     return p ? getDisplayName(p) : t('flow.target-fallback');
   };
 
+  // M-07: the entry screen names the active profile; a stale stored id
+  // (profile deleted in another tab) resolves to no hint at all.
+  const activeProfile = activeProfileId ? profilesById[activeProfileId] : undefined;
+
   const state = importState.state;
 
   switch (state.kind) {
     case 'entry':
-      return <ImportEntryScreen onSubmit={handleEntrySubmit} onCancel={handleNavigateHome} />;
+      return (
+        <ImportEntryScreen
+          onSubmit={handleEntrySubmit}
+          onCancel={handleNavigateHome}
+          activeProfileName={activeProfile ? getDisplayName(activeProfile) : undefined}
+        />
+      );
 
     case 'parsing':
       return (
@@ -120,7 +132,11 @@ export function ImportFlow() {
 
     case 'profile-selection':
       return (
-        <ProfileSelectionScreen onSelect={handleProfileSelect} onCancel={importState.cancel} />
+        <ProfileSelectionScreen
+          onSelect={handleProfileSelect}
+          onCancel={importState.cancel}
+          preselectedProfileId={activeProfile?.id}
+        />
       );
 
     case 'parse-failure':

@@ -9,6 +9,7 @@
   "entry": {
     "heading": "Import aus Markdown",
     "intro": "Importiere ein bestehendes Lebende-Gesundheit Profil als Markdown-Datei oder Text.",
+    "target-hint": "Aktives Profil: {{name}}. Das Zielprofil bestätigst oder wechselst du im nächsten Schritt.",
     "file": {
       "heading": "Datei auswählen",
       "cta": "Markdown-Datei wählen (.md)",

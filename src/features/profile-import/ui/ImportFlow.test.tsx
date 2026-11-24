@@ -216,3 +216,69 @@ describe('ImportFlow', () => {
 // (kept minimal, matches existing test conventions)
 export {};
 void vi;
+
+describe('ImportFlow target profile visibility [M-07]', () => {
+  const ACTIVE_KEY = 'phylax-active-profile';
+
+  async function createSecondProfile(): Promise<string> {
+    const p = await new ProfileRepository().create({
+      baseData: {
+        name: 'Zweitprofil',
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+    return p.id;
+  }
+
+  beforeEach(() => {
+    localStorage.removeItem(ACTIVE_KEY);
+  });
+
+  it('names the active profile on the entry screen when several profiles exist', async () => {
+    const secondId = await createSecondProfile();
+    localStorage.setItem(ACTIVE_KEY, secondId);
+    renderFlow();
+    const hint = await screen.findByTestId('import-entry-target-hint');
+    expect(hint).toHaveTextContent('Aktives Profil: Zweitprofil');
+    expect(hint).not.toHaveTextContent('Testprofil');
+  });
+
+  it('shows no hint when no profile is active', async () => {
+    renderFlow();
+    await screen.findByRole('heading', { name: 'Import aus Markdown' });
+    await waitFor(() => {
+      expect(screen.queryByTestId('import-entry-target-hint')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows no hint when the stored active id matches no profile', async () => {
+    localStorage.setItem(ACTIVE_KEY, 'stale-id');
+    renderFlow();
+    await screen.findByRole('heading', { name: 'Import aus Markdown' });
+    await waitFor(() => {
+      expect(screen.queryByTestId('import-entry-target-hint')).not.toBeInTheDocument();
+    });
+  });
+
+  it('highlights the active profile in the selection step', async () => {
+    const secondId = await createSecondProfile();
+    localStorage.setItem(ACTIVE_KEY, secondId);
+    const user = userEvent.setup();
+    renderFlow();
+    await pasteAndContinue(user);
+    await screen.findByRole('heading', { name: /In welches Profil importieren/i });
+    await screen.findByText('Zweitprofil');
+    const current = screen
+      .getAllByTestId('profile-card')
+      .filter((card) => card.getAttribute('aria-current') === 'true');
+    expect(current).toHaveLength(1);
+    expect(current[0]).toHaveTextContent('Zweitprofil');
+  });
+});

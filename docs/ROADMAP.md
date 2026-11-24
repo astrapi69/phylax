@@ -205,6 +205,12 @@ Status: M-01..M-05 shipped in the four-phase track on 2026-06-02
 groundwork (`profileId` on every entity row) was in place from
 day one.
 
+- [x] **M-07** Markdown-Import zeigt das Zielprofil früher. Der
+      Entry-Screen nennt das aktive Profil, der Auswahlschritt hebt es
+      hervor; das Ziel wird weiterhin per Klick bestätigt. Anlass:
+      bei mehreren Profilen war auf dem Entry-Screen nicht ersichtlich,
+      wohin importiert wird.
+
 Follow-up not currently scheduled:
 
 - [ ] **M-05 import-as-new-profile** Backup _import_ path that adds

@@ -180,3 +180,66 @@ describe('ProfileSelectionScreen', () => {
     expect(card).not.toHaveAttribute('aria-current');
   });
 });
+
+describe('ProfileSelectionScreen preselection [M-07]', () => {
+  async function createProfile(name: string) {
+    return new ProfileRepository().create({
+      baseData: {
+        name,
+        weightHistory: [],
+        knownDiagnoses: [],
+        currentMedications: [],
+        relevantLimitations: [],
+        profileType: 'self',
+      },
+      warningSigns: [],
+      externalReferences: [],
+      version: '1.0',
+    });
+  }
+
+  function currentCardNames(): string[] {
+    return screen
+      .getAllByTestId('profile-card')
+      .filter((card) => card.getAttribute('aria-current') === 'true')
+      .map((card) => card.querySelector('h3')?.textContent ?? '');
+  }
+
+  it('marks only the preselected profile as current', async () => {
+    await createProfile('Anna');
+    const bernd = await createProfile('Bernd');
+    render(
+      <MemoryRouter>
+        <ProfileSelectionScreen
+          onSelect={vi.fn()}
+          onCancel={vi.fn()}
+          preselectedProfileId={bernd.id}
+        />
+      </MemoryRouter>,
+    );
+    await screen.findByText('Bernd');
+    expect(currentCardNames()).toEqual(['Bernd']);
+  });
+
+  it('marks no card without a preselected profile', async () => {
+    await createProfile('Anna');
+    renderScreen();
+    await screen.findByText('Anna');
+    expect(currentCardNames()).toEqual([]);
+  });
+
+  it('marks no card when the preselected id matches no profile', async () => {
+    await createProfile('Anna');
+    render(
+      <MemoryRouter>
+        <ProfileSelectionScreen
+          onSelect={vi.fn()}
+          onCancel={vi.fn()}
+          preselectedProfileId="does-not-exist"
+        />
+      </MemoryRouter>,
+    );
+    await screen.findByText('Anna');
+    expect(currentCardNames()).toEqual([]);
+  });
+});
