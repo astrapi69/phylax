@@ -106,6 +106,11 @@ the trigger fires.
 - **M-06** Rate-limit storage key scoping per vault (unlock and
   backup-import). Trigger: user report of cross-profile lockout
   confusion or multi-user device use case.
+- **M-08** Wizard reorder in the Markdown import flow: pick the target
+  profile before the file step, so every later screen shows a fixed
+  target. M-07 only names the active profile on the entry screen and
+  highlights it in the selection step. Trigger: a user report that the
+  file-before-profile order is still confusing despite the M-07 hint.
 - **X-10** All-profiles PDF export option, producing one document that
   spans every profile on the device rather than only the active one.
   Trigger: an explicit user request for a single PDF covering multiple
