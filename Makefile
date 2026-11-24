@@ -60,7 +60,7 @@ test-e2e: ## Run Playwright end-to-end tests
 test-e2e-ui: ## Run Playwright tests in interactive UI mode
 	npx playwright test --ui
 
-test-e2e-production: ## Run Playwright E2E against production build
+test-e2e-production: build ## Build, then run Playwright E2E against the production build
 	npx playwright test --config playwright.config.production.ts
 
 size: ## Run size-limit against an existing dist/ build (no rebuild)
