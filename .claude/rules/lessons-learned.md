@@ -64,6 +64,31 @@ This file collects lessons that come from real development. It starts small and 
 - Playwright runs a real browser, so `crypto.subtle` works.
 - Use a separate Playwright project for E2E with a clean storage state. Otherwise the master password from one test leaks into the next.
 
+### Production E2E locally needs a fresh build first
+
+- `make test-e2e-production` does not build. It starts `vite preview`,
+  which comes up even when `dist/` is missing, and then every test
+  fails in the first onboarding step with
+  `Timeout 15000ms exceeded while waiting on the predicate` at
+  `fillNewPasswordPair`. The message points at the password helper,
+  but the page under test is simply not the app. Measured 2026-11-24
+  on `0a900ed`, Playwright 1.59.1, Chromium: without `dist/` 1 of 1
+  failed, after `make build` 4 of 4 passed (same test filter).
+- CI does not have this gap: the `E2E (Production)` job downloads the
+  `production-build` artifact that the build job produced.
+- Run `make build` before `make test-e2e-production`. With an old
+  `dist/` the suite runs against the old bundle and says nothing, so
+  rebuild after every source change, not only when `dist/` is absent.
+- A full local run also needs the WebKit build that matches the
+  installed Playwright version (`npx playwright install webkit`).
+  Without it the WebKit project fails at launch with
+  `Executable doesn't exist`. For a quick local check of one screen,
+  limit the run to one engine and one test name:
+
+  ```bash
+  npx playwright test --config playwright.config.production.ts --project=chromium -g "<name>"
+  ```
+
 ### Stryker static mutants (vitest runner)
 
 - Mutants flagged `static: true` can show up as "Survived" even when
