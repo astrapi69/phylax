@@ -86,7 +86,7 @@ export function ProfileList({
                   <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-gray-100">
                     {getDisplayName(profile)}
                   </h3>
-                  <p className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                  <p className="text-xs tracking-wide text-gray-600 uppercase dark:text-gray-400">
                     {profileTypeBadge(t, profile)}
                   </p>
                   {counts !== undefined && (
