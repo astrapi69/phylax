@@ -1,8 +1,9 @@
 # CI Gates
 
-## Required checks on `main`
+## Required checks on `develop` and `main`
 
-The `main` branch should require these CI checks from
+Both long-lived branches (ADR-0025: `develop` for task pull requests,
+`main` for release and hotfix pull requests) should require these CI checks from
 `.github/workflows/ci.yml` before a pull request can merge:
 
 - `lint-typecheck`
@@ -12,7 +13,8 @@ The `main` branch should require these CI checks from
 - `build`
 
 Enforced via GitHub repo settings -> Branches -> Branch protection rules
-for `main`. Not expressible in YAML: if branch protection is not
+for `develop` and `main`. Measured 2026-11-24: neither branch has a
+protection rule, so the gate rests on the workflow and on discipline. Not expressible in YAML: if branch protection is not
 configured (or the required-checks list is out of sync with the
 workflow), CI can stay green while the gate is effectively off.
 
@@ -41,5 +43,5 @@ Per-test timeouts use Playwright defaults.
 ## Nightly
 
 `mutation-nightly.yml` is not part of the PR gate. Runs at 02:00 UTC
-against `main`. Per-module thresholds enforced independently (see
+against the default branch (`develop`, ADR-0025). Per-module thresholds enforced independently (see
 `.claude/rules/quality-checks.md`).

@@ -57,7 +57,7 @@ not a per-feature deliverable. Both patterns coexist.
 
 ## Nightly (Not Per Commit)
 
-- **Mutation tests** (Stryker): runs nightly on main via GitHub Actions cron. Per-module thresholds enforced independently. Not a per-commit gate due to runtime (~23 min combined). See ADR-0011 for strategy details.
+- **Mutation tests** (Stryker): runs nightly on the default branch (`develop`, ADR-0025) via GitHub Actions cron. Per-module thresholds enforced independently. Not a per-commit gate due to runtime (~23 min combined). See ADR-0011 for strategy details.
 
 ## Not Standard
 

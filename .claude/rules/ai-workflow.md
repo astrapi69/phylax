@@ -69,14 +69,19 @@ If a task in ROADMAP.md is ambiguous, do not invent a scope. Ask one targeted qu
 
 ## Commits and branches
 
-- Gitflow (ADR-0024): one feature branch per task, no direct commits to `main`.
+- Gitflow (ADR-0024, ADR-0025): `develop` is the integration and default
+  branch, `main` carries releases and hotfixes only. One branch per task,
+  cut from `develop`; no direct commits to `develop` or `main`.
   Branch naming: `feature/<TASK>-desc`, `fix/<BUG-NN>-desc`,
   `chore/<I-NN>-desc`, `docs/<TASK>-desc`.
-- Open a pull request targeting `main`. CI must be green (lint, typecheck,
+- Open a pull request targeting `develop`. CI must be green (lint, typecheck,
   unit + coverage, E2E dev + production, bundle size) before merging.
-- Merge strategy: squash by default (one commit per task on a linear `main`);
-  a merge commit is used only when a PR intentionally groups multiple distinct
-  task commits. Rebase-merge is not used.
+- Merge strategy: squash by default (one commit per task on a linear
+  `develop`); a merge commit is used only when a PR intentionally groups
+  multiple distinct task commits. Rebase-merge is not used.
+- Release and hotfix pull requests target `main` and are merged with a merge
+  commit, never squashed; `main` is merged back into `develop` afterwards.
+  The agent never merges a pull request into `main` (ADR-0025 point 8).
 - One commit per task ID where possible.
 - Conventional Commits format: `feat(profile): add observation CRUD [O-04]`.
 - The task ID in square brackets is mandatory.

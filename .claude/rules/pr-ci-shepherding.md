@@ -57,4 +57,7 @@ einer gegenteiligen Anweisung.
   unabhaengiger, vorbestehender Bug taucht auf), wird gemeldet und nicht
   stillschweigend in dieselbe PR gezogen; bei Unklarheit nachfragen
   (`ai-workflow.md`, "How to handle ambiguity").
-- Hotfix-Ausnahme und Branch-Namen folgen unveraendert `ADR-0024`.
+- Branch-Namen folgen unveraendert `ADR-0024`; Zielbranch, Release- und
+  Hotfix-Weg folgen `ADR-0025` (Task-PRs gegen `develop`, Release- und
+  Hotfix-PRs gegen `main`). Einen PR gegen `main` mergt der Agent nie selbst,
+  auch nicht bei reinem Markdown.
