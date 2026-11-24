@@ -80,7 +80,11 @@ If a task in ROADMAP.md is ambiguous, do not invent a scope. Ask one targeted qu
 - One commit per task ID where possible.
 - Conventional Commits format: `feat(profile): add observation CRUD [O-04]`.
 - The task ID in square brackets is mandatory.
-- No co-author lines, no AI attribution in commit messages.
+- A commit or pull request made with an AI agent may name it (a
+  `Co-Authored-By` trailer, a "Generated with" line). The commit author
+  and committer stay a person: an agent is named in a trailer, it does not
+  commit under its own identity. Family rule since 2026-11-10
+  (astrapi69/astrapi69#14); the earlier wording here kept such lines out.
 
 ## Running a coverage audit
 
