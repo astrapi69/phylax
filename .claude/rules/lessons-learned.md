@@ -66,7 +66,10 @@ This file collects lessons that come from real development. It starts small and 
 
 ### Production E2E locally needs a fresh build first
 
-- `make test-e2e-production` does not build. It starts `vite preview`,
+- `make test-e2e-production` builds first since TD-22 (same pattern as
+  `test-bundle-size: build`). The trap remains for a direct
+  `npx playwright test --config playwright.config.production.ts`:
+  it starts `vite preview`,
   which comes up even when `dist/` is missing, and then every test
   fails in the first onboarding step with
   `Timeout 15000ms exceeded while waiting on the predicate` at
@@ -76,14 +79,14 @@ This file collects lessons that come from real development. It starts small and 
   failed, after `make build` 4 of 4 passed (same test filter).
 - CI does not have this gap: the `E2E (Production)` job downloads the
   `production-build` artifact that the build job produced.
-- Run `make build` before `make test-e2e-production`. With an old
+- Before a direct `npx playwright` run, run `make build`. With an old
   `dist/` the suite runs against the old bundle and says nothing, so
   rebuild after every source change, not only when `dist/` is absent.
 - A full local run also needs the WebKit build that matches the
   installed Playwright version (`npx playwright install webkit`).
   Without it the WebKit project fails at launch with
   `Executable doesn't exist`. For a quick local check of one screen,
-  limit the run to one engine and one test name:
+  limit the run to one engine and one test name (after `make build`):
 
   ```bash
   npx playwright test --config playwright.config.production.ts --project=chromium -g "<name>"

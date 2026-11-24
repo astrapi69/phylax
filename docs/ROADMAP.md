@@ -394,6 +394,12 @@ Follow-up not currently scheduled:
       drift surfaced file by file. One `make format` pass, verified
       idempotent (check green twice), no functional change. (Shipped
       in this commit.)
+- [x] **TD-22** `make test-e2e-production` depends on `build`. Without
+      `dist/` the target started `vite preview` anyway and every test
+      failed in the first onboarding step with a misleading timeout
+      (root cause in I-12, `.claude/rules/lessons-learned.md`). CI is
+      unchanged: it calls `npx playwright` directly on the downloaded
+      build artifact.
 - [ ] **TD-14** Unify the proxy-profile wording between the predicate
       create-form radio ("Stellvertretend für jemand anderen") and the
       noun badge ("Stellvertreterprofil"), and resolve the EN
