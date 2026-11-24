@@ -15,22 +15,23 @@ with one trunk, not Gitflow: there is no integration branch, so `main`
 is at once the place where work accumulates and the place releases are
 cut from.
 
-Two consequences are measurable in this repository on 2026-11-24:
+Two consequences, measured in this repository on 2026-11-24:
 
 - `.github/workflows/deploy.yml` deploys GitHub Pages after every green
-  CI run on `main`. Since each task merges into `main`, every merged
-  task goes live at once, released or not. The live site carries
-  everything under `[Unreleased]` in `CHANGELOG.md`, while the last tag
-  is `v1.1.0`.
-- A release has no branch of its own to stabilise on. The release
-  commit is one more task branch against the same trunk that keeps
-  receiving feature work.
+  CI run on `main` (its trigger is `workflow_run` of `CI`, `types:
+[completed]`, `branches: [main]`). Each task merged into `main`, so
+  each merged task went live, released or not: the deployment run
+  45399433855 (started 13:02:58 UTC) published commit `365f9c4`, which
+  is 120 commits after the last tag `v1.1.0`
+  (`git rev-list --count v1.1.0..365f9c4`).
+- A release had no branch of its own. `.claude/rules/release-workflow.md`
+  put the release commit on a `chore/release-vX.Y.Z` branch against
+  `main`, the same branch that received the task pull requests.
 
-The other repositories of the family that are developed actively
-(bibliogon, lethenon, mystic-crypt-ui and its libraries) already work
-with `develop` as the integration branch and `main` or `master` for
-releases. Phylax was the exception, which also made every cross-repo
-instruction ("PR against develop") wrong here.
+Five other repositories of the family have `develop` as their default
+branch: bibliogon, lethenon, mystic-crypt-ui, crypt-api and
+adaptive-learner (`gh api repos/astrapi69/<repo> -q .default_branch`,
+2026-11-24).
 
 The maintainer decided on 2026-11-24 to introduce Gitflow in this
 repository.
@@ -73,8 +74,10 @@ repository.
    "Deployment trigger" below.
 7. **CI runs on both branches.** `ci.yml` triggers on pushes to and
    pull requests against `main` and `develop`. The nightly mutation
-   workflow has a `schedule` trigger and therefore runs on the default
-   branch, which is `develop` after the switch.
+   workflow (`mutation-nightly.yml`) has a `schedule` trigger. GitHub
+   documents for that event: "Scheduled workflows will only run on the
+   default branch." It therefore runs on `develop` once `develop` is
+   the default branch.
 8. **Agent auto-merge for documentation-only pull requests** (ADR-0024
    point 7) applies to pull requests into `develop`. A release or
    hotfix pull request into `main` is never merged by the agent.
@@ -118,21 +121,29 @@ is. `src/pwa/deployWorkflow.test.ts` pins the wiring.
 - One more branch to keep in sync: every merge into `main` is followed
   by a merge of `main` into `develop`. Forgetting it shows as a
   `main` that is ahead of `develop`.
-- Dependabot opens its pull requests against the default branch, so
-  they target `develop` after the switch.
-- Two steps are repository settings and not part of the commit that
-  adds this ADR: making `develop` the default branch, and retargeting
-  the pull requests that were open against `main` at the time.
-- `main` and `develop` start from the same commit (`f116658`), so the
-  first release merge is a plain merge without conflicts.
+- The repository has no `.github/dependabot.yml`; its Dependabot pull
+  requests are security updates. GitHub documents: "security updates
+  always use the default branch for the repository". They target
+  `develop` once `develop` is the default branch.
+- One step is a repository setting and not part of a commit: making
+  `develop` the default branch.
+- `develop` was created from `main` at commit `f116658`.
 
 ## Sources
 
+The two GitHub Docs quotes were read verbatim on 2026-11-24 in the
+source of the documentation, repository `github/docs` at commit
+`801373e82d`.
+
 - Vincent Driessen, "A successful Git branching model" (2010), the
   definition of the model: <https://nvie.com/posts/a-successful-git-branching-model/>
-- GitHub Docs, "Events that trigger workflows", `schedule`: scheduled
-  workflows run on the latest commit of the default branch:
-  <https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule>
-- GitHub Docs, Dependabot options reference, `target-branch`: without
-  it, Dependabot uses the default branch:
-  <https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference#target-branch>
+- GitHub Docs, "Events that trigger workflows", section `schedule`
+  (`content/actions/reference/workflows-and-actions/events-that-trigger-workflows.md`):
+  "Scheduled workflows will only run on the default branch."
+  <https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule>
+- GitHub Docs, Dependabot options reference, section `target-branch`
+  (`content/code-security/reference/supply-chain-security/dependabot-options-reference.md`):
+  "Options defined for this `package-ecosystem` no longer apply to
+  security updates because security updates always use the default
+  branch for the repository."
+  <https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#target-branch>
