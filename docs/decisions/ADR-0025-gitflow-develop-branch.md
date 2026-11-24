@@ -66,10 +66,12 @@ repository.
    `main` through a pull request with green CI, and `main` is merged
    back into `develop` afterwards. This replaces ADR-0024 point 5. The
    CI-green gate has no bypass.
-6. **Deployment follows `main`.** `deploy.yml` stays as it is: it
-   deploys after a green CI run on `main`. With decision 1 that means
-   the live site changes with a release or a hotfix, no longer with
-   every merged task.
+6. **Deployment follows `main`.** The deployment runs after a green CI
+   run on a push to `main`. With decision 1 that means the live site
+   changes with a release or a hotfix, no longer with every merged
+   task. `deploy.yml` is called by `ci.yml` as its last job
+   (`workflow_call`), no longer started by `workflow_run`: see
+   "Deployment trigger" below.
 7. **CI runs on both branches.** `ci.yml` triggers on pushes to and
    pull requests against `main` and `develop`. The nightly mutation
    workflow (`mutation-nightly.yml`) has a `schedule` trigger. GitHub
@@ -79,6 +81,35 @@ repository.
 8. **Agent auto-merge for documentation-only pull requests** (ADR-0024
    point 7) applies to pull requests into `develop`. A release or
    hotfix pull request into `main` is never merged by the agent.
+
+### Deployment trigger
+
+The first version of this ADR said `deploy.yml` stays as it is. That
+was wrong. `deploy.yml` was started by `workflow_run`, and GitHub
+documents for that event `GITHUB_SHA` "Last commit on default branch"
+and `GITHUB_REF` "Default branch". With `develop` as the default
+branch two things follow:
+
+- The `github-pages` environment has one deployment branch rule, `main`
+  (measured 2026-11-24:
+  `gh api repos/astrapi69/phylax/environments/github-pages/deployment-branch-policies`).
+  GitHub documents: "The deployment branch or tag rule is matched
+  against the `GITHUB_REF` of the workflow run." A run with `develop`
+  as its `GITHUB_REF` does not match the rule.
+- The checkout step had no `ref`, so it would have built the default
+  branch, not the commit that passed CI on `main`.
+
+Neither was observed in a run: the trigger was replaced before a
+deployment ran with `develop` as the default branch. The statement
+rests on the two documented rules above.
+
+`deploy.yml` is now a called workflow. GitHub documents: "When a
+reusable workflow is triggered by a caller workflow, the `github`
+context is always associated with the caller workflow." The caller is
+the CI run of the push to `main`, so `GITHUB_REF` is `main` and the
+checkout takes the pushed commit. The calling job needs every gate job
+and runs only on a push to `main`. The environment rule stays as it
+is. `src/pwa/deployWorkflow.test.ts` pins the wiring.
 
 ## Consequences
 

@@ -1,16 +1,22 @@
 name: Deploy to GitHub Pages
 
-# Triggers AFTER ci.yml completes successfully on main. Under Gitflow
-# (ADR-0025) main carries releases and hotfixes only, so the live site
-# changes with a release, not with every merged task. Avoids duplicating
-# the test suite (ci.yml already lints, typechecks, runs unit + e2e + prod
-# e2e + size-limit against the same commit SHA). Manual dispatch is also
-# supported for re-deploying without a new commit.
+# Called by ci.yml as its last job, on a push to main and only after every
+# gate job passed. Under Gitflow (ADR-0025) main carries releases and
+# hotfixes only, so the live site changes with a release, not with every
+# merged task. Avoids duplicating the test suite (ci.yml already lints,
+# typechecks, runs unit + e2e + prod e2e + size-limit against the same
+# commit SHA). Manual dispatch is also supported for re-deploying without
+# a new commit; dispatch it on main.
+#
+# Why workflow_call and not workflow_run: a workflow started by
+# workflow_run has the default branch as its GITHUB_REF and GITHUB_SHA.
+# The default branch is develop. The github-pages environment lets only
+# main deploy and matches that rule against GITHUB_REF, so such a run
+# would be refused, and without the rule it would build develop. A called
+# workflow runs in the context of its caller, here the push to main.
+# Guarded by src/pwa/deployWorkflow.test.ts.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  workflow_call:
   workflow_dispatch:
 
 # GitHub Pages permissions.
@@ -26,10 +32,8 @@ concurrency:
 
 jobs:
   build:
-    # Only proceed when the upstream CI workflow succeeded, or when manually
-    # dispatched. workflow_run fires regardless of conclusion, so the gate
-    # belongs in the job condition.
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    # No job condition here: the gate is the `needs` and `if` of the
+    # calling job in ci.yml.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
