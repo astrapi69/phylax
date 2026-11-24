@@ -10,9 +10,19 @@ import { ProfileCreateForm } from '../../profile-create';
 interface ProfileSelectionScreenProps {
   onSelect: (profileId: string) => void;
   onCancel: () => void;
+  /**
+   * Profile to highlight as the likely target (M-07), typically the
+   * active profile. Purely visual: the user still confirms the target
+   * with an explicit click.
+   */
+  preselectedProfileId?: string;
 }
 
-export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionScreenProps) {
+export function ProfileSelectionScreen({
+  onSelect,
+  onCancel,
+  preselectedProfileId,
+}: ProfileSelectionScreenProps) {
   const { t } = useTranslation('import');
   const [profiles, setProfiles] = useState<Profile[] | null>(null);
   const [counts, setCounts] = useState<Record<string, EntityCounts>>({});
@@ -79,6 +89,7 @@ export function ProfileSelectionScreen({ onSelect, onCancel }: ProfileSelectionS
           profiles={profiles}
           countsByProfile={counts}
           onSelect={onSelect}
+          selectedProfileId={preselectedProfileId}
           showCreateButton
           onCreateNew={() => setShowCreate(true)}
           selectLabel={t('selection.select-label')}

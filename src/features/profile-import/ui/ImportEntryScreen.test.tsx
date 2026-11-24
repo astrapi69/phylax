@@ -154,3 +154,30 @@ describe('ImportEntryScreen', () => {
     });
   });
 });
+
+describe('ImportEntryScreen target hint [M-07]', () => {
+  it('names the active profile when one is passed', () => {
+    render(
+      <MemoryRouter>
+        <ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} activeProfileName="Anna" />
+      </MemoryRouter>,
+    );
+    const hint = screen.getByTestId('import-entry-target-hint');
+    expect(hint).toHaveTextContent('Aktives Profil: Anna');
+    expect(hint).toHaveTextContent(/im nächsten Schritt/);
+  });
+
+  it('renders no hint without an active profile name', () => {
+    renderInRouter();
+    expect(screen.queryByTestId('import-entry-target-hint')).not.toBeInTheDocument();
+  });
+
+  it('renders no hint for an empty name', () => {
+    render(
+      <MemoryRouter>
+        <ImportEntryScreen onSubmit={vi.fn()} onCancel={vi.fn()} activeProfileName="" />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByTestId('import-entry-target-hint')).not.toBeInTheDocument();
+  });
+});

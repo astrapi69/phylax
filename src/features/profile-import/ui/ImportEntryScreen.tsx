@@ -14,9 +14,20 @@ const MIN_PASTE_LENGTH = 100;
 interface ImportEntryScreenProps {
   onSubmit: (content: string, sourceLabel: string) => void;
   onCancel: () => void;
+  /**
+   * Display name of the currently active profile (M-07). The target
+   * profile is only picked in the next step, so the entry screen names
+   * the active one to keep multi-profile vaults oriented. Omitted or
+   * empty: no hint is rendered.
+   */
+  activeProfileName?: string;
 }
 
-export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps) {
+export function ImportEntryScreen({
+  onSubmit,
+  onCancel,
+  activeProfileName,
+}: ImportEntryScreenProps) {
   const { t } = useTranslation('import');
   const [pasted, setPasted] = useState('');
   const [fileContent, setFileContent] = useState<{ content: string; name: string } | null>(null);
@@ -70,6 +81,15 @@ export function ImportEntryScreen({ onSubmit, onCancel }: ImportEntryScreenProps
         {t('entry.heading')}
       </h1>
       <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">{t('entry.intro')}</p>
+
+      {activeProfileName && (
+        <p
+          className="mb-6 rounded-sm border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-100"
+          data-testid="import-entry-target-hint"
+        >
+          {t('entry.target-hint', { name: activeProfileName })}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <section>
