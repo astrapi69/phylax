@@ -1,6 +1,8 @@
 name: Deploy to GitHub Pages
 
-# Triggers AFTER ci.yml completes successfully on main. Avoids duplicating
+# Triggers AFTER ci.yml completes successfully on main. Under Gitflow
+# (ADR-0025) main carries releases and hotfixes only, so the live site
+# changes with a release, not with every merged task. Avoids duplicating
 # the test suite (ci.yml already lints, typechecks, runs unit + e2e + prod
 # e2e + size-limit against the same commit SHA). Manual dispatch is also
 # supported for re-deploying without a new commit.

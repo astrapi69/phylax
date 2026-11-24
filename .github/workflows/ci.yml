@@ -1,10 +1,12 @@
 name: CI
 
+# Gitflow (ADR-0025): task pull requests target develop, release and
+# hotfix pull requests target main. Both branches get the full gate.
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
 
 concurrency:

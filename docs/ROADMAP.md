@@ -321,6 +321,12 @@ Follow-up not currently scheduled:
       and out-of-scope fixes are surfaced, not folded in silently.
       Cross-referenced to `ADR-0024`, `tdd.md`, `lessons-learned.md`, and
       `ai-workflow.md`. (Shipped in this commit.)
+- [x] **I-14** Gitflow mit `develop` als Integrations- und Default-Branch
+      ([ADR-0025](decisions/ADR-0025-gitflow-develop-branch.md)). Task-PRs
+      gehen nach `develop`, `main` trägt nur Releases und Hotfixes, das
+      Deployment folgt `main`. CI läuft auf beiden Branches. Zwei Schritte
+      sind Repo-Einstellungen und liegen beim Maintainer: Default-Branch
+      umstellen, offene PRs gegen `main` umhängen.
 - [x] **I-11** External-resource audit and outbound-connection
       disclosure. New `docs/audits/external-resources-2026-09-16.md`
       documents every host referenced in the production build (`dist/`),
