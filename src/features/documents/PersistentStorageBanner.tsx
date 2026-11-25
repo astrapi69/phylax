@@ -83,6 +83,10 @@ export function PersistentStorageBanner({ versionKey }: PersistentStorageBannerP
   }, [profileId]);
 
   if (state.kind !== 'denied') return null;
+  // No profile yet (lookup still running, or none exists): nothing to
+  // dismiss against. Rendering here would offer a dismiss button whose
+  // flag cannot be written, so the banner would come back on reload.
+  if (!profileId) return null;
   if (dismissed) return null;
 
   return (

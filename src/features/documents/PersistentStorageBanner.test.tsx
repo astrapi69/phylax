@@ -275,20 +275,56 @@ describe('PersistentStorageBanner', () => {
       vi.restoreAllMocks();
     });
 
-    it('shows the banner before the profile is known', async () => {
+    it('renders nothing before the profile is known', async () => {
       await renderWithHeldLookup();
-      expect(screen.getByTestId('persistent-storage-banner')).toBeInTheDocument();
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('persistent-storage-dismiss-btn')).not.toBeInTheDocument();
     });
 
-    it('drops the dismiss flag when the banner is dismissed before the profile is known', async () => {
+    it('shows the banner once the profile is known, and a dismiss writes the flag', async () => {
       const { profileId, release } = await renderWithHeldLookup();
+      await release();
 
+      expect(screen.getByTestId('persistent-storage-banner')).toBeInTheDocument();
       await act(async () => {
         fireEvent.click(screen.getByTestId('persistent-storage-dismiss-btn'));
       });
+
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+      expect(window.localStorage.getItem(`phylax.persistence.dismissed.${profileId}`)).toBe('1');
+    });
+
+    it('stays hidden once the profile is known and its flag is already set', async () => {
+      const { profileId, release } = await renderWithHeldLookup();
+      window.localStorage.setItem(`phylax.persistence.dismissed.${profileId}`, '1');
       await release();
 
-      expect(window.localStorage.getItem(`phylax.persistence.dismissed.${profileId}`)).toBeNull();
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+    });
+
+    it('renders nothing when there is no profile at all', async () => {
+      setStorage({
+        persisted: async () => false,
+        persist: async () => false,
+      });
+      await act(async () => {
+        const { usePersistentStorage } = await import('./usePersistentStorage');
+        function Helper() {
+          const r = usePersistentStorage();
+          r.requestPersistence();
+          return null;
+        }
+        render(<Helper />);
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(null);
+
+      render(<PersistentStorageBanner versionKey={1} />);
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 40));
+      });
+
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
     });
   });
 });
