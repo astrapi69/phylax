@@ -144,6 +144,55 @@ the dependency is contained behind one feature folder
 (`src/features/document-import/preparePdf.ts`). Replacement requires
 swapping that single module's implementation.
 
+## Update 2026-11-25: pdf.js 6 (DEPS-06)
+
+### Context
+
+GitHub advisory GHSA-hq66-cqwq-w95j (CVE-2026-16633, severity high,
+published 2026-08-06) covers `pdfjs-dist` from 5.6.83 up to, not
+including, 6.2.108: a malicious PDF can run script in the hosting
+origin when `enableScripting` is on and no CSP forbids it. No 5.x
+release carries the fix. Befaro was on 5.7.284.
+
+Befaro calls only `getDocument`, `getTextContent` and `page.render`
+and builds no annotation layer; in 5.7.284 `enableScripting` is read by
+the annotation layer and the viewer only. That makes it likely that the
+vulnerable path was never reached, but it was not proven, and an
+imported PDF is exactly the untrusted input the advisory describes.
+
+### Decision
+
+- `pdfjs-dist` goes to 6.4.299, declared as `~6.4.299`.
+- The supported Safari minimum goes from 16 to 18. PDF.js 6.0 requires
+  Chrome 125 and Safari 18 (mozilla/pdf.js pull request 21152: it
+  needs `AbortSignal.any()` and drops the polyfills). The maintainer
+  decided this on 2026-11-25. `docs/browser-support.md` and
+  `.claude/rules/quality-checks.md` carry the new baseline.
+
+### Why 6.4.299 and a tilde range
+
+Measured on 2026-11-25, gzip -9 of the built lazy chunk
+`dist/assets/pdf-*.js`: 6.2.108 125,450 bytes, 6.3.289 127,061,
+6.4.299 127,372. With 6.5.438 size-limit reports 132.1 kB against the
+130 kB budget of the pdf.js slot. 6.4.299 is the newest release inside
+the budget. A caret range would let a fresh install resolve to 6.5 and
+break the budget, so the range is a tilde. Moving to 6.5 or later needs
+a decision on that budget first.
+
+### What changes for the code
+
+Nothing. The two API breaks of 6.0 do not touch Befaro: `getDocument`
+is always called with a parameter object, and
+`PDFDocumentProxy.destroy` is not used. The worker is still bundled
+through Vite and no external resource is fetched
+(`scripts/audit-external-resources.mjs` passes).
+
+### What could not be verified automatically
+
+The rasterization path (`page.render` to a canvas) runs in no unit test
+(jsdom has no canvas) and in no E2E test. It needs one manual import of
+a scanned PDF before the release.
+
 ## Related ADRs
 
 - [ADR-0020](ADR-0020-jspdf-autotable-for-pdf-export.md): companion

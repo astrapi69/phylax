@@ -144,5 +144,5 @@ When a test-hardening task raises a module's score:
 ## Browser support
 
 - Latest Chrome, Firefox, Safari, Edge (last two versions).
-- iOS Safari 16+, Chrome on Android 12+.
+- iOS Safari 18+, Chrome on Android 12+. Safari 18 and Chrome 125 are the minimum of `pdfjs-dist` 6 (ADR-0017, update of 2026-11-25).
 - No IE, no legacy Edge, no polyfills for dead browsers.
