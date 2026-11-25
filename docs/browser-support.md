@@ -7,7 +7,12 @@ Revisit per item when real user feedback surfaces.
 ## Baseline
 
 Latest Chrome, Firefox, Edge, desktop Safari (last two versions each);
-iOS Safari 16+; Chrome on Android 12+. No IE, no legacy Edge.
+iOS Safari 18+; Chrome on Android 12+. No IE, no legacy Edge.
+
+The Safari minimum was raised from 16 to 18 on 2026-11-25 (DEPS-06):
+`pdfjs-dist` 6, which the PDF import needs for a security fix, requires
+Safari 18 and Chrome 125. See the update section of
+[ADR-0017](decisions/ADR-0017-pdfjs-dist-for-pdf-import.md).
 
 ## PDF viewer (D-05)
 
