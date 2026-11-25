@@ -11,6 +11,7 @@ import type {
 } from '../../domain';
 import { parseProfile } from '../profile-import/parser/parseProfile';
 import { exportProfileAsMarkdown } from './markdownExport';
+import packageJsonSource from '../../../package.json?raw';
 
 function makeProfile(overrides: Partial<Profile> = {}): Profile {
   const now = Date.UTC(2026, 3, 18);
@@ -536,8 +537,15 @@ describe('exportProfileAsMarkdown', () => {
     const profile = makeProfile({ version: '1.3.5' });
     const md = exportProfileAsMarkdown(profile, [], [], [], [], [], []);
     expect(md).toMatch(/\*\*Export erstellt:\*\* \d{4}-\d{2}-\d{2}/);
-    expect(md).toContain('**Befaro-Version:** 1.0.0');
+    expect(md).toMatch(/\*\*Befaro-Version:\*\* \d+\.\d+\.\d+/);
     expect(md).toContain('**Profil-Version:** 1.3.5');
+  });
+
+  it('footer names the version of the running app, not a fixed one (BUG-19)', () => {
+    const packageVersion = (JSON.parse(packageJsonSource) as { version: string }).version;
+    const md = exportProfileAsMarkdown(makeProfile(), [], [], [], [], [], []);
+    expect(packageVersion).toMatch(/^\d+\.\d+\.\d+/);
+    expect(md).toContain(`**Befaro-Version:** ${packageVersion}`);
   });
 
   it('includes warning signs and external references when present', () => {
