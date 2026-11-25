@@ -346,7 +346,9 @@ function buildFooter(version: string, lastUpdateReason: string | undefined): str
     '---',
     '',
     `**Export erstellt:** ${exportedAt}`,
-    `**Befaro-Version:** 1.0.0`,
+    // Same source and fallback as the backup envelope (createBackup.ts):
+    // the version Vite injects from package.json at build time.
+    `**Befaro-Version:** ${typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '0.0.0'}`,
     `**Profil-Version:** ${version}`,
   ];
   if (lastUpdateReason) {
