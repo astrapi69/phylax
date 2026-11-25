@@ -221,4 +221,110 @@ describe('PersistentStorageBanner', () => {
     await new Promise((r) => setTimeout(r, 40));
     expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
   });
+
+  describe('while the profile lookup is pending (BUG-18)', () => {
+    type CurrentProfile = Awaited<ReturnType<ProfileRepository['getCurrentProfile']>>;
+
+    /** Deny persistence and hold the profile lookup until `release` is called. */
+    async function renderWithHeldLookup(): Promise<{
+      profileId: string;
+      release: () => Promise<void>;
+    }> {
+      setStorage({
+        persisted: async () => false,
+        persist: async () => false,
+      });
+      const profileId = await seedProfile();
+      const profile = await new ProfileRepository().getCurrentProfile();
+
+      await act(async () => {
+        const { usePersistentStorage } = await import('./usePersistentStorage');
+        function Helper() {
+          const r = usePersistentStorage();
+          r.requestPersistence();
+          return null;
+        }
+        render(<Helper />);
+        await new Promise((r) => setTimeout(r, 20));
+      });
+
+      let resolveLookup: (value: CurrentProfile) => void = () => {};
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockReturnValue(
+        new Promise<CurrentProfile>((resolve) => {
+          resolveLookup = resolve;
+        }),
+      );
+
+      render(<PersistentStorageBanner versionKey={1} />);
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 40));
+      });
+
+      return {
+        profileId,
+        release: async () => {
+          await act(async () => {
+            resolveLookup(profile);
+            await new Promise((r) => setTimeout(r, 20));
+          });
+        },
+      };
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('renders nothing before the profile is known', async () => {
+      await renderWithHeldLookup();
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('persistent-storage-dismiss-btn')).not.toBeInTheDocument();
+    });
+
+    it('shows the banner once the profile is known, and a dismiss writes the flag', async () => {
+      const { profileId, release } = await renderWithHeldLookup();
+      await release();
+
+      expect(screen.getByTestId('persistent-storage-banner')).toBeInTheDocument();
+      await act(async () => {
+        fireEvent.click(screen.getByTestId('persistent-storage-dismiss-btn'));
+      });
+
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+      expect(window.localStorage.getItem(`phylax.persistence.dismissed.${profileId}`)).toBe('1');
+    });
+
+    it('stays hidden once the profile is known and its flag is already set', async () => {
+      const { profileId, release } = await renderWithHeldLookup();
+      window.localStorage.setItem(`phylax.persistence.dismissed.${profileId}`, '1');
+      await release();
+
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+    });
+
+    it('renders nothing when there is no profile at all', async () => {
+      setStorage({
+        persisted: async () => false,
+        persist: async () => false,
+      });
+      await act(async () => {
+        const { usePersistentStorage } = await import('./usePersistentStorage');
+        function Helper() {
+          const r = usePersistentStorage();
+          r.requestPersistence();
+          return null;
+        }
+        render(<Helper />);
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockResolvedValue(null);
+
+      render(<PersistentStorageBanner versionKey={1} />);
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 40));
+      });
+
+      expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
+    });
+  });
 });
