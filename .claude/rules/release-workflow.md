@@ -13,10 +13,13 @@ Prompt triggers: "Release new version", "New release", "Deploy new version".
 - Tests must be green: red tests block the release, no exceptions.
 - CHANGELOG is for humans: do not paste raw commit messages, summarize meaningfully.
 - Version bump follows SemVer, even in the 0.x phase.
-- Gitflow applies to releases too (ADR-0024): the `chore(release): vX.Y.Z`
-  commit lands on a `chore/release-vX.Y.Z` branch via a pull request with
-  green CI. The tag and the `git push origin main` steps below run on `main`
-  only after that PR has merged.
+- Gitflow applies to releases (ADR-0025): the `chore(release): vX.Y.Z`
+  commit lands on a `release/vX.Y.Z` branch cut from `develop`. That branch
+  goes into `main` through a pull request with green CI, merged with a merge
+  commit, never squashed. The tag step below runs on `main` only after that
+  PR has merged. Then `main` is merged back into `develop` (Step 6).
+- The deployment follows `main`: the live site changes when the release PR
+  merges, not before.
 
 ---
 
@@ -124,10 +127,21 @@ git commit -m "chore(release): v0.2.0"
 
 ## Step 6: Tag and push
 
+After the release pull request has merged into `main`:
+
 ```bash
+git checkout main && git pull --ff-only
 git tag -a v0.2.0 -m "Release v0.2.0"
-git push origin main
 git push origin v0.2.0
+```
+
+Then bring `develop` level with `main` again, through a pull request from a
+branch that merges `main` (merge commit, never squashed):
+
+```bash
+git checkout --no-track -b chore/merge-main-v0.2.0 origin/develop
+git merge --no-ff origin/main
+git push -u origin chore/merge-main-v0.2.0
 ```
 
 ---
@@ -158,7 +172,9 @@ Create a GitHub Release from the tag. Body = the CHANGELOG section for this vers
 - [ ] CHANGELOG.md updated and grouped correctly
 - [ ] Version bumped in package.json
 - [ ] Commit `chore(release): vX.Y.Z` exists
+- [ ] Release PR `release/vX.Y.Z` merged into `main` with a merge commit
 - [ ] Git tag `vX.Y.Z` created and pushed
+- [ ] `main` merged back into `develop`
 - [ ] Production build succeeds
 - [ ] Deployed URL serves the new version
 - [ ] Smoke test passed on deployed URL

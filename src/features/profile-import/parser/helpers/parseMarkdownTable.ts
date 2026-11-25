@@ -68,10 +68,34 @@ export function parseMarkdownTable(markdown: string): TableRow[] {
   return rows;
 }
 
+/**
+ * Split a table row into its cells. A pipe ends a cell unless a backslash
+ * escapes it; `\|` yields a literal pipe and `\\` a literal backslash, the
+ * two escapes the Markdown export writes. A backslash before any other
+ * character is kept as it is. The leading pipe and an unescaped trailing
+ * pipe frame the row and yield no cell.
+ */
 function splitTableRow(line: string): string[] {
-  return line
-    .replace(/^\|/, '')
-    .replace(/\|$/, '')
-    .split('|')
-    .map((cell) => cell.trim());
+  const cells: string[] = [];
+  let current = '';
+  let endsWithBoundary = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line.charAt(i);
+    const next = line.charAt(i + 1);
+    if (char === '\\' && (next === '|' || next === '\\')) {
+      current += next;
+      endsWithBoundary = false;
+      i++;
+    } else if (char === '|') {
+      cells.push(current);
+      current = '';
+      endsWithBoundary = true;
+    } else {
+      current += char;
+      endsWithBoundary = false;
+    }
+  }
+  if (!endsWithBoundary) cells.push(current);
+  if (line.startsWith('|')) cells.shift();
+  return cells.map((cell) => cell.trim());
 }

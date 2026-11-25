@@ -1,7 +1,7 @@
 # ADR-0024: Gitflow with per-task feature branches and CI-gated merges
 
 **Date:** 2026-06-29
-**Status:** Accepted
+**Status:** Accepted, amended by [ADR-0025](ADR-0025-gitflow-develop-branch.md)
 
 ## Context
 
@@ -94,6 +94,9 @@ trunk.
 
 ## Amendments
 
+- **2026-11-24 (I-14):** ADR-0025 introduces `develop` as the integration
+  branch. Decision points 1 and 5 are replaced there; points 2, 3, 4, 6 and
+  7 stay in force with `develop` in the place of `main`.
 - **2026-06-29 (I-08):** Added Decision point 7 (agent auto-merge for
   documentation-only PRs) and the matching consequence. No change to the
   CI-green requirement or the squash-default strategy.

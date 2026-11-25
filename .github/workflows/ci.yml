@@ -1,15 +1,22 @@
 name: CI
 
+# Gitflow (ADR-0025): task pull requests target develop, release and
+# hotfix pull requests target main. Both branches get the full gate.
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
+
+# Least privilege for the GITHUB_TOKEN: every job only reads the
+# repository. The deploy job raises its own permissions below.
+permissions:
+  contents: read
 
 jobs:
   lint-typecheck:
@@ -169,3 +176,19 @@ jobs:
           name: playwright-report-production
           path: playwright-report/
           retention-days: 14
+
+  # Deployment follows main (ADR-0025 point 6): only a push to main
+  # deploys, and only after every gate job above passed. On develop and on
+  # pull requests this job is skipped. It lives here, not behind a
+  # workflow_run trigger, so that it runs with main as its GITHUB_REF; see
+  # the comment at the top of deploy.yml.
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint-typecheck, unit-tests, e2e-dev, build, e2e-production]
+    # A called workflow cannot raise the token permissions it is given.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
