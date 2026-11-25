@@ -382,8 +382,14 @@ function filterByDateRange<T>(
   });
 }
 
+/**
+ * Escape a value for a Markdown table cell. The backslash is escaped
+ * first: otherwise a backslash that already stands before a pipe would
+ * pair with the backslash added for that pipe and leave the pipe open as
+ * a cell boundary. `parseMarkdownTable` reverses both escapes.
+ */
 function escapeCell(value: string): string {
-  return value.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+  return value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 }
 
 function formatDateIso(d: Date): string {

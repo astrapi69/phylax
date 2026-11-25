@@ -60,4 +60,72 @@ describe('parseMarkdownTable', () => {
     const rows = parseMarkdownTable(md);
     expect(rows[0]?.['Kategorie']).toBe('**Täglich**');
   });
+
+  describe('escaped characters in cells (BUG-17)', () => {
+    it('reads an escaped pipe as a literal pipe inside the cell', () => {
+      const md = ['| Kategorie | Präparat |', '|---|---|', '| täglich | Zink \\| Kupfer |'].join(
+        '\n',
+      );
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['Kategorie']).toBe('täglich');
+      expect(rows[0]?.['Präparat']).toBe('Zink | Kupfer');
+    });
+
+    it('reads a doubled backslash as one backslash', () => {
+      const md = ['| A | B |', '|---|---|', '| x\\\\y | 2 |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('x\\y');
+      expect(rows[0]?.['B']).toBe('2');
+    });
+
+    it('ends the cell at a pipe that follows an escaped backslash', () => {
+      // x\\|y is an escaped backslash, then a cell boundary.
+      const md = ['| A | B |', '|---|---|', '| x\\\\|y |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('x\\');
+      expect(rows[0]?.['B']).toBe('y');
+    });
+
+    it('keeps a backslash before any other character', () => {
+      const md = ['| A | B |', '|---|---|', '| C:\\Daten\\neu | \\* |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('C:\\Daten\\neu');
+      expect(rows[0]?.['B']).toBe('\\*');
+    });
+
+    it('keeps an escaped pipe at the end of the last cell', () => {
+      const md = ['| A | B |', '|---|---|', '| 1 | a\\||'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('1');
+      expect(rows[0]?.['B']).toBe('a|');
+    });
+
+    it('keeps a single backslash at the very end of a row', () => {
+      const md = ['| A | B |', '|---|---|', '| 1 | a\\'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['B']).toBe('a\\');
+    });
+
+    it('reads an escaped pipe in a header', () => {
+      const md = ['| A\\|B | C |', '|---|---|', '| 1 | 2 |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A|B']).toBe('1');
+      expect(rows[0]?.['C']).toBe('2');
+    });
+
+    it('reads a row without framing pipes', () => {
+      const md = ['| A | B |', '|---|---|', '| 1 | 2'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('1');
+      expect(rows[0]?.['B']).toBe('2');
+    });
+
+    it('reads an empty cell between two pipes', () => {
+      const md = ['| A | B | C |', '|---|---|---|', '| 1 || 3 |'].join('\n');
+      const rows = parseMarkdownTable(md);
+      expect(rows[0]?.['A']).toBe('1');
+      expect(rows[0]?.['B']).toBe('');
+      expect(rows[0]?.['C']).toBe('3');
+    });
+  });
 });
