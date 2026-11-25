@@ -1,7 +1,7 @@
 {
   "name": "befaro",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Asterios Raptis",
   "license": "MIT",
   "type": "module",
