@@ -221,4 +221,74 @@ describe('PersistentStorageBanner', () => {
     await new Promise((r) => setTimeout(r, 40));
     expect(screen.queryByTestId('persistent-storage-banner')).not.toBeInTheDocument();
   });
+
+  describe('while the profile lookup is pending (BUG-18)', () => {
+    type CurrentProfile = Awaited<ReturnType<ProfileRepository['getCurrentProfile']>>;
+
+    /** Deny persistence and hold the profile lookup until `release` is called. */
+    async function renderWithHeldLookup(): Promise<{
+      profileId: string;
+      release: () => Promise<void>;
+    }> {
+      setStorage({
+        persisted: async () => false,
+        persist: async () => false,
+      });
+      const profileId = await seedProfile();
+      const profile = await new ProfileRepository().getCurrentProfile();
+
+      await act(async () => {
+        const { usePersistentStorage } = await import('./usePersistentStorage');
+        function Helper() {
+          const r = usePersistentStorage();
+          r.requestPersistence();
+          return null;
+        }
+        render(<Helper />);
+        await new Promise((r) => setTimeout(r, 20));
+      });
+
+      let resolveLookup: (value: CurrentProfile) => void = () => {};
+      vi.spyOn(ProfileRepository.prototype, 'getCurrentProfile').mockReturnValue(
+        new Promise<CurrentProfile>((resolve) => {
+          resolveLookup = resolve;
+        }),
+      );
+
+      render(<PersistentStorageBanner versionKey={1} />);
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 40));
+      });
+
+      return {
+        profileId,
+        release: async () => {
+          await act(async () => {
+            resolveLookup(profile);
+            await new Promise((r) => setTimeout(r, 20));
+          });
+        },
+      };
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('shows the banner before the profile is known', async () => {
+      await renderWithHeldLookup();
+      expect(screen.getByTestId('persistent-storage-banner')).toBeInTheDocument();
+    });
+
+    it('drops the dismiss flag when the banner is dismissed before the profile is known', async () => {
+      const { profileId, release } = await renderWithHeldLookup();
+
+      await act(async () => {
+        fireEvent.click(screen.getByTestId('persistent-storage-dismiss-btn'));
+      });
+      await release();
+
+      expect(window.localStorage.getItem(`phylax.persistence.dismissed.${profileId}`)).toBeNull();
+    });
+  });
 });
