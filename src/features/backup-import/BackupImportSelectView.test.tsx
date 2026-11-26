@@ -74,6 +74,20 @@ describe('BackupImportSelectView', () => {
     expect(screen.getByLabelText('Datei auswählen')).not.toHaveAttribute('accept');
   });
 
+  describe('file picker control (BUG-21)', () => {
+    it('shows the native file input itself, not a styled button', () => {
+      renderView();
+      const input = screen.getByLabelText('Datei auswählen');
+      expect(input).not.toHaveClass('sr-only');
+      expect(input.closest('label')).toBeNull();
+    });
+
+    it('renders no text of its own about the chosen file', () => {
+      renderView();
+      expect(screen.queryByText('Keine Datei ausgewählt.')).toBeNull();
+    });
+  });
+
   it('continue button disabled before a file is selected', () => {
     renderView();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
