@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import 'fake-indexeddb/auto';
@@ -75,16 +75,69 @@ describe('BackupImportSelectView', () => {
   });
 
   describe('file picker control (BUG-21)', () => {
-    it('shows the native file input itself, not a styled button', () => {
+    it('shows a labelled button and hides the native file input visually', () => {
       renderView();
       const input = screen.getByLabelText('Datei auswählen');
-      expect(input).not.toHaveClass('sr-only');
-      expect(input.closest('label')).toBeNull();
+      const label = input.closest('label');
+      expect(input).toHaveClass('sr-only');
+      expect(label).not.toBeNull();
+      expect(label).toHaveTextContent('Datei auswählen');
     });
 
-    it('renders no text of its own about the chosen file', () => {
+    it('keeps the hidden input reachable for keyboard and screen reader', async () => {
+      const user = userEvent.setup();
       renderView();
+      const input = screen.getByLabelText('Datei auswählen');
+      expect(input).not.toHaveAttribute('hidden');
+      expect(input).not.toHaveAttribute('aria-hidden');
+      expect(input).toBeEnabled();
+      expect(input).toHaveAttribute('type', 'file');
+      // The heading takes the initial focus; the file input is the
+      // next stop in the tab order.
+      await user.tab();
+      expect(input).toHaveFocus();
+    });
+
+    it('says that no file is chosen before a choice', () => {
+      renderView();
+      expect(screen.getByTestId('backup-file-status')).toHaveTextContent('Keine Datei ausgewählt.');
+    });
+
+    it('names the chosen file below the button', async () => {
+      const user = userEvent.setup();
+      renderView();
+      await user.upload(
+        screen.getByLabelText('Datei auswählen'),
+        makeBefaroFile('mein-backup.phylax'),
+      );
+      await waitFor(() =>
+        expect(screen.getByTestId('backup-file-status')).toHaveTextContent('mein-backup.phylax'),
+      );
       expect(screen.queryByText('Keine Datei ausgewählt.')).toBeNull();
+    });
+
+    it('names the chosen file also when it is not a backup', async () => {
+      const user = userEvent.setup();
+      renderView();
+      const bad = new File(['not-json'], 'urlaub.jpg', { type: 'image/jpeg' });
+      await user.upload(screen.getByLabelText('Datei auswählen'), bad);
+      await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
+      expect(screen.getByTestId('backup-file-status')).toHaveTextContent('urlaub.jpg');
+    });
+
+    it('describes the input by the status line', () => {
+      renderView();
+      expect(screen.getByLabelText('Datei auswählen')).toHaveAccessibleDescription(
+        'Keine Datei ausgewählt.',
+      );
+    });
+
+    it('shows the English texts when the language is en', async () => {
+      await i18n.changeLanguage('en');
+      renderView();
+      expect(screen.getByLabelText('Choose file')).toBeInTheDocument();
+      expect(screen.getByTestId('backup-file-status')).toHaveTextContent('No file selected.');
+      await i18n.changeLanguage('de');
     });
   });
 
@@ -101,8 +154,11 @@ describe('BackupImportSelectView', () => {
     await user.upload(input, makeBefaroFile('test.phylax'));
 
     await waitFor(() => expect(screen.getByTestId('backup-metadata')).toBeInTheDocument());
-    expect(screen.getByText('test.phylax')).toBeInTheDocument();
-    expect(screen.getByText('Befaro 0.0.0')).toBeInTheDocument();
+    // The file name now also stands below the button, so look inside
+    // the metadata block.
+    const metadata = within(screen.getByTestId('backup-metadata'));
+    expect(metadata.getByText('test.phylax')).toBeInTheDocument();
+    expect(metadata.getByText('Befaro 0.0.0')).toBeInTheDocument();
   });
 
   it('displays a parse error for invalid JSON', async () => {

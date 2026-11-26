@@ -43,6 +43,13 @@ Section umgewandelt; diese ROADMAP behaelt nur die offenen Punkte.
       zero-bundle but becomes scroll-heavy at larger counts.
       **Revisit when:** any profile crosses ~30 themes / observations
       / lab values that surface in the link picker.
+- [ ] **P-23** Contrast of disabled buttons in dark mode. A disabled
+      primary button (`dark:disabled:bg-gray-700`,
+      `dark:disabled:text-gray-500`) is hard to read; reported for
+      "Weiter" on the backup import screen (2026-11-25). The style is
+      app-wide (eight use sites) and is changed for the whole app or
+      not at all. **Revisit when:** the maintainer decides on a new
+      disabled style.
 
 ## AI Provider polish (AIP-series)
 
@@ -435,6 +442,13 @@ Follow-up not currently scheduled:
       any future PR modifying the data-loading or profile-resolution
       logic in `src/features/export/useExportData.ts`, or a
       maintainer-reported confusion about active-profile scoping.
+- [ ] **TD-24** Extract the label-styled file picker (a `label` as the
+      visible button, the native `<input type="file">` inside it with
+      `sr-only`) into one component in `src/ui/`. Five use sites since
+      BUG-21: `DocumentUploadButton`, `document-import/ui/ImportButton`,
+      `BackupImportSection`, `profile-import/ui/ImportEntryScreen`,
+      `BackupImportSelectView`. Rule of three in
+      `.claude/rules/reusability.md`. Kept out of the 1.2.1 hotfix.
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 
