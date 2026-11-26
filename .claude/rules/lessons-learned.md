@@ -92,6 +92,42 @@ This file collects lessons that come from real development. It starts small and 
   npx playwright test --config playwright.config.production.ts --project=chromium -g "<name>"
   ```
 
+### Pre-commit hook and git worktrees (TD-25)
+
+- Git resolves a relative `core.hooksPath` against the root of the
+  worktree that commits. husky sets `.husky/_`, a generated,
+  git-ignored directory. A linked worktree that never ran `npm ci`
+  (for example one that only links the main checkout's `node_modules`)
+  had no `.husky/_`, and git then runs no hook and says nothing.
+  Measured 2026-11-26 on `ae20674`: a commit with a type error went
+  through in such a worktree with exit 0.
+- Since TD-25 `prepare` runs `scripts/setup-git-hooks.mjs` after
+  `husky`. It sets `core.hooksPath` to the absolute path of the main
+  checkout's `.husky/_`, so every worktree runs the hook of the main
+  checkout. The setting is written when `npm ci` or `npm install` runs;
+  a checkout set up before TD-25 needs one such run. Check with
+  `git config core.hooksPath`: it must be an absolute path.
+- The hook that runs is the main checkout's `.husky/pre-commit`, not the
+  copy on the branch of the worktree. A change to the hook takes effect
+  for all worktrees once the main checkout has it.
+- One silent path is left: the absolute path names the main checkout.
+  If that checkout is moved, renamed or deleted, `core.hooksPath`
+  points at a directory that no longer exists, git runs no hook and
+  says nothing, and every worktree is back to no hook. After moving or
+  renaming the main checkout, run `npm ci` in it again (it rewrites the
+  path), then check `git config core.hooksPath` and that the directory
+  it names exists. CI repeats every check of the hook (I-16), so a
+  skipped hook is caught on the pull request, not before the commit.
+- `.husky/pre-commit` stops with a message when `node_modules/.bin` lacks
+  one of its tools. Without that guard `npx tsc` would look for a
+  package named `tsc` in the registry.
+- Until I-16, Prettier was the one check the hook had and CI lacked:
+  `lint-staged` formats the staged files, CI ran `make lint` and
+  `make typecheck` only. A file committed without the hook landed
+  unformatted (the audit file fixed in TD-23). Since I-16 the job
+  `Lint & Typecheck` also runs `make format-check`, so every check of
+  the hook is repeated in CI.
+
 ### Stryker static mutants (vitest runner)
 
 - Mutants flagged `static: true` can show up as "Survived" even when

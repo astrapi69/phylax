@@ -4,6 +4,7 @@ import { lock } from '../../crypto';
 import { ThemeToggle } from '../theme';
 import { SearchIcon } from '../../ui';
 import { useSearch } from '../search-trigger';
+import { ActiveProfileLink } from './ActiveProfileLink';
 
 interface HeaderProps {
   /**
@@ -16,7 +17,8 @@ interface HeaderProps {
 }
 
 /**
- * Top header bar with app name + (mobile) hamburger trigger +
+ * Top header bar with app name + active profile (M-09, only with more
+ * than one profile) + (mobile) hamburger trigger +
  * search magnifier (when current route has search) + theme toggle
  * + lock button.
  *
@@ -39,8 +41,8 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
   const { t } = useTranslation('app-shell');
   const { hasSearch, hasActiveFilter, isOpen, toggle } = useSearch();
   return (
-    <header className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900">
-      <div className="flex items-center gap-2">
+    <header className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         {onOpenNavDrawer && (
           <button
             type="button"
@@ -52,15 +54,22 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
             <HamburgerIcon />
           </button>
         )}
-        <Link
-          to="/profile"
-          className="text-lg font-bold text-gray-900 no-underline dark:text-gray-100"
-        >
-          Befaro
-        </Link>
+        {/* M-09: below md the active profile sits under the app name,
+            so its name keeps most of the header width at 360px; from md
+            up both share one line. items-start: without it the column
+            stretches the app name link to the full width of the block. */}
+        <div className="flex min-w-0 flex-col items-start md:flex-row md:items-center md:gap-3">
+          <Link
+            to="/profile"
+            className="text-lg leading-7 font-bold text-gray-900 no-underline dark:text-gray-100"
+          >
+            Befaro
+          </Link>
+          <ActiveProfileLink />
+        </div>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex shrink-0 items-center gap-1">
         {hasSearch && (
           <SearchHeaderToggle
             isOpen={isOpen}

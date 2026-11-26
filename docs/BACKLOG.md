@@ -143,6 +143,12 @@ the trigger fires.
   `src/features/export/useExportData.ts`, OR a maintainer-reported
   confusion about active-profile scoping in the export pipeline.
 
+- **DEPS-08** Major upgrades of `@stryker-mutator/*` (10.x) and
+  `vite-plugin-pwa` (2.x), both reported by `npm audit` through
+  `minimatch`, `glob` and `workbox-build` (moderate, development
+  tooling). One item, no work until the maintainer schedules it; see
+  ROADMAP DEPS-08. Trigger: the maintainer schedules it.
+
 - **P-23** Contrast of disabled buttons in dark mode. A disabled
   primary button (`dark:disabled:bg-gray-700` with
   `dark:disabled:text-gray-500`) is hard to read; reported by the

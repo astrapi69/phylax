@@ -217,6 +217,13 @@ day one.
       hervor; das Ziel wird weiterhin per Klick bestätigt. Anlass:
       bei mehreren Profilen war auf dem Entry-Screen nicht ersichtlich,
       wohin importiert wird.
+- [x] **M-09** Aktives Profil in jeder Ansicht sichtbar. Bei mehr als
+      einem Profil nennt die Kopfzeile neben "Befaro" den Namen des
+      aktiven Profils, gekürzt mit Auslassungspunkten; ein Klick führt
+      zur Profilliste. Screenreader lesen "Aktives Profil: <Name>". Bei
+      genau einem Profil bleibt die Kopfzeile unverändert. Anlass: in
+      Beobachtungen, Laborwerten und Dokumenten war nicht erkennbar,
+      wessen Daten man gerade sieht oder ändert.
 
 Follow-up not currently scheduled:
 
@@ -338,6 +345,10 @@ Follow-up not currently scheduled:
       Workflow-Ebene; nur der Deploy-Job hebt seine Rechte selbst an.
       Schließt die sechs CodeQL-Meldungen
       `actions/missing-workflow-permissions`.
+- [x] **I-16** `make format-check` läuft in CI, als Schritt im Job
+      `Lint & Typecheck`. Prettier war die einzige Prüfung des
+      Pre-Commit-Hooks, die CI nicht wiederholte; ein Commit ohne Hook
+      konnte unformatiert landen (so geschehen, behoben in TD-23).
 - [x] **I-11** External-resource audit and outbound-connection
       disclosure. New `docs/audits/external-resources-2026-09-16.md`
       documents every host referenced in the production build (`dist/`),
@@ -449,6 +460,31 @@ Follow-up not currently scheduled:
       `BackupImportSection`, `profile-import/ui/ImportEntryScreen`,
       `BackupImportSelectView`. Rule of three in
       `.claude/rules/reusability.md`. Kept out of the 1.2.1 hotfix.
+- [x] **TD-25** Pre-commit hook runs in every git worktree. husky set
+      `core.hooksPath` to the relative `.husky/_`, which is generated
+      and git-ignored; a linked worktree that never ran `npm ci` had
+      none, so its commits ran no hook, silently. `prepare` now also
+      runs `scripts/setup-git-hooks.mjs`, which sets the absolute path
+      of the main checkout's `.husky/_`, and `.husky/pre-commit` refuses
+      to run without `node_modules`. Takes effect after the next
+      `npm ci` or `npm install` in the main checkout. (Shipped in this
+      commit.)
+
+- [x] **DEPS-07** Audit fixes in the development tooling:
+      `brace-expansion` 1.1.22 inside its range, and
+      `@size-limit/file` in place of `@size-limit/preset-app`, which
+      removes the puppeteer chain (ADR-0010, update of 2026-11-26).
+      `npm audit` 24 to 10 reported packages, `--omit=dev` stays 0.
+      (Shipped in this commit.)
+- [ ] **DEPS-08** Major upgrades of `@stryker-mutator/*` (9.6.1, latest
+      10.1.1) and `vite-plugin-pwa` (1.3.0, latest 2.0.0). `npm audit`
+      reports `minimatch`, `glob` and `workbox-build` below them
+      (moderate). Whether the new majors clear the findings is not
+      measured. `vite-plugin-pwa` 2 touches the service worker setup
+      pinned in `src/pwa/viteConfigPwa.test.ts`; Stryker runs only in
+      the nightly workflow. Trigger: the maintainer schedules it.
+      `@tailwindcss/typography` (`postcss-selector-parser`) waits for
+      an upstream release.
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 

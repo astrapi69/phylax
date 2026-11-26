@@ -3,7 +3,8 @@
     "lock-aria-label": "Lock Befaro",
     "lock": "Lock",
     "open-nav": "Open navigation",
-    "search-filter-active": "Filter active"
+    "search-filter-active": "Filter active",
+    "active-profile": "Active profile: {{name}}"
   },
   "nav": {
     "aria-label": "Main navigation",
