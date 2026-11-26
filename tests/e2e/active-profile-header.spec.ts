@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { setupAuthenticatedSession } from './helpers';
 
 /**
@@ -93,6 +93,17 @@ test.describe('Active profile in the header (M-09)', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
     const before = await headerControlBoxes(page);
 
+    // BUG-22: with one profile every header control is a target of at
+    // least 44 x 44, the app name link included, and a tap on the app
+    // name hits that link.
+    for (const [key, box] of Object.entries(before)) {
+      expect(box.width, `${key} width with one profile`).toBeGreaterThanOrEqual(44);
+      expect(box.height, `${key} height with one profile`).toBeGreaterThanOrEqual(44);
+    }
+    expect(await hitAtCentreOf(page, page.getByRole('link', { name: 'Befaro', exact: true }))).toBe(
+      '/profile',
+    );
+
     await createFurtherProfile(page, LONG);
     await navigateTo(page, 'Beobachtungen', /\/observations/);
     await expect(page.getByRole('heading', { level: 1, name: 'Beobachtungen' })).toBeVisible();
@@ -100,17 +111,40 @@ test.describe('Active profile in the header (M-09)', () => {
     await expect(nameSpan).toHaveText(LONG);
     const after = await headerControlBoxes(page);
 
-    // No control was pushed out, moved off screen or shrunk.
+    // No control was pushed out, moved off screen or shrunk. The app
+    // name is the exception: below md it is no target of its own any
+    // more but part of the common target measured further down.
     expect(Object.keys(after).sort()).toEqual(Object.keys(before).sort());
     for (const [key, box] of Object.entries(before)) {
       const now = after[key];
       expect(now, `control ${key} still present`).toBeDefined();
       if (!now) continue;
-      expect(now.width, `${key} width`).toBeCloseTo(box.width, 0);
-      expect(now.height, `${key} height`).toBeCloseTo(box.height, 0);
       expect(now.right, `${key} inside the viewport`).toBeLessThanOrEqual(MOBILE_WIDTH);
       expect(now.left, `${key} inside the viewport`).toBeGreaterThanOrEqual(0);
+      if (key === 'Befaro') continue;
+      expect(now.width, `${key} width`).toBeCloseTo(box.width, 0);
+      expect(now.height, `${key} height`).toBeCloseTo(box.height, 0);
+      expect(now.width, `${key} width with two profiles`).toBeGreaterThanOrEqual(44);
+      expect(now.height, `${key} height with two profiles`).toBeGreaterThanOrEqual(44);
     }
+
+    // BUG-22: app name and profile name are one target. A tap on either
+    // hits the profile link, and the block they form is at least 44 x 44.
+    const appName = page.getByRole('link', { name: 'Befaro', exact: true });
+    const profileLink = page.getByTestId('header-active-profile');
+    expect(await hitAtCentreOf(page, appName)).toBe('/profiles');
+    expect(await hitAtCentreOf(page, profileLink)).toBe('/profiles');
+    const block = await profileLink.evaluate((el) => {
+      const rect = (el.parentElement as HTMLElement).getBoundingClientRect();
+      return { width: rect.width, height: rect.height, top: rect.top, bottom: rect.bottom };
+    });
+    expect(block.width, 'common target width').toBeGreaterThanOrEqual(44);
+    expect(block.height, 'common target height').toBeGreaterThanOrEqual(44);
+    expect(block.top).toBeGreaterThanOrEqual(0);
+    expect(block.bottom).toBeLessThanOrEqual(56);
+    console.warn(
+      `BUG-22 header boxes at 360px: ${JSON.stringify({ oneProfile: before, twoProfiles: after, commonTarget: block })}`,
+    );
 
     // The header neither wraps nor overflows.
     const header = await page
@@ -156,8 +190,36 @@ test.describe('Active profile in the header (M-09)', () => {
       `M-09 visible characters at 360px: ${visibleCharacters} of ${LONG.length} (span ${name.clientWidth}px of ${name.scrollWidth}px)`,
     );
     expect(visibleCharacters).toBeGreaterThanOrEqual(8);
+
+    // A real tap on the app name leads to the profile list.
+    const appNameBox = await appName.boundingBox();
+    if (!appNameBox) throw new Error('app name link has no box');
+    await page.mouse.click(
+      appNameBox.x + appNameBox.width / 2,
+      appNameBox.y + appNameBox.height / 2,
+    );
+    await expect(page).toHaveURL(/\/profiles$/);
   });
 });
+
+/**
+ * Which link a tap at the centre of `target` reaches: the `href` path of
+ * the closest link of the topmost element at that point.
+ */
+async function hitAtCentreOf(page: Page, target: Locator): Promise<string | null> {
+  const box = await target.boundingBox();
+  if (!box) throw new Error('target has no box');
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  return page.evaluate(
+    ([px, py]) => {
+      const el = document.elementFromPoint(px as number, py as number);
+      const link = el?.closest('a');
+      return link ? new URL(link.href).pathname.replace(/^\/phylax/, '') : null;
+    },
+    [x, y],
+  );
+}
 
 interface Box {
   left: number;
