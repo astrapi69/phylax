@@ -53,6 +53,7 @@ export function BackupImportSelectView() {
   const [parsed, setParsed] = useState<ParsedBefaroFile | null>(null);
   const [metadata, setMetadata] = useState<BackupMetadata | null>(null);
   const [parseError, setParseError] = useState<ParseError | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [vaultExists, setVaultExists] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
 
@@ -64,6 +65,7 @@ export function BackupImportSelectView() {
   const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSelectedFileName(file.name);
     setParseError(null);
     setParsed(null);
     setMetadata(null);
@@ -115,19 +117,32 @@ export function BackupImportSelectView() {
         )}
 
         <div className="mb-4">
+          {/* The native file input is unstyled by the browser and reads
+              like plain text in dark mode on iOS. Same pattern as
+              DocumentUploadButton: the label is the visible button, the
+              input sits inside it, visually hidden but focusable, and
+              focus-within draws the focus ring on the button. */}
           <label
             htmlFor="backup-file-input"
-            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+            className="inline-flex min-h-[44px] cursor-pointer items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus-within:ring-offset-gray-900 dark:hover:bg-gray-700"
           >
             {t('select.file-picker-label')}
+            <input
+              id="backup-file-input"
+              type="file"
+              onChange={(e) => void handleFile(e)}
+              className="sr-only"
+              aria-describedby="backup-file-status"
+            />
           </label>
-          <input
-            id="backup-file-input"
-            type="file"
-            accept=".phylax,application/json,application/x-phylax-backup"
-            onChange={(e) => void handleFile(e)}
-            className="block w-full text-sm text-gray-600 dark:text-gray-400"
-          />
+          <p
+            id="backup-file-status"
+            data-testid="backup-file-status"
+            aria-live="polite"
+            className="mt-2 text-sm break-all text-gray-600 dark:text-gray-300"
+          >
+            {selectedFileName ?? t('select.no-file-selected')}
+          </p>
         </div>
 
         {parseError && (

@@ -12,7 +12,17 @@ ROADMAP, then add a CHANGELOG `[Unreleased]` entry per
 
 ## Tier 1 - Actionable now (sorted by leverage / effort)
 
-Tier 1 is empty: every actionable code-side row has shipped.
+- **TD-24** Extract the label-styled file picker into one component in
+  `src/ui/`. The pattern (a `label` as the visible button, the native
+  `<input type="file">` inside it with `sr-only`) now has five use
+  sites: `DocumentUploadButton`, `document-import/ui/ImportButton`,
+  `BackupImportSection`, `profile-import/ui/ImportEntryScreen` and,
+  since BUG-21, `BackupImportSelectView`. `.claude/rules/reusability.md`
+  ("Rule of three"): "Dreimal oder ein bewiesener zweiter Konsument mit
+  identischer Semantik: extrahieren." Not done inside the 1.2.1 hotfix
+  on the maintainer's decision.
+
+Apart from the item above, every actionable code-side row has shipped.
 All four "Coverage P0" rows in
 `docs/audits/current-coverage.md` are resolved. The AI-provider
 wizard has a clean add-flow. PWABuilder manifest prep is in place
@@ -132,6 +142,14 @@ the trigger fires.
   modifying the data-loading or profile-resolution logic in
   `src/features/export/useExportData.ts`, OR a maintainer-reported
   confusion about active-profile scoping in the export pipeline.
+
+- **P-23** Contrast of disabled buttons in dark mode. A disabled
+  primary button (`dark:disabled:bg-gray-700` with
+  `dark:disabled:text-gray-500`) is hard to read; reported by the
+  maintainer on 2026-11-25 for "Weiter" on the backup import screen.
+  The class string is an app-wide style with eight use sites, so it is
+  not changed on one screen. Trigger: the maintainer decides on a new
+  disabled style for the whole app.
 
 ## Tier 4 - Deferred / future (out-of-scope for the next release)
 

@@ -198,7 +198,6 @@ export function BackupImportSection() {
             <input
               id="backup-import-section-file"
               type="file"
-              accept=".phylax,application/json,application/x-phylax-backup"
               onChange={(e) => void handleFile(e)}
               disabled={isWorking}
               className="sr-only"
