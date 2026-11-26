@@ -449,6 +449,15 @@ Follow-up not currently scheduled:
       `BackupImportSection`, `profile-import/ui/ImportEntryScreen`,
       `BackupImportSelectView`. Rule of three in
       `.claude/rules/reusability.md`. Kept out of the 1.2.1 hotfix.
+- [x] **TD-25** Pre-commit hook runs in every git worktree. husky set
+      `core.hooksPath` to the relative `.husky/_`, which is generated
+      and git-ignored; a linked worktree that never ran `npm ci` had
+      none, so its commits ran no hook, silently. `prepare` now also
+      runs `scripts/setup-git-hooks.mjs`, which sets the absolute path
+      of the main checkout's `.husky/_`, and `.husky/pre-commit` refuses
+      to run without `node_modules`. Takes effect after the next
+      `npm ci` or `npm install` in the main checkout. (Shipped in this
+      commit.)
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 

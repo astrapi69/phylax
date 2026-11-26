@@ -1,6 +1,19 @@
 #!/usr/bin/env sh
 set -e
 
+# TD-25: this hook runs for every worktree (core.hooksPath is the
+# absolute path of the main checkout's .husky/_, see
+# scripts/setup-git-hooks.mjs). A worktree without node_modules cannot
+# run the checks below; `npx` would then try to fetch packages by name.
+# Refuse loudly instead of skipping or guessing.
+for tool in lint-staged vitest tsc; do
+  if [ ! -x "node_modules/.bin/$tool" ]; then
+    echo "pre-commit: node_modules/.bin/$tool is missing in $(pwd)." >&2
+    echo "pre-commit: run 'npm ci' in this worktree, or link the main checkout's node_modules, then commit again." >&2
+    exit 1
+  fi
+done
+
 npx lint-staged
 
 STAGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx)$' || true)
