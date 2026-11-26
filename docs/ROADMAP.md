@@ -484,7 +484,11 @@ Follow-up not currently scheduled:
       pinned in `src/pwa/viteConfigPwa.test.ts`; Stryker runs only in
       the nightly workflow. Trigger: the maintainer schedules it.
       `@tailwindcss/typography` (`postcss-selector-parser`) waits for
-      an upstream release.
+      an upstream release. Also part of this item: `zod` 3.25.76 below
+      `eslint-plugin-react-hooks` 7.1.1, the one finding `npm audit`
+      still rates high (fixed in `zod` 4.6.6, no fix on the 3.x line).
+      7.1.1 is the newest release of the plugin, so this too waits for
+      upstream; check it when the item is worked.
 
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 
