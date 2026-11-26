@@ -92,6 +92,32 @@ This file collects lessons that come from real development. It starts small and 
   npx playwright test --config playwright.config.production.ts --project=chromium -g "<name>"
   ```
 
+### Pre-commit hook and git worktrees (TD-25)
+
+- Git resolves a relative `core.hooksPath` against the root of the
+  worktree that commits. husky sets `.husky/_`, a generated,
+  git-ignored directory. A linked worktree that never ran `npm ci`
+  (for example one that only links the main checkout's `node_modules`)
+  had no `.husky/_`, and git then runs no hook and says nothing.
+  Measured 2026-11-26 on `ae20674`: a commit with a type error went
+  through in such a worktree with exit 0.
+- Since TD-25 `prepare` runs `scripts/setup-git-hooks.mjs` after
+  `husky`. It sets `core.hooksPath` to the absolute path of the main
+  checkout's `.husky/_`, so every worktree runs the hook of the main
+  checkout. The setting is written when `npm ci` or `npm install` runs;
+  a checkout set up before TD-25 needs one such run. Check with
+  `git config core.hooksPath`: it must be an absolute path.
+- The hook that runs is the main checkout's `.husky/pre-commit`, not the
+  copy on the branch of the worktree. A change to the hook takes effect
+  for all worktrees once the main checkout has it.
+- `.husky/pre-commit` stops with a message when `node_modules/.bin` lacks
+  one of its tools. Without that guard `npx tsc` would look for a
+  package named `tsc` in the registry.
+- What the hook checks and CI does not: Prettier. `lint-staged` formats
+  the staged files, CI runs `make lint` and `make typecheck` but not
+  `make format-check`. A file committed without the hook can therefore
+  land unformatted (it did: the audit file fixed in TD-23).
+
 ### Stryker static mutants (vitest runner)
 
 - Mutants flagged `static: true` can show up as "Survived" even when

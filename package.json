@@ -21,7 +21,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "size": "size-limit",
-    "prepare": "husky"
+    "prepare": "husky && node scripts/setup-git-hooks.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
