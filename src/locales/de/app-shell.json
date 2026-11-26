@@ -3,7 +3,8 @@
     "lock-aria-label": "Befaro sperren",
     "lock": "Sperren",
     "open-nav": "Navigation öffnen",
-    "search-filter-active": "Filter aktiv"
+    "search-filter-active": "Filter aktiv",
+    "active-profile": "Aktives Profil: {{name}}"
   },
   "nav": {
     "aria-label": "Hauptnavigation",

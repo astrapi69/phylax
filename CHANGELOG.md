@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The header names the active profile** [M-09]. With more than one
+  profile, the name of the active profile stands next to "Befaro" on
+  every screen, so it is clear whose observations, lab values or
+  documents are shown or changed. A long name is cut with an ellipsis;
+  a click leads to the profile list. With a single profile the header
+  is unchanged.
+
 ## [1.2.1] - 2026-11-26
 
 ### Fixed
