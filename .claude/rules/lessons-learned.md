@@ -113,10 +113,12 @@ This file collects lessons that come from real development. It starts small and 
 - `.husky/pre-commit` stops with a message when `node_modules/.bin` lacks
   one of its tools. Without that guard `npx tsc` would look for a
   package named `tsc` in the registry.
-- What the hook checks and CI does not: Prettier. `lint-staged` formats
-  the staged files, CI runs `make lint` and `make typecheck` but not
-  `make format-check`. A file committed without the hook can therefore
-  land unformatted (it did: the audit file fixed in TD-23).
+- Until I-16, Prettier was the one check the hook had and CI lacked:
+  `lint-staged` formats the staged files, CI ran `make lint` and
+  `make typecheck` only. A file committed without the hook landed
+  unformatted (the audit file fixed in TD-23). Since I-16 the job
+  `Lint & Typecheck` also runs `make format-check`, so every check of
+  the hook is repeated in CI.
 
 ### Stryker static mutants (vitest runner)
 

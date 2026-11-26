@@ -31,6 +31,9 @@ jobs:
       - run: npm ci
       - run: make lint
       - run: make typecheck
+      # Prettier is the one check the pre-commit hook has and CI lacked:
+      # a commit made without the hook could land unformatted (TD-23).
+      - run: make format-check
 
   unit-tests:
     name: Unit Tests (Node ${{ matrix.node-version }})
