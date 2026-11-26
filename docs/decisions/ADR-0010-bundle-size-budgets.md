@@ -142,8 +142,12 @@ plugin still ran and printed a "Loading time" per entry.
 
 The dev dependency `@size-limit/preset-app` is replaced by
 `@size-limit/file`, same version line as `size-limit` (12.1.0).
-`.size-limit.json` is unchanged: the same seven entries, the same
-limits, gzip as before. The maintainer approved the change of the
+`.size-limit.json` keeps its seven entries, their paths, limits and
+gzip setting. The one change: `"running": false` is removed from every
+entry. The option belongs to the time plugin, and `size-limit` refuses
+it without that plugin ("Config option running needs @size-limit/time
+plugin"). Without the plugin nothing is executed, which is what
+`"running": false` asked for. The maintainer approved the change of the
 dependency list on 2026-11-26.
 
 ### Consequences

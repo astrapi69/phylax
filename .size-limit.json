@@ -3,49 +3,42 @@
     "name": "Main JS bundle",
     "path": "dist/assets/index-*.js",
     "limit": "350 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "Workbox chunk",
     "path": ["dist/assets/workbox-*.js", "dist/workbox-*.js"],
     "limit": "20 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "CSS bundle",
     "path": "dist/assets/index-*.css",
     "limit": "15 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "Total JS + CSS",
     "path": ["dist/assets/index-*.js", "dist/assets/workbox-*.js", "dist/assets/index-*.css"],
     "limit": "380 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "Setup lazy chunks (zxcvbn-ts)",
     "path": "dist/assets/index.esm-*.js",
     "limit": "250 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "pdf.js chunk (lazy)",
     "path": "dist/assets/pdf-*.js",
     "limit": "130 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   },
   {
     "name": "jsPDF chunk (lazy)",
     "path": "dist/assets/jspdf*.js",
     "limit": "145 KB",
-    "gzip": true,
-    "running": false
+    "gzip": true
   }
 ]
