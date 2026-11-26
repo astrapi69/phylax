@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-26
+
+### Fixed
+
+- **Backup import: a `.phylax` backup could not be chosen on an iPhone**
+  [BUG-20]. The file picker greyed the backup out, on the import screen
+  of the welcome page and under "Backup wiederherstellen" in Settings.
+  Both file pickers no longer restrict the file type; what is chosen is
+  checked as before, and a file that is no backup is rejected with a
+  message.
+
+- **Backup import: the control to choose the file was not recognisable
+  as a button** [BUG-21]. On the import screen of the welcome page it
+  read like plain text in dark mode on an iPhone. It is a button now,
+  and the name of the chosen file, or "Keine Datei ausgewählt.", stands
+  below it.
+
 ## [1.2.0] - 2026-11-25
 
 ### Added
