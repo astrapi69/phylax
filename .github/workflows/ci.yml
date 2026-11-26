@@ -40,6 +40,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # The job name contains this version ("Unit Tests (Node 24)"), and
+        # that name is a required status check in the branch protection
+        # of develop and of main. When the version changes, update both
+        # protections in the same change (gh api
+        # repos/astrapi69/phylax/branches/<branch>/protection), or every
+        # pull request waits for a check that never reports. The same
+        # holds for renaming any of the five CI jobs.
         node-version: [24]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
