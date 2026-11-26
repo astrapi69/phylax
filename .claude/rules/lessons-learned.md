@@ -110,6 +110,14 @@ This file collects lessons that come from real development. It starts small and 
 - The hook that runs is the main checkout's `.husky/pre-commit`, not the
   copy on the branch of the worktree. A change to the hook takes effect
   for all worktrees once the main checkout has it.
+- One silent path is left: the absolute path names the main checkout.
+  If that checkout is moved, renamed or deleted, `core.hooksPath`
+  points at a directory that no longer exists, git runs no hook and
+  says nothing, and every worktree is back to no hook. After moving or
+  renaming the main checkout, run `npm ci` in it again (it rewrites the
+  path), then check `git config core.hooksPath` and that the directory
+  it names exists. CI repeats every check of the hook (I-16), so a
+  skipped hook is caught on the pull request, not before the commit.
 - `.husky/pre-commit` stops with a message when `node_modules/.bin` lacks
   one of its tools. Without that guard `npx tsc` would look for a
   package named `tsc` in the registry.
