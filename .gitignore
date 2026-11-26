@@ -53,3 +53,5 @@ playwright/.cache/
 
 # Temp files
 tmp/
+# graphify knowledge graph output (local, regenerated with /graphify)
+graphify-out/
