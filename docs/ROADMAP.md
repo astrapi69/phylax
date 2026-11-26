@@ -476,6 +476,12 @@ Follow-up not currently scheduled:
       removes the puppeteer chain (ADR-0010, update of 2026-11-26).
       `npm audit` 24 to 10 reported packages, `--omit=dev` stays 0.
       (Shipped in this commit.)
+- [x] **DEPS-09** `zod` 4.6.7 for `eslint-plugin-react-hooks`, inside
+      the range the plugin declares (`^3.25.0 || ^4.0.0`). `npm audit`
+      rated `zod` 3.25.76 high; the lockfile now resolves one `zod`
+      4.6.7 for the plugin and for Stryker. `npm audit` 10 to 9
+      reported packages, none high. Lockfile only. (Shipped in this
+      commit.)
 - [ ] **DEPS-08** Major upgrades of `@stryker-mutator/*` (9.6.1, latest
       10.1.1) and `vite-plugin-pwa` (1.3.0, latest 2.0.0). `npm audit`
       reports `minimatch`, `glob` and `workbox-build` below them

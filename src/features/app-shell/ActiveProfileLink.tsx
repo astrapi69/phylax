@@ -1,28 +1,37 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useActiveProfileLabel } from '../active-profile';
 
 /**
  * Names the active profile in the header and links to the profile list
- * (M-09). Renders nothing unless more than one profile exists, so a
- * single-profile installation keeps its header as it was.
+ * (M-09). The header renders it only when more than one profile exists,
+ * so a single-profile installation keeps its header as it was.
+ *
+ * Touch target (BUG-22): below md the link sits under the app name and
+ * is only 24px high, and two 44px targets do not fit into the 56px
+ * header. Its `::before` therefore covers the whole block it shares with
+ * the app name (the parent must be `relative`), so app name and profile
+ * name are one target of at least 44 x 44. From md up the pseudo-element
+ * is off and the link is 44px high by itself.
  *
  * The visible text is the name only, truncated with an ellipsis: the
  * header has no room for a caption at 360px. The caption is in the
  * accessible name ("Aktives Profil: <name>"), and `title` carries the
  * full name for a truncated one.
  */
-export function ActiveProfileLink() {
+interface ActiveProfileLinkProps {
+  /** Display name of the active profile. */
+  name: string;
+}
+
+export function ActiveProfileLink({ name }: ActiveProfileLinkProps) {
   const { t } = useTranslation('app-shell');
-  const name = useActiveProfileLabel();
-  if (name === null) return null;
   return (
     <Link
       to="/profiles"
       aria-label={t('header.active-profile', { name })}
       title={name}
       data-testid="header-active-profile"
-      className="flex min-h-[24px] max-w-full min-w-0 items-center gap-1 rounded-sm text-xs font-medium text-gray-600 no-underline transition-colors hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 md:min-h-[44px] md:text-sm dark:text-gray-300 dark:hover:text-gray-100"
+      className="flex min-h-[24px] max-w-full min-w-0 items-center gap-1 rounded-sm text-xs font-medium text-gray-600 no-underline transition-colors before:absolute before:inset-0 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 md:min-h-[44px] md:text-sm md:before:hidden dark:text-gray-300 dark:hover:text-gray-100"
     >
       <ProfileIcon />
       <span className="truncate" data-testid="header-active-profile-name">

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-11-26
+
+### Fixed
+
+- **Header: touch targets of at least 44px** [BUG-22]. At phone width
+  the theme button, the lock button and the app name were smaller than
+  the 44px the project sets as its minimum, and the profile name that
+  came with 1.3.0 was only 24px high, directly under the app name. Theme
+  and lock are now 44 x 44. With more than one profile, app name and
+  profile name are one target on small screens and lead to the profile
+  list; on wider screens both stay separate. The header looks the same
+  as before.
+
+### Security
+
+- **Development tooling: `zod` 4.6.7** [DEPS-09], inside the range
+  `eslint-plugin-react-hooks` declares. `npm audit` reports no finding
+  rated high any more (9 moderate, all in tools that are not shipped;
+  none for the shipped app).
+
 ## [1.3.0] - 2026-11-26
 
 ### Added
