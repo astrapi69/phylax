@@ -56,8 +56,9 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
         )}
         {/* M-09: below md the active profile sits under the app name,
             so its name keeps most of the header width at 360px; from md
-            up both share one line. */}
-        <div className="flex min-w-0 flex-col md:flex-row md:items-center md:gap-3">
+            up both share one line. items-start: without it the column
+            stretches the app name link to the full width of the block. */}
+        <div className="flex min-w-0 flex-col items-start md:flex-row md:items-center md:gap-3">
           <Link
             to="/profile"
             className="text-lg leading-7 font-bold text-gray-900 no-underline dark:text-gray-100"
