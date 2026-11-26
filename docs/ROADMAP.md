@@ -338,6 +338,10 @@ Follow-up not currently scheduled:
       Workflow-Ebene; nur der Deploy-Job hebt seine Rechte selbst an.
       Schließt die sechs CodeQL-Meldungen
       `actions/missing-workflow-permissions`.
+- [x] **I-16** `make format-check` läuft in CI, als Schritt im Job
+      `Lint & Typecheck`. Prettier war die einzige Prüfung des
+      Pre-Commit-Hooks, die CI nicht wiederholte; ein Commit ohne Hook
+      konnte unformatiert landen (so geschehen, behoben in TD-23).
 - [x] **I-11** External-resource audit and outbound-connection
       disclosure. New `docs/audits/external-resources-2026-09-16.md`
       documents every host referenced in the production build (`dist/`),
