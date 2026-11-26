@@ -269,6 +269,20 @@ describe('active profile in the header (M-09)', () => {
       expect(screen.queryByTestId('header-active-profile')).toBeNull();
     });
 
+    it('is a small target of its own below the app name (BUG-22)', async () => {
+      const anna = await createProfile('Anna');
+      await createProfile('Bernd');
+      localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, anna);
+      renderHeader();
+      await expectName('Anna');
+
+      const link = screen.getByTestId('header-active-profile');
+      const appName = screen.getByText('Befaro').closest('a');
+      expect(link).toHaveClass('min-h-[24px]');
+      expect(link).not.toHaveClass('before:absolute');
+      expect(appName).not.toHaveClass('pointer-events-none');
+    });
+
     it('keeps a long name on one line and lets it truncate', async () => {
       const longName = 'Maximiliane Konstantinopoulou-Schwarzenberger';
       const id = await createProfile(longName);

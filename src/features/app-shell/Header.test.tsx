@@ -86,4 +86,16 @@ describe('Header', () => {
     await user.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
   });
+
+  describe('touch targets (BUG-22)', () => {
+    it('theme toggle, lock button and app name link carry no 44px minimum', () => {
+      renderHeader();
+      const themeToggle = screen.getByRole('button', { name: /Aktuelles Theme/ });
+      const lockButton = screen.getByLabelText('Befaro sperren');
+      const appName = screen.getByText('Befaro').closest('a');
+      for (const control of [themeToggle, lockButton, appName]) {
+        expect(control).not.toHaveClass('min-h-[44px]');
+      }
+    });
+  });
 });
