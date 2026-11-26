@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
 import { renderHook, act } from '@testing-library/react';
 import { lock, unlock } from '../../crypto';
@@ -6,6 +6,7 @@ import { readMeta } from '../../db/meta';
 import { setupCompletedOnboarding } from '../../db/test-helpers';
 import { ProfileRepository, ProfileVersionRepository } from '../../db/repositories';
 import type { Profile } from '../../domain';
+import { subscribeProfilesChanged } from '../active-profile';
 import { useProfileBaseDataForm } from './useProfileBaseDataForm';
 
 const TEST_PASSWORD = 'test-password-12';
@@ -103,6 +104,29 @@ describe('useProfileBaseDataForm', () => {
       await result.current.submit();
     });
     expect(result.current.state.kind).toBe('open');
+  });
+
+  it('tells the header that a profile changed, once, after a saved edit (M-09)', async () => {
+    const profile = await ensureProfile();
+    const listener = vi.fn();
+    const unsubscribe = subscribeProfilesChanged(listener);
+    const { result } = renderHook(() => useProfileBaseDataForm());
+
+    act(() => {
+      result.current.openEdit(profile);
+    });
+    expect(listener).not.toHaveBeenCalled();
+    act(() => {
+      result.current.setField('name', 'Anna Marie');
+      result.current.setField('lastUpdateReason', 'Name korrigiert');
+    });
+    await act(async () => {
+      await result.current.submit();
+    });
+    unsubscribe();
+
+    expect(result.current.state.kind).toBe('closed');
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it('happy path: bumps version, creates ProfileVersion entry, persists baseData', async () => {

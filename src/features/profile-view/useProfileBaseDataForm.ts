@@ -4,6 +4,7 @@ import { ProfileRepository, ProfileVersionRepository } from '../../db/repositori
 import { generateId } from '../../crypto';
 import { db } from '../../db/schema';
 import { bumpVersion } from '../../domain/profileVersion/bumpVersion';
+import { notifyProfilesChanged } from '../active-profile';
 
 /**
  * Mode the form opens in. Only `edit` exists for the base-data form
@@ -208,6 +209,9 @@ export function useProfileBaseDataForm(
         await Promise.all([db.profiles.put(profileRow), db.profileVersions.put(versionRow)]);
       });
 
+      // M-09: the header names the active profile; a rename must reach it
+      // without a navigation.
+      notifyProfilesChanged();
       options.onCommitted?.();
       setState({ kind: 'closed' });
     } catch (err) {

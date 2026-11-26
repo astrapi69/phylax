@@ -10,3 +10,5 @@ export {
   writeStoredActiveProfileId,
   clearStoredActiveProfileId,
 } from './activeProfileStorage';
+export { useActiveProfileLabel } from './useActiveProfileLabel';
+export { notifyProfilesChanged, subscribeProfilesChanged } from './profilesChanged';

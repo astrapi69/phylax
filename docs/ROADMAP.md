@@ -217,6 +217,13 @@ day one.
       hervor; das Ziel wird weiterhin per Klick bestätigt. Anlass:
       bei mehreren Profilen war auf dem Entry-Screen nicht ersichtlich,
       wohin importiert wird.
+- [x] **M-09** Aktives Profil in jeder Ansicht sichtbar. Bei mehr als
+      einem Profil nennt die Kopfzeile neben "Befaro" den Namen des
+      aktiven Profils, gekürzt mit Auslassungspunkten; ein Klick führt
+      zur Profilliste. Screenreader lesen "Aktives Profil: <Name>". Bei
+      genau einem Profil bleibt die Kopfzeile unverändert. Anlass: in
+      Beobachtungen, Laborwerten und Dokumenten war nicht erkennbar,
+      wessen Daten man gerade sieht oder ändert.
 
 Follow-up not currently scheduled:
 
