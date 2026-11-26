@@ -82,12 +82,12 @@ function renderInRouter() {
 }
 
 describe('BackupImportSection', () => {
-  it('restricts the file picker to backup types through accept (BUG-20)', () => {
+  it('sets no accept filter on the file picker, so iOS offers .phylax files (BUG-20)', () => {
+    // iOS greys out every file whose type is not in `accept`, and it
+    // knows neither the .phylax extension nor its MIME type. The
+    // chosen file is validated by parseBackupFile instead.
     renderInRouter();
-    expect(screen.getByTestId('backup-import-section-file-input')).toHaveAttribute(
-      'accept',
-      '.phylax,application/json,application/x-phylax-backup',
-    );
+    expect(screen.getByTestId('backup-import-section-file-input')).not.toHaveAttribute('accept');
   });
 
   it('renders heading + description + file picker on mount', () => {
