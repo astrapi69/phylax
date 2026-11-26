@@ -82,6 +82,14 @@ function renderInRouter() {
 }
 
 describe('BackupImportSection', () => {
+  it('restricts the file picker to backup types through accept (BUG-20)', () => {
+    renderInRouter();
+    expect(screen.getByTestId('backup-import-section-file-input')).toHaveAttribute(
+      'accept',
+      '.phylax,application/json,application/x-phylax-backup',
+    );
+  });
+
   it('renders heading + description + file picker on mount', () => {
     renderInRouter();
     expect(

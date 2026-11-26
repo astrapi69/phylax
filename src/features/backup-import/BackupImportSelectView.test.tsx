@@ -66,6 +66,14 @@ describe('BackupImportSelectView', () => {
     expect(screen.getByLabelText('Datei auswählen')).toBeInTheDocument();
   });
 
+  it('restricts the file picker to backup types through accept (BUG-20)', () => {
+    renderView();
+    expect(screen.getByLabelText('Datei auswählen')).toHaveAttribute(
+      'accept',
+      '.phylax,application/json,application/x-phylax-backup',
+    );
+  });
+
   it('continue button disabled before a file is selected', () => {
     renderView();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
