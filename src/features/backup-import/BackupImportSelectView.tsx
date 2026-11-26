@@ -124,7 +124,6 @@ export function BackupImportSelectView() {
           <input
             id="backup-file-input"
             type="file"
-            accept=".phylax,application/json,application/x-phylax-backup"
             onChange={(e) => void handleFile(e)}
             className="block w-full text-sm text-gray-600 dark:text-gray-400"
           />

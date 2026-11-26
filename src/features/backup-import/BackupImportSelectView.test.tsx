@@ -66,6 +66,14 @@ describe('BackupImportSelectView', () => {
     expect(screen.getByLabelText('Datei auswählen')).toBeInTheDocument();
   });
 
+  it('sets no accept filter on the file picker, so iOS offers .phylax files (BUG-20)', () => {
+    // iOS greys out every file whose type is not in `accept`, and it
+    // knows neither the .phylax extension nor its MIME type. The
+    // chosen file is validated by parseBackupFile instead.
+    renderView();
+    expect(screen.getByLabelText('Datei auswählen')).not.toHaveAttribute('accept');
+  });
+
   it('continue button disabled before a file is selected', () => {
     renderView();
     expect(screen.getByRole('button', { name: 'Weiter' })).toBeDisabled();
