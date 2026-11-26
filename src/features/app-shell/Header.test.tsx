@@ -88,13 +88,27 @@ describe('Header', () => {
   });
 
   describe('touch targets (BUG-22)', () => {
-    it('theme toggle, lock button and app name link carry no 44px minimum', () => {
+    it('theme toggle and lock button are at least 44 x 44', () => {
       renderHeader();
       const themeToggle = screen.getByRole('button', { name: /Aktuelles Theme/ });
       const lockButton = screen.getByLabelText('Befaro sperren');
+      for (const control of [themeToggle, lockButton]) {
+        expect(control).toHaveClass('min-h-[44px]', 'min-w-[44px]', 'justify-center');
+      }
+    });
+
+    it('the app name link is a 44px target of its own without a profile name', () => {
+      renderHeader();
       const appName = screen.getByText('Befaro').closest('a');
-      for (const control of [themeToggle, lockButton, appName]) {
-        expect(control).not.toHaveClass('min-h-[44px]');
+      expect(appName).toHaveClass('min-h-[44px]');
+      expect(appName).not.toHaveClass('pointer-events-none');
+      expect(appName).toHaveAttribute('href', '/profile');
+    });
+
+    it('the hamburger and the search control keep their 44 x 44', () => {
+      renderHeader(<Header onOpenNavDrawer={() => {}} />, { initialEntries: ['/observations'] });
+      for (const testId of ['header-hamburger', 'header-search-toggle']) {
+        expect(screen.getByTestId(testId)).toHaveClass('min-h-[44px]', 'min-w-[44px]');
       }
     });
   });

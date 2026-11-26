@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { lock } from '../../crypto';
 import { ThemeToggle } from '../theme';
 import { SearchIcon } from '../../ui';
+import { useActiveProfileLabel } from '../active-profile';
 import { useSearch } from '../search-trigger';
 import { ActiveProfileLink } from './ActiveProfileLink';
 
@@ -40,6 +41,7 @@ interface HeaderProps {
 export function Header({ onOpenNavDrawer }: HeaderProps) {
   const { t } = useTranslation('app-shell');
   const { hasSearch, hasActiveFilter, isOpen, toggle } = useSearch();
+  const activeProfileName = useActiveProfileLabel();
   return (
     <header className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900">
       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -57,15 +59,23 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
         {/* M-09: below md the active profile sits under the app name,
             so its name keeps most of the header width at 360px; from md
             up both share one line. items-start: without it the column
-            stretches the app name link to the full width of the block. */}
-        <div className="flex min-w-0 flex-col items-start md:flex-row md:items-center md:gap-3">
+            stretches the app name link to the full width of the block.
+            BUG-22: `relative` anchors the profile link's ::before, which
+            makes the whole block one touch target below md. There the
+            app name link lets pointer events through to it; alone, or
+            from md up, it is a 44px target of its own. */}
+        <div className="relative flex min-w-0 flex-col items-start md:flex-row md:items-center md:gap-3">
           <Link
             to="/profile"
-            className="text-lg leading-7 font-bold text-gray-900 no-underline dark:text-gray-100"
+            className={`flex items-center text-lg leading-7 font-bold text-gray-900 no-underline dark:text-gray-100 ${
+              activeProfileName === null
+                ? 'min-h-[44px]'
+                : 'pointer-events-none md:pointer-events-auto md:min-h-[44px]'
+            }`}
           >
             Befaro
           </Link>
-          <ActiveProfileLink />
+          {activeProfileName !== null && <ActiveProfileLink name={activeProfileName} />}
         </div>
       </div>
 
@@ -84,7 +94,7 @@ export function Header({ onOpenNavDrawer }: HeaderProps) {
         <button
           type="button"
           onClick={() => lock()}
-          className="flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-sm px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
           aria-label={t('header.lock-aria-label')}
         >
           <svg

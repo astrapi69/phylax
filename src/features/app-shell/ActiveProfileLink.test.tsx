@@ -269,7 +269,7 @@ describe('active profile in the header (M-09)', () => {
       expect(screen.queryByTestId('header-active-profile')).toBeNull();
     });
 
-    it('is a small target of its own below the app name (BUG-22)', async () => {
+    it('forms one touch target with the app name below md (BUG-22)', async () => {
       const anna = await createProfile('Anna');
       await createProfile('Bernd');
       localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, anna);
@@ -278,9 +278,27 @@ describe('active profile in the header (M-09)', () => {
 
       const link = screen.getByTestId('header-active-profile');
       const appName = screen.getByText('Befaro').closest('a');
-      expect(link).toHaveClass('min-h-[24px]');
-      expect(link).not.toHaveClass('before:absolute');
-      expect(appName).not.toHaveClass('pointer-events-none');
+      // The link's ::before covers the block it shares with the app
+      // name; the app name lets pointer events through to it.
+      expect(link).toHaveClass('before:absolute', 'before:inset-0');
+      expect(link.parentElement).toHaveClass('relative');
+      expect(link.parentElement).toContainElement(appName);
+      expect(appName).toHaveClass('pointer-events-none');
+    });
+
+    it('gives both links their own 44px target from md up (BUG-22)', async () => {
+      const anna = await createProfile('Anna');
+      await createProfile('Bernd');
+      localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, anna);
+      renderHeader();
+      await expectName('Anna');
+
+      const link = screen.getByTestId('header-active-profile');
+      const appName = screen.getByText('Befaro').closest('a');
+      expect(link).toHaveClass('md:before:hidden', 'md:min-h-[44px]');
+      expect(appName).toHaveClass('md:pointer-events-auto', 'md:min-h-[44px]');
+      // Still a link to the profile view for keyboard and screen reader.
+      expect(appName).toHaveAttribute('href', '/profile');
     });
 
     it('keeps a long name on one line and lets it truncate', async () => {

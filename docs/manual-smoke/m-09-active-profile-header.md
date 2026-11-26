@@ -85,11 +85,21 @@ Create a vault and a first profile, for example "Nikolaos Raptis".
      "Aktives Profil: <name>", link.
    - **Result** -
 
+9. **Touch targets at phone width (BUG-22)**
+   - **Steps** - At 360px width with two profiles, tap the word
+     "Befaro", then go back and tap the profile name. Tap the theme
+     button and the lock button with a thumb.
+   - **Expected** - Both taps on the left lead to "Alle Profile": app
+     name and profile name are one target there. Theme and lock are
+     easy to hit and do not trigger each other. With one profile, and
+     on a desktop, "Befaro" leads to the profile view as before.
+   - **Result** -
+
 ## Findings
 
 ## Sign-off
 
-- [ ] Scenarios 1 to 8 walked
+- [ ] Scenarios 1 to 9 walked
 - [ ] Phone width and desktop width both checked
 - [ ] Light mode and dark mode both checked
 - [ ] Walker, date:
