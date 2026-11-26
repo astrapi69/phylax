@@ -146,10 +146,8 @@ the trigger fires.
 - **DEPS-08** Major upgrades of `@stryker-mutator/*` (10.x) and
   `vite-plugin-pwa` (2.x), both reported by `npm audit` through
   `minimatch`, `glob` and `workbox-build` (moderate, development
-  tooling). The same item carries `zod` below
-  `eslint-plugin-react-hooks` (high, development tooling, waits for an
-  upstream release). One item, no work until the maintainer schedules
-  it; see ROADMAP DEPS-08. Trigger: the maintainer schedules it.
+  tooling). One item, no work until the maintainer schedules it; see
+  ROADMAP DEPS-08. Trigger: the maintainer schedules it.
 
 - **P-23** Contrast of disabled buttons in dark mode. A disabled
   primary button (`dark:disabled:bg-gray-700` with
