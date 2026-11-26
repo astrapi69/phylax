@@ -463,6 +463,22 @@ Follow-up not currently scheduled:
       `npm ci` or `npm install` in the main checkout. (Shipped in this
       commit.)
 
+- [x] **DEPS-07** Audit fixes in the development tooling:
+      `brace-expansion` 1.1.22 inside its range, and
+      `@size-limit/file` in place of `@size-limit/preset-app`, which
+      removes the puppeteer chain (ADR-0010, update of 2026-11-26).
+      `npm audit` 24 to 10 reported packages, `--omit=dev` stays 0.
+      (Shipped in this commit.)
+- [ ] **DEPS-08** Major upgrades of `@stryker-mutator/*` (9.6.1, latest
+      10.1.1) and `vite-plugin-pwa` (1.3.0, latest 2.0.0). `npm audit`
+      reports `minimatch`, `glob` and `workbox-build` below them
+      (moderate). Whether the new majors clear the findings is not
+      measured. `vite-plugin-pwa` 2 touches the service worker setup
+      pinned in `src/pwa/viteConfigPwa.test.ts`; Stryker runs only in
+      the nightly workflow. Trigger: the maintainer schedules it.
+      `@tailwindcss/typography` (`postcss-selector-parser`) waits for
+      an upstream release.
+
 ## Coverage gaps (from `docs/audits/current-coverage.md`)
 
 Closed by **TD-16** (2026-06-29): the `src/db/repositories/**`,

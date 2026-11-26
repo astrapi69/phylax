@@ -121,3 +121,38 @@ When the total approaches 220-230 KB (well before the 250 KB hard
 ceiling), open a code-splitting or route-splitting task rather than
 raising the budget further. Bundle size is not a single-axis problem
 past that point.
+
+## Update 2026-11-26: `@size-limit/file` replaces `@size-limit/preset-app` (DEPS-07)
+
+### Context
+
+`@size-limit/preset-app` is `@size-limit/file` plus `@size-limit/time`.
+The time plugin measures execution in a headless Chrome and brings
+`estimo` and `puppeteer-core` with it. `npm audit` on 2026-11-26
+reported 24 vulnerable packages in the development tooling, 15 of them
+high, and 13 of those high ones sat below this one dependency
+(`extract-zip`, for which no patched release exists, `nanoid`,
+`basic-ftp`, `puppeteer-core` and others).
+
+Befaro never used the time plugin for a budget: every entry in
+`.size-limit.json` has `"running": false` and only a size limit. The
+plugin still ran and printed a "Loading time" per entry.
+
+### Decision
+
+The dev dependency `@size-limit/preset-app` is replaced by
+`@size-limit/file`, same version line as `size-limit` (12.1.0).
+`.size-limit.json` is unchanged: the same seven entries, the same
+limits, gzip as before. The maintainer approved the change of the
+dependency list on 2026-11-26.
+
+### Consequences
+
+- The budgets and the measured sizes stay what they were; the
+  "Loading time" line per entry is gone from the output, and no
+  headless Chrome is started.
+- `npm audit` goes from 24 to 10 reported packages (15 high to 1);
+  `npm audit --omit=dev` stays at 0.
+- A time budget would need `@size-limit/time` back. None is planned;
+  the time to interactive in `.claude/rules/quality-checks.md` is a
+  manual target.
